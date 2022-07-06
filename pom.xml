@@ -13,7 +13,7 @@
 
 	<groupId>io.loicgreffier.quickstarts</groupId>
 	<artifactId>spring-boot-kafka-quickstarts</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>spring-boot-kafka-quickstarts</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -33,6 +33,7 @@
 	<properties>
 		<avro.version>1.11.0</avro.version>
 		<java.version>17</java.version>
+		<jib-maven-plugin.version>3.2.1</jib-maven-plugin.version>
 		<kafka.version>3.2.0</kafka.version>
 		<kafka-avro-serializer.version>7.1.1</kafka-avro-serializer.version>
 		<lombok.version>1.18.24</lombok.version>
@@ -62,6 +63,25 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>${jib-maven-plugin.version}</version>
+				<configuration>
+					<from>
+						<image>eclipse-temurin:17.0.3_7-jre</image>
+					</from>
+					<to>
+						<image>docker.io/loicgreffier/spring-boot-kafka-quickstarts:${project.artifactId}-${project.version}</image>
+					</to>
+					<container>
+						<ports>
+							<port>8080</port>
+						</ports>
+					</container>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
