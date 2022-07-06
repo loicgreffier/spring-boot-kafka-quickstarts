@@ -1,4 +1,4 @@
-# Getting Started
+# Consumer Simple
 
 This module uses:
 - Kafka Clients consumer API

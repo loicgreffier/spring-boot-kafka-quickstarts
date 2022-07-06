@@ -1,4 +1,4 @@
-# Getting Started
+# Consumer Circuit Breaker
 
 This module shows:
 - Kafka Clients consumer API
