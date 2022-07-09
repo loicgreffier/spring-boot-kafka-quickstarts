@@ -101,6 +101,28 @@ services:
           }
         }
 
+  kafka-consumer-avro:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-consumer-avro-1.0.0-SNAPSHOT
+    hostname: kafka-consumer-avro
+    container_name: kafka-consumer-avro
+    networks:
+      - spring-boot-kafka-quickstarts
+    depends_on:
+      - kafka-producer-avro
+    ports:
+      - "8083:8080"
+    restart: unless-stopped
+    environment:
+      SPRING_APPLICATION_JSON: |
+        {
+          "kafka": {
+            "properties": {
+              "bootstrap.servers": "broker:29092",
+              "schema.registry.url": "http://schema-registry:8081"
+            }
+          }
+        }
+
 networks:
   spring-boot-kafka-quickstarts:
     driver: bridge

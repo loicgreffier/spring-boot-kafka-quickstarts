@@ -37,26 +37,10 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_JMX_PORT: 9101
       KAFKA_JMX_HOSTNAME: localhost
-      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker:29092
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
-
-  schema-registry:
-    image: confluentinc/cp-schema-registry:7.2.0
-    hostname: schema-registry
-    container_name: schema-registry
-    networks:
-      - spring-boot-kafka-quickstarts
-    depends_on:
-      - broker
-    ports:
-      - "8081:8081"
-    environment:
-      SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:29092'
-      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
 
   control-center:
     image: confluentinc/cp-enterprise-control-center:7.2.0
@@ -66,27 +50,24 @@ services:
       - spring-boot-kafka-quickstarts
     depends_on:
       - broker
-      - schema-registry
     ports:
       - "9021:9021"
     environment:
       CONTROL_CENTER_BOOTSTRAP_SERVERS: 'broker:29092'
-      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
       CONTROL_CENTER_REPLICATION_FACTOR: 1
       CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
 
-  kafka-producer-avro:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-producer-avro-1.0.0-SNAPSHOT
-    hostname: kafka-producer-avro
-    container_name: kafka-producer-avro
+  kafka-producer-simple:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-producer-simple-1.0.0-SNAPSHOT
+    hostname: kafka-producer-simple
+    container_name: kafka-producer-simple
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
       - broker
-      - schema-registry
     ports:
       - "8082:8080"
     restart: unless-stopped
@@ -95,8 +76,28 @@ services:
         {
           "kafka": {
             "properties": {
-              "bootstrap.servers": "broker:29092",
-              "schema.registry.url": "http://schema-registry:8081"
+              "bootstrap.servers": "broker:29092"
+            }
+          }
+        }
+
+  kafka-consumer-simple:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-consumer-simple-1.0.0-SNAPSHOT
+    hostname: kafka-consumer-simple
+    container_name: kafka-consumer-simple
+    networks:
+      - spring-boot-kafka-quickstarts
+    depends_on:
+      - kafka-producer-simple
+    ports:
+      - "8083:8080"
+    restart: unless-stopped
+    environment:
+      SPRING_APPLICATION_JSON: |
+        {
+          "kafka": {
+            "properties": {
+              "bootstrap.servers": "broker:29092"
             }
           }
         }

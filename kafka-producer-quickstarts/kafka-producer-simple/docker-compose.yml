@@ -60,10 +60,10 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
 
-  producer-simple:
+  kafka-producer-simple:
     image: loicgreffier/spring-boot-kafka-quickstarts:kafka-producer-simple-1.0.0-SNAPSHOT
-    hostname: producer-simple
-    container_name: producer-simple
+    hostname: kafka-producer-simple
+    container_name: kafka-producer-simple
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
