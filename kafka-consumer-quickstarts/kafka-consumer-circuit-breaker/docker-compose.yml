@@ -79,7 +79,7 @@ services:
       PORT: 9021
 
   kafka-producer-avro:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-producer-avro-1.0.0-SNAPSHOT
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-producer-avro-1.0.0
     hostname: kafka-producer-avro
     container_name: kafka-producer-avro
     networks:
@@ -102,7 +102,7 @@ services:
         }
 
   kafka-consumer-circuit-breaker:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-consumer-circuit-breaker-1.0.0-SNAPSHOT
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-consumer-circuit-breaker-1.0.0
     hostname: kafka-consumer-circuit-breaker
     container_name: kafka-consumer-circuit-breaker
     networks:

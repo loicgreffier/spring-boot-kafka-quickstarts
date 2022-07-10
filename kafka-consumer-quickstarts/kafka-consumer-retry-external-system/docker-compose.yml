@@ -61,7 +61,7 @@ services:
       PORT: 9021
 
   kafka-producer-simple:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-producer-simple-1.0.0-SNAPSHOT
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-producer-simple-1.0.0
     hostname: kafka-producer-simple
     container_name: kafka-producer-simple
     networks:
@@ -82,7 +82,7 @@ services:
         }
 
   kafka-consumer-retry-external-system:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-consumer-retry-external-system-1.0.0-SNAPSHOT
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-consumer-retry-external-system-1.0.0
     hostname: kafka-consumer-retry-external-system
     container_name: kafka-consumer-retry-external-system
     networks:

@@ -61,7 +61,7 @@ services:
       PORT: 9021
 
   kafka-producer-simple:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-producer-simple-1.0.0-SNAPSHOT
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-producer-simple-1.0.0
     hostname: kafka-producer-simple
     container_name: kafka-producer-simple
     networks:
