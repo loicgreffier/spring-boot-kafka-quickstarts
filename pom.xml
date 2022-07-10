@@ -13,7 +13,7 @@
 
 	<groupId>io.loicgreffier.quickstarts</groupId>
 	<artifactId>spring-boot-kafka-quickstarts</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>spring-boot-kafka-quickstarts</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -32,6 +32,7 @@
 
 	<properties>
 		<avro.version>1.11.0</avro.version>
+		<commons-io.version>2.11.0</commons-io.version>
 		<java.version>17</java.version>
 		<jib-maven-plugin.version>3.2.1</jib-maven-plugin.version>
 		<kafka.version>3.2.0</kafka.version>

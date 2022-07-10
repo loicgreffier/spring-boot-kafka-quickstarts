@@ -3,7 +3,6 @@ kafka:
     bootstrap.servers: localhost:9092
     schema.registry.url: http://localhost:8081
     application.id: streams-map
-    replication.factor: 3
     state.dir: /tmp/kafka-streams-quickstarts
     acks: all
     avro.remove.java.properties: true

@@ -22,6 +22,7 @@ public class KafkaStreamsMapTopology {
                 .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .map((key, person) -> {
+                    person.setFirstName(null);
                     person.setFirstName(person.getFirstName().toUpperCase());
                     person.setLastName(person.getLastName().toUpperCase());
                     return KeyValue.pair(person.getId(), person);

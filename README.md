@@ -28,3 +28,5 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 - [Consumer retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system): Kafka Clients, consumer API, external system interfacing with strong retry mechanism, mock consumer
 
 ### Streams
+
+- [Streams map](/kafka-streams-quickstarts/kafka-streams-map): Kafka Streams, `map()`, `peek()`, Topology Test Driver

@@ -45,7 +45,7 @@ public class KafkaStreamsMapRunner implements ApplicationRunner {
 
         kafkaStreams.setStateListener((newState, oldState) -> {
             if (newState.equals(KafkaStreams.State.ERROR)) {
-                log.error("The Kafka Streams {} is in error state. Shutting down",
+                log.error("The {} Kafka Streams is in error state...",
                         streamsProperties.getProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
 
                 applicationContext.close();
