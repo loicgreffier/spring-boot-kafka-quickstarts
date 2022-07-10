@@ -2,11 +2,10 @@ package io.lgr.quickstarts.producer.simple.app;
 
 import io.lgr.quickstarts.producer.simple.constants.Topic;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -17,11 +16,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class KafkaProducerSimpleRunner implements ApplicationRunner {
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaProducerSimpleRunner.class);
-
     @Autowired
     private Producer<String, String> kafkaProducer;
 
@@ -38,7 +36,7 @@ public class KafkaProducerSimpleRunner implements ApplicationRunner {
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
-                LOGGER.error("Interruption during sleep between message production", e);
+                log.error("Interruption during sleep between message production", e);
                 Thread.currentThread().interrupt();
             }
 
@@ -49,9 +47,9 @@ public class KafkaProducerSimpleRunner implements ApplicationRunner {
     public Future<RecordMetadata> send(ProducerRecord<String, String> message) {
         return kafkaProducer.send(message, ((recordMetadata, e) -> {
             if (e != null) {
-                LOGGER.error(e.getMessage());
+                log.error(e.getMessage());
             } else {
-                LOGGER.info("Success: topic = {} partition = {} offset = {}, key = {}, value = {}", recordMetadata.topic(),
+                log.info("Success: topic = {} partition = {} offset = {}, key = {}, value = {}", recordMetadata.topic(),
                         recordMetadata.partition(), recordMetadata.offset(), message.key(), message.value());
             }
         }));
@@ -59,6 +57,7 @@ public class KafkaProducerSimpleRunner implements ApplicationRunner {
 
     @PreDestroy
     public void preDestroy() {
+        log.info("Closing producer");
         kafkaProducer.close();
     }
 }

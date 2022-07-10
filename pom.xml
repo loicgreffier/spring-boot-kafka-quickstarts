@@ -36,6 +36,7 @@
 		<jib-maven-plugin.version>3.2.1</jib-maven-plugin.version>
 		<kafka.version>3.2.0</kafka.version>
 		<kafka-avro-serializer.version>7.1.1</kafka-avro-serializer.version>
+		<kafka-streams-avro-serde.version>7.1.1</kafka-streams-avro-serde.version>
 		<lombok.version>1.18.24</lombok.version>
 	</properties>
 
@@ -59,6 +60,30 @@
 	</dependencies>
 
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.avro</groupId>
+					<artifactId>avro-maven-plugin</artifactId>
+					<version>${avro.version}</version>
+					<executions>
+						<execution>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>schema</goal>
+							</goals>
+							<configuration>
+								<stringType>String</stringType>
+								<enableDecimalLogicalType>true</enableDecimalLogicalType>
+								<sourceDirectory>${project.basedir}/src/main/avro/</sourceDirectory>
+								<outputDirectory>${project.basedir}/target/generated-sources</outputDirectory>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

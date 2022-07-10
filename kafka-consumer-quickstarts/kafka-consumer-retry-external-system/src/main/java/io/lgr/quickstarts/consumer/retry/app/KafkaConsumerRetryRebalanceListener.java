@@ -1,19 +1,18 @@
 package io.lgr.quickstarts.consumer.retry.app;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class KafkaConsumerRetryRebalanceListener implements ConsumerRebalanceListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerRetryRebalanceListener.class);
     private final Consumer<String, String> consumer;
     private final Map<TopicPartition, OffsetAndMetadata> offsets;
 
@@ -24,7 +23,7 @@ public class KafkaConsumerRetryRebalanceListener implements ConsumerRebalanceLis
 
     @Override
     public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
-        LOGGER.info("Partition revoked : {}", partitions);
+        log.info("Partition revoked : {}", partitions);
 
         for (TopicPartition topicPartition : partitions) {
             offsets.remove(topicPartition);
@@ -33,7 +32,7 @@ public class KafkaConsumerRetryRebalanceListener implements ConsumerRebalanceLis
 
     @Override
     public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-        LOGGER.info("Partition assigned : {}", partitions);
+        log.info("Partition assigned : {}", partitions);
 
         Map<TopicPartition, OffsetAndMetadata> offsetsTopicPartitions = consumer.committed(new HashSet<>(partitions));
         offsets.putAll(offsetsTopicPartitions.entrySet()
@@ -44,7 +43,7 @@ public class KafkaConsumerRetryRebalanceListener implements ConsumerRebalanceLis
 
     @Override
     public void onPartitionsLost(Collection<TopicPartition> partitions) {
-        LOGGER.info("Partition lost : {}", partitions);
+        log.info("Partition lost : {}", partitions);
 
         ConsumerRebalanceListener.super.onPartitionsLost(partitions);
     }
