@@ -117,8 +117,12 @@ services:
         {
           "kafka": {
             "properties": {
-              "bootstrap.servers": "broker:29092",
-              "schema.registry.url": "http://schema-registry:8081"
+              "streams": {
+                "bootstrap.servers": "broker:29092",
+              },
+              "serdes": {
+                "schema.registry.url": "http://schema-registry:8081"
+              }
             }
           }
         }
