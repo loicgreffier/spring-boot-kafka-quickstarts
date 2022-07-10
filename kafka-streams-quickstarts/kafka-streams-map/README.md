@@ -1,4 +1,4 @@
-# Consumer Avro
+# Kafka Streams Map
 
 This module shows:
 - Kafka Streams API: `map()`, `peek()`
