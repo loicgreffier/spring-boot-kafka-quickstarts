@@ -9,8 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
+
     <modules>
         <module>kafka-streams-map</module>
+        <module>kafka-streams-map-values</module>
     </modules>
 
     <artifactId>kafka-streams-quickstarts</artifactId>

@@ -1,11 +1,11 @@
-package io.lgr.quickstarts.streams.map.constants;
+package io.lgr.quickstarts.streams.mapvalues.constants;
 
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum Topic {
     PERSON_TOPIC("PERSON_TOPIC"),
-    PERSON_MAP_TOPIC("PERSON_MAP_TOPIC");
+    PERSON_MAP_VALUES_TOPIC("PERSON_MAP_VALUES_TOPIC");
 
     private final String topicName;
 
