@@ -7,7 +7,7 @@ import io.lgr.quickstarts.streams.map.app.KafkaStreamsMapTopology;
 import io.lgr.quickstarts.streams.map.constants.Topic;
 import io.lgr.quickstarts.streams.map.serdes.CustomSerdes;
 import org.apache.commons.io.FileUtils;
-import org.apache.kafka.common.serialization.LongDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.*;
 import org.junit.jupiter.api.AfterEach;
@@ -26,7 +26,7 @@ public class KafkaStreamsMapTest {
     private final static String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, KafkaPerson> inputTopic;
-    private TestOutputTopic<Long, KafkaPerson> outputTopic;
+    private TestOutputTopic<String, KafkaPerson> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -43,7 +43,7 @@ public class KafkaStreamsMapTest {
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getSerdes().serializer());
 
-        outputTopic = testDriver.createOutputTopic(Topic.PERSON_UPPERCASE_TOPIC.toString(), new LongDeserializer(),
+        outputTopic = testDriver.createOutputTopic(Topic.PERSON_UPPERCASE_TOPIC.toString(), new StringDeserializer(),
                 CustomSerdes.<KafkaPerson>getSerdes().deserializer());
     }
 
@@ -65,10 +65,10 @@ public class KafkaStreamsMapTest {
 
         inputTopic.pipeInput("1", personAvro);
 
-        List<KeyValue<Long, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
         assertThat(results.size()).isEqualTo(1);
-        assertThat(results.get(0).key).isEqualTo(1L);
+        assertThat(results.get(0).key).isEqualTo("LAST NAME");
         assertThat(results.get(0).value.getId()).isEqualTo(1L);
         assertThat(results.get(0).value.getFirstName()).isEqualTo("FIRST NAME");
         assertThat(results.get(0).value.getLastName()).isEqualTo("LAST NAME");

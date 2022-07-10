@@ -6,7 +6,7 @@ This module shows:
 
 This module does:
 - stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
-- map the String key into Long key and the KafkaPerson value attributes into uppercase
+- map the KafkaPerson value attributes into uppercase and map the last name as key
 - write back the result into a new topic named PERSON_UPPERCASE_TOPIC
 
 ## Requirements

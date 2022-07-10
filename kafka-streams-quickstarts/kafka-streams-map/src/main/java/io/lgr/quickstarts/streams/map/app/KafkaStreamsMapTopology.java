@@ -24,9 +24,9 @@ public class KafkaStreamsMapTopology {
                 .map((key, person) -> {
                     person.setFirstName(person.getFirstName().toUpperCase());
                     person.setLastName(person.getLastName().toUpperCase());
-                    return KeyValue.pair(person.getId(), person);
+                    return KeyValue.pair(person.getLastName(), person);
                 })
-                .to(Topic.PERSON_UPPERCASE_TOPIC.toString(), Produced.with(Serdes.Long(), CustomSerdes.getSerdes()));
+                .to(Topic.PERSON_UPPERCASE_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getSerdes()));
 
         return streamsBuilder.build();
     }
