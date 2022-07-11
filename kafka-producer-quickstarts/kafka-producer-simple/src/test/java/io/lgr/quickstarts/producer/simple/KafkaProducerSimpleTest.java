@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class KafkaProducerSimpleTest {
+class KafkaProducerSimpleTest {
     private KafkaProducerSimpleRunner producerRunner;
     private MockProducer<String, String> mockProducer;
 
@@ -28,8 +28,8 @@ public class KafkaProducerSimpleTest {
         assertThat(mockProducer.history().size()).isEqualTo(1);
         assertThat(mockProducer.history().get(0)).isEqualTo(message);
         assertThat(record.get().hasOffset()).isTrue();
-        assertThat(record.get().offset()).isEqualTo(0);
-        assertThat(record.get().partition()).isEqualTo(0);
+        assertThat(record.get().offset()).isZero();
+        assertThat(record.get().partition()).isZero();
     }
 
     @Test
