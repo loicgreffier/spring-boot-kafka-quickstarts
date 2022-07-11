@@ -31,5 +31,6 @@ docker compose up -d
 The docker compose runs:
 - 1 Zookeeper
 - 1 Kafka broker
+- 1 Schema registry
 - 1 Control Center
 - 1 producer Avro
