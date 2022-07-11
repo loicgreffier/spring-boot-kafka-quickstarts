@@ -19,7 +19,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-public class KafkaConsumerCircuitBreakerTest {
+class KafkaConsumerCircuitBreakerTest {
     private KafkaConsumerCircuitBreakerRunner consumerRunner;
     private MockConsumer<String, KafkaPerson> mockConsumer;
     private TopicPartition topicPartition;
