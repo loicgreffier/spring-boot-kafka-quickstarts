@@ -2,6 +2,7 @@
 
 This module shows:
 - Kafka Clients consumer API
+- Apache Avro
 - Unit tests with Mock consumer
 
 This module does:
