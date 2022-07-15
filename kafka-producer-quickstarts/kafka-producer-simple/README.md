@@ -10,7 +10,7 @@ This module does:
 ## Requirements
 
 To compile and run this demo you will need:
-- JDK 17
+- Java 17
 - Maven
 - Docker
 
