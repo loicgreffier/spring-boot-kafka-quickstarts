@@ -16,8 +16,7 @@ public class ConsumerProperties {
 
     public Properties asProperties() {
         final Properties streamProperties = new Properties();
-        streamProperties.putAll(this.properties);
-
+        streamProperties.putAll(properties);
         return streamProperties;
     }
 }

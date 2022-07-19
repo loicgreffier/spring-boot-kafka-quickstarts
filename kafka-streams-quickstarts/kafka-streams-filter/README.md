@@ -1,13 +1,13 @@
-# Kafka Streams Map
+# Kafka Streams Filter
 
 This module shows:
-- Kafka Streams API: `stream()`, `map()`, `peek()`
+- Kafka Streams API: `stream()`, `filter()`, `peek()`
 - unit tests with Topology Test Driver
 
 This module does:
 - stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
-- map the KafkaPerson value attributes into uppercase and map the last name as key
-- write back the result into a new topic named PERSON_MAP_TOPIC
+- filter KafkaPerson inputs to only keep those who have a last name starting with "A"
+- write back the result into a new topic named PERSON_FILTER_TOPIC
 
 ## Requirements
 
@@ -36,4 +36,4 @@ The docker compose runs:
 - 1 Schema registry
 - 1 Control Center
 - 1 producer Avro
-- 1 Kafka Streams map
+- 1 Kafka Streams filter

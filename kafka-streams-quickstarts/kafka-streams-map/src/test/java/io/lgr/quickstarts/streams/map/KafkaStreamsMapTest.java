@@ -22,7 +22,7 @@ import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class KafkaStreamsMapTest {
+class KafkaStreamsMapTest {
     private final static String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, KafkaPerson> inputTopic;
@@ -38,7 +38,9 @@ public class KafkaStreamsMapTest {
         Map<String, String> serdesProperties = Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://");
         CustomSerdes.setSerdesConfig(serdesProperties);
 
-        testDriver = new TopologyTestDriver(KafkaStreamsMapTopology.topology(), properties, Instant.ofEpochMilli(1577836800000L));
+        StreamsBuilder streamsBuilder = new StreamsBuilder();
+        KafkaStreamsMapTopology.topology(streamsBuilder);
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
 
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getSerdes().serializer());
@@ -56,18 +58,18 @@ public class KafkaStreamsMapTest {
 
     @Test
     void testUppercase() {
-        KafkaPerson personAvro = KafkaPerson.newBuilder()
+        KafkaPerson person = KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
                 .setBirthDate(Instant.now())
                 .build();
 
-        inputTopic.pipeInput("1", personAvro);
+        inputTopic.pipeInput("1", person);
 
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
-        assertThat(results.size()).isEqualTo(1);
+        assertThat(results).hasSize(1);
         assertThat(results.get(0).key).isEqualTo("LAST NAME");
         assertThat(results.get(0).value.getId()).isEqualTo(1L);
         assertThat(results.get(0).value.getFirstName()).isEqualTo("FIRST NAME");

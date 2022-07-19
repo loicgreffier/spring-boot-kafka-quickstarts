@@ -1,4 +1,4 @@
-package io.lgr.quickstarts.streams.mapvalues.serdes;
+package io.lgr.quickstarts.streams.filter.serdes;
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import lombok.Setter;

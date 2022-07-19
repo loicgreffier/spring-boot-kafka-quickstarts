@@ -16,8 +16,7 @@ public class ProducerProperties {
 
     public Properties asProperties() {
         final var streamProperties = new Properties();
-        streamProperties.putAll(this.properties);
-
+        streamProperties.putAll(properties);
         return streamProperties;
     }
 }

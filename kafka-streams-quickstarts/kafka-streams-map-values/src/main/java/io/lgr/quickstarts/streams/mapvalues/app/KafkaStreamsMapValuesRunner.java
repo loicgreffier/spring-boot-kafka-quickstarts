@@ -4,6 +4,7 @@ import io.lgr.quickstarts.streams.mapvalues.properties.StreamsProperties;
 import io.lgr.quickstarts.streams.mapvalues.serdes.CustomSerdes;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
@@ -28,16 +29,18 @@ public class KafkaStreamsMapValuesRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        CustomSerdes.setSerdesConfig(streamsProperties.getSerdes());
+        CustomSerdes.setSerdesConfig(streamsProperties.getProperties());
 
-        Topology topology = KafkaStreamsMapValuesTopology.topology();
+        StreamsBuilder streamsBuilder = new StreamsBuilder();
+        KafkaStreamsMapValuesTopology.topology(streamsBuilder);
+        Topology topology = streamsBuilder.build();
         log.info("Description of the topology:\n {}", topology.describe());
 
-        kafkaStreams = new KafkaStreams(topology, streamsProperties.streamsAsProperties());
+        kafkaStreams = new KafkaStreams(topology, streamsProperties.asProperties());
 
         kafkaStreams.setUncaughtExceptionHandler(exception -> {
             log.error("A not covered exception occurred in {} Kafka Streams. Shutting down...",
-                    streamsProperties.streamsAsProperties().get(StreamsConfig.APPLICATION_ID_CONFIG), exception);
+                    streamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG), exception);
 
             applicationContext.close();
             return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
@@ -46,7 +49,7 @@ public class KafkaStreamsMapValuesRunner implements ApplicationRunner {
         kafkaStreams.setStateListener((newState, oldState) -> {
             if (newState.equals(KafkaStreams.State.ERROR)) {
                 log.error("The {} Kafka Streams is in error state...",
-                        streamsProperties.streamsAsProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
+                        streamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
 
                 applicationContext.close();
             }

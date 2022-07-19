@@ -10,15 +10,13 @@ import java.util.Properties;
 
 @Getter
 @Configuration
-@ConfigurationProperties(prefix = "kafka.properties")
+@ConfigurationProperties(prefix = "kafka")
 public class StreamsProperties {
-    private final Map<String, String> streams = new HashMap<>();
-    private final Map<String, String> serdes = new HashMap<>();
+    private final Map<String, String> properties = new HashMap<>();
 
-    public Properties streamsAsProperties() {
+    public Properties asProperties() {
         final Properties streamProperties = new Properties();
-        streamProperties.putAll(streams);
-
+        streamProperties.putAll(properties);
         return streamProperties;
     }
 }

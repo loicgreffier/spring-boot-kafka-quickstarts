@@ -1,11 +1,11 @@
-package io.lgr.quickstarts.streams.mapvalues;
+package io.lgr.quickstarts.streams.filter;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.lgr.quickstarts.avro.KafkaPerson;
-import io.lgr.quickstarts.streams.mapvalues.app.KafkaStreamsMapValuesTopology;
-import io.lgr.quickstarts.streams.mapvalues.constants.Topic;
-import io.lgr.quickstarts.streams.mapvalues.serdes.CustomSerdes;
+import io.lgr.quickstarts.streams.filter.app.KafkaStreamsFilterTopology;
+import io.lgr.quickstarts.streams.filter.constants.Topic;
+import io.lgr.quickstarts.streams.filter.serdes.CustomSerdes;
 import org.apache.commons.io.FileUtils;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -22,7 +22,7 @@ import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class KafkaStreamsMapValuesTest {
+class KafkaStreamsFilterTest {
     private final static String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, KafkaPerson> inputTopic;
@@ -31,7 +31,7 @@ class KafkaStreamsMapValuesTest {
     @BeforeEach
     void setUp() {
         Properties properties = new Properties();
-        properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-map-values-test");
+        properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-filter-test");
         properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "mock://");
         properties.setProperty(StreamsConfig.STATE_DIR_CONFIG, STATE_DIR);
 
@@ -39,13 +39,13 @@ class KafkaStreamsMapValuesTest {
         CustomSerdes.setSerdesConfig(serdesProperties);
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
-        KafkaStreamsMapValuesTopology.topology(streamsBuilder);
+        KafkaStreamsFilterTopology.topology(streamsBuilder);
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
 
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getSerdes().serializer());
 
-        outputTopic = testDriver.createOutputTopic(Topic.PERSON_MAP_VALUES_TOPIC.toString(), new StringDeserializer(),
+        outputTopic = testDriver.createOutputTopic(Topic.PERSON_FILTER_TOPIC.toString(), new StringDeserializer(),
                 CustomSerdes.<KafkaPerson>getSerdes().deserializer());
     }
 
@@ -57,7 +57,7 @@ class KafkaStreamsMapValuesTest {
     }
 
     @Test
-    void testUppercase() {
+    void testFiltered() {
         KafkaPerson person = KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
@@ -68,11 +68,25 @@ class KafkaStreamsMapValuesTest {
         inputTopic.pipeInput("1", person);
 
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+        assertThat(results).isEmpty();
+    }
 
+    @Test
+    void testNotFiltered() {
+        KafkaPerson person = KafkaPerson.newBuilder()
+                .setId(1L)
+                .setFirstName("Diego")
+                .setLastName("Abbott")
+                .setBirthDate(Instant.now())
+                .build();
+
+        inputTopic.pipeInput("1", person);
+
+        List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
         assertThat(results).hasSize(1);
         assertThat(results.get(0).key).isEqualTo("1");
         assertThat(results.get(0).value.getId()).isEqualTo(1L);
-        assertThat(results.get(0).value.getFirstName()).isEqualTo("FIRST NAME");
-        assertThat(results.get(0).value.getLastName()).isEqualTo("LAST NAME");
+        assertThat(results.get(0).value.getFirstName()).isEqualTo("Diego");
+        assertThat(results.get(0).value.getLastName()).isEqualTo("Abbott");
     }
 }

@@ -15,7 +15,7 @@
 	<artifactId>spring-boot-kafka-quickstarts</artifactId>
 	<version>1.0.0</version>
 	<name>spring-boot-kafka-quickstarts</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Code samples around Spring Boot and Kafka</description>
 
 	<repositories>
 		<repository>
@@ -28,7 +28,7 @@
 		<module>kafka-producer-quickstarts</module>
 		<module>kafka-consumer-quickstarts</module>
 		<module>kafka-streams-quickstarts</module>
-	</modules>
+    </modules>
 
 	<properties>
 		<avro.version>1.11.0</avro.version>

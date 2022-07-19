@@ -1,11 +1,9 @@
 kafka:
   properties:
-    streams:
-      bootstrap.servers: localhost:9092
-      application.id: streams-map-values
-      state.dir: /tmp/kafka-streams-quickstarts
-      acks: all
-      auto.offset.reset: earliest
-    serdes:
-      schema.registry.url: http://localhost:8081
-      avro.remove.java.properties: true
+    bootstrap.servers: localhost:9092
+    schema.registry.url: http://localhost:8081
+    application.id: streams-map-values
+    state.dir: /tmp/kafka-streams-quickstarts
+    acks: all
+    auto.offset.reset: earliest
+    avro.remove.java.properties: true

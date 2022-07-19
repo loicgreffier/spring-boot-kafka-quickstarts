@@ -6,7 +6,6 @@ import io.lgr.quickstarts.streams.mapvalues.serdes.CustomSerdes;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
 
@@ -14,9 +13,7 @@ import org.apache.kafka.streams.kstream.Produced;
 public class KafkaStreamsMapValuesTopology {
     private KafkaStreamsMapValuesTopology() { }
 
-    public static Topology topology() {
-        StreamsBuilder streamsBuilder = new StreamsBuilder();
-
+    public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
                 .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
@@ -26,7 +23,5 @@ public class KafkaStreamsMapValuesTopology {
                     return person;
                 })
                 .to(Topic.PERSON_MAP_VALUES_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getSerdes()));
-
-        return streamsBuilder.build();
     }
 }

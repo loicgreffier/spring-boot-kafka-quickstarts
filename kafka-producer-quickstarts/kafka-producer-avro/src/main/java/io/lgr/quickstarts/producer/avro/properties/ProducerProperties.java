@@ -15,9 +15,8 @@ public class ProducerProperties {
     private final Map<String, String> properties = new HashMap<>();
 
     public Properties asProperties() {
-        final var streamProperties = new Properties();
-        streamProperties.putAll(this.properties);
-
+        final Properties streamProperties = new Properties();
+        streamProperties.putAll(properties);
         return streamProperties;
     }
 }

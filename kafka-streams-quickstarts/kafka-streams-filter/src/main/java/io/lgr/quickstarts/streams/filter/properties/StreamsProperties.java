@@ -1,4 +1,4 @@
-package io.lgr.quickstarts.consumer.simple.properties;
+package io.lgr.quickstarts.streams.filter.properties;
 
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -11,12 +11,13 @@ import java.util.Properties;
 @Getter
 @Configuration
 @ConfigurationProperties(prefix = "kafka")
-public class ConsumerProperties {
+public class StreamsProperties {
     private final Map<String, String> properties = new HashMap<>();
 
     public Properties asProperties() {
-        final var streamProperties = new Properties();
+        final Properties streamProperties = new Properties();
         streamProperties.putAll(properties);
+
         return streamProperties;
     }
 }

@@ -1,7 +1,7 @@
-package io.lgr.quickstarts.streams.map.app;
+package io.lgr.quickstarts.streams.filter.app;
 
-import io.lgr.quickstarts.streams.map.properties.StreamsProperties;
-import io.lgr.quickstarts.streams.map.serdes.CustomSerdes;
+import io.lgr.quickstarts.streams.filter.properties.StreamsProperties;
+import io.lgr.quickstarts.streams.filter.serdes.CustomSerdes;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -18,7 +18,7 @@ import javax.annotation.PreDestroy;
 
 @Slf4j
 @Component
-public class KafkaStreamsMapRunner implements ApplicationRunner {
+public class KafkaStreamsFilterRunner implements ApplicationRunner {
     @Autowired
     private ConfigurableApplicationContext applicationContext;
 
@@ -32,7 +32,7 @@ public class KafkaStreamsMapRunner implements ApplicationRunner {
         CustomSerdes.setSerdesConfig(streamsProperties.getProperties());
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
-        KafkaStreamsMapTopology.topology(streamsBuilder);
+        KafkaStreamsFilterTopology.topology(streamsBuilder);
         Topology topology = streamsBuilder.build();
         log.info("Description of the topology:\n {}", topology.describe());
 

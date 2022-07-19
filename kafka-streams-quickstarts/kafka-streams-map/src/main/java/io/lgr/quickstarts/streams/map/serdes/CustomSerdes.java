@@ -13,9 +13,8 @@ public class CustomSerdes {
     private static Map<String, String> serdesConfig;
 
     public static <T extends SpecificRecord> SpecificAvroSerde<T> getSerdes() {
-        SpecificAvroSerde<T> serDe = new SpecificAvroSerde<>();
-        serDe.configure(serdesConfig, false);
-
-        return serDe;
+        SpecificAvroSerde<T> serdes = new SpecificAvroSerde<>();
+        serdes.configure(serdesConfig, false);
+        return serdes;
     }
 }

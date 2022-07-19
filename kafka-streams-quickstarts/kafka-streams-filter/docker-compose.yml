@@ -101,10 +101,10 @@ services:
           }
         }
 
-  kafka-streams-map-values:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-map-values-1.0.0
-    hostname: kafka-streams-map-values
-    container_name: kafka-streams-map-values
+  kafka-streams-filter:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-filter-1.0.0
+    hostname: kafka-streams-filter
+    container_name: kafka-streams-filter
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:

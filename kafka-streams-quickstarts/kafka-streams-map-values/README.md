@@ -1,7 +1,7 @@
 # Kafka Streams MapValues
 
 This module shows:
-- Kafka Streams API: `mapValues()`, `peek()`
+- Kafka Streams API: `stream()`, `mapValues()`, `peek()`
 - unit tests with Topology Test Driver
 
 This module does:
