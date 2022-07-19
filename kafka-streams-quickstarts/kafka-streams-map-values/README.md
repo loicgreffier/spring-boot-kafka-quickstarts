@@ -1,4 +1,4 @@
-# Kafka Streams MapValues
+# Kafka Streams Map Values
 
 This module shows:
 - Kafka Streams API: `stream()`, `mapValues()`, `peek()`
@@ -36,4 +36,4 @@ The docker compose runs:
 - 1 Schema registry
 - 1 Control Center
 - 1 producer Avro
-- 1 Kafka Streams mapValues
+- 1 Kafka Streams map values
