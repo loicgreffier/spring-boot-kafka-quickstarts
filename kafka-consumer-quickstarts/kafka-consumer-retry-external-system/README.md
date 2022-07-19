@@ -2,7 +2,7 @@
 
 This module shows:
 - Kafka Clients consumer API
-- Unit tests with Mock consumer
+- unit tests with Mock consumer
 
 This module does:
 - consume <String,String> records from a topic named STRING_TOPIC

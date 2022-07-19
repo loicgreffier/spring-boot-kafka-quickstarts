@@ -2,7 +2,7 @@
 
 This module shows:
 - Kafka Clients producer API
-- Unit tests with Mock producer
+- unit tests with Mock producer
 
 This module does:
 - produce <String,String> records to a topic named STRING_TOPIC

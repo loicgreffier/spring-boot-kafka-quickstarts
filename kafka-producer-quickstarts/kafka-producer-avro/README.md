@@ -3,7 +3,7 @@
 This module shows:
 - Kafka Clients producer API
 - Apache Avro
-- Unit tests with Mock producer
+- unit tests with Mock producer
 
 This module does:
 - produce <String,KafkaPerson> records to a topic named PERSON_TOPIC

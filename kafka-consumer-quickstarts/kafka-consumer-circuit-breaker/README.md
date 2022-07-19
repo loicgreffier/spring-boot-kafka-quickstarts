@@ -3,7 +3,7 @@
 This module shows:
 - Kafka Clients consumer API
 - Apache Avro
-- Unit tests with Mock consumer
+- unit tests with Mock consumer
 
 This module does:
 - consume <String,KafkaPerson> records from a topic named PERSON_TOPIC
