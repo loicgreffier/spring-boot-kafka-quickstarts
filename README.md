@@ -32,3 +32,4 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 - [Streams filter](/kafka-streams-quickstarts/kafka-streams-filter): Kafka Streams, `stream()`, `filter()`, `peek()`, Topology Test Driver
 - [Streams map](/kafka-streams-quickstarts/kafka-streams-map): Kafka Streams, `stream()`, `map()`, `peek()`, Topology Test Driver
 - [Streams map values](/kafka-streams-quickstarts/kafka-streams-map-values): Kafka Streams, `stream()`, `mapValues()`, `peek()`, Topology Test Driver
+- [Streams select key](/kafka-streams-quickstarts/kafka-streams-select-key): Kafka Streams, `stream()`, `selectKey()`, `peek()`, Topology Test Driver

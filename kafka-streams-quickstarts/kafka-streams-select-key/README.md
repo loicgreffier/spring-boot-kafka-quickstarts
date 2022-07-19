@@ -1,13 +1,13 @@
-# Kafka Streams Filter
+# Kafka Streams Select Key
 
 This module shows:
-- Kafka Streams API: `stream()`, `filter()`, `peek()`
+- Kafka Streams API: `stream()`, `selectKey()`, `peek()`
 - unit tests with Topology Test Driver
 
 This module does:
 - stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
-- filter KafkaPerson records to only keep those who have a last name starting with "A"
-- write back the result into a new topic named PERSON_FILTER_TOPIC
+- select the last name as new key for each record
+- write back the result into a new topic named PERSON_SELECT_KEY_TOPIC
 
 ## Requirements
 
@@ -36,4 +36,4 @@ The docker compose runs:
 - 1 Schema registry
 - 1 Control Center
 - 1 producer Avro
-- 1 Kafka Streams filter
+- 1 Kafka Streams select key
