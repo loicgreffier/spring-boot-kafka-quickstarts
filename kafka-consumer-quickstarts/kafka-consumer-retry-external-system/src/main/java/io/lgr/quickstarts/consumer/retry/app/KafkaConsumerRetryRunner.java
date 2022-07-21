@@ -23,15 +23,9 @@ import java.util.Map;
 @Component
 @AllArgsConstructor
 public class KafkaConsumerRetryRunner implements ApplicationRunner {
-    @Autowired
-    private Consumer<String, String> kafkaConsumer;
-
-    @Autowired
+    private final Consumer<String, String> kafkaConsumer;
     private final ExternalService externalService;
-
-    @Autowired
     private final ConsumerProperties consumerProperties;
-
     private final Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
 
     @Override

@@ -23,8 +23,7 @@ import java.util.Collections;
 @Component
 @AllArgsConstructor
 public class KafkaConsumerSimpleRunner implements ApplicationRunner {
-    @Autowired
-    private Consumer<String, String> kafkaConsumer;
+    private final Consumer<String, String> kafkaConsumer;
 
     @Override
     public void run(ApplicationArguments args) {

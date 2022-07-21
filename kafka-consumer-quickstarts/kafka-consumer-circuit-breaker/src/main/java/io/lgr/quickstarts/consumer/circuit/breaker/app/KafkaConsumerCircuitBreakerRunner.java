@@ -23,8 +23,7 @@ import java.util.Collections;
 @Component
 @AllArgsConstructor
 public class KafkaConsumerCircuitBreakerRunner implements ApplicationRunner {
-    @Autowired
-    private Consumer<String, KafkaPerson> kafkaConsumer;
+    private final Consumer<String, KafkaPerson> kafkaConsumer;
 
     @Override
     public void run(ApplicationArguments args) {

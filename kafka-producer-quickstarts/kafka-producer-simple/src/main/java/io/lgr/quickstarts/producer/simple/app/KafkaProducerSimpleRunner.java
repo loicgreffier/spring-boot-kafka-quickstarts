@@ -20,8 +20,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 @AllArgsConstructor
 public class KafkaProducerSimpleRunner implements ApplicationRunner {
-    @Autowired
-    private Producer<String, String> kafkaProducer;
+    private final Producer<String, String> kafkaProducer;
 
     @Override
     public void run(ApplicationArguments args) {
