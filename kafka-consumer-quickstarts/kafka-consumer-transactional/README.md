@@ -1,6 +1,6 @@
 # Consumer Transactional
 
-This module uses:
+This module shows:
 - Kafka Clients consumer API
 - Isolation level
 

@@ -1,6 +1,6 @@
 # Consumer Simple
 
-This module uses:
+This module shows:
 - Kafka Clients consumer API
 - unit tests with Mock consumer
 
