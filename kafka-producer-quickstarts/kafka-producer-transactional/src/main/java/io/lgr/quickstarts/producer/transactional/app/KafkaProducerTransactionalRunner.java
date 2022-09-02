@@ -29,7 +29,8 @@ public class KafkaProducerTransactionalRunner implements ApplicationRunner {
         kafkaProducer.initTransactions();
 
         int i = 0;
-        while (true) {
+        int max = args.getSourceArgs().length > 0 ? Integer.parseInt(args.getSourceArgs()[0]) : 10;
+        while (i < max) {
             try {
                 log.info("Begin transaction");
                 kafkaProducer.beginTransaction();
@@ -39,14 +40,14 @@ public class KafkaProducerTransactionalRunner implements ApplicationRunner {
 
                 send(firstMessage);
 
-                if (i % 5 == 0) {
-                    throw new Exception("Error during transaction...");
-                }
-
-                /*ProducerRecord<String, String> secondMessage = new ProducerRecord<>(Topic.SECOND_STRING_TOPIC.toString(),
+                ProducerRecord<String, String> secondMessage = new ProducerRecord<>(Topic.SECOND_STRING_TOPIC.toString(),
                         String.valueOf(i), String.format("Message %s", i));
 
-                send(secondMessage);*/
+                send(secondMessage);
+
+                if (i % 3 == 0) {
+                    throw new Exception("Error during transaction...");
+                }
 
                 log.info("Commit transaction");
                 kafkaProducer.commitTransaction();

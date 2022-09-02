@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.time.Duration;
-import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -25,9 +25,10 @@ public class KafkaConsumerTransactionalRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try {
-            log.info("Subscribing to {} topic", Topic.FIRST_STRING_TOPIC);
+            log.info("Subscribing to {} and {} topics", Topic.FIRST_STRING_TOPIC, Topic.SECOND_STRING_TOPIC);
 
-            kafkaConsumer.subscribe(Collections.singleton(Topic.FIRST_STRING_TOPIC.toString()), new KafkaConsumerTransactionalRebalanceListener());
+            kafkaConsumer.subscribe(List.of(Topic.FIRST_STRING_TOPIC.toString(), Topic.SECOND_STRING_TOPIC.toString()),
+                    new KafkaConsumerTransactionalRebalanceListener());
 
             while (true) {
                 ConsumerRecords<String, String> messages = kafkaConsumer.poll(Duration.ofMillis(1000));

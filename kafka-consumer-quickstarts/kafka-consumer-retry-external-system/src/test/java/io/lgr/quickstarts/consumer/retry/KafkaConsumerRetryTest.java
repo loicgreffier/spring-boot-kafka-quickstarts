@@ -19,7 +19,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-public class KafkaConsumerRetryTest {
+class KafkaConsumerRetryTest {
     @Mock
     private ExternalService externalService;
     private AutoCloseable closeable;
