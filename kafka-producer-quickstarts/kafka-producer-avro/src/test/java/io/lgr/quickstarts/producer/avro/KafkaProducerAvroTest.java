@@ -45,7 +45,7 @@ class KafkaProducerAvroTest {
 
         Future<RecordMetadata> record = producerRunner.send(message);
 
-        assertThat(mockProducer.history().size()).isEqualTo(1);
+        assertThat(mockProducer.history()).hasSize(1);
         assertThat(mockProducer.history().get(0)).isEqualTo(message);
         assertThat(record.get().hasOffset()).isTrue();
         assertThat(record.get().offset()).isZero();
@@ -68,7 +68,7 @@ class KafkaProducerAvroTest {
         RuntimeException exception = new RuntimeException("Error sending message");
         mockProducer.errorNext(exception);
 
-        assertThat(mockProducer.history().size()).isEqualTo(1);
+        assertThat(mockProducer.history()).hasSize(1);
         assertThat(mockProducer.history().get(0)).isEqualTo(message);
 
         try {

@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -46,6 +45,8 @@ public class KafkaProducerSimpleRunner implements ApplicationRunner {
     public Future<RecordMetadata> send(ProducerRecord<String, String> message) {
         return kafkaProducer.send(message, ((recordMetadata, e) -> {
             if (e != null) {
+                log.info("Fail: topic = {} partition = {} offset = {}, key = {}, value = {}", recordMetadata.topic(),
+                        recordMetadata.partition(), recordMetadata.offset(), message.key(), message.value());
                 log.error(e.getMessage());
             } else {
                 log.info("Success: topic = {} partition = {} offset = {}, key = {}, value = {}", recordMetadata.topic(),

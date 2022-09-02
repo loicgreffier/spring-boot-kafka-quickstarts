@@ -25,7 +25,7 @@ class KafkaProducerSimpleTest {
         ProducerRecord<String, String> message = new ProducerRecord<>(Topic.STRING_TOPIC.toString(), "1", "Message 1");
         Future<RecordMetadata> record = producerRunner.send(message);
 
-        assertThat(mockProducer.history().size()).isEqualTo(1);
+        assertThat(mockProducer.history()).hasSize(1);
         assertThat(mockProducer.history().get(0)).isEqualTo(message);
         assertThat(record.get().hasOffset()).isTrue();
         assertThat(record.get().offset()).isZero();
@@ -42,7 +42,7 @@ class KafkaProducerSimpleTest {
         RuntimeException exception = new RuntimeException("Error sending message");
         mockProducer.errorNext(exception);
 
-        assertThat(mockProducer.history().size()).isEqualTo(1);
+        assertThat(mockProducer.history()).hasSize(1);
         assertThat(mockProducer.history().get(0)).isEqualTo(message);
 
         try {

@@ -1,6 +1,6 @@
-package io.lgr.quickstarts.consumer.simple.app;
+package io.lgr.quickstarts.consumer.transactional.app;
 
-import io.lgr.quickstarts.consumer.simple.constants.Topic;
+import io.lgr.quickstarts.consumer.transactional.constants.Topic;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.CommitFailedException;
@@ -8,39 +8,35 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.WakeupException;
-import org.apache.kafka.common.header.Header;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Component
 @AllArgsConstructor
-public class KafkaConsumerSimpleRunner implements ApplicationRunner {
+public class KafkaConsumerTransactionalRunner implements ApplicationRunner {
     private final Consumer<String, String> kafkaConsumer;
 
     @Override
     public void run(ApplicationArguments args) {
         try {
-            log.info("Subscribing to {} topic", Topic.STRING_TOPIC);
+            log.info("Subscribing to {} and {} topics", Topic.FIRST_STRING_TOPIC, Topic.SECOND_STRING_TOPIC);
 
-            kafkaConsumer.subscribe(Collections.singleton(Topic.STRING_TOPIC.toString()), new KafkaConsumerSimpleRebalanceListener());
+            kafkaConsumer.subscribe(List.of(Topic.FIRST_STRING_TOPIC.toString(), Topic.SECOND_STRING_TOPIC.toString()),
+                    new KafkaConsumerTransactionalRebalanceListener());
 
             while (true) {
                 ConsumerRecords<String, String> messages = kafkaConsumer.poll(Duration.ofMillis(1000));
                 log.info("Pulled {} records", messages.count());
 
                 for (ConsumerRecord<String, String> message : messages) {
-                    Header header = message.headers().lastHeader("headerKey");
-                    String headerValue = header != null ? new String(header.value(), StandardCharsets.UTF_8) : "";
-
-                    log.info("Received offset = {}, partition = {}, key = {}, value = {}, header = {}",
-                            message.offset(), message.partition(), message.key(), message.value(), headerValue);
+                    log.info("Received offset = {}, partition = {}, key = {}, value = {}",
+                            message.offset(), message.partition(), message.key(), message.value());
                 }
 
                 if (!messages.isEmpty()) {

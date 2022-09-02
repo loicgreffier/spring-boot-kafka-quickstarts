@@ -3,7 +3,7 @@ kafka:
     bootstrap.servers: localhost:9092
     key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
     value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    group.id: consumer-retry-external-system
+    group.id: consumer-transactional
     enable.auto.commit: false
     auto.offset.reset: earliest
     max.poll.interval.ms: 300000
@@ -11,4 +11,7 @@ kafka:
     heartbeat.interval.ms: 3000
     session.timeout.ms: 45000
     fetch.min.bytes: 1
-failureRate: 15
+    isolation.level: read_committed
+
+server:
+  port: 8081
