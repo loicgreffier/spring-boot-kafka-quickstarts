@@ -2,6 +2,7 @@
 
 This module shows:
 - Kafka Clients producer API
+- Kafka transactions
 - unit tests with Mock producer
 
 This module does:
