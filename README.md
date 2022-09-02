@@ -19,6 +19,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 - [Producer Avro](/kafka-producer-quickstarts/kafka-producer-avro): Kafka Clients, producer API, Apache Avro, mock producer
 - [Producer simple](/kafka-producer-quickstarts/kafka-producer-simple): Kafka Clients, producer API, mock producer
+- [Producer transactional](/kafka-producer-quickstarts/kafka-producer-transactional): Kafka Clients, producer API, transactions, mock producer
 
 ### Consumers
 
@@ -26,6 +27,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 - [Consumer circuit breaker](/kafka-consumer-quickstarts/kafka-consumer-circuit-breaker): Kafka Clients, consumer API, deserialization/poison pill error handling, mock consumer
 - [Consumer retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system): Kafka Clients, consumer API, external system interfacing with strong retry mechanism, mock consumer
 - [Consumer simple](/kafka-consumer-quickstarts/kafka-consumer-simple): Kafka Clients, consumer API, mock consumer
+- [Consumer transactional](/kafka-consumer-quickstarts/kafka-consumer-transactional): Kafka Clients, consumer API, transactions
 
 ### Streams
 
