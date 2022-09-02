@@ -71,6 +71,7 @@ services:
     ports:
       - "8082:8080"
     restart: unless-stopped
+    command: "--iteration=1000"
     environment:
       SPRING_APPLICATION_JSON: |
         {

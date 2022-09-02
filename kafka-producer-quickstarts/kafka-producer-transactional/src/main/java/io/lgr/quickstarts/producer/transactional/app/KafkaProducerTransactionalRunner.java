@@ -29,7 +29,7 @@ public class KafkaProducerTransactionalRunner implements ApplicationRunner {
         kafkaProducer.initTransactions();
 
         int i = 0;
-        int max = args.getSourceArgs().length > 0 ? Integer.parseInt(args.getSourceArgs()[0]) : 10;
+        int max = args.containsOption("iteration") ? Integer.parseInt(args.getOptionValues("iteration").get(0)) : 10;
         while (i < max) {
             try {
                 log.info("Begin transaction");

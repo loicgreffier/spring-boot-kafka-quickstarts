@@ -19,7 +19,7 @@ class KafkaProducerTransactionalTest {
         mockProducer = new MockProducer<>(true, new StringSerializer(), new StringSerializer());
         producerRunner = new KafkaProducerTransactionalRunner(mockProducer);
 
-        producerRunner.run(new DefaultApplicationArguments("1"));
+        producerRunner.run(new DefaultApplicationArguments("--iteration=1"));
 
         assertThat(mockProducer.history()).isEmpty();
         assertThat(mockProducer.transactionInitialized()).isTrue();
@@ -33,7 +33,7 @@ class KafkaProducerTransactionalTest {
         mockProducer = new MockProducer<>(true, new StringSerializer(), new StringSerializer());
         producerRunner = new KafkaProducerTransactionalRunner(mockProducer);
 
-        producerRunner.run(new DefaultApplicationArguments("2"));
+        producerRunner.run(new DefaultApplicationArguments("--iteration=2"));
 
         assertThat(mockProducer.history()).hasSize(2);
         assertThat(mockProducer.history().get(0).topic()).isEqualTo(FIRST_STRING_TOPIC.toString());
