@@ -5,8 +5,7 @@ This module shows:
 - isolation level
 
 This module does:
-- consume <String,String> records from topics named FIRST_STRING_TOPIC and SECOND_STRING_TOPIC with an _isolation_level_ set to
-_read_committed_
+- consume <String,String> records from topics named FIRST_STRING_TOPIC and SECOND_STRING_TOPIC with an isolation_level set to read_committed
 
 ## Requirements
 
