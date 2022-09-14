@@ -2,7 +2,7 @@
 
 This module shows:
 - Kafka Clients consumer API
-- Isolation level
+- isolation level
 
 This module does:
 - consume <String,String> records from topics named FIRST_STRING_TOPIC and SECOND_STRING_TOPIC with an _isolation_level_ set to
