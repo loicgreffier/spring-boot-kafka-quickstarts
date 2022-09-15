@@ -45,11 +45,9 @@ public class KafkaProducerSimpleRunner implements ApplicationRunner {
     public Future<RecordMetadata> send(ProducerRecord<String, String> message) {
         return kafkaProducer.send(message, ((recordMetadata, e) -> {
             if (e != null) {
-                log.info("Fail: topic = {} partition = {} offset = {}, key = {}, value = {}", recordMetadata.topic(),
-                        recordMetadata.partition(), recordMetadata.offset(), message.key(), message.value());
                 log.error(e.getMessage());
             } else {
-                log.info("Success: topic = {} partition = {} offset = {}, key = {}, value = {}", recordMetadata.topic(),
+                log.info("Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}", recordMetadata.topic(),
                         recordMetadata.partition(), recordMetadata.offset(), message.key(), message.value());
             }
         }));

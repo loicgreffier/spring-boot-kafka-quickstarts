@@ -12,6 +12,3 @@ kafka:
     session.timeout.ms: 45000
     fetch.min.bytes: 1
     isolation.level: read_committed
-
-server:
-  port: 8081
