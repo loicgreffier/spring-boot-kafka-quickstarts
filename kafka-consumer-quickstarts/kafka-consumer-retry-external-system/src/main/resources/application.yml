@@ -4,6 +4,7 @@ kafka:
     key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
     value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
     group.id: consumer-retry-external-system
+    client.id: consumer-retry-external-system
     enable.auto.commit: false
     auto.offset.reset: earliest
     max.poll.interval.ms: 300000

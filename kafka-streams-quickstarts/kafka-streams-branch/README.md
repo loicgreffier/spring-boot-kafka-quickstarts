@@ -7,9 +7,9 @@ This module shows:
 This module does:
 - stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
 - split the records to different topics according to criteria:
-  - persons with a last name starting with A to a topic named PERSON_A_BRANCH_TOPIC. Both first name and last name are set to uppercase.
-  - persons with a last name starting with B to a topic named PERSON_B_BRANCH_TOPIC.
-  - other persons to a topic named PERSON_DEFAULT_BRANCH_TOPIC.
+  - persons with a last name starting with A to a topic named PERSON_BRANCH_A_TOPIC. Both first name and last name are set to uppercase.
+  - persons with a last name starting with B to a topic named PERSON_BRANCH_B_TOPIC.
+  - other persons to a topic named PERSON_BRANCH_DEFAULT_TOPIC.
 
 ## Requirements
 

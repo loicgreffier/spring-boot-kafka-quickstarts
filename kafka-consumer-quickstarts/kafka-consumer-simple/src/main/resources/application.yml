@@ -4,6 +4,7 @@ kafka:
     key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
     value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
     group.id: consumer-simple
+    client.id: consumer-simple
     enable.auto.commit: false
     auto.offset.reset: earliest
     max.poll.interval.ms: 300000

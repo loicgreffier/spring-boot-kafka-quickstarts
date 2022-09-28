@@ -5,6 +5,7 @@ kafka:
     key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
     value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
     group.id: consumer-avro
+    client.id: consumer-avro
     specific.avro.reader: true
     enable.auto.commit: false
     auto.offset.reset: earliest

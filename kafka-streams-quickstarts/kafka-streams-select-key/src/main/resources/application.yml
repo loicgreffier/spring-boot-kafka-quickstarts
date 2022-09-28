@@ -3,6 +3,7 @@ kafka:
     bootstrap.servers: localhost:9092
     schema.registry.url: http://localhost:8081
     application.id: streams-select-key
+    client.id: streams-select-key
     state.dir: /tmp/kafka-streams-quickstarts
     acks: all
     auto.offset.reset: earliest
