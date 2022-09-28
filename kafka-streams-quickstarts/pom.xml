@@ -11,6 +11,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>kafka-streams-branch</module>
         <module>kafka-streams-filter</module>
         <module>kafka-streams-map</module>
         <module>kafka-streams-map-values</module>
