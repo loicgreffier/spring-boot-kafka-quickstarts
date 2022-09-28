@@ -1,10 +1,13 @@
 package io.lgr.quickstarts.producer.transactional;
 
 import io.lgr.quickstarts.producer.transactional.app.KafkaProducerTransactionalRunner;
+import io.lgr.quickstarts.producer.transactional.constants.Topic;
 import org.apache.kafka.clients.producer.MockProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.DefaultApplicationArguments;
+
+import java.util.Arrays;
 
 import static io.lgr.quickstarts.producer.transactional.constants.Topic.FIRST_STRING_TOPIC;
 import static io.lgr.quickstarts.producer.transactional.constants.Topic.SECOND_STRING_TOPIC;
@@ -17,9 +20,12 @@ class KafkaProducerTransactionalTest {
     @Test
     void testTransactionAborted() {
         mockProducer = new MockProducer<>(true, new StringSerializer(), new StringSerializer());
+        mockProducer.initTransactions();
         producerRunner = new KafkaProducerTransactionalRunner(mockProducer);
 
-        producerRunner.run(new DefaultApplicationArguments("--iteration=1"));
+        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(Topic.FIRST_STRING_TOPIC.toString(), "3", "Message 1");
+        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(Topic.SECOND_STRING_TOPIC.toString(), "3", "Message 1");
+        producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
         assertThat(mockProducer.history()).isEmpty();
         assertThat(mockProducer.transactionInitialized()).isTrue();
@@ -31,9 +37,12 @@ class KafkaProducerTransactionalTest {
     @Test
     void testTransactionCommitted() {
         mockProducer = new MockProducer<>(true, new StringSerializer(), new StringSerializer());
+        mockProducer.initTransactions();
         producerRunner = new KafkaProducerTransactionalRunner(mockProducer);
 
-        producerRunner.run(new DefaultApplicationArguments("--iteration=2"));
+        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(Topic.FIRST_STRING_TOPIC.toString(), "1", "Message 1");
+        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(Topic.SECOND_STRING_TOPIC.toString(), "1", "Message 1");
+        producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
         assertThat(mockProducer.history()).hasSize(2);
         assertThat(mockProducer.history().get(0).topic()).isEqualTo(FIRST_STRING_TOPIC.toString());

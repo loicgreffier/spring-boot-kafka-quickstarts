@@ -14,6 +14,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -29,44 +31,45 @@ public class KafkaProducerTransactionalRunner implements ApplicationRunner {
         kafkaProducer.initTransactions();
 
         int i = 0;
-        int max = args.containsOption("iteration") ? Integer.parseInt(args.getOptionValues("iteration").get(0)) : 10;
-        while (i < max) {
+        while (true) {
+            ProducerRecord<String, String> firstMessage = new ProducerRecord<>(Topic.FIRST_STRING_TOPIC.toString(),
+                    String.valueOf(i), String.format("Message %s", i));
+
+            ProducerRecord<String, String> secondMessage = new ProducerRecord<>(Topic.SECOND_STRING_TOPIC.toString(),
+                    String.valueOf(i), String.format("Message %s", i));
+
+            sendInTransaction(Arrays.asList(firstMessage, secondMessage));
+
             try {
-                log.info("Begin transaction");
-                kafkaProducer.beginTransaction();
-
-                ProducerRecord<String, String> firstMessage = new ProducerRecord<>(Topic.FIRST_STRING_TOPIC.toString(),
-                        String.valueOf(i), String.format("Message %s", i));
-
-                send(firstMessage);
-
-                ProducerRecord<String, String> secondMessage = new ProducerRecord<>(Topic.SECOND_STRING_TOPIC.toString(),
-                        String.valueOf(i), String.format("Message %s", i));
-
-                send(secondMessage);
-
-                if (i % 3 == 0) {
-                    throw new Exception("Error during transaction...");
-                }
-
-                log.info("Commit transaction");
-                kafkaProducer.commitTransaction();
-
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    log.error("Interruption during sleep between message production", e);
-                    Thread.currentThread().interrupt();
-                }
-            } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException e) {
-                log.info("Closing producer");
-                kafkaProducer.close();
-            } catch (Exception e) {
-                log.info("Abort transaction", e);
-                kafkaProducer.abortTransaction();
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                log.error("Interruption during sleep between message production", e);
+                Thread.currentThread().interrupt();
             }
 
             i++;
+        }
+    }
+
+    public final void sendInTransaction(List<ProducerRecord<String, String>> messages) {
+        try {
+            log.info("Begin transaction");
+            kafkaProducer.beginTransaction();
+
+            messages.forEach(this::send);
+
+            if (Integer.parseInt(messages.get(0).key()) % 3 == 0) {
+                throw new Exception("Error during transaction...");
+            }
+
+            log.info("Commit transaction");
+            kafkaProducer.commitTransaction();
+        } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException e) {
+            log.info("Closing producer");
+            kafkaProducer.close();
+        } catch (Exception e) {
+            log.info("Abort transaction", e);
+            kafkaProducer.abortTransaction();
         }
     }
 
