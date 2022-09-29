@@ -1,12 +1,12 @@
 # Kafka Streams Filter
 
 This module shows:
-- Kafka Streams API: `stream()`, `filter()`, `peek()`
+- Kafka Streams API: `stream()`, `filter()`, `filterNot()`, `peek()`
 - unit tests with Topology Test Driver
 
 This module does:
 - stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
-- filter KafkaPerson records to only keep those who have a last name starting with "A"
+- filter KafkaPerson records to only keep those having both last name and first name starting with "A"
 - write back the result into a new topic named PERSON_FILTER_TOPIC
 
 ## Requirements

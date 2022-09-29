@@ -18,6 +18,7 @@ public class KafkaStreamsFilterTopology {
                 .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .filter((key, person) -> person.getLastName().startsWith("A"))
+                .filterNot((key, person) -> !person.getFirstName().startsWith("A"))
                 .to(Topic.PERSON_FILTER_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getSerdes()));
     }
 }

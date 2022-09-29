@@ -57,7 +57,7 @@ class KafkaStreamsFilterTest {
     }
 
     @Test
-    void testFiltered() {
+    void testBadLastNameFiltered() {
         KafkaPerson person = KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
@@ -72,7 +72,7 @@ class KafkaStreamsFilterTest {
     }
 
     @Test
-    void testNotFiltered() {
+    void testBadFirstNameFiltered() {
         KafkaPerson person = KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("Diego")
@@ -83,10 +83,25 @@ class KafkaStreamsFilterTest {
         inputTopic.pipeInput("1", person);
 
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+        assertThat(results).isEmpty();
+    }
+
+    @Test
+    void testNotFiltered() {
+        KafkaPerson person = KafkaPerson.newBuilder()
+                .setId(1L)
+                .setFirstName("Akan")
+                .setLastName("Abbott")
+                .setBirthDate(Instant.now())
+                .build();
+
+        inputTopic.pipeInput("1", person);
+
+        List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
         assertThat(results).hasSize(1);
         assertThat(results.get(0).key).isEqualTo("1");
         assertThat(results.get(0).value.getId()).isEqualTo(1L);
-        assertThat(results.get(0).value.getFirstName()).isEqualTo("Diego");
+        assertThat(results.get(0).value.getFirstName()).isEqualTo("Akan");
         assertThat(results.get(0).value.getLastName()).isEqualTo("Abbott");
     }
 }
