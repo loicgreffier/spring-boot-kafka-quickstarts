@@ -33,6 +33,8 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 - [Streams branch](/kafka-streams-quickstarts/kafka-streams-branch): Kafka Streams, `branch()`, `peek()`, Topology Test Driver
 - [Streams filter](/kafka-streams-quickstarts/kafka-streams-filter): Kafka Streams, `stream()`, `filter()`, `filterNot()`, `peek()`, Topology Test Driver
+- [Streams flatmap](/kafka-streams-quickstarts/kafka-streams-flatmap): Kafka Streams, `stream()`, `flatMap()`, `peek()`, Topology Test Driver
+- [Streams flatmap values](/kafka-streams-quickstarts/kafka-streams-flatmap-values): Kafka Streams, `stream()`, `flatMapValues()`, `peek()`, Topology Test Driver
 - [Streams map](/kafka-streams-quickstarts/kafka-streams-map): Kafka Streams, `stream()`, `map()`, `peek()`, Topology Test Driver
 - [Streams map values](/kafka-streams-quickstarts/kafka-streams-map-values): Kafka Streams, `stream()`, `mapValues()`, `peek()`, Topology Test Driver
 - [Streams select key](/kafka-streams-quickstarts/kafka-streams-select-key): Kafka Streams, `stream()`, `selectKey()`, `peek()`, Topology Test Driver
