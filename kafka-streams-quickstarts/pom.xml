@@ -18,6 +18,7 @@
         <module>kafka-streams-select-key</module>
         <module>kafka-streams-flatmap-values</module>
         <module>kafka-streams-flatmap</module>
+        <module>kafka-streams-cogroup</module>
     </modules>
 
     <artifactId>kafka-streams-quickstarts</artifactId>
