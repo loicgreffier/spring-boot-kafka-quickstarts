@@ -35,5 +35,5 @@ The docker compose runs:
 - 1 Kafka broker
 - 1 Schema registry
 - 1 Control Center
-- 1 producer Avro
+- 1 producer person
 - 1 Kafka Streams flatmap values
