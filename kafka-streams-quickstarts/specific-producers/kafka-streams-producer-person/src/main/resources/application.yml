@@ -1,0 +1,11 @@
+kafka:
+  properties:
+    bootstrap.servers: localhost:9092
+    schema.registry.url: http://localhost:8081
+    key.serializer: org.apache.kafka.common.serialization.StringSerializer
+    value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+    client.id: streams-producer-person
+    acks: all
+    enable.idempotence: true
+    max.in.flight.requests.per.connection: 5
+    avro.remove.java.properties: true

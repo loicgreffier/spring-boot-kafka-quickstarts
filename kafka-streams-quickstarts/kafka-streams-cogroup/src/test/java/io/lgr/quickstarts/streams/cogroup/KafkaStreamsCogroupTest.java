@@ -180,23 +180,62 @@ class KafkaStreamsCogroupTest {
 
         KafkaPerson personFour = KafkaPerson.newBuilder()
                 .setId(1L)
-                .setFirstName("Aaran")
+                .setFirstName("Daimhin")
                 .setLastName("Abbott")
                 .setBirthDate(Instant.now())
                 .build();
 
         KafkaPerson personFive = KafkaPerson.newBuilder()
                 .setId(2L)
-                .setFirstName("Brendan")
-                .setLastName("Abbott")
+                .setFirstName("Jude")
+                .setLastName("Holman")
                 .setBirthDate(Instant.now())
                 .build();
 
         KafkaPerson personSix = KafkaPerson.newBuilder()
                 .setId(3L)
-                .setFirstName("Bret")
-                .setLastName("Holman")
+                .setFirstName("Kacey")
+                .setLastName("Wyatt")
                 .setBirthDate(Instant.now())
                 .build();
+
+        inputTopicTwo.pipeInput("4", personFour);
+        inputTopicTwo.pipeInput("5", personFive);
+        inputTopicTwo.pipeInput("6", personSix);
+
+        List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+        assertThat(results.get(0).key).isEqualTo("Abbott");
+        assertThat(results.get(0).value.getFirstNameByLastName()).containsKey("Abbott");
+        assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott")).hasSize(1);
+        assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
+
+        assertThat(results.get(1).key).isEqualTo("Abbott");
+        assertThat(results.get(1).value.getFirstNameByLastName()).containsKey("Abbott");
+        assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott")).hasSize(2);
+        assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
+        assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott").get(1)).isEqualTo("Brendan");
+
+        assertThat(results.get(2).key).isEqualTo("Holman");
+        assertThat(results.get(2).value.getFirstNameByLastName()).containsKey("Holman");
+        assertThat(results.get(2).value.getFirstNameByLastName().get("Holman")).hasSize(1);
+        assertThat(results.get(2).value.getFirstNameByLastName().get("Holman").get(0)).isEqualTo("Bret");
+
+        assertThat(results.get(3).key).isEqualTo("Abbott");
+        assertThat(results.get(3).value.getFirstNameByLastName()).containsKey("Abbott");
+        assertThat(results.get(3).value.getFirstNameByLastName().get("Abbott")).hasSize(3);
+        assertThat(results.get(3).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
+        assertThat(results.get(3).value.getFirstNameByLastName().get("Abbott").get(1)).isEqualTo("Brendan");
+        assertThat(results.get(3).value.getFirstNameByLastName().get("Abbott").get(2)).isEqualTo("Daimhin");
+
+        assertThat(results.get(4).key).isEqualTo("Holman");
+        assertThat(results.get(4).value.getFirstNameByLastName()).containsKey("Holman");
+        assertThat(results.get(4).value.getFirstNameByLastName().get("Holman")).hasSize(2);
+        assertThat(results.get(4).value.getFirstNameByLastName().get("Holman").get(0)).isEqualTo("Bret");
+        assertThat(results.get(4).value.getFirstNameByLastName().get("Holman").get(1)).isEqualTo("Jude");
+
+        assertThat(results.get(5).key).isEqualTo("Wyatt");
+        assertThat(results.get(5).value.getFirstNameByLastName()).containsKey("Wyatt");
+        assertThat(results.get(5).value.getFirstNameByLastName().get("Wyatt")).hasSize(1);
+        assertThat(results.get(5).value.getFirstNameByLastName().get("Wyatt").get(0)).isEqualTo("Kacey");
     }
 }
