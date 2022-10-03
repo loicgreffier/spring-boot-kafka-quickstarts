@@ -5,11 +5,10 @@ This module shows:
 - unit tests with Topology Test Driver
 
 This module does:
-- stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
-- stream <String,KafkaPerson> records from a topic named PERSON_TOPIC_TWO
+- stream <String,KafkaPerson> records from topics named PERSON_TOPIC and PERSON_TOPIC_TWO
 - group each stream by last name
 - cogroup all streams with an aggregator. 
-The aggregator combines each KafkaPerson with same last name into KafkaPersonGroup that aggregate first names by last name
+The aggregator combines each KafkaPerson with the same last name into KafkaPersonGroup records and aggregate first names by last name such as
 
 ```
 {"firstNameByLastName":{"Last name 1":{"First name 1", "First name 2", "First name 3")}}
