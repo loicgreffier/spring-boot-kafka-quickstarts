@@ -108,7 +108,7 @@ services:
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
-      - kafka-producer-avro
+      - kafka-streams-producer-person
     ports:
       - "8083:8080"
     restart: unless-stopped
