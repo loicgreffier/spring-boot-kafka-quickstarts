@@ -6,5 +6,4 @@ kafka:
     client.id: producer-transactional
     acks: all
     enable.idempotence: true
-    max.in.flight.requests.per.connection: 5
     transactional.id: producer-transactional
