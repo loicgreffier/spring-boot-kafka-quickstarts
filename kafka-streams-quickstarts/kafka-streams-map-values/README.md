@@ -9,6 +9,8 @@ This module does:
 - map the KafkaPerson value attributes into uppercase
 - write back the result into a new topic named PERSON_MAP_VALUES_TOPIC
 
+![topology.png](topology.png)
+
 ## Requirements
 
 To compile and run this demo you will need:

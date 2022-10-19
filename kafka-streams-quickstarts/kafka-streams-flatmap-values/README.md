@@ -9,6 +9,8 @@ This module does:
 - map the KafkaPerson value to both first name and last name then flatten the result
 - write back the result into a new topic named PERSON_FLATMAP_VALUES_TOPIC
 
+![topology.png](topology.png)
+
 ## Requirements
 
 To compile and run this demo you will need:

@@ -11,6 +11,8 @@ This module does:
   - persons with a last name starting with B to a topic named PERSON_BRANCH_B_TOPIC.
   - other persons to a topic named PERSON_BRANCH_DEFAULT_TOPIC.
 
+![topology.png](topology.png)
+
 ## Requirements
 
 To compile and run this demo you will need:

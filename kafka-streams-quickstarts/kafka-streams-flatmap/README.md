@@ -10,6 +10,8 @@ This module does:
 - map the respective keys to uppercase first name and uppercase last name 
 - flatten the result and write it back into a new topic named PERSON_FLATMAP_TOPIC
 
+![topology.png](topology.png)
+
 ## Requirements
 
 To compile and run this demo you will need:

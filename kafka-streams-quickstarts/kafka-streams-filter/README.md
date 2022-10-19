@@ -9,6 +9,8 @@ This module does:
 - filter KafkaPerson records to only keep those having both last name and first name starting with "A"
 - write back the result into a new topic named PERSON_FILTER_TOPIC
 
+![topology.png](topology.png)
+
 ## Requirements
 
 To compile and run this demo you will need:

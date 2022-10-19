@@ -9,6 +9,8 @@ This module does:
 - select the last name as new key for each record
 - write back the result into a new topic named PERSON_SELECT_KEY_TOPIC
 
+![topology.png](topology.png)
+
 ## Requirements
 
 To compile and run this demo you will need:

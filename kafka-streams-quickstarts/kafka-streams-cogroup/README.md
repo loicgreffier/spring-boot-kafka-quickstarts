@@ -16,6 +16,8 @@ The aggregator combines each KafkaPerson with the same last name into KafkaPerso
 {"firstNameByLastName":{"Last name 3":{"First name 7", "First name 8", "First name 9")}}
 ```
 
+![topology.png](topology.png)
+
 ## Requirements
 
 To compile and run this demo you will need:

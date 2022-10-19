@@ -9,6 +9,8 @@ This module does:
 - merge the two streams
 - write the result into a new topic named PERSON_MERGE_TOPIC
 
+![topology.png](topology.png)
+
 ## Requirements
 
 To compile and run this demo you will need:

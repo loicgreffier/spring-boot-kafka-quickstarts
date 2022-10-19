@@ -78,6 +78,29 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
 
+  create-topics:
+    image: confluentinc/cp-kafka:7.2.0
+    hostname: create-topics
+    container_name: create-topics
+    networks:
+      - spring-boot-kafka-quickstarts
+    depends_on:
+      - broker
+      - schema-registry
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                         kafka-topics --create --if-not-exists --bootstrap-server broker:29092 --partitions 1 --replication-factor 1 --topic PERSON_TOPIC && \
+                         kafka-topics --create --if-not-exists --bootstrap-server broker:29092 --partitions 1 --replication-factor 1 --topic PERSON_TOPIC_TWO'"
+    environment:
+      # The following settings are listed here only to satisfy the image's requirements.
+      # We override the image's `command` anyways, hence this container will not start a broker.
+      KAFKA_BROKER_ID: ignored
+      KAFKA_ZOOKEEPER_CONNECT: ignored
+    healthcheck:
+      test: ["CMD", "cub", "kafka-ready", "-b", "broker:29092", "1", "40"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+        
   kafka-streams-producer-person:
     image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-producer-person-1.0.0
     hostname: kafka-streams-producer-person
@@ -85,8 +108,7 @@ services:
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
-      - broker
-      - schema-registry
+      - create-topics
     ports:
       - "8082:8080"
     restart: unless-stopped
