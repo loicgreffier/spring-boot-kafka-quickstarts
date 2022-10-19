@@ -1,13 +1,11 @@
 # Kafka Streams Map
 
 This module shows:
-- Kafka Streams API: `map()`, `peek()`
-- unit tests with Topology Test Driver
+- Kafka Streams API: `foreach()`
 
 This module does:
 - stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
-- map the KafkaPerson value attributes into uppercase and map the last name as key
-- write back the result into a new topic named PERSON_MAP_TOPIC
+- log the KafkaPerson records
 
 ![topology.png](topology.png)
 
@@ -38,4 +36,4 @@ The docker compose runs:
 - 1 Schema registry
 - 1 Control Center
 - 1 producer person
-- 1 Kafka Streams map
+- 1 Kafka Streams foreach

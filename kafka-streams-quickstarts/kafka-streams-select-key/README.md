@@ -1,7 +1,7 @@
 # Kafka Streams Select Key
 
 This module shows:
-- Kafka Streams API: `stream()`, `selectKey()`, `peek()`
+- Kafka Streams API: `selectKey()`, `peek()`
 - unit tests with Topology Test Driver
 
 This module does:

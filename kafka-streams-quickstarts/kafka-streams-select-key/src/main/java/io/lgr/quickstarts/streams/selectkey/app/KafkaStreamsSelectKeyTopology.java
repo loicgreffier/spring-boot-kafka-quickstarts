@@ -15,9 +15,9 @@ public class KafkaStreamsSelectKeyTopology {
 
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getSerdes()))
+                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .selectKey((key, person) -> person.getLastName())
-                .to(Topic.PERSON_SELECT_KEY_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getSerdes()));
+                .to(Topic.PERSON_SELECT_KEY_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
     }
 }

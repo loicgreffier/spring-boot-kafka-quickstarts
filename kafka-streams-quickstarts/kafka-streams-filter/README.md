@@ -1,7 +1,7 @@
 # Kafka Streams Filter
 
 This module shows:
-- Kafka Streams API: `stream()`, `filter()`, `filterNot()`, `peek()`
+- Kafka Streams API: `filter()`, `filterNot()`, `peek()`
 - unit tests with Topology Test Driver
 
 This module does:

@@ -16,15 +16,15 @@ public class KafkaStreamsMergeTopology {
 
     public static void topology(StreamsBuilder streamsBuilder) {
         final KStream<String, KafkaPerson> streamOne = streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getSerdes()))
+                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person));
 
         final KStream<String, KafkaPerson> streamTwo = streamsBuilder
-                .stream(Topic.PERSON_TOPIC_TWO.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getSerdes()))
+                .stream(Topic.PERSON_TOPIC_TWO.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person));
 
         streamOne
                 .merge(streamTwo)
-                .to(Topic.PERSON_MERGE_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getSerdes()));
+                .to(Topic.PERSON_MERGE_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
     }
 }

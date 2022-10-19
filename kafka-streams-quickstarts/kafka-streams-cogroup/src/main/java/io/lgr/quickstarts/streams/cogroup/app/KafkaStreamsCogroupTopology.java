@@ -23,16 +23,16 @@ public class KafkaStreamsCogroupTopology {
         final FirstNameByLastNameAggregator aggregator = new FirstNameByLastNameAggregator();
 
         final KGroupedStream<String, KafkaPerson> groupedStreamOne = streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getSerdes()))
+                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .groupBy((key, person) -> person.getLastName(),
-                        Grouped.with("GROUP_BY" + Topic.PERSON_TOPIC, Serdes.String(), CustomSerdes.getSerdes()));
+                        Grouped.with("GROUP_BY" + Topic.PERSON_TOPIC, Serdes.String(), CustomSerdes.getValueSerdes()));
 
         final KGroupedStream<String, KafkaPerson> groupedStreamTwo = streamsBuilder
-                .stream(Topic.PERSON_TOPIC_TWO.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getSerdes()))
+                .stream(Topic.PERSON_TOPIC_TWO.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .groupBy((key, person) -> person.getLastName(),
-                        Grouped.with("GROUP_BY" + Topic.PERSON_TOPIC_TWO, Serdes.String(), CustomSerdes.getSerdes()));
+                        Grouped.with("GROUP_BY" + Topic.PERSON_TOPIC_TWO, Serdes.String(), CustomSerdes.getValueSerdes()));
 
         groupedStreamOne
                 .cogroup(aggregator)
@@ -40,8 +40,8 @@ public class KafkaStreamsCogroupTopology {
                 .aggregate(() -> new KafkaPersonGroup(new HashMap<>()), Named.as("AGGREGATE_PERSON_TOPICS"),
                         Materialized.<String, KafkaPersonGroup, KeyValueStore<Bytes, byte[]>>as(StateStore.PERSON_COGROUP_AGGREGATE_STATE_STORE.toString())
                         .withKeySerde(Serdes.String())
-                        .withValueSerde(CustomSerdes.getSerdes()))
+                        .withValueSerde(CustomSerdes.getValueSerdes()))
                 .toStream()
-                .to(Topic.PERSON_COGROUP_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getSerdes()));
+                .to(Topic.PERSON_COGROUP_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
     }
 }

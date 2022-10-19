@@ -15,10 +15,10 @@ public class KafkaStreamsFilterTopology {
 
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getSerdes()))
+                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .filter((key, person) -> person.getLastName().startsWith("A"))
                 .filterNot((key, person) -> !person.getFirstName().startsWith("A"))
-                .to(Topic.PERSON_FILTER_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getSerdes()));
+                .to(Topic.PERSON_FILTER_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
     }
 }

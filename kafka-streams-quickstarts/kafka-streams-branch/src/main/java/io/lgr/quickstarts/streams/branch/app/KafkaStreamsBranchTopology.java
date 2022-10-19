@@ -16,7 +16,7 @@ public class KafkaStreamsBranchTopology {
 
     public static void topology(StreamsBuilder streamsBuilder) {
         Map<String, KStream<String, KafkaPerson>> branches = streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getSerdes()))
+                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .split(Named.as("BRANCH_"))
                 .branch((key, value) -> value.getLastName().startsWith("A"),
@@ -24,13 +24,13 @@ public class KafkaStreamsBranchTopology {
                 .branch((key, value) -> value.getLastName().startsWith("B"),
                         Branched.as("B"))
                 .defaultBranch(Branched.withConsumer(stream -> stream
-                        .to(Topic.PERSON_BRANCH_DEFAULT_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getSerdes()))));
+                        .to(Topic.PERSON_BRANCH_DEFAULT_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()))));
 
         branches.get("BRANCH_A")
-                .to(Topic.PERSON_BRANCH_A_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getSerdes()));
+                .to(Topic.PERSON_BRANCH_A_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
 
         branches.get("BRANCH_B")
-                .to(Topic.PERSON_BRANCH_B_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getSerdes()));
+                .to(Topic.PERSON_BRANCH_B_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
     }
 
     private static KStream<String, KafkaPerson> toUppercase(KStream<String, KafkaPerson> streamPerson) {

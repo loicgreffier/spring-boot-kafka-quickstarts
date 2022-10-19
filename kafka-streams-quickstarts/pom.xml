@@ -21,6 +21,7 @@
         <module>kafka-streams-merge</module>
         <module>kafka-streams-select-key</module>
         <module>specific-producers</module>
+        <module>kafka-streams-foreach</module>
     </modules>
 
     <artifactId>kafka-streams-quickstarts</artifactId>

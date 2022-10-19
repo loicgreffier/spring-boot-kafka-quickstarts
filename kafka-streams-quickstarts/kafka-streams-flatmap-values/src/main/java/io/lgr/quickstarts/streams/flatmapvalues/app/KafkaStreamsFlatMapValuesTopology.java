@@ -17,7 +17,7 @@ public class KafkaStreamsFlatMapValuesTopology {
 
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getSerdes()))
+                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .flatMapValues(person -> Arrays.asList(person.getFirstName(), person.getLastName()))
                 .to(Topic.PERSON_FLATMAP_VALUES_TOPIC.toString(), Produced.with(Serdes.String(), Serdes.String()));

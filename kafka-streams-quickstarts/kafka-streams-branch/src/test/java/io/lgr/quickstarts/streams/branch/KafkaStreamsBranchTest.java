@@ -45,16 +45,16 @@ class KafkaStreamsBranchTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
 
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
-                CustomSerdes.<KafkaPerson>getSerdes().serializer());
+                CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
 
         outputTopicA = testDriver.createOutputTopic(Topic.PERSON_BRANCH_A_TOPIC.toString(), new StringDeserializer(),
-                CustomSerdes.<KafkaPerson>getSerdes().deserializer());
+                CustomSerdes.<KafkaPerson>getValueSerdes().deserializer());
 
         outputTopicB = testDriver.createOutputTopic(Topic.PERSON_BRANCH_B_TOPIC.toString(), new StringDeserializer(),
-                CustomSerdes.<KafkaPerson>getSerdes().deserializer());
+                CustomSerdes.<KafkaPerson>getValueSerdes().deserializer());
 
         outputTopicDefault = testDriver.createOutputTopic(Topic.PERSON_BRANCH_DEFAULT_TOPIC.toString(), new StringDeserializer(),
-                CustomSerdes.<KafkaPerson>getSerdes().deserializer());
+                CustomSerdes.<KafkaPerson>getValueSerdes().deserializer());
     }
 
     @AfterEach

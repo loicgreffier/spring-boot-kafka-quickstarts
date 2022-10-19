@@ -1,7 +1,7 @@
 # Kafka Streams FlatMap Values
 
 This module shows:
-- Kafka Streams API: `stream()`, `flatMapValues()`, `peek()`
+- Kafka Streams API: `flatMapValues()`, `peek()`
 - unit tests with Topology Test Driver
 
 This module does:

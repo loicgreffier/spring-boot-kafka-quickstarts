@@ -45,13 +45,13 @@ class KafkaStreamsCogroupTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
 
         inputTopicOne = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
-                CustomSerdes.<KafkaPerson>getSerdes().serializer());
+                CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
 
         inputTopicTwo = testDriver.createInputTopic(Topic.PERSON_TOPIC_TWO.toString(), new StringSerializer(),
-                CustomSerdes.<KafkaPerson>getSerdes().serializer());
+                CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
 
         outputTopic = testDriver.createOutputTopic(Topic.PERSON_COGROUP_TOPIC.toString(), new StringDeserializer(),
-                CustomSerdes.<KafkaPersonGroup>getSerdes().deserializer());
+                CustomSerdes.<KafkaPersonGroup>getValueSerdes().deserializer());
     }
 
     @AfterEach

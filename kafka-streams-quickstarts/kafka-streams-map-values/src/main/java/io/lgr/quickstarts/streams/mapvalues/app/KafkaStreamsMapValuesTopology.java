@@ -15,13 +15,13 @@ public class KafkaStreamsMapValuesTopology {
 
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getSerdes()))
+                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .mapValues(person -> {
                     person.setFirstName(person.getFirstName().toUpperCase());
                     person.setLastName(person.getLastName().toUpperCase());
                     return person;
                 })
-                .to(Topic.PERSON_MAP_VALUES_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getSerdes()));
+                .to(Topic.PERSON_MAP_VALUES_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
     }
 }
