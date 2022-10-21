@@ -30,8 +30,6 @@ class KafkaStreamsJoinStreamTableTest {
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, KafkaPerson> personInputTopic;
     private TestInputTopic<String, KafkaCountry> countryInputTopic;
-    private TestOutputTopic<String, KafkaPerson> rekeyPersonOutputTopic;
-    private TestOutputTopic<String, KafkaCountry> rekeyCountryOutputTopic;
     private TestOutputTopic<String, KafkaJoinPersonCountry> joinOutputTopic;
 
     @BeforeEach
@@ -54,12 +52,6 @@ class KafkaStreamsJoinStreamTableTest {
         countryInputTopic = testDriver.createInputTopic(Topic.COUNTRY_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaCountry>getValueSerdes().serializer());
 
-        rekeyPersonOutputTopic = testDriver.createOutputTopic(Topic.PERSON_REKEY_TOPIC.toString(), new StringDeserializer(),
-                CustomSerdes.<KafkaPerson>getValueSerdes().deserializer());
-
-        rekeyCountryOutputTopic = testDriver.createOutputTopic(Topic.COUNTRY_REKEY_TOPIC.toString(), new StringDeserializer(),
-                CustomSerdes.<KafkaCountry>getValueSerdes().deserializer());
-
         joinOutputTopic = testDriver.createOutputTopic(Topic.JOIN_PERSON_COUNTRY_TOPIC.toString(), new StringDeserializer(),
                 CustomSerdes.<KafkaJoinPersonCountry>getValueSerdes().deserializer());
     }
@@ -69,32 +61,6 @@ class KafkaStreamsJoinStreamTableTest {
         testDriver.close();
         FileUtils.deleteQuietly(new File(STATE_DIR));
         MockSchemaRegistry.dropScope(this.getClass().getName());
-    }
-
-    @Test
-    void testRekeyPerson() {
-        personInputTopic.pipeInput("1", buildPerson());
-
-        List<KeyValue<String, KafkaPerson>> results = rekeyPersonOutputTopic.readKeyValuesToList();
-
-        assertThat(results).hasSize(1);
-        assertThat(results.get(0).key).isEqualTo("FR");
-        assertThat(results.get(0).value.getId()).isEqualTo(1L);
-        assertThat(results.get(0).value.getFirstName()).isEqualTo("First name");
-        assertThat(results.get(0).value.getLastName()).isEqualTo("Last name");
-    }
-
-    @Test
-    void testRekeyCountry() {
-        countryInputTopic.pipeInput("1", buildCountry());
-
-        List<KeyValue<String, KafkaCountry>> results = rekeyCountryOutputTopic.readKeyValuesToList();
-
-        assertThat(results).hasSize(1);
-        assertThat(results.get(0).key).isEqualTo("FR");
-        assertThat(results.get(0).value.getName()).isEqualTo("France");
-        assertThat(results.get(0).value.getCapital()).isEqualTo("Paris");
-        assertThat(results.get(0).value.getOfficialLanguage()).isEqualTo("French");
     }
 
     @Test

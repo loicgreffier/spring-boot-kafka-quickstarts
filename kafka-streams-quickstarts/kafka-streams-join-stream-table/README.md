@@ -1,7 +1,7 @@
 # Kafka Streams Join Stream Table
 
 This module shows:
-- Kafka Streams API: `join()` between KStream and KTable, `selectKey()`, `peek()`
+- Kafka Streams API: `join()` between KStream and KTable, `selectKey()`, `repartition()`, `.toTable()`, `peek()`
 - unit tests with Topology Test Driver
 
 This module does:
@@ -10,6 +10,8 @@ This module does:
 - rekey both streams on same key: the country code
 - join matching records and build a new KafkaJoinPersonCountry object that holds both person and country information
 - write the result into a new topic named JOIN_PERSON_COUNTRY_TOPIC
+
+![topology.png](topology.png)
 
 ## Requirements
 
