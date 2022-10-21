@@ -23,6 +23,7 @@
         <module>kafka-streams-select-key</module>
         <module>specific-producers</module>
         <module>kafka-streams-foreach</module>
+        <module>kafka-streams-join-stream-table</module>
     </modules>
 
     <artifactId>kafka-streams-quickstarts</artifactId>

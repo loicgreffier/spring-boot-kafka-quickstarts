@@ -14,5 +14,6 @@
 
     <modules>
         <module>kafka-streams-producer-person</module>
+        <module>kafka-streams-producer-country</module>
     </modules>
 </project>

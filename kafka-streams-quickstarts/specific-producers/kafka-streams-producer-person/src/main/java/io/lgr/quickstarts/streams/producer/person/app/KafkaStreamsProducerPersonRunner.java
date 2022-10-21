@@ -1,5 +1,6 @@
 package io.lgr.quickstarts.streams.producer.person.app;
 
+import io.lgr.quickstarts.avro.CountryCode;
 import io.lgr.quickstarts.avro.KafkaPerson;
 import io.lgr.quickstarts.streams.producer.person.constants.Topic;
 import lombok.AllArgsConstructor;
@@ -65,6 +66,7 @@ public class KafkaStreamsProducerPersonRunner implements ApplicationRunner {
                 .setId((long) id)
                 .setFirstName(FIRST_NAMES[new Random().nextInt(FIRST_NAMES.length)])
                 .setLastName(LAST_NAMES[new Random().nextInt(LAST_NAMES.length)])
+                .setNationality(CountryCode.values()[new Random().nextInt(CountryCode.values().length)])
                 .setBirthDate(Instant.now())
                 .build();
     }

@@ -18,9 +18,8 @@ public class KafkaStreamsRepartitionTopology {
                 .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .repartition(Repartitioned
-                        .<String, KafkaPerson>as(Topic.PERSON_TOPIC.toString())
-                        .withNumberOfPartitions(3)
-                        .withKeySerde(Serdes.String())
-                        .withValueSerde(CustomSerdes.getValueSerdes()));
+                        .<String, KafkaPerson>with(Serdes.String(), CustomSerdes.getValueSerdes())
+                        .withName(Topic.PERSON_TOPIC.toString())
+                        .withNumberOfPartitions(3));
     }
 }
