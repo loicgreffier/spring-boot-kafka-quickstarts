@@ -1,7 +1,7 @@
 # Kafka Streams Join Stream Table
 
 This module shows:
-- Kafka Streams API: `join()` between KStream and KTable, `selectKey()`, `repartition()`, `.toTable()`, `peek()`
+- Kafka Streams API: `join()` between KStream and KTable, `selectKey()`, `repartition()`, `toTable()`, `peek()`
 - unit tests with Topology Test Driver
 
 This module does:
