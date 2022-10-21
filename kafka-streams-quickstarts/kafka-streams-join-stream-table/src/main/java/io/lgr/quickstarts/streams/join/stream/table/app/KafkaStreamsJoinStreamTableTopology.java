@@ -34,7 +34,8 @@ public class KafkaStreamsJoinStreamTableTopology {
                 .selectKey((key, person) -> person.getNationality().toString())
                 .join(countryTable,
                         (key, person, country) -> {
-                            log.info("Joined {} {} by code {}", person.getFirstName(), person.getLastName(), key);
+                            log.info("Joined {} {} {} to country {} by code {}", person.getId(), person.getFirstName(), person.getLastName(),
+                                    country.getName(), key);
                             return KafkaJoinPersonCountry.newBuilder()
                                     .setPerson(person)
                                     .setCountry(country)
