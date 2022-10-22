@@ -45,7 +45,7 @@ class KafkaStreamsRepartitionTest {
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
 
-        outputTopic = testDriver.createOutputTopic("streams-map-values-test-" + Topic.PERSON_TOPIC + "-repartition", new StringDeserializer(),
+        outputTopic = testDriver.createOutputTopic("streams-repartition-test-" + Topic.PERSON_TOPIC + "-repartition", new StringDeserializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().deserializer());
     }
 

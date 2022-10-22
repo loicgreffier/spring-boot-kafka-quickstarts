@@ -34,11 +34,7 @@
       "name": "nationality",
       "type": [
         "null",
-        {
-          "name": "CountryCode",
-          "type": "enum",
-          "symbols" : ["FR", "DE", "ES", "IT", "GB", "CH"]
-        }
+        "CountryCode"
       ],
       "default": null,
       "doc": "Person nationality"
