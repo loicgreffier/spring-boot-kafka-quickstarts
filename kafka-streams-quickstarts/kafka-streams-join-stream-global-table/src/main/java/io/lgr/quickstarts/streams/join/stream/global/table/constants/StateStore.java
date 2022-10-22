@@ -1,10 +1,10 @@
-package io.lgr.quickstarts.streams.left.join.stream.table.constants;
+package io.lgr.quickstarts.streams.join.stream.global.table.constants;
 
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum StateStore {
-    COUNTRY_TABLE_LEFT_JOIN_STREAM_TABLE_STATE_STORE("COUNTRY_TABLE_LEFT_JOIN_STREAM_TABLE_STATE_STORE");
+    COUNTRY_GLOBAL_TABLE_JOIN_STREAM_GLOBAL_TABLE_STATE_STORE("COUNTRY_GLOBAL_TABLE_JOIN_STREAM_GLOBAL_TABLE_STATE_STORE");
 
     private final String stateStoreName;
 

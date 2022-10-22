@@ -24,7 +24,7 @@ public class KafkaStreamsJoinStreamTableTopology {
                 .repartition(Repartitioned
                         .<String, KafkaCountry>with(Serdes.String(), CustomSerdes.getValueSerdes())
                         .withName(Topic.COUNTRY_JOIN_STREAM_TABLE_REKEY_TOPIC.toString()))
-                .toTable(Materialized.<String, KafkaCountry, KeyValueStore<Bytes, byte[]>>as(StateStore.COUNTRY_TABLE_JOIN_STREAM_MAP_STATE_STORE.toString())
+                .toTable(Materialized.<String, KafkaCountry, KeyValueStore<Bytes, byte[]>>as(StateStore.COUNTRY_TABLE_JOIN_STREAM_TABLE_STATE_STORE.toString())
                         .withKeySerde(Serdes.String())
                         .withValueSerde(CustomSerdes.getValueSerdes()));
 

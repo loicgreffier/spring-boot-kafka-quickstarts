@@ -1,0 +1,47 @@
+{
+  "namespace": "io.lgr.quickstarts.avro",
+  "type": "record",
+  "name": "KafkaCountry",
+  "fields": [
+    {
+      "name": "code",
+      "type": [
+        "null",
+        {
+          "name": "CountryCode",
+          "type": "enum",
+          "symbols" : ["FR", "DE", "ES", "IT", "GB", "CH"]
+        }
+      ],
+      "default": null,
+      "doc": "Country code"
+    },
+    {
+      "name": "name",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "Country name"
+    },
+    {
+      "name": "capital",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "Country capital"
+    },
+    {
+      "name": "officialLanguage",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "Official language"
+    }
+  ]
+}

@@ -25,6 +25,7 @@
         <module>kafka-streams-foreach</module>
         <module>kafka-streams-join-stream-table</module>
         <module>kafka-streams-left-join-stream-table</module>
+        <module>kafka-streams-join-stream-global-table</module>
     </modules>
 
     <artifactId>kafka-streams-quickstarts</artifactId>

@@ -26,13 +26,13 @@ public class KafkaStreamsCogroupTopology {
                 .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .groupBy((key, person) -> person.getLastName(),
-                        Grouped.with("GROUP_BY" + Topic.PERSON_TOPIC, Serdes.String(), CustomSerdes.getValueSerdes()));
+                        Grouped.with("GROUP_BY_" + Topic.PERSON_TOPIC, Serdes.String(), CustomSerdes.getValueSerdes()));
 
         final KGroupedStream<String, KafkaPerson> groupedStreamTwo = streamsBuilder
                 .stream(Topic.PERSON_TOPIC_TWO.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .groupBy((key, person) -> person.getLastName(),
-                        Grouped.with("GROUP_BY" + Topic.PERSON_TOPIC_TWO, Serdes.String(), CustomSerdes.getValueSerdes()));
+                        Grouped.with("GROUP_BY_" + Topic.PERSON_TOPIC_TWO, Serdes.String(), CustomSerdes.getValueSerdes()));
 
         groupedStreamOne
                 .cogroup(aggregator)
