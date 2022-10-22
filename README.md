@@ -17,38 +17,45 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 ### Producers
 
-| Module                                                                             | Library       | API      | Additional Content                |
-|------------------------------------------------------------------------------------|---------------|----------|-----------------------------------|
-| [Producer Avro](/kafka-producer-quickstarts/kafka-producer-avro)                   | Kafka Clients | Producer | Apache Avro, Mock producer        |
-| [Producer simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | Producer | Mock producer                     |
-| [Producer transactional](/kafka-producer-quickstarts/kafka-producer-transactional) | Kafka Clients | Producer | Kafka transactions, Mock producer |
+| Module                                                                    | Library       | API      | Additional Content                |
+|---------------------------------------------------------------------------|---------------|----------|-----------------------------------|
+| [Avro](/kafka-producer-quickstarts/kafka-producer-avro)                   | Kafka Clients | Producer | Apache Avro, Mock producer        |
+| [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | Producer | Mock producer                     |
+| [Transactional](/kafka-producer-quickstarts/kafka-producer-transactional) | Kafka Clients | Producer | Kafka transactions, Mock producer |
 
 ### Consumers
 
-| Module                                                                                             | Library       | API      | Additional Content                                                     |
-|:---------------------------------------------------------------------------------------------------|---------------|----------|------------------------------------------------------------------------|
-| [Consumer Avro](/kafka-consumer-quickstarts/kafka-consumer-avro)                                   | Kafka Clients | Consumer | Apache Avro, Mock consumer                                             |
-| [Consumer circuit breaker](/kafka-consumer-quickstarts/kafka-consumer-circuit-breaker)             | Kafka Clients | Consumer | Deserialization/poison pill error handling, Mock consumer              |
-| [Consumer retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system) | Kafka Clients | Consumer | External system interfacing with strong retry mechanism, Mock consumer |
-| [Consumer simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                               | Kafka Clients | Consumer | Mock consumer                                                          |
-| [Consumer transactional](/kafka-consumer-quickstarts/kafka-consumer-transactional)                 | Kafka Clients | Consumer | Kafka transactions, Isolation level                                    |
+| Module                                                                                    | Library       | API      | Additional Content                                                     |
+|:------------------------------------------------------------------------------------------|---------------|----------|------------------------------------------------------------------------|
+| [Avro](/kafka-consumer-quickstarts/kafka-consumer-avro)                                   | Kafka Clients | Consumer | Apache Avro, Mock consumer                                             |
+| [Circuit breaker](/kafka-consumer-quickstarts/kafka-consumer-circuit-breaker)             | Kafka Clients | Consumer | Deserialization/poison pill error handling, Mock consumer              |
+| [Retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system) | Kafka Clients | Consumer | External system interfacing with strong retry mechanism, Mock consumer |
+| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                               | Kafka Clients | Consumer | Mock consumer                                                          |
+| [Transactional](/kafka-consumer-quickstarts/kafka-consumer-transactional)                 | Kafka Clients | Consumer | Kafka transactions, Isolation level                                    |
 
 ### Streams
 
-| Module                                                                                                          | Library       | Operations                                                       | Additional Content   |
-|:----------------------------------------------------------------------------------------------------------------|---------------|------------------------------------------------------------------|----------------------|
-| [Streams branch](/kafka-streams-quickstarts/kafka-streams-branch)                                               | Kafka Streams | `branch()`, `peek()`                                             | Topology Test Driver |
-| [Streams cogroup](/kafka-streams-quickstarts/kafka-streams-cogroup)                                             | Kafka Streams | `cogroup()`, `groupBy()`, `aggregate()`, `peek()`                | Topology Test Driver |
-| [Streams filter](/kafka-streams-quickstarts/kafka-streams-filter)                                               | Kafka Streams | `filter()`, `filterNot()`, `peek()`                              | Topology Test Driver |
-| [Streams flatmap](/kafka-streams-quickstarts/kafka-streams-flatmap)                                             | Kafka Streams | `flatMap()`, `peek()`                                            | Topology Test Driver |
-| [Streams flatmap values](/kafka-streams-quickstarts/kafka-streams-flatmap-values)                               | Kafka Streams | `flatMapValues()`, `peek()`                                      | Topology Test Driver |
-| [Streams foreach](/kafka-streams-quickstarts/kafka-streams-foreach)                                             | Kafka Streams | `foreach()`                                                      |                      |
-| [Streams join stream global table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table)           | Kafka Streams | `join()` between KStream and GlobalKTable, `peek()`              | Topology Test Driver |
-| [Streams join stream table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)                         | Kafka Streams | `join()` between KStream and KTable, `selectKey()`, `peek()`     | Topology Test Driver |
-| [Streams left join stream global table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-global-table) | Kafka Streams | `leftJoin()` between KStream and GlobalKTable, `peek()`          | Topology Test Driver |
-| [Streams left join stream table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-table)               | Kafka Streams | `leftJoin()` between KStream and KTable, `selectKey()`, `peek()` | Topology Test Driver |
-| [Streams map](/kafka-streams-quickstarts/kafka-streams-map)                                                     | Kafka Streams | `map()`, `peek()`                                                | Topology Test Driver |
-| [Streams map values](/kafka-streams-quickstarts/kafka-streams-map-values)                                       | Kafka Streams | `mapValues()`, `peek()`                                          | Topology Test Driver |
-| [Streams merge](/kafka-streams-quickstarts/kafka-streams-merge)                                                 | Kafka Streams | `merge()`, `peek()`                                              | Topology Test Driver |
-| [Streams repartition](/kafka-streams-quickstarts/kafka-streams-repartition)                                     | Kafka Streams | `repartition()`, `peek()`                                        | Topology Test Driver |
-| [Streams select key](/kafka-streams-quickstarts/kafka-streams-select-key)                                       | Kafka Streams | `selectKey()`, `peek()`                                          | Topology Test Driver |
+#### Stateless
+
+| Module                                                                                                  | Library       | Operations                                                       | Additional Content   |
+|:--------------------------------------------------------------------------------------------------------|---------------|------------------------------------------------------------------|----------------------|
+| [Branch](/kafka-streams-quickstarts/kafka-streams-branch)                                               | Kafka Streams | `branch()`, `peek()`                                             | Topology Test Driver |
+| [Cogroup](/kafka-streams-quickstarts/kafka-streams-cogroup)                                             | Kafka Streams | `cogroup()`, `groupBy()`, `aggregate()`, `peek()`                | Topology Test Driver |
+| [Filter](/kafka-streams-quickstarts/kafka-streams-filter)                                               | Kafka Streams | `filter()`, `filterNot()`, `peek()`                              | Topology Test Driver |
+| [Flatmap](/kafka-streams-quickstarts/kafka-streams-flatmap)                                             | Kafka Streams | `flatMap()`, `peek()`                                            | Topology Test Driver |
+| [Flatmap values](/kafka-streams-quickstarts/kafka-streams-flatmap-values)                               | Kafka Streams | `flatMapValues()`, `peek()`                                      | Topology Test Driver |
+| [Foreach](/kafka-streams-quickstarts/kafka-streams-foreach)                                             | Kafka Streams | `foreach()`                                                      |                      |
+| [Map](/kafka-streams-quickstarts/kafka-streams-map)                                                     | Kafka Streams | `map()`, `peek()`                                                | Topology Test Driver |
+| [Map values](/kafka-streams-quickstarts/kafka-streams-map-values)                                       | Kafka Streams | `mapValues()`, `peek()`                                          | Topology Test Driver |
+| [Merge](/kafka-streams-quickstarts/kafka-streams-merge)                                                 | Kafka Streams | `merge()`, `peek()`                                              | Topology Test Driver |
+| [Repartition](/kafka-streams-quickstarts/kafka-streams-repartition)                                     | Kafka Streams | `repartition()`, `peek()`                                        | Topology Test Driver |
+| [Select key](/kafka-streams-quickstarts/kafka-streams-select-key)                                       | Kafka Streams | `selectKey()`, `peek()`                                          | Topology Test Driver |
+
+#### Join
+
+| Module                                                                                                  | Library       | Operations                                                       | Additional Content   |
+|:--------------------------------------------------------------------------------------------------------|---------------|------------------------------------------------------------------|----------------------|
+| [Join Stream-Global table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table)           | Kafka Streams | `join()` between KStream and GlobalKTable, `peek()`              | Topology Test Driver |
+| [Join Stream-Table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)                         | Kafka Streams | `join()` between KStream and KTable, `selectKey()`, `peek()`     | Topology Test Driver |
+| [Left join Stream-Global table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-global-table) | Kafka Streams | `leftJoin()` between KStream and GlobalKTable, `peek()`          | Topology Test Driver |
+| [Left join Stream-Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-table)               | Kafka Streams | `leftJoin()` between KStream and KTable, `selectKey()`, `peek()` | Topology Test Driver |

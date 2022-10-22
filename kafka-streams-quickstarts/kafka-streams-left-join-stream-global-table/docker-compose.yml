@@ -123,10 +123,10 @@ services:
           }
         }
 
-  kafka-streams-join-stream-global-table:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-join-stream-global-table-1.0.0
-    hostname: kafka-streams-join-stream-global-table
-    container_name: kafka-streams-join-stream-global-table
+  kafka-streams-left-join-stream-global-table:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-left-join-stream-global-table-1.0.0
+    hostname: kafka-streams-left-join-stream-global-table
+    container_name: kafka-streams-left-join-stream-global-table
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
