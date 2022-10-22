@@ -16,6 +16,10 @@
         <module>kafka-streams-filter</module>
         <module>kafka-streams-flatmap</module>
         <module>kafka-streams-flatmap-values</module>
+        <module>kafka-streams-join-stream-global-table</module>
+        <module>kafka-streams-join-stream-table</module>
+        <module>kafka-streams-left-join-stream-global-table</module>
+        <module>kafka-streams-left-join-stream-table</module>
         <module>kafka-streams-map</module>
         <module>kafka-streams-map-values</module>
         <module>kafka-streams-merge</module>
@@ -23,9 +27,6 @@
         <module>kafka-streams-select-key</module>
         <module>specific-producers</module>
         <module>kafka-streams-foreach</module>
-        <module>kafka-streams-join-stream-table</module>
-        <module>kafka-streams-left-join-stream-table</module>
-        <module>kafka-streams-join-stream-global-table</module>
     </modules>
 
     <artifactId>kafka-streams-quickstarts</artifactId>

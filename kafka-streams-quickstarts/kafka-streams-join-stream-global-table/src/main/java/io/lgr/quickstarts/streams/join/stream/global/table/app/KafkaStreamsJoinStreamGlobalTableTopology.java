@@ -18,13 +18,8 @@ public class KafkaStreamsJoinStreamGlobalTableTopology {
     private KafkaStreamsJoinStreamGlobalTableTopology() { }
 
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder
-                .stream(Topic.COUNTRY_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaCountry>getValueSerdes()))
-                .selectKey((key, country) -> country.getCode().toString())
-                .to(Topic.COUNTRY_JOIN_STREAM_GLOBAL_TABLE_REKEY_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
-
         GlobalKTable<String, KafkaCountry> countryGlobalTable = streamsBuilder
-                .globalTable(Topic.COUNTRY_JOIN_STREAM_GLOBAL_TABLE_REKEY_TOPIC.toString(),
+                .globalTable(Topic.COUNTRY_TOPIC.toString(),
                         Consumed.with(Serdes.String(), CustomSerdes.getValueSerdes()),
                         Materialized.<String, KafkaCountry, KeyValueStore<Bytes, byte[]>>as(StateStore.COUNTRY_GLOBAL_TABLE_JOIN_STREAM_GLOBAL_TABLE_STATE_STORE.toString())
                                 .withKeySerde(Serdes.String())

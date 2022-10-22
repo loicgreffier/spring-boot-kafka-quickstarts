@@ -24,10 +24,9 @@ public class KafkaStreamsProducerCountryRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        int i = 0;
         for (KafkaCountry country : buildKafkaCountries()) {
             ProducerRecord<String, KafkaCountry> message = new ProducerRecord<>(Topic.COUNTRY_TOPIC.toString(),
-                    String.valueOf(i++), country);
+                    country.getCode().toString(), country);
 
             send(message);
         }

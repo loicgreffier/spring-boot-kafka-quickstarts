@@ -19,14 +19,11 @@ public class KafkaStreamsJoinStreamTableTopology {
 
     public static void topology(StreamsBuilder streamsBuilder) {
         KTable<String, KafkaCountry> countryTable = streamsBuilder
-                .stream(Topic.COUNTRY_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaCountry>getValueSerdes()))
-                .selectKey((key, country) -> country.getCode().toString())
-                .repartition(Repartitioned
-                        .<String, KafkaCountry>with(Serdes.String(), CustomSerdes.getValueSerdes())
-                        .withName(Topic.COUNTRY_JOIN_STREAM_TABLE_REKEY_TOPIC.toString()))
-                .toTable(Materialized.<String, KafkaCountry, KeyValueStore<Bytes, byte[]>>as(StateStore.COUNTRY_TABLE_JOIN_STREAM_TABLE_STATE_STORE.toString())
-                        .withKeySerde(Serdes.String())
-                        .withValueSerde(CustomSerdes.getValueSerdes()));
+                .table(Topic.COUNTRY_TOPIC.toString(),
+                        Consumed.with(Serdes.String(), CustomSerdes.getValueSerdes()),
+                        Materialized.<String, KafkaCountry, KeyValueStore<Bytes, byte[]>>as(StateStore.COUNTRY_TABLE_JOIN_STREAM_TABLE_STATE_STORE.toString())
+                                .withKeySerde(Serdes.String())
+                                .withValueSerde(CustomSerdes.getValueSerdes()));
 
         streamsBuilder
                 .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))

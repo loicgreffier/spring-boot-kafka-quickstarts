@@ -1,14 +1,13 @@
 # Kafka Streams Left Join Stream Table
 
 This module shows:
-- Kafka Streams API: `leftJoin()` between KStream and KTable, `selectKey()`, `repartition()`, `toTable()`, `peek()`
+- Kafka Streams API: `leftJoin()` between KStream and KTable, `selectKey()`, `peek()`
 - unit tests with Topology Test Driver
 
 This module does:
 - stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
 - stream <String,KafkaCountry> records from a topic named COUNTRY_TOPIC
-- rekey both streams on same key: the country code
-- join matching records and build a new KafkaJoinPersonCountry object that holds both person and country information. If no country has been matched, a value holding the person is still emitted as a `leftJoin()` is performed
+- join records matching on country code and build a new KafkaJoinPersonCountry object that holds both person and country information. If no country has been matched, a value holding the person is still emitted as a `leftJoin()` is performed
 - write the result into a new topic named PERSON_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC
 
 ![topology.png](topology.png)

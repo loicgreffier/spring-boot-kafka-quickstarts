@@ -30,7 +30,7 @@ class KafkaStreamsLeftJoinStreamTableTest {
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, KafkaPerson> personInputTopic;
     private TestInputTopic<String, KafkaCountry> countryInputTopic;
-    private TestOutputTopic<String, KafkaCountry> countryRekeyOutputTopic;
+
     private TestOutputTopic<String, KafkaPerson> personRekeyOutputTopic;
     private TestOutputTopic<String, KafkaJoinPersonCountry> joinOutputTopic;
 
@@ -54,9 +54,6 @@ class KafkaStreamsLeftJoinStreamTableTest {
         countryInputTopic = testDriver.createInputTopic(Topic.COUNTRY_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaCountry>getValueSerdes().serializer());
 
-        countryRekeyOutputTopic = testDriver.createOutputTopic("streams-left-join-stream-table-test-" + Topic.COUNTRY_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC + "-repartition", new StringDeserializer(),
-                CustomSerdes.<KafkaCountry>getValueSerdes().deserializer());
-
         personRekeyOutputTopic = testDriver.createOutputTopic("streams-left-join-stream-table-test-" + Topic.PERSON_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC + "-repartition", new StringDeserializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().deserializer());
 
@@ -69,17 +66,6 @@ class KafkaStreamsLeftJoinStreamTableTest {
         testDriver.close();
         FileUtils.deleteQuietly(new File(STATE_DIR));
         MockSchemaRegistry.dropScope(this.getClass().getName());
-    }
-
-    @Test
-    void testRekeyCountry() {
-        countryInputTopic.pipeInput("1", buildCountry());
-
-        List<KeyValue<String, KafkaCountry>> results = countryRekeyOutputTopic.readKeyValuesToList();
-
-        assertThat(results).hasSize(1);
-        assertThat(results.get(0).key).isEqualTo("FR");
-        assertThat(results.get(0).value.getName()).isEqualTo("France");
     }
 
     @Test
@@ -96,7 +82,7 @@ class KafkaStreamsLeftJoinStreamTableTest {
 
     @Test
     void testLeftJoin() {
-        countryInputTopic.pipeInput("1", buildCountry());
+        countryInputTopic.pipeInput("FR", buildCountry());
         personInputTopic.pipeInput("1", buildPerson());
 
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
@@ -108,7 +94,7 @@ class KafkaStreamsLeftJoinStreamTableTest {
     }
 
     @Test
-    void testLeftJoinRightRecordIsNull() {
+    void testLeftJoinWhenRightRecordIsNull() {
         personInputTopic.pipeInput("1", buildPerson());
 
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
