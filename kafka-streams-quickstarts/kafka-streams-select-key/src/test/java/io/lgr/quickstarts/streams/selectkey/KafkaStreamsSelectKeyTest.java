@@ -31,7 +31,7 @@ class KafkaStreamsSelectKeyTest {
     @BeforeEach
     void setUp() {
         Properties properties = new Properties();
-        properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-map-values-test");
+        properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-select-key-test");
         properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "mock://");
         properties.setProperty(StreamsConfig.STATE_DIR_CONFIG, STATE_DIR);
 

@@ -33,7 +33,7 @@ class KafkaStreamsBranchTest {
     @BeforeEach
     void setUp() {
         Properties properties = new Properties();
-        properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-map-test");
+        properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-branch-test");
         properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "mock://");
         properties.setProperty(StreamsConfig.STATE_DIR_CONFIG, STATE_DIR);
 

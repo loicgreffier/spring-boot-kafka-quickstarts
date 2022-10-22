@@ -30,12 +30,14 @@ class KafkaStreamsJoinStreamTableTest {
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, KafkaPerson> personInputTopic;
     private TestInputTopic<String, KafkaCountry> countryInputTopic;
+    private TestOutputTopic<String, KafkaCountry> countryRekeyOutputTopic;
+    private TestOutputTopic<String, KafkaPerson> personRekeyOutputTopic;
     private TestOutputTopic<String, KafkaJoinPersonCountry> joinOutputTopic;
 
     @BeforeEach
     void setUp() {
         Properties properties = new Properties();
-        properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-map-test");
+        properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-join-stream-table-test");
         properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "mock://");
         properties.setProperty(StreamsConfig.STATE_DIR_CONFIG, STATE_DIR);
 
@@ -52,6 +54,12 @@ class KafkaStreamsJoinStreamTableTest {
         countryInputTopic = testDriver.createInputTopic(Topic.COUNTRY_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaCountry>getValueSerdes().serializer());
 
+        countryRekeyOutputTopic = testDriver.createOutputTopic("streams-join-stream-table-test-" + Topic.COUNTRY_REKEY_TOPIC + "-repartition", new StringDeserializer(),
+                CustomSerdes.<KafkaCountry>getValueSerdes().deserializer());
+
+        personRekeyOutputTopic = testDriver.createOutputTopic("streams-join-stream-table-test-" + Topic.PERSON_REKEY_TOPIC + "-repartition", new StringDeserializer(),
+                CustomSerdes.<KafkaPerson>getValueSerdes().deserializer());
+
         joinOutputTopic = testDriver.createOutputTopic(Topic.JOIN_PERSON_COUNTRY_TOPIC.toString(), new StringDeserializer(),
                 CustomSerdes.<KafkaJoinPersonCountry>getValueSerdes().deserializer());
     }
@@ -61,6 +69,29 @@ class KafkaStreamsJoinStreamTableTest {
         testDriver.close();
         FileUtils.deleteQuietly(new File(STATE_DIR));
         MockSchemaRegistry.dropScope(this.getClass().getName());
+    }
+
+    @Test
+    void testRekeyCountry() {
+        countryInputTopic.pipeInput("1", buildCountry());
+
+        List<KeyValue<String, KafkaCountry>> results = countryRekeyOutputTopic.readKeyValuesToList();
+
+        assertThat(results).hasSize(1);
+        assertThat(results.get(0).key).isEqualTo("FR");
+        assertThat(results.get(0).value.getName()).isEqualTo("France");
+    }
+
+    @Test
+    void testRekeyPerson() {
+        personInputTopic.pipeInput("1", buildPerson());
+
+        List<KeyValue<String, KafkaPerson>> results = personRekeyOutputTopic.readKeyValuesToList();
+
+        assertThat(results).hasSize(1);
+        assertThat(results.get(0).key).isEqualTo("FR");
+        assertThat(results.get(0).value.getFirstName()).isEqualTo("First name");
+        assertThat(results.get(0).value.getLastName()).isEqualTo("Last name");
     }
 
     @Test

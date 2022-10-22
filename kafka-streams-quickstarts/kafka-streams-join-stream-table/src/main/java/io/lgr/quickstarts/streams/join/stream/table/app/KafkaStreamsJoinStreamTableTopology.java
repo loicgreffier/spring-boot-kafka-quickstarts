@@ -23,7 +23,7 @@ public class KafkaStreamsJoinStreamTableTopology {
                 .selectKey((key, country) -> country.getCode().toString())
                 .repartition(Repartitioned
                         .<String, KafkaCountry>with(Serdes.String(), CustomSerdes.getValueSerdes())
-                        .withName(Topic.COUNTRY_TOPIC.toString()))
+                        .withName(Topic.COUNTRY_REKEY_TOPIC.toString()))
                 .toTable(Materialized.<String, KafkaCountry, KeyValueStore<Bytes, byte[]>>as(StateStore.COUNTRY_TABLE_STATE_STORE.toString())
                         .withKeySerde(Serdes.String())
                         .withValueSerde(CustomSerdes.getValueSerdes()));
@@ -41,7 +41,7 @@ public class KafkaStreamsJoinStreamTableTopology {
                                     .setCountry(country)
                                     .build();
                         },
-                        Joined.with(Serdes.String(), CustomSerdes.getValueSerdes(), CustomSerdes.getValueSerdes(), Topic.JOIN_PERSON_COUNTRY_TOPIC.toString()))
+                        Joined.with(Serdes.String(), CustomSerdes.getValueSerdes(), CustomSerdes.getValueSerdes(), Topic.PERSON_REKEY_TOPIC.toString()))
                 .to(Topic.JOIN_PERSON_COUNTRY_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
     }
 }
