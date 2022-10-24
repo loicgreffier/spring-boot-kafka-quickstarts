@@ -1,4 +1,4 @@
-# Kafka Streams Map
+# Kafka Streams Foreach
 
 This module shows:
 - Kafka Streams API: `foreach()`
