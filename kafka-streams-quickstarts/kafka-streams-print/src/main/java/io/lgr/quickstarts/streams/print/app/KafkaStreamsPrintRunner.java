@@ -1,5 +1,6 @@
 package io.lgr.quickstarts.streams.print.app;
 
+import io.lgr.quickstarts.streams.print.properties.ApplicationProperties;
 import io.lgr.quickstarts.streams.print.properties.StreamsProperties;
 import io.lgr.quickstarts.streams.print.serdes.CustomSerdes;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,10 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Slf4j
 @Component
@@ -25,14 +30,22 @@ public class KafkaStreamsPrintRunner implements ApplicationRunner {
     @Autowired
     private StreamsProperties streamsProperties;
 
+    @Autowired
+    private ApplicationProperties applicationProperties;
+
     private KafkaStreams kafkaStreams;
 
     @Override
-    public void run(ApplicationArguments args) {
+    public void run(ApplicationArguments args) throws IOException {
         CustomSerdes.setSerdesConfig(streamsProperties.getProperties());
 
+        Path filePath = Paths.get(applicationProperties.getFilePath());
+        if (!Files.exists(filePath)) {
+            Files.createDirectories(filePath);
+        }
+
         StreamsBuilder streamsBuilder = new StreamsBuilder();
-        KafkaStreamsPrintTopology.topology(streamsBuilder);
+        KafkaStreamsPrintTopology.topology(streamsBuilder, applicationProperties.getFilePath(), applicationProperties.getFileName());
         Topology topology = streamsBuilder.build();
         log.info("Description of the topology:\n {}", topology.describe());
 

@@ -8,3 +8,7 @@ kafka:
     acks: all
     auto.offset.reset: earliest
     avro.remove.java.properties: true
+
+application:
+  filePath: /tmp/kafka-streams-quickstarts/streams-print
+  fileName: streams-print-output.log
