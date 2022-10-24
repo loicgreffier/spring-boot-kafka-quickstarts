@@ -9,7 +9,6 @@ import io.lgr.quickstarts.avro.KafkaPerson;
 import io.lgr.quickstarts.streams.join.stream.global.table.app.KafkaStreamsJoinStreamGlobalTableTopology;
 import io.lgr.quickstarts.streams.join.stream.global.table.constants.Topic;
 import io.lgr.quickstarts.streams.join.stream.global.table.serdes.CustomSerdes;
-import org.apache.commons.io.FileUtils;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.*;
@@ -17,7 +16,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -57,10 +58,10 @@ class KafkaStreamsJoinStreamGlobalTableTest {
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown() throws IOException {
         testDriver.close();
-        FileUtils.deleteQuietly(new File(STATE_DIR));
-        MockSchemaRegistry.dropScope(this.getClass().getName());
+        Files.deleteIfExists(Paths.get(STATE_DIR));
+        MockSchemaRegistry.dropScope(getClass().getName());
     }
 
     @Test

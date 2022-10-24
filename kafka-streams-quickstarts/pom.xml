@@ -16,6 +16,7 @@
         <module>kafka-streams-filter</module>
         <module>kafka-streams-flatmap</module>
         <module>kafka-streams-flatmap-values</module>
+        <module>kafka-streams-foreach</module>
         <module>kafka-streams-join-stream-global-table</module>
         <module>kafka-streams-join-stream-table</module>
         <module>kafka-streams-left-join-stream-global-table</module>
@@ -23,10 +24,10 @@
         <module>kafka-streams-map</module>
         <module>kafka-streams-map-values</module>
         <module>kafka-streams-merge</module>
+        <module>kafka-streams-print</module>
         <module>kafka-streams-repartition</module>
         <module>kafka-streams-select-key</module>
         <module>specific-producers</module>
-        <module>kafka-streams-foreach</module>
     </modules>
 
     <artifactId>kafka-streams-quickstarts</artifactId>
@@ -48,12 +49,6 @@
             <groupId>io.confluent</groupId>
             <artifactId>kafka-streams-avro-serde</artifactId>
             <version>${kafka-streams-avro-serde.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
         </dependency>
 
         <dependency>
