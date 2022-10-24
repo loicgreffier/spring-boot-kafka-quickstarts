@@ -107,15 +107,7 @@ class KafkaStreamsBranchTest {
 
     @Test
     void testBranchToDefaultTopic() {
-        KafkaPerson person = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("Mathew")
-                .setLastName("Jennings")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopic.pipeInput("1", person);
-
+        inputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaPerson>> results = outputTopicDefault.readKeyValuesToList();
 
         assertThat(results).hasSize(1);
@@ -123,5 +115,14 @@ class KafkaStreamsBranchTest {
         assertThat(results.get(0).value.getId()).isEqualTo(1L);
         assertThat(results.get(0).value.getFirstName()).isEqualTo("Mathew");
         assertThat(results.get(0).value.getLastName()).isEqualTo("Jennings");
+    }
+
+    private KafkaPerson buildKafkaPersonValue() {
+        return KafkaPerson.newBuilder()
+                .setId(1L)
+                .setFirstName("Mathew")
+                .setLastName("Jennings")
+                .setBirthDate(Instant.now())
+                .build();
     }
 }

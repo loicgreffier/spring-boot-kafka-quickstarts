@@ -2,6 +2,7 @@ package io.lgr.quickstarts.streams.repartition;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import io.lgr.quickstarts.avro.CountryCode;
 import io.lgr.quickstarts.avro.KafkaPerson;
 import io.lgr.quickstarts.streams.repartition.app.KafkaStreamsRepartitionTopology;
 import io.lgr.quickstarts.streams.repartition.constants.Topic;
@@ -59,18 +60,20 @@ class KafkaStreamsRepartitionTest {
 
     @Test
     void testRepartition() {
-        KafkaPerson person = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("First name")
-                .setLastName("Last name")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopic.pipeInput("1", person);
-
+        inputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
         assertThat(results).hasSize(1);
         assertThat(results.get(0).key).isEqualTo("1");
+    }
+
+    private KafkaPerson buildKafkaPersonValue() {
+        return KafkaPerson.newBuilder()
+                .setId(1L)
+                .setFirstName("First name")
+                .setLastName("Last name")
+                .setBirthDate(Instant.now())
+                .setNationality(CountryCode.FR)
+                .build();
     }
 }

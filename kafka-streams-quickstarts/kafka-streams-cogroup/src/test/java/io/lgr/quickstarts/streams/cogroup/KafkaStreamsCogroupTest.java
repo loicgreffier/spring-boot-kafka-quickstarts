@@ -5,11 +5,14 @@ import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.lgr.quickstarts.avro.KafkaPerson;
 import io.lgr.quickstarts.avro.KafkaPersonGroup;
 import io.lgr.quickstarts.streams.cogroup.app.KafkaStreamsCogroupTopology;
+import io.lgr.quickstarts.streams.cogroup.constants.StateStore;
 import io.lgr.quickstarts.streams.cogroup.constants.Topic;
 import io.lgr.quickstarts.streams.cogroup.serdes.CustomSerdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.*;
+import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -64,179 +68,107 @@ class KafkaStreamsCogroupTest {
 
     @Test
     void testAggregationGroupedStreamOne() {
-        KafkaPerson personOne = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("Aaran")
-                .setLastName("Abbott")
-                .setBirthDate(Instant.now())
-                .build();
-
-        KafkaPerson personTwo = KafkaPerson.newBuilder()
-                .setId(2L)
-                .setFirstName("Brendan")
-                .setLastName("Abbott")
-                .setBirthDate(Instant.now())
-                .build();
-
-        KafkaPerson personThree = KafkaPerson.newBuilder()
-                .setId(3L)
-                .setFirstName("Bret")
-                .setLastName("Holman")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopicOne.pipeInput("1", personOne);
-        inputTopicOne.pipeInput("2", personTwo);
-        inputTopicOne.pipeInput("3", personThree);
+        inputTopicOne.pipeKeyValueList(buildFirstKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+
         assertThat(results.get(0).key).isEqualTo("Abbott");
-        assertThat(results.get(0).value.getFirstNameByLastName()).containsKey("Abbott");
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott")).hasSize(1);
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
 
         assertThat(results.get(1).key).isEqualTo("Abbott");
-        assertThat(results.get(1).value.getFirstNameByLastName()).containsKey("Abbott");
         assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott")).hasSize(2);
         assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
         assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott").get(1)).isEqualTo("Brendan");
 
         assertThat(results.get(2).key).isEqualTo("Holman");
-        assertThat(results.get(2).value.getFirstNameByLastName()).containsKey("Holman");
         assertThat(results.get(2).value.getFirstNameByLastName().get("Holman")).hasSize(1);
         assertThat(results.get(2).value.getFirstNameByLastName().get("Holman").get(0)).isEqualTo("Bret");
+
+        KeyValueStore<String, ValueAndTimestamp<KafkaPersonGroup>> stateStore = testDriver.getTimestampedKeyValueStore(StateStore.PERSON_COGROUP_AGGREGATE_STATE_STORE.toString());
+
+        assertThat(stateStore.get("Abbott").value().getFirstNameByLastName().get("Abbott")).contains("Aaran", "Brendan");
+        assertThat(stateStore.get("Holman").value().getFirstNameByLastName().get("Holman")).contains("Bret");
     }
 
     @Test
     void testAggregationGroupedStreamTwo() {
-        KafkaPerson personOne = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("Aaran")
-                .setLastName("Abbott")
-                .setBirthDate(Instant.now())
-                .build();
-
-        KafkaPerson personTwo = KafkaPerson.newBuilder()
-                .setId(2L)
-                .setFirstName("Brendan")
-                .setLastName("Abbott")
-                .setBirthDate(Instant.now())
-                .build();
-
-        KafkaPerson personThree = KafkaPerson.newBuilder()
-                .setId(3L)
-                .setFirstName("Bret")
-                .setLastName("Holman")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopicTwo.pipeInput("1", personOne);
-        inputTopicTwo.pipeInput("2", personTwo);
-        inputTopicTwo.pipeInput("3", personThree);
+        inputTopicTwo.pipeKeyValueList(buildFirstKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
         assertThat(results.get(0).key).isEqualTo("Abbott");
-        assertThat(results.get(0).value.getFirstNameByLastName()).containsKey("Abbott");
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott")).hasSize(1);
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
 
         assertThat(results.get(1).key).isEqualTo("Abbott");
-        assertThat(results.get(1).value.getFirstNameByLastName()).containsKey("Abbott");
         assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott")).hasSize(2);
         assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
         assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott").get(1)).isEqualTo("Brendan");
 
         assertThat(results.get(2).key).isEqualTo("Holman");
-        assertThat(results.get(2).value.getFirstNameByLastName()).containsKey("Holman");
         assertThat(results.get(2).value.getFirstNameByLastName().get("Holman")).hasSize(1);
         assertThat(results.get(2).value.getFirstNameByLastName().get("Holman").get(0)).isEqualTo("Bret");
+
+        KeyValueStore<String, ValueAndTimestamp<KafkaPersonGroup>> stateStore = testDriver.getTimestampedKeyValueStore(StateStore.PERSON_COGROUP_AGGREGATE_STATE_STORE.toString());
+
+        assertThat(stateStore.get("Abbott").value().getFirstNameByLastName().get("Abbott")).contains("Aaran", "Brendan");
+        assertThat(stateStore.get("Holman").value().getFirstNameByLastName().get("Holman")).contains("Bret");
     }
 
     @Test
     void testAggregationCogroup() {
-        KafkaPerson personOne = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("Aaran")
-                .setLastName("Abbott")
-                .setBirthDate(Instant.now())
-                .build();
-
-        KafkaPerson personTwo = KafkaPerson.newBuilder()
-                .setId(2L)
-                .setFirstName("Brendan")
-                .setLastName("Abbott")
-                .setBirthDate(Instant.now())
-                .build();
-
-        KafkaPerson personThree = KafkaPerson.newBuilder()
-                .setId(3L)
-                .setFirstName("Bret")
-                .setLastName("Holman")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopicTwo.pipeInput("1", personOne);
-        inputTopicTwo.pipeInput("2", personTwo);
-        inputTopicTwo.pipeInput("3", personThree);
-
-        KafkaPerson personFour = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("Daimhin")
-                .setLastName("Abbott")
-                .setBirthDate(Instant.now())
-                .build();
-
-        KafkaPerson personFive = KafkaPerson.newBuilder()
-                .setId(2L)
-                .setFirstName("Jude")
-                .setLastName("Holman")
-                .setBirthDate(Instant.now())
-                .build();
-
-        KafkaPerson personSix = KafkaPerson.newBuilder()
-                .setId(3L)
-                .setFirstName("Kacey")
-                .setLastName("Wyatt")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopicTwo.pipeInput("4", personFour);
-        inputTopicTwo.pipeInput("5", personFive);
-        inputTopicTwo.pipeInput("6", personSix);
+        inputTopicTwo.pipeKeyValueList(buildFirstKafkaPersonRecords());
+        inputTopicTwo.pipeKeyValueList(buildSecondKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
         assertThat(results.get(0).key).isEqualTo("Abbott");
-        assertThat(results.get(0).value.getFirstNameByLastName()).containsKey("Abbott");
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott")).hasSize(1);
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
 
         assertThat(results.get(1).key).isEqualTo("Abbott");
-        assertThat(results.get(1).value.getFirstNameByLastName()).containsKey("Abbott");
         assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott")).hasSize(2);
         assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
         assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott").get(1)).isEqualTo("Brendan");
 
         assertThat(results.get(2).key).isEqualTo("Holman");
-        assertThat(results.get(2).value.getFirstNameByLastName()).containsKey("Holman");
         assertThat(results.get(2).value.getFirstNameByLastName().get("Holman")).hasSize(1);
         assertThat(results.get(2).value.getFirstNameByLastName().get("Holman").get(0)).isEqualTo("Bret");
 
         assertThat(results.get(3).key).isEqualTo("Abbott");
-        assertThat(results.get(3).value.getFirstNameByLastName()).containsKey("Abbott");
         assertThat(results.get(3).value.getFirstNameByLastName().get("Abbott")).hasSize(3);
         assertThat(results.get(3).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
         assertThat(results.get(3).value.getFirstNameByLastName().get("Abbott").get(1)).isEqualTo("Brendan");
         assertThat(results.get(3).value.getFirstNameByLastName().get("Abbott").get(2)).isEqualTo("Daimhin");
 
         assertThat(results.get(4).key).isEqualTo("Holman");
-        assertThat(results.get(4).value.getFirstNameByLastName()).containsKey("Holman");
         assertThat(results.get(4).value.getFirstNameByLastName().get("Holman")).hasSize(2);
         assertThat(results.get(4).value.getFirstNameByLastName().get("Holman").get(0)).isEqualTo("Bret");
         assertThat(results.get(4).value.getFirstNameByLastName().get("Holman").get(1)).isEqualTo("Jude");
 
         assertThat(results.get(5).key).isEqualTo("Wyatt");
-        assertThat(results.get(5).value.getFirstNameByLastName()).containsKey("Wyatt");
         assertThat(results.get(5).value.getFirstNameByLastName().get("Wyatt")).hasSize(1);
         assertThat(results.get(5).value.getFirstNameByLastName().get("Wyatt").get(0)).isEqualTo("Kacey");
+
+        KeyValueStore<String, ValueAndTimestamp<KafkaPersonGroup>> stateStore = testDriver.getTimestampedKeyValueStore(StateStore.PERSON_COGROUP_AGGREGATE_STATE_STORE.toString());
+
+        assertThat(stateStore.get("Abbott").value().getFirstNameByLastName().get("Abbott")).contains("Aaran", "Brendan", "Daimhin");
+        assertThat(stateStore.get("Holman").value().getFirstNameByLastName().get("Holman")).contains("Bret", "Jude");
+        assertThat(stateStore.get("Wyatt").value().getFirstNameByLastName().get("Wyatt")).contains("Kacey");
+    }
+
+    private List<KeyValue<String, KafkaPerson>> buildFirstKafkaPersonRecords() {
+        return Arrays.asList(
+                KeyValue.pair("1", KafkaPerson.newBuilder().setId(1L).setFirstName("Aaran").setLastName("Abbott").setBirthDate(Instant.now()).build()),
+                KeyValue.pair("2", KafkaPerson.newBuilder().setId(2L).setFirstName("Brendan").setLastName("Abbott").setBirthDate(Instant.now()).build()),
+                KeyValue.pair("3", KafkaPerson.newBuilder().setId(3L).setFirstName("Bret").setLastName("Holman").setBirthDate(Instant.now()).build())
+        );
+    }
+
+    private List<KeyValue<String, KafkaPerson>> buildSecondKafkaPersonRecords() {
+        return Arrays.asList(
+                KeyValue.pair("4", KafkaPerson.newBuilder().setId(1L).setFirstName("Daimhin").setLastName("Abbott").setBirthDate(Instant.now()).build()),
+                KeyValue.pair("5", KafkaPerson.newBuilder().setId(2L).setFirstName("Jude").setLastName("Holman").setBirthDate(Instant.now()).build()),
+                KeyValue.pair("6", KafkaPerson.newBuilder().setId(3L).setFirstName("Kacey").setLastName("Wyatt").setBirthDate(Instant.now()).build())
+        );
     }
 }

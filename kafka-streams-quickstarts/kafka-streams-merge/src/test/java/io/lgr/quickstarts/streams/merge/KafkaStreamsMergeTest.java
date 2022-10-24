@@ -2,6 +2,7 @@ package io.lgr.quickstarts.streams.merge;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import io.lgr.quickstarts.avro.CountryCode;
 import io.lgr.quickstarts.avro.KafkaPerson;
 import io.lgr.quickstarts.streams.merge.app.KafkaStreamsMergeTopology;
 import io.lgr.quickstarts.streams.merge.constants.Topic;
@@ -63,24 +64,10 @@ class KafkaStreamsMergeTest {
 
     @Test
     void testMerge() {
-        KafkaPerson personOne = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("Aaran")
-                .setLastName("Abbott")
-                .setBirthDate(Instant.now())
-                .build();
-
-        KafkaPerson personTwo = KafkaPerson.newBuilder()
-                .setId(2L)
-                .setFirstName("Brendan")
-                .setLastName("Abbott")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopicOne.pipeInput("1", personOne);
-        inputTopicTwo.pipeInput("2", personTwo);
-
+        inputTopicOne.pipeInput("1", buildKafkaPersonValue(1L, "Aaran", "Abbott"));
+        inputTopicTwo.pipeInput("2", buildKafkaPersonValue(2L, "Brendan", "Tillman"));
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+
         assertThat(results.get(0).key).isEqualTo("1");
         assertThat(results.get(0).value.getId()).isEqualTo(1L);
         assertThat(results.get(0).value.getFirstName()).isEqualTo("Aaran");
@@ -89,6 +76,16 @@ class KafkaStreamsMergeTest {
         assertThat(results.get(1).key).isEqualTo("2");
         assertThat(results.get(1).value.getId()).isEqualTo(2L);
         assertThat(results.get(1).value.getFirstName()).isEqualTo("Brendan");
-        assertThat(results.get(1).value.getLastName()).isEqualTo("Abbott");
+        assertThat(results.get(1).value.getLastName()).isEqualTo("Tillman");
+    }
+
+    private KafkaPerson buildKafkaPersonValue(Long id, String firstName, String lastName) {
+        return KafkaPerson.newBuilder()
+                .setId(id)
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setBirthDate(Instant.now())
+                .setNationality(CountryCode.FR)
+                .build();
     }
 }

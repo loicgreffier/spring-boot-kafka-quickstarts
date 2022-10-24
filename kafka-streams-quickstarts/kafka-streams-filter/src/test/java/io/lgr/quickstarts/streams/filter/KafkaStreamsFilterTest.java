@@ -59,50 +59,38 @@ class KafkaStreamsFilterTest {
 
     @Test
     void testBadLastNameFiltered() {
-        KafkaPerson person = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("First name")
-                .setLastName("Last name")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopic.pipeInput("1", person);
-
+        inputTopic.pipeInput("1", buildKafkaPersonValue("First name", "Last name"));
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+
         assertThat(results).isEmpty();
     }
 
     @Test
     void testBadFirstNameFiltered() {
-        KafkaPerson person = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("Diego")
-                .setLastName("Abbott")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopic.pipeInput("1", person);
-
+        inputTopic.pipeInput("1", buildKafkaPersonValue("Diego", "Abbott"));
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+
         assertThat(results).isEmpty();
     }
 
     @Test
     void testNotFiltered() {
-        KafkaPerson person = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("Akan")
-                .setLastName("Abbott")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopic.pipeInput("1", person);
-
+        inputTopic.pipeInput("1", buildKafkaPersonValue("Akan", "Abbott"));
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+
         assertThat(results).hasSize(1);
         assertThat(results.get(0).key).isEqualTo("1");
         assertThat(results.get(0).value.getId()).isEqualTo(1L);
         assertThat(results.get(0).value.getFirstName()).isEqualTo("Akan");
         assertThat(results.get(0).value.getLastName()).isEqualTo("Abbott");
+    }
+
+    private KafkaPerson buildKafkaPersonValue(String firstName, String lastName) {
+        return KafkaPerson.newBuilder()
+                .setId(1L)
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setBirthDate(Instant.now())
+                .build();
     }
 }

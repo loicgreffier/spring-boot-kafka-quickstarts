@@ -59,15 +59,7 @@ class KafkaStreamsFlatMapValuesTest {
 
     @Test
     void testFirstNameLastNameFlatMapping() {
-        KafkaPerson person = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("First name")
-                .setLastName("Last name")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopic.pipeInput("1", person);
-
+        inputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, String>> results = outputTopic.readKeyValuesToList();
 
         assertThat(results).hasSize(2);
@@ -75,5 +67,14 @@ class KafkaStreamsFlatMapValuesTest {
         assertThat(results.get(0).value).isEqualTo("First name");
         assertThat(results.get(1).key).isEqualTo("1");
         assertThat(results.get(1).value).isEqualTo("Last name");
+    }
+
+    private KafkaPerson buildKafkaPersonValue() {
+        return KafkaPerson.newBuilder()
+                .setId(1L)
+                .setFirstName("First name")
+                .setLastName("Last name")
+                .setBirthDate(Instant.now())
+                .build();
     }
 }

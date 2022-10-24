@@ -35,6 +35,14 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 ### Streams
 
+#### Source
+
+| Module                                                                            | Library       | Operations                  | Additional Content          |
+|:----------------------------------------------------------------------------------|---------------|-----------------------------|-----------------------------|
+| [Stream](/kafka-streams-quickstarts/kafka-streams-foreach)                        | Kafka Streams | `stream()`                  | String/Specific Avro Serdes |
+| [Table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)               | Kafka Streams | `table()`, `stream()`       | String/Specific Avro Serdes |
+| [Global Table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table) | Kafka Streams | `globalTable()`, `stream()` | String/Specific Avro Serdes |
+
 #### Stateless
 
 | Module                                                                    | Library       | Operations                                        | Additional Content   |
@@ -56,7 +64,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 | Module                                                                                                  | Library       | Operations                                                       | Additional Content   |
 |:--------------------------------------------------------------------------------------------------------|---------------|------------------------------------------------------------------|----------------------|
-| [Join Stream-Global table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table)           | Kafka Streams | `join()` between KStream and GlobalKTable, `peek()`              | Topology Test Driver |
+| [Join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table)           | Kafka Streams | `join()` between KStream and GlobalKTable, `peek()`              | Topology Test Driver |
 | [Join Stream-Table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)                         | Kafka Streams | `join()` between KStream and KTable, `selectKey()`, `peek()`     | Topology Test Driver |
-| [Left join Stream-Global table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-global-table) | Kafka Streams | `leftJoin()` between KStream and GlobalKTable, `peek()`          | Topology Test Driver |
+| [Left join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-global-table) | Kafka Streams | `leftJoin()` between KStream and GlobalKTable, `peek()`          | Topology Test Driver |
 | [Left join Stream-Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-table)               | Kafka Streams | `leftJoin()` between KStream and KTable, `selectKey()`, `peek()` | Topology Test Driver |

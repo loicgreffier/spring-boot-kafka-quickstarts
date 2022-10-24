@@ -71,7 +71,7 @@ class KafkaStreamsLeftJoinStreamTableTest {
 
     @Test
     void testRekeyPerson() {
-        personInputTopic.pipeInput("1", buildPerson());
+        personInputTopic.pipeInput("1", buildKafkaPersonValue());
 
         List<KeyValue<String, KafkaPerson>> results = personRekeyOutputTopic.readKeyValuesToList();
 
@@ -83,8 +83,8 @@ class KafkaStreamsLeftJoinStreamTableTest {
 
     @Test
     void testLeftJoin() {
-        countryInputTopic.pipeInput("FR", buildCountry());
-        personInputTopic.pipeInput("1", buildPerson());
+        countryInputTopic.pipeInput("FR", buildKafkaCountryValue());
+        personInputTopic.pipeInput("1", buildKafkaPersonValue());
 
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
 
@@ -96,7 +96,7 @@ class KafkaStreamsLeftJoinStreamTableTest {
 
     @Test
     void testLeftJoinWhenRightRecordIsNull() {
-        personInputTopic.pipeInput("1", buildPerson());
+        personInputTopic.pipeInput("1", buildKafkaPersonValue());
 
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
 
@@ -106,7 +106,7 @@ class KafkaStreamsLeftJoinStreamTableTest {
         assertThat(results.get(0).value.getCountry()).isNull();
     }
 
-    private KafkaPerson buildPerson() {
+    private KafkaPerson buildKafkaPersonValue() {
         return KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
@@ -116,7 +116,7 @@ class KafkaStreamsLeftJoinStreamTableTest {
                 .build();
     }
 
-    private KafkaCountry buildCountry() {
+    private KafkaCountry buildKafkaCountryValue() {
         return KafkaCountry.newBuilder()
                 .setCode(CountryCode.FR)
                 .setName("France")

@@ -70,8 +70,7 @@ class KafkaStreamsJoinStreamTableTest {
 
     @Test
     void testRekeyPerson() {
-        personInputTopic.pipeInput("1", buildPerson());
-
+        personInputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaPerson>> results = personRekeyOutputTopic.readKeyValuesToList();
 
         assertThat(results).hasSize(1);
@@ -82,9 +81,8 @@ class KafkaStreamsJoinStreamTableTest {
 
     @Test
     void testJoin() {
-        countryInputTopic.pipeInput("FR", buildCountry());
-        personInputTopic.pipeInput("1", buildPerson());
-
+        countryInputTopic.pipeInput("FR", buildKafkaCountryValue());
+        personInputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
 
         assertThat(results).hasSize(1);
@@ -95,14 +93,13 @@ class KafkaStreamsJoinStreamTableTest {
 
     @Test
     void testJoinWhenRightRecordIsNull() {
-        personInputTopic.pipeInput("1", buildPerson());
-
+        personInputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
 
         assertThat(results).isEmpty();
     }
 
-    private KafkaPerson buildPerson() {
+    private KafkaPerson buildKafkaPersonValue() {
         return KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
@@ -112,7 +109,7 @@ class KafkaStreamsJoinStreamTableTest {
                 .build();
     }
 
-    private KafkaCountry buildCountry() {
+    private KafkaCountry buildKafkaCountryValue() {
         return KafkaCountry.newBuilder()
                 .setCode(CountryCode.FR)
                 .setName("France")

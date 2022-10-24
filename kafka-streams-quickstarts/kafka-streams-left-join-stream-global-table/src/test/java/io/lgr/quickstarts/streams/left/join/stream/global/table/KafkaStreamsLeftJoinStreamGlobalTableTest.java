@@ -66,8 +66,8 @@ class KafkaStreamsLeftJoinStreamGlobalTableTest {
 
     @Test
     void testJoin() {
-        countryInputTopic.pipeInput("FR", buildCountry());
-        personInputTopic.pipeInput("1", buildPerson());
+        countryInputTopic.pipeInput("FR", buildKafkaCountryValue());
+        personInputTopic.pipeInput("1", buildKafkaPersonValue());
 
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
 
@@ -79,7 +79,7 @@ class KafkaStreamsLeftJoinStreamGlobalTableTest {
 
     @Test
     void testJoinWhenRightRecordIsNull() {
-        personInputTopic.pipeInput("1", buildPerson());
+        personInputTopic.pipeInput("1", buildKafkaPersonValue());
 
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
 
@@ -89,7 +89,7 @@ class KafkaStreamsLeftJoinStreamGlobalTableTest {
         assertThat(results.get(0).value.getCountry()).isNull();
     }
 
-    private KafkaPerson buildPerson() {
+    private KafkaPerson buildKafkaPersonValue() {
         return KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
@@ -99,7 +99,7 @@ class KafkaStreamsLeftJoinStreamGlobalTableTest {
                 .build();
     }
 
-    private KafkaCountry buildCountry() {
+    private KafkaCountry buildKafkaCountryValue() {
         return KafkaCountry.newBuilder()
                 .setCode(CountryCode.FR)
                 .setName("France")

@@ -2,6 +2,7 @@ package io.lgr.quickstarts.streams.mapvalues;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import io.lgr.quickstarts.avro.CountryCode;
 import io.lgr.quickstarts.avro.KafkaPerson;
 import io.lgr.quickstarts.streams.mapvalues.app.KafkaStreamsMapValuesTopology;
 import io.lgr.quickstarts.streams.mapvalues.constants.Topic;
@@ -59,15 +60,7 @@ class KafkaStreamsMapValuesTest {
 
     @Test
     void testUppercase() {
-        KafkaPerson person = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("First name")
-                .setLastName("Last name")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopic.pipeInput("1", person);
-
+        inputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
         assertThat(results).hasSize(1);
@@ -75,5 +68,15 @@ class KafkaStreamsMapValuesTest {
         assertThat(results.get(0).value.getId()).isEqualTo(1L);
         assertThat(results.get(0).value.getFirstName()).isEqualTo("FIRST NAME");
         assertThat(results.get(0).value.getLastName()).isEqualTo("LAST NAME");
+    }
+
+    private KafkaPerson buildKafkaPersonValue() {
+        return KafkaPerson.newBuilder()
+                .setId(1L)
+                .setFirstName("First name")
+                .setLastName("Last name")
+                .setBirthDate(Instant.now())
+                .setNationality(CountryCode.FR)
+                .build();
     }
 }
