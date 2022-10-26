@@ -1,13 +1,12 @@
-# Kafka Streams Cogroup
+# Kafka Streams Aggregate
 
 This module shows:
-- Kafka Streams API: `cogroup()`, `groupBy()`, `aggregate()`, `toStream()`, `peek()`
+- Kafka Streams API: `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()`
 - unit tests with Topology Test Driver
 
 This module does:
-- stream <String,KafkaPerson> records from topics named PERSON_TOPIC and PERSON_TOPIC_TWO
-- group each stream by last name
-- cogroup all streams and apply a common aggregator to them. 
+- stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
+- group each stream by last name and apply an aggregator. 
 The aggregator combines each KafkaPerson with the same key into a KafkaPersonGroup object and aggregate first names by last name.
 
 ```json
@@ -29,7 +28,7 @@ To compile and run this demo you will need:
 
 For manual run:
 - start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in Docker
-- produce <String,KafkaPerson> records to topics named PERSON_TOPIC and PERSON_TOPIC_TWO. The [producer person](../specific-producers/kafka-streams-producer-person) can be used
+- produce <String,KafkaPerson> records to a topic named PERSON_TOPIC. The [producer person](../specific-producers/kafka-streams-producer-person) can be used
 - start the Kafka Streams
 
 For Docker run:
@@ -45,4 +44,4 @@ The docker compose runs:
 - 1 Schema registry
 - 1 Control Center
 - 1 producer person
-- 1 Kafka Streams cogroup
+- 1 Kafka Streams aggregate

@@ -35,30 +35,28 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 ### Streams
 
-#### Source
-
-| Module                                                                            | Library       | Operations                  | Additional Content          |
-|:----------------------------------------------------------------------------------|---------------|-----------------------------|-----------------------------|
-| [Stream](/kafka-streams-quickstarts/kafka-streams-foreach)                        | Kafka Streams | `stream()`                  | String/Specific Avro Serdes |
-| [Table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)               | Kafka Streams | `table()`, `stream()`       | String/Specific Avro Serdes |
-| [Global Table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table) | Kafka Streams | `globalTable()`, `stream()` | String/Specific Avro Serdes |
-
 #### Stateless
 
-| Module                                                                    | Library       | Operations                                        | Additional Content   |
-|:--------------------------------------------------------------------------|---------------|---------------------------------------------------|----------------------|
-| [Branch](/kafka-streams-quickstarts/kafka-streams-branch)                 | Kafka Streams | `branch()`, `peek()`                              | Topology Test Driver |
-| [Cogroup](/kafka-streams-quickstarts/kafka-streams-cogroup)               | Kafka Streams | `cogroup()`, `groupBy()`, `aggregate()`, `peek()` | Topology Test Driver |
-| [Filter](/kafka-streams-quickstarts/kafka-streams-filter)                 | Kafka Streams | `filter()`, `filterNot()`, `peek()`               | Topology Test Driver |
-| [Flatmap](/kafka-streams-quickstarts/kafka-streams-flatmap)               | Kafka Streams | `flatMap()`, `peek()`                             | Topology Test Driver |
-| [Flatmap values](/kafka-streams-quickstarts/kafka-streams-flatmap-values) | Kafka Streams | `flatMapValues()`, `peek()`                       | Topology Test Driver |
-| [Foreach](/kafka-streams-quickstarts/kafka-streams-foreach)               | Kafka Streams | `foreach()`                                       |                      |
-| [Map](/kafka-streams-quickstarts/kafka-streams-map)                       | Kafka Streams | `map()`, `peek()`                                 | Topology Test Driver |
-| [Map values](/kafka-streams-quickstarts/kafka-streams-map-values)         | Kafka Streams | `mapValues()`, `peek()`                           | Topology Test Driver |
-| [Merge](/kafka-streams-quickstarts/kafka-streams-merge)                   | Kafka Streams | `merge()`, `peek()`                               | Topology Test Driver |
-| [Print](/kafka-streams-quickstarts/kafka-streams-print)                   | Kafka Streams | `print()`, `peek()`                               |                      |
-| [Repartition](/kafka-streams-quickstarts/kafka-streams-repartition)       | Kafka Streams | `repartition()`, `peek()`                         | Topology Test Driver |
-| [Select key](/kafka-streams-quickstarts/kafka-streams-select-key)         | Kafka Streams | `selectKey()`, `peek()`                           | Topology Test Driver |
+| Module                                                                    | Library       | Operations                                                      | Additional Content   |
+|:--------------------------------------------------------------------------|---------------|-----------------------------------------------------------------|----------------------|
+| [Branch](/kafka-streams-quickstarts/kafka-streams-branch)                 | Kafka Streams | `branch()`, `peek()`                                            | Topology Test Driver |
+| [Cogroup](/kafka-streams-quickstarts/kafka-streams-cogroup)               | Kafka Streams | `cogroup()`, `groupBy()`, `aggregate()`, `toStream()`, `peek()` | Topology Test Driver |
+| [Filter](/kafka-streams-quickstarts/kafka-streams-filter)                 | Kafka Streams | `filter()`, `filterNot()`, `peek()`                             | Topology Test Driver |
+| [Flatmap](/kafka-streams-quickstarts/kafka-streams-flatmap)               | Kafka Streams | `flatMap()`, `peek()`                                           | Topology Test Driver |
+| [Flatmap values](/kafka-streams-quickstarts/kafka-streams-flatmap-values) | Kafka Streams | `flatMapValues()`, `peek()`                                     | Topology Test Driver |
+| [Foreach](/kafka-streams-quickstarts/kafka-streams-foreach)               | Kafka Streams | `foreach()`                                                     |                      |
+| [Map](/kafka-streams-quickstarts/kafka-streams-map)                       | Kafka Streams | `map()`, `peek()`                                               | Topology Test Driver |
+| [Map values](/kafka-streams-quickstarts/kafka-streams-map-values)         | Kafka Streams | `mapValues()`, `peek()`                                         | Topology Test Driver |
+| [Merge](/kafka-streams-quickstarts/kafka-streams-merge)                   | Kafka Streams | `merge()`, `peek()`                                             | Topology Test Driver |
+| [Print](/kafka-streams-quickstarts/kafka-streams-print)                   | Kafka Streams | `print()`, `peek()`                                             |                      |
+| [Repartition](/kafka-streams-quickstarts/kafka-streams-repartition)       | Kafka Streams | `repartition()`, `peek()`                                       | Topology Test Driver |
+| [Select key](/kafka-streams-quickstarts/kafka-streams-select-key)         | Kafka Streams | `selectKey()`, `peek()`                                         | Topology Test Driver |
+
+#### Aggregate
+
+| Module                                                          | Library       | Operations                                                           | Additional Content   |
+|:----------------------------------------------------------------|---------------|----------------------------------------------------------------------|----------------------|
+| [Aggregate](/kafka-streams-quickstarts/kafka-streams-aggregate) | Kafka Streams | `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()` | Topology Test Driver |
 
 #### Join
 

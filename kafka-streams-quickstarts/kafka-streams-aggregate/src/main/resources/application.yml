@@ -1,0 +1,10 @@
+kafka:
+  properties:
+    bootstrap.servers: localhost:9092
+    schema.registry.url: http://localhost:8081
+    application.id: streams-aggregate
+    client.id: streams-aggregate
+    state.dir: /tmp/kafka-streams-quickstarts
+    acks: all
+    auto.offset.reset: earliest
+    avro.remove.java.properties: true

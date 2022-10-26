@@ -39,7 +39,7 @@ class KafkaStreamsCogroupTest {
     void setUp() {
         Properties properties = new Properties();
         properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-cogroup-test");
-        properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "mock://");
+        properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "mock://" +  getClass().getName());
         properties.setProperty(StreamsConfig.STATE_DIR_CONFIG, STATE_DIR);
 
         Map<String, String> serdesProperties = Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://");
@@ -117,7 +117,7 @@ class KafkaStreamsCogroupTest {
 
     @Test
     void testAggregationCogroup() {
-        inputTopicTwo.pipeKeyValueList(buildFirstKafkaPersonRecords());
+        inputTopicOne.pipeKeyValueList(buildFirstKafkaPersonRecords());
         inputTopicTwo.pipeKeyValueList(buildSecondKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
