@@ -57,6 +57,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 | Module                                                          | Library       | Operations                                                           | Additional Content   |
 |:----------------------------------------------------------------|---------------|----------------------------------------------------------------------|----------------------|
 | [Aggregate](/kafka-streams-quickstarts/kafka-streams-aggregate) | Kafka Streams | `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()` | Topology Test Driver |
+| [Count](/kafka-streams-quickstarts/kafka-streams-count)         | Kafka Streams | `count()`, `groupBy()`, `toStream()`, `peek()`                       | Topology Test Driver |
 
 #### Join
 

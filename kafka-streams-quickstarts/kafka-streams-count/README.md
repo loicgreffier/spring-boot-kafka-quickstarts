@@ -1,19 +1,12 @@
-# Kafka Streams Aggregate
+# Kafka Streams Count
 
 This module shows:
-- Kafka Streams API: `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()`
+- Kafka Streams API: `count()`, `groupBy()`, `toStream()`, `peek()`
 - unit tests with Topology Test Driver
 
 This module does:
 - stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
-- group the stream by last name and apply an aggregator. 
-The aggregator combines each KafkaPerson with the same key into a KafkaPersonGroup object and aggregate first names by last name.
-
-```json
-{"firstNameByLastName":{"Last name 1":{"First name 1", "First name 2", "First name 3")}}
-{"firstNameByLastName":{"Last name 2":{"First name 4", "First name 5", "First name 6")}}
-{"firstNameByLastName":{"Last name 3":{"First name 7", "First name 8", "First name 9")}}
-```
+- group the stream by last name and count the number of records in each group. 
 
 ![topology.png](topology.png)
 

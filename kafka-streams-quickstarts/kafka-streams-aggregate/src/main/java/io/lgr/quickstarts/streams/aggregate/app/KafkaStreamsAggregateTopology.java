@@ -25,7 +25,7 @@ public class KafkaStreamsAggregateTopology {
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .selectKey((key, person) -> person.getLastName())
                 .groupByKey(Grouped.with("GROUP_BY_" + Topic.PERSON_TOPIC, Serdes.String(), CustomSerdes.getValueSerdes()))
-                .aggregate(() -> new KafkaPersonGroup(new HashMap<>()), new FirstNameByLastNameAggregator(), Named.as("AGGREGATE_PERSON_TOPICS"), Materialized.<String, KafkaPersonGroup, KeyValueStore<Bytes, byte[]>>as(StateStore.PERSON_AGGREGATE_STATE_STORE.toString())
+                .aggregate(() -> new KafkaPersonGroup(new HashMap<>()), new FirstNameByLastNameAggregator(), Named.as("AGGREGATE_PERSON_TOPIC"), Materialized.<String, KafkaPersonGroup, KeyValueStore<Bytes, byte[]>>as(StateStore.PERSON_AGGREGATE_STATE_STORE.toString())
                         .withKeySerde(Serdes.String())
                         .withValueSerde(CustomSerdes.getValueSerdes()))
                 .toStream()
