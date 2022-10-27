@@ -11,5 +11,4 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "application")
 public class ApplicationProperties {
     private String filePath;
-    private String fileName;
 }

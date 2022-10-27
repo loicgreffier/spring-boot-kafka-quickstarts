@@ -13,11 +13,11 @@ import org.apache.kafka.streams.kstream.Printed;
 public class KafkaStreamsPrintTopology {
     private KafkaStreamsPrintTopology() { }
 
-    public static void topology(StreamsBuilder streamsBuilder, String filePath, String fileName) {
+    public static void topology(StreamsBuilder streamsBuilder, String filePath) {
         streamsBuilder
                 .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-                .print(Printed.<String, KafkaPerson>toFile(filePath + "/" + fileName)
+                .print(Printed.<String, KafkaPerson>toFile(filePath)
                         .withKeyValueMapper(KafkaStreamsPrintTopology::toOutput)
                         .withLabel(Topic.PERSON_TOPIC.toString()));
 

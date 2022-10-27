@@ -39,13 +39,13 @@ public class KafkaStreamsPrintRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws IOException {
         CustomSerdes.setSerdesConfig(streamsProperties.getProperties());
 
-        Path filePath = Paths.get(applicationProperties.getFilePath());
+        Path filePath = Paths.get(applicationProperties.getFilePath().substring(0, applicationProperties.getFilePath().lastIndexOf("/")));
         if (!Files.exists(filePath)) {
             Files.createDirectories(filePath);
         }
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
-        KafkaStreamsPrintTopology.topology(streamsBuilder, applicationProperties.getFilePath(), applicationProperties.getFileName());
+        KafkaStreamsPrintTopology.topology(streamsBuilder, applicationProperties.getFilePath());
         Topology topology = streamsBuilder.build();
         log.info("Description of the topology:\n {}", topology.describe());
 

@@ -2,6 +2,7 @@ package io.lgr.quickstarts.streams.count;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import io.lgr.quickstarts.avro.CountryCode;
 import io.lgr.quickstarts.avro.KafkaPerson;
 import io.lgr.quickstarts.streams.count.app.KafkaStreamsCountTopology;
 import io.lgr.quickstarts.streams.count.constants.StateStore;
@@ -67,39 +68,50 @@ class KafkaStreamsCountTest {
         inputTopic.pipeKeyValueList(buildFirstKafkaPersonRecords());
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
-        assertThat(results.get(0).key).isEqualTo("Abbott");
+        assertThat(results.get(0).key).isEqualTo(CountryCode.FR.toString());
         assertThat(results.get(0).value).isEqualTo(1);
 
-        assertThat(results.get(1).key).isEqualTo("Abbott");
-        assertThat(results.get(1).value).isEqualTo(2);
+        assertThat(results.get(1).key).isEqualTo(CountryCode.CH.toString());
+        assertThat(results.get(1).value).isEqualTo(1);
 
-        assertThat(results.get(2).key).isEqualTo("Holman");
-        assertThat(results.get(2).value).isEqualTo(1);
+        assertThat(results.get(2).key).isEqualTo(CountryCode.FR.toString());
+        assertThat(results.get(2).value).isEqualTo(2);
 
-        assertThat(results.get(3).key).isEqualTo("Abbott");
-        assertThat(results.get(3).value).isEqualTo(3);
+        assertThat(results.get(3).key).isEqualTo(CountryCode.ES.toString());
+        assertThat(results.get(3).value).isEqualTo(1);
 
-        assertThat(results.get(4).key).isEqualTo("Patton");
+        assertThat(results.get(4).key).isEqualTo(CountryCode.GB.toString());
         assertThat(results.get(4).value).isEqualTo(1);
 
-        assertThat(results.get(5).key).isEqualTo("Holman");
+        assertThat(results.get(5).key).isEqualTo(CountryCode.CH.toString());
         assertThat(results.get(5).value).isEqualTo(2);
+
+        assertThat(results.get(6).key).isEqualTo(CountryCode.DE.toString());
+        assertThat(results.get(6).value).isEqualTo(1);
+
+        assertThat(results.get(7).key).isEqualTo(CountryCode.IT.toString());
+        assertThat(results.get(7).value).isEqualTo(1);
 
         KeyValueStore<String, ValueAndTimestamp<Long>> stateStore = testDriver.getTimestampedKeyValueStore(StateStore.PERSON_COUNT_STATE_STORE.toString());
 
-        assertThat(stateStore.get("Abbott").value()).isEqualTo(3);
-        assertThat(stateStore.get("Holman").value()).isEqualTo(2);
-        assertThat(stateStore.get("Patton").value()).isEqualTo(1);
+        assertThat(stateStore.get(CountryCode.FR.toString()).value()).isEqualTo(2);
+        assertThat(stateStore.get(CountryCode.CH.toString()).value()).isEqualTo(2);
+        assertThat(stateStore.get(CountryCode.ES.toString()).value()).isEqualTo(1);
+        assertThat(stateStore.get(CountryCode.GB.toString()).value()).isEqualTo(1);
+        assertThat(stateStore.get(CountryCode.DE.toString()).value()).isEqualTo(1);
+        assertThat(stateStore.get(CountryCode.IT.toString()).value()).isEqualTo(1);
     }
 
     private List<KeyValue<String, KafkaPerson>> buildFirstKafkaPersonRecords() {
         return Arrays.asList(
-                KeyValue.pair("1", KafkaPerson.newBuilder().setId(1L).setFirstName("Aaran").setLastName("Abbott").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("2", KafkaPerson.newBuilder().setId(2L).setFirstName("Brendan").setLastName("Abbott").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("3", KafkaPerson.newBuilder().setId(3L).setFirstName("Bret").setLastName("Holman").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("4", KafkaPerson.newBuilder().setId(2L).setFirstName("Daimhin").setLastName("Abbott").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("5", KafkaPerson.newBuilder().setId(3L).setFirstName("Jiao").setLastName("Patton").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("6", KafkaPerson.newBuilder().setId(3L).setFirstName("Jude").setLastName("Holman").setBirthDate(Instant.now()).build())
+                KeyValue.pair("1", KafkaPerson.newBuilder().setId(1L).setFirstName("Aaran").setLastName("Abbott").setBirthDate(Instant.now()).setNationality(CountryCode.FR).build()),
+                KeyValue.pair("2", KafkaPerson.newBuilder().setId(2L).setFirstName("Brendan").setLastName("Abbott").setBirthDate(Instant.now()).setNationality(CountryCode.CH).build()),
+                KeyValue.pair("3", KafkaPerson.newBuilder().setId(3L).setFirstName("Bret").setLastName("Holman").setBirthDate(Instant.now()).setNationality(CountryCode.FR).build()),
+                KeyValue.pair("4", KafkaPerson.newBuilder().setId(4L).setFirstName("Daimhin").setLastName("Abbott").setBirthDate(Instant.now()).setNationality(CountryCode.ES).build()),
+                KeyValue.pair("5", KafkaPerson.newBuilder().setId(5L).setFirstName("Jiao").setLastName("Patton").setBirthDate(Instant.now()).setNationality(CountryCode.GB).build()),
+                KeyValue.pair("6", KafkaPerson.newBuilder().setId(6L).setFirstName("Acevedo").setLastName("Holman").setBirthDate(Instant.now()).setNationality(CountryCode.CH).build()),
+                KeyValue.pair("7", KafkaPerson.newBuilder().setId(7L).setFirstName("Bennett").setLastName("Patton").setBirthDate(Instant.now()).setNationality(CountryCode.DE).build()),
+                KeyValue.pair("8", KafkaPerson.newBuilder().setId(8L).setFirstName("Donaldson").setLastName("Holman").setBirthDate(Instant.now()).setNationality(CountryCode.IT).build())
         );
     }
 }

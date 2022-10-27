@@ -10,5 +10,4 @@ kafka:
     avro.remove.java.properties: true
 
 application:
-  filePath: /tmp/kafka-streams-quickstarts/streams-print
-  fileName: streams-print-output.log
+  filePath: /tmp/kafka-streams-quickstarts/streams-print/streams-print-output.log

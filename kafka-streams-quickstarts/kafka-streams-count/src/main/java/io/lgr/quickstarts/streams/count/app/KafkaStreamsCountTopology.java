@@ -19,7 +19,7 @@ public class KafkaStreamsCountTopology {
         streamsBuilder
                 .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-                .groupBy((key, person) -> person.getLastName(),
+                .groupBy((key, person) -> person.getNationality().toString(),
                         Grouped.with("GROUP_BY", Serdes.String(), CustomSerdes.getValueSerdes()))
                 .count(Named.as("COUNT"), Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as(StateStore.PERSON_COUNT_STATE_STORE.toString())
                         .withKeySerde(Serdes.String())

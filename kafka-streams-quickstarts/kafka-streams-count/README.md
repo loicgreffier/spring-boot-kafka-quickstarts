@@ -6,7 +6,7 @@ This module shows:
 
 This module does:
 - stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
-- group the stream by last name and count the number of records in each group. 
+- group the stream by nationality and count the number of KafkaPerson with the same nationality. 
 
 ![topology.png](topology.png)
 
