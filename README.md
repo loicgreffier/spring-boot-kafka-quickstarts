@@ -20,7 +20,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 | Module                                                                    | Library       | API      | Additional Content                |
 |---------------------------------------------------------------------------|---------------|----------|-----------------------------------|
 | [Avro](/kafka-producer-quickstarts/kafka-producer-avro)                   | Kafka Clients | Producer | Apache Avro, Mock producer        |
-| [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | Producer | Mock producer                     |
+| [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | Producer | Header, Mock producer             |
 | [Transactional](/kafka-producer-quickstarts/kafka-producer-transactional) | Kafka Clients | Producer | Kafka transactions, Mock producer |
 
 ### Consumers
@@ -30,7 +30,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 | [Avro](/kafka-consumer-quickstarts/kafka-consumer-avro)                                   | Kafka Clients | Consumer | Apache Avro, Mock consumer                                             |
 | [Circuit breaker](/kafka-consumer-quickstarts/kafka-consumer-circuit-breaker)             | Kafka Clients | Consumer | Deserialization/poison pill error handling, Mock consumer              |
 | [Retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system) | Kafka Clients | Consumer | External system interfacing with strong retry mechanism, Mock consumer |
-| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                               | Kafka Clients | Consumer | Mock consumer                                                          |
+| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                               | Kafka Clients | Consumer | Header, Mock consumer                                                  |
 | [Transactional](/kafka-consumer-quickstarts/kafka-consumer-transactional)                 | Kafka Clients | Consumer | Kafka transactions, Isolation level                                    |
 
 ### Streams
@@ -58,6 +58,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 |:----------------------------------------------------------------|---------------|----------------------------------------------------------------------|----------------------|
 | [Aggregate](/kafka-streams-quickstarts/kafka-streams-aggregate) | Kafka Streams | `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()` | Topology Test Driver |
 | [Count](/kafka-streams-quickstarts/kafka-streams-count)         | Kafka Streams | `count()`, `groupBy()`, `toStream()`, `peek()`                       | Topology Test Driver |
+| [Reduce](/kafka-streams-quickstarts/kafka-streams-reduce)       | Kafka Streams | `reduce()`, `groupBy()`, `toStream()`, `peek()`                      | Topology Test Driver |
 
 #### Join
 

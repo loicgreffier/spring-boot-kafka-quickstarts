@@ -30,6 +30,7 @@
         <module>specific-producers</module>
         <module>kafka-streams-aggregate</module>
         <module>kafka-streams-count</module>
+        <module>kafka-streams-reduce</module>
     </modules>
 
     <artifactId>kafka-streams-quickstarts</artifactId>

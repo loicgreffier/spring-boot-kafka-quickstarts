@@ -64,7 +64,7 @@ class KafkaStreamsAggregateTest {
 
     @Test
     void testAggregation() {
-        inputTopic.pipeKeyValueList(buildFirstKafkaPersonRecords());
+        inputTopic.pipeKeyValueList(buildKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
         assertThat(results.get(0).key).isEqualTo("Abbott");
@@ -102,7 +102,7 @@ class KafkaStreamsAggregateTest {
         assertThat(stateStore.get("Patton").value().getFirstNameByLastName().get("Patton")).contains("Jiao");
     }
 
-    private List<KeyValue<String, KafkaPerson>> buildFirstKafkaPersonRecords() {
+    private List<KeyValue<String, KafkaPerson>> buildKafkaPersonRecords() {
         return Arrays.asList(
                 KeyValue.pair("1", KafkaPerson.newBuilder().setId(1L).setFirstName("Aaran").setLastName("Abbott").setBirthDate(Instant.now()).build()),
                 KeyValue.pair("2", KafkaPerson.newBuilder().setId(2L).setFirstName("Brendan").setLastName("Abbott").setBirthDate(Instant.now()).build()),

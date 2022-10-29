@@ -67,7 +67,8 @@ public class KafkaStreamsProducerPersonRunner implements ApplicationRunner {
                 .setFirstName(FIRST_NAMES[new Random().nextInt(FIRST_NAMES.length)])
                 .setLastName(LAST_NAMES[new Random().nextInt(LAST_NAMES.length)])
                 .setNationality(CountryCode.values()[new Random().nextInt(CountryCode.values().length)])
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.ofEpochSecond(new Random().nextLong(Instant.parse("1900-01-01T00:00:00.00Z").getEpochSecond(),
+                                Instant.now().getEpochSecond())))
                 .build();
     }
 

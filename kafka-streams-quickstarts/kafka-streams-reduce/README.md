@@ -1,12 +1,12 @@
-# Kafka Streams Count
+# Kafka Streams Reduce
 
 This module shows:
-- Kafka Streams API: `count()`, `groupBy()`, `toStream()`, `peek()`
+- Kafka Streams API: `reduce()`, `groupBy()`, `toStream()`, `peek()`
 - unit tests with Topology Test Driver
 
 This module does:
 - stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
-- group the stream by nationality and count the number of KafkaPerson with the same nationality. 
+- group the stream by nationality and reduce it by keeping the KafkaPerson with the maximum age. 
 
 ![topology.png](topology.png)
 
@@ -37,4 +37,4 @@ The docker compose runs:
 - 1 Schema registry
 - 1 Control Center
 - 1 producer person
-- 1 Kafka Streams count
+- 1 Kafka Streams reduce

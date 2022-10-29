@@ -65,7 +65,7 @@ class KafkaStreamsCountTest {
 
     @Test
     void testCount() {
-        inputTopic.pipeKeyValueList(buildFirstKafkaPersonRecords());
+        inputTopic.pipeKeyValueList(buildKafkaPersonRecords());
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
         assertThat(results.get(0).key).isEqualTo(CountryCode.FR.toString());
@@ -102,7 +102,7 @@ class KafkaStreamsCountTest {
         assertThat(stateStore.get(CountryCode.IT.toString()).value()).isEqualTo(1);
     }
 
-    private List<KeyValue<String, KafkaPerson>> buildFirstKafkaPersonRecords() {
+    private List<KeyValue<String, KafkaPerson>> buildKafkaPersonRecords() {
         return Arrays.asList(
                 KeyValue.pair("1", KafkaPerson.newBuilder().setId(1L).setFirstName("Aaran").setLastName("Abbott").setBirthDate(Instant.now()).setNationality(CountryCode.FR).build()),
                 KeyValue.pair("2", KafkaPerson.newBuilder().setId(2L).setFirstName("Brendan").setLastName("Abbott").setBirthDate(Instant.now()).setNationality(CountryCode.CH).build()),
