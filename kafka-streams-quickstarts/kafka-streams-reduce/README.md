@@ -6,7 +6,7 @@ This module shows:
 
 This module does:
 - stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
-- group the stream by nationality and reduce it by keeping the KafkaPerson with the maximum age. 
+- group the stream by nationality and reduce it by keeping the KafkaPerson with the maximum age for each nationality. 
 
 ![topology.png](topology.png)
 
