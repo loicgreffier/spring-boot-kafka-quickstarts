@@ -63,7 +63,7 @@ class KafkaStreamsAggregateTest {
     }
 
     @Test
-    void testAggregation() {
+    void shouldAggregateFirstNamesByLastName() {
         inputTopic.pipeKeyValueList(buildKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();

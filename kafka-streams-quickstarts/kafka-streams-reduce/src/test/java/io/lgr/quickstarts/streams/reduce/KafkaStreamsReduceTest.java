@@ -63,7 +63,7 @@ class KafkaStreamsReduceTest {
     }
 
     @Test
-    void testReduce() {
+    void shouldReduceByNationalityAndKeepMaxAge() {
         inputTopic.pipeKeyValueList(buildKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();

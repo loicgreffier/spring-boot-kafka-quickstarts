@@ -31,7 +31,6 @@ class KafkaStreamsLeftJoinStreamTableTest {
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, KafkaPerson> personInputTopic;
     private TestInputTopic<String, KafkaCountry> countryInputTopic;
-
     private TestOutputTopic<String, KafkaPerson> personRekeyOutputTopic;
     private TestOutputTopic<String, KafkaJoinPersonCountry> joinOutputTopic;
 
@@ -70,7 +69,7 @@ class KafkaStreamsLeftJoinStreamTableTest {
     }
 
     @Test
-    void testRekeyPerson() {
+    void shouldRekey() {
         personInputTopic.pipeInput("1", buildKafkaPersonValue());
 
         List<KeyValue<String, KafkaPerson>> results = personRekeyOutputTopic.readKeyValuesToList();
@@ -82,7 +81,7 @@ class KafkaStreamsLeftJoinStreamTableTest {
     }
 
     @Test
-    void testLeftJoin() {
+    void shouldJoinPersonToCountry() {
         countryInputTopic.pipeInput("FR", buildKafkaCountryValue());
         personInputTopic.pipeInput("1", buildKafkaPersonValue());
 
@@ -95,7 +94,7 @@ class KafkaStreamsLeftJoinStreamTableTest {
     }
 
     @Test
-    void testLeftJoinWhenRightRecordIsNull() {
+    void shouldEmitValueEvenIfNoCountry() {
         personInputTopic.pipeInput("1", buildKafkaPersonValue());
 
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();

@@ -63,7 +63,7 @@ class KafkaStreamsMergeTest {
     }
 
     @Test
-    void testMerge() {
+    void shouldMergeBothStreams() {
         inputTopicOne.pipeInput("1", buildKafkaPersonValue(1L, "Aaran", "Abbott"));
         inputTopicTwo.pipeInput("2", buildKafkaPersonValue(2L, "Brendan", "Tillman"));
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();

@@ -69,7 +69,7 @@ class KafkaStreamsJoinStreamTableTest {
     }
 
     @Test
-    void testRekeyPerson() {
+    void shouldRekey() {
         personInputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaPerson>> results = personRekeyOutputTopic.readKeyValuesToList();
 
@@ -80,7 +80,7 @@ class KafkaStreamsJoinStreamTableTest {
     }
 
     @Test
-    void testJoin() {
+    void shouldJoinPersonToCountry() {
         countryInputTopic.pipeInput("FR", buildKafkaCountryValue());
         personInputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
@@ -92,7 +92,7 @@ class KafkaStreamsJoinStreamTableTest {
     }
 
     @Test
-    void testJoinWhenRightRecordIsNull() {
+    void shouldNotJoinWhenNoCountry() {
         personInputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
 

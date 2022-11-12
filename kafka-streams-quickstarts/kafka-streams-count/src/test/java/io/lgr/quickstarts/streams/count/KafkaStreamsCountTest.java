@@ -64,7 +64,7 @@ class KafkaStreamsCountTest {
     }
 
     @Test
-    void testCount() {
+    void shouldCountByNationality() {
         inputTopic.pipeKeyValueList(buildKafkaPersonRecords());
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();

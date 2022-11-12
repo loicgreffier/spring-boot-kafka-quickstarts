@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MaxAgeReducerTest {
     @Test
-    void testMaxAgeReducer() {
+    void shouldKeepOldestPerson() {
         MaxAgeReducer maxAgeReducer = new MaxAgeReducer();
 
         KafkaPerson oldest = KafkaPerson.newBuilder()

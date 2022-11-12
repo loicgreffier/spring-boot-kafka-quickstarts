@@ -65,7 +65,7 @@ class KafkaStreamsJoinStreamGlobalTableTest {
     }
 
     @Test
-    void testJoin() {
+    void shouldJoinPersonToCountry() {
         countryInputTopic.pipeInput("FR", buildKafkaCountryValue());
         personInputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
@@ -77,7 +77,7 @@ class KafkaStreamsJoinStreamGlobalTableTest {
     }
 
     @Test
-    void testJoinWhenRightRecordIsNull() {
+    void shouldNotJoinValueWhenNoCountry() {
         personInputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
 

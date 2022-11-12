@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class FirstNameByLastNameAggregatorTest {
     @Test
-    void testFirstNameByLastNameAggregation() {
+    void shouldAggregateFirstNamesByLastName() {
         FirstNameByLastNameAggregator firstNameByLastNameAggregator = new FirstNameByLastNameAggregator();
         KafkaPersonGroup kafkaPersonGroup = new KafkaPersonGroup(new HashMap<>());
 

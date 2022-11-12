@@ -1,0 +1,25 @@
+{
+  "namespace": "io.lgr.quickstarts.avro",
+  "type": "record",
+  "name": "KafkaJoinPersons",
+  "fields": [
+    {
+      "name": "personOne",
+      "type": [
+        "null",
+        "KafkaPerson"
+      ],
+      "default": null,
+      "doc": "First person"
+    },
+    {
+      "name": "personTwo",
+      "type": [
+        "null",
+        "KafkaPerson"
+      ],
+      "default": null,
+      "doc": "Second person"
+    }
+  ]
+}

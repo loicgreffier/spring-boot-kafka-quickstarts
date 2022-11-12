@@ -59,7 +59,7 @@ class KafkaStreamsSelectKeyTest {
     }
 
     @Test
-    void testSelectKey() {
+    void shouldSelectLastNameAsNewKey() {
         inputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 

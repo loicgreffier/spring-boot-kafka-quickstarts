@@ -59,7 +59,7 @@ class KafkaStreamsMapValuesTest {
     }
 
     @Test
-    void testUppercase() {
+    void shouldUpperCase() {
         inputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 

@@ -59,7 +59,7 @@ class KafkaStreamsRepartitionTest {
     }
 
     @Test
-    void testRepartition() {
+    void shouldRepartitionRecordsInNewTopic() {
         inputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 

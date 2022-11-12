@@ -67,7 +67,7 @@ class KafkaStreamsCogroupTest {
     }
 
     @Test
-    void testAggregationGroupedStreamOne() {
+    void shouldAggregateFirstNamesByLastNameStreamOneOnly() {
         inputTopicOne.pipeKeyValueList(buildFirstKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
@@ -92,7 +92,7 @@ class KafkaStreamsCogroupTest {
     }
 
     @Test
-    void testAggregationGroupedStreamTwo() {
+    void shouldAggregateFirstNamesByLastNameStreamTwoOnly() {
         inputTopicTwo.pipeKeyValueList(buildFirstKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
@@ -116,7 +116,7 @@ class KafkaStreamsCogroupTest {
     }
 
     @Test
-    void testAggregationCogroup() {
+    void shouldAggregateFirstNamesByLastNameBothCogroupedStreams() {
         inputTopicOne.pipeKeyValueList(buildFirstKafkaPersonRecords());
         inputTopicTwo.pipeKeyValueList(buildSecondKafkaPersonRecords());
 

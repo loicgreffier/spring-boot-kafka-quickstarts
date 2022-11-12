@@ -12,3 +12,4 @@ kafka:
     heartbeat.interval.ms: 3000
     session.timeout.ms: 45000
     fetch.min.bytes: 1
+    fetch.max.wait.ms: 500

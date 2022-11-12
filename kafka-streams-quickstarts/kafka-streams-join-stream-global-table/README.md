@@ -7,7 +7,7 @@ This module shows:
 This module does:
 - stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
 - stream <String,KafkaCountry> records from a topic named COUNTRY_TOPIC
-- join records matching on country code and build a new KafkaJoinPersonCountry object that holds both person and country information
+- join records matching by country code and build a new KafkaJoinPersonCountry object that holds both person and country information
 - write the result into a new topic named PERSON_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC
 
 ![topology.png](topology.png)

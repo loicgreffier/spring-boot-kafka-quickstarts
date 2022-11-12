@@ -66,7 +66,7 @@ class KafkaStreamsBranchTest {
     }
 
     @Test
-    void testBranchToTopicA() {
+    void shouldBranchToTopicA() {
         KafkaPerson person = KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("Calder")
@@ -86,7 +86,7 @@ class KafkaStreamsBranchTest {
     }
 
     @Test
-    void testBranchToTopicB() {
+    void shouldBranchToTopicB() {
         KafkaPerson person = KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("Abir")
@@ -106,7 +106,7 @@ class KafkaStreamsBranchTest {
     }
 
     @Test
-    void testBranchToDefaultTopic() {
+    void shouldBranchToDefaultTopic() {
         inputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, KafkaPerson>> results = outputTopicDefault.readKeyValuesToList();
 

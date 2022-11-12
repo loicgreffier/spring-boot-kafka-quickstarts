@@ -58,7 +58,7 @@ class KafkaStreamsFlatMapValuesTest {
     }
 
     @Test
-    void testFirstNameLastNameFlatMapping() {
+    void shouldFlatMapFirstNameAndLastName() {
         inputTopic.pipeInput("1", buildKafkaPersonValue());
         List<KeyValue<String, String>> results = outputTopic.readKeyValuesToList();
 

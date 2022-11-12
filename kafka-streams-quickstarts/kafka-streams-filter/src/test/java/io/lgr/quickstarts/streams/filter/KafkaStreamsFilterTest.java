@@ -58,7 +58,7 @@ class KafkaStreamsFilterTest {
     }
 
     @Test
-    void testBadLastNameFiltered() {
+    void shouldFilterBadLastName() {
         inputTopic.pipeInput("1", buildKafkaPersonValue("First name", "Last name"));
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
@@ -66,7 +66,7 @@ class KafkaStreamsFilterTest {
     }
 
     @Test
-    void testBadFirstNameFiltered() {
+    void shouldFilterBadFirstName() {
         inputTopic.pipeInput("1", buildKafkaPersonValue("Diego", "Abbott"));
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
@@ -74,7 +74,7 @@ class KafkaStreamsFilterTest {
     }
 
     @Test
-    void testNotFiltered() {
+    void shouldNotFilter() {
         inputTopic.pipeInput("1", buildKafkaPersonValue("Akan", "Abbott"));
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
