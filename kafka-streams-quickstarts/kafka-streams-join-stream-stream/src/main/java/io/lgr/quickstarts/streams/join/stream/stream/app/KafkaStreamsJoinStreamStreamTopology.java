@@ -28,7 +28,7 @@ public class KafkaStreamsJoinStreamStreamTopology {
                 .selectKey((key, person) -> person.getLastName())
                 .join(streamTwo,
                         (key, personLeft, personRight) -> {
-                            log.info("Joined {} and {} by last name {}", personLeft.getFirstName(), personRight.getLastName(), key);
+                            log.info("Joined {} and {} by last name {}", personLeft.getFirstName(), personRight.getFirstName(), key);
                             return KafkaJoinPersons.newBuilder()
                                     .setPersonOne(personLeft)
                                     .setPersonTwo(personRight)

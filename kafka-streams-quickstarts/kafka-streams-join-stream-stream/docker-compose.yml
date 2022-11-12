@@ -78,29 +78,6 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
 
-  kafka-streams-producer-country:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-producer-country-1.0.0
-    hostname: kafka-streams-producer-country
-    container_name: kafka-streams-producer-country
-    networks:
-      - spring-boot-kafka-quickstarts
-    depends_on:
-      - broker
-      - schema-registry
-    ports:
-      - "8082:8080"
-    restart: on-failure
-    environment:
-      SPRING_APPLICATION_JSON: |
-        {
-          "kafka": {
-            "properties": {
-              "bootstrap.servers": "broker:29092",
-              "schema.registry.url": "http://schema-registry:8081"
-            }
-          }
-        }
-
   kafka-streams-producer-person:
     image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-producer-person-1.0.0
     hostname: kafka-streams-producer-person
@@ -108,7 +85,8 @@ services:
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
-      - kafka-streams-producer-country
+      - broker
+      - schema-registry
     ports:
       - "8083:8080"
     restart: unless-stopped
