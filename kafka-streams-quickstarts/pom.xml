@@ -32,6 +32,7 @@
         <module>kafka-streams-count</module>
         <module>kafka-streams-reduce</module>
         <module>kafka-streams-join-stream-stream</module>
+        <module>kafka-streams-left-join-stream-stream</module>
     </modules>
 
     <artifactId>kafka-streams-quickstarts</artifactId>

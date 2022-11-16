@@ -1,15 +1,15 @@
-# Kafka Streams Join Stream Stream
+# Kafka Streams Left Join Stream Stream
 
 This module shows:
-- Kafka Streams API: `join()` between KStream and KStream, `selectKey()`, `peek()`
+- Kafka Streams API: `leftJoin()` between KStream and KStream, `selectKey()`, `peek()`
 - sliding time windows in join operations (join windows)
 - unit tests with Topology Test Driver
 
 This module does:
 - stream <String,KafkaPerson> records from topics named PERSON_TOPIC and PERSON_TOPIC_TWO
-- join records matching by last name within a 2 minutes time window and a 30s grace period for delayed records
-- Build a new KafkaJoinPersons object that holds both persons
-- write the result into a new topic named PERSON_JOIN_STREAM_STREAM_TOPIC
+- join records matching by last name within a 5 minutes before and 2 minutes after time window, and a 30s grace period for delayed records
+- build a new KafkaJoinPersons object that holds both persons
+- write the result into a new topic named PERSON_LEFT_JOIN_STREAM_STREAM_TOPIC
 
 ![topology.png](topology.png)
 
@@ -40,4 +40,4 @@ The docker compose runs:
 - 1 Schema registry
 - 1 Control Center
 - 1 producer person
-- 1 Kafka Streams join stream stream
+- 1 Kafka Streams left join stream stream

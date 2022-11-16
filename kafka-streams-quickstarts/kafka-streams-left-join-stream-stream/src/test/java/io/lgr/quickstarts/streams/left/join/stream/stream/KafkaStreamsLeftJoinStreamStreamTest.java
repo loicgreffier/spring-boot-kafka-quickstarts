@@ -1,13 +1,13 @@
-package io.lgr.quickstarts.streams.join.stream.stream;
+package io.lgr.quickstarts.streams.left.join.stream.stream;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.lgr.quickstarts.avro.KafkaJoinPersons;
 import io.lgr.quickstarts.avro.KafkaPerson;
-import io.lgr.quickstarts.streams.join.stream.stream.app.KafkaStreamsJoinStreamStreamTopology;
-import io.lgr.quickstarts.streams.join.stream.stream.constants.StateStore;
-import io.lgr.quickstarts.streams.join.stream.stream.constants.Topic;
-import io.lgr.quickstarts.streams.join.stream.stream.serdes.CustomSerdes;
+import io.lgr.quickstarts.streams.left.join.stream.stream.app.KafkaStreamsLeftJoinStreamStreamTopology;
+import io.lgr.quickstarts.streams.left.join.stream.stream.constants.StateStore;
+import io.lgr.quickstarts.streams.left.join.stream.stream.constants.Topic;
+import io.lgr.quickstarts.streams.left.join.stream.stream.serdes.CustomSerdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.*;
@@ -30,7 +30,7 @@ import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class KafkaStreamsJoinStreamStreamTest {
+class KafkaStreamsLeftJoinStreamStreamTest {
     private final static String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, KafkaPerson> inputTopicOne;
@@ -42,7 +42,7 @@ class KafkaStreamsJoinStreamStreamTest {
     @BeforeEach
     void setUp() {
         Properties properties = new Properties();
-        properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-join-stream-stream-test");
+        properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-left-join-stream-stream-test");
         properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "mock://" +  getClass().getName());
         properties.setProperty(StreamsConfig.STATE_DIR_CONFIG, STATE_DIR);
 
@@ -50,7 +50,7 @@ class KafkaStreamsJoinStreamStreamTest {
         CustomSerdes.setSerdesConfig(serdesProperties);
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
-        KafkaStreamsJoinStreamStreamTopology.topology(streamsBuilder);
+        KafkaStreamsLeftJoinStreamStreamTopology.topology(streamsBuilder);
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
 
         inputTopicOne = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
@@ -59,13 +59,13 @@ class KafkaStreamsJoinStreamStreamTest {
         inputTopicTwo = testDriver.createInputTopic(Topic.PERSON_TOPIC_TWO.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
 
-        rekeyInputTopicOne = testDriver.createOutputTopic("streams-join-stream-stream-test-" + Topic.PERSON_JOIN_STREAM_STREAM_REKEY_TOPIC + "-left-repartition", new StringDeserializer(),
+        rekeyInputTopicOne = testDriver.createOutputTopic("streams-left-join-stream-stream-test-" + Topic.PERSON_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC + "-left-repartition", new StringDeserializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().deserializer());
 
-        rekeyInputTopicTwo = testDriver.createOutputTopic("streams-join-stream-stream-test-" + Topic.PERSON_JOIN_STREAM_STREAM_REKEY_TOPIC + "-right-repartition", new StringDeserializer(),
+        rekeyInputTopicTwo = testDriver.createOutputTopic("streams-left-join-stream-stream-test-" + Topic.PERSON_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC + "-right-repartition", new StringDeserializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().deserializer());
 
-        joinOutputTopic = testDriver.createOutputTopic(Topic.PERSON_JOIN_STREAM_STREAM_TOPIC.toString(), new StringDeserializer(),
+        joinOutputTopic = testDriver.createOutputTopic(Topic.PERSON_LEFT_JOIN_STREAM_STREAM_TOPIC.toString(), new StringDeserializer(),
                 CustomSerdes.<KafkaJoinPersons>getValueSerdes().deserializer());
     }
 
@@ -99,7 +99,7 @@ class KafkaStreamsJoinStreamStreamTest {
         Instant start = Instant.parse("2000-01-01T01:00:00.00Z");
         inputTopicOne.pipeInput(new TestRecord<>("1", buildKafkaPersonValue("Callie", "Acosta"), start));
         inputTopicTwo.pipeInput(new TestRecord<>("2", buildKafkaPersonValue("Zubayr", "Acosta"), start
-                .minus(2, ChronoUnit.MINUTES)));
+                .minus(5, ChronoUnit.MINUTES)));
         inputTopicTwo.pipeInput(new TestRecord<>("3", buildKafkaPersonValue("Tayyab", "Acosta"), start
                 .minus(1, ChronoUnit.MINUTES)));
         inputTopicTwo.pipeInput(new TestRecord<>("4", buildKafkaPersonValue("Tyra", "Acosta"), start
@@ -126,14 +126,14 @@ class KafkaStreamsJoinStreamStreamTest {
         assertThat(results.get(3).value.getPersonOne().getFirstName()).isEqualTo("Callie");
         assertThat(results.get(3).value.getPersonTwo().getFirstName()).isEqualTo("Robby");
 
-        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
             assertThat(record.value.getFirstName()).isEqualTo("Callie");
             assertThat(record.value.getLastName()).isEqualTo("Acosta");
         }
 
-        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-other-join-store");
+        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
             assertThat(record.value.getFirstName()).isEqualTo("Zubayr");
@@ -182,7 +182,7 @@ class KafkaStreamsJoinStreamStreamTest {
         assertThat(results.get(2).value.getPersonOne().getFirstName()).isEqualTo("Oscar");
         assertThat(results.get(2).value.getPersonTwo().getFirstName()).isEqualTo("Finnlay");
 
-        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
             assertThat(record.value.getFirstName()).isEqualTo("Callie");
@@ -193,7 +193,7 @@ class KafkaStreamsJoinStreamStreamTest {
             assertThat(record.value.getLastName()).isEqualTo("Rhodes");
         }
 
-        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-other-join-store");
+        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
             assertThat(record.value.getFirstName()).isEqualTo("Tyra");
@@ -214,7 +214,7 @@ class KafkaStreamsJoinStreamStreamTest {
         Instant start = Instant.parse("2000-01-01T01:00:00.00Z");
         inputTopicOne.pipeInput(new TestRecord<>("1", buildKafkaPersonValue("Callie", "Acosta"), start));
         inputTopicTwo.pipeInput(new TestRecord<>("2", buildKafkaPersonValue("Zubayr", "Acosta"), start
-                .minus(3, ChronoUnit.MINUTES)));
+                .minus(6, ChronoUnit.MINUTES)));
         inputTopicTwo.pipeInput(new TestRecord<>("3", buildKafkaPersonValue("Robby", "Acosta"), start
                 .plus(3, ChronoUnit.MINUTES)));
 
@@ -222,16 +222,20 @@ class KafkaStreamsJoinStreamStreamTest {
 
         assertThat(results).isEmpty();
 
-        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
             assertThat(record.value.getFirstName()).isEqualTo("Callie");
             assertThat(record.value.getLastName()).isEqualTo("Acosta");
         }
 
-        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-other-join-store");
+        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
+            assertThat(record.value.getFirstName()).isEqualTo("Zubayr");
+            assertThat(record.value.getLastName()).isEqualTo("Acosta");
+
+            record = iterator.next();
             assertThat(record.value.getFirstName()).isEqualTo("Robby");
             assertThat(record.value.getLastName()).isEqualTo("Acosta");
         }
@@ -247,14 +251,14 @@ class KafkaStreamsJoinStreamStreamTest {
 
         assertThat(results).isEmpty();
 
-        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
             assertThat(record.value.getFirstName()).isEqualTo("Callie");
             assertThat(record.value.getLastName()).isEqualTo("Acosta");
         }
 
-        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-other-join-store");
+        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
             assertThat(record.value.getFirstName()).isEqualTo("Zubayr");
