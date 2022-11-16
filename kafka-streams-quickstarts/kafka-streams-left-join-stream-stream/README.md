@@ -7,7 +7,7 @@ This module shows:
 
 This module does:
 - stream <String,KafkaPerson> records from topics named PERSON_TOPIC and PERSON_TOPIC_TWO
-- join records matching by last name within a 5 minutes before and 2 minutes after time window, and a 30s grace period for delayed records
+- join records matching by last name within a 5 minutes before and 2 minutes after time window, and a 30 seconds grace period for delayed records
 - build a new KafkaJoinPersons object that holds both persons
 - write the result into a new topic named PERSON_LEFT_JOIN_STREAM_STREAM_TOPIC
 
