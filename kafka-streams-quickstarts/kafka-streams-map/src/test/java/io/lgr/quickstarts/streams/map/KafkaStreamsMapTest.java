@@ -42,7 +42,7 @@ class KafkaStreamsMapTest {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsMapTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
@@ -75,7 +75,7 @@ class KafkaStreamsMapTest {
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .setNationality(CountryCode.FR)
                 .build();
     }

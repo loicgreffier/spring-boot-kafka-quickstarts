@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -43,7 +44,7 @@ class KafkaStreamsMergeTest {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsMergeTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
         inputTopicOne = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
@@ -64,27 +65,24 @@ class KafkaStreamsMergeTest {
 
     @Test
     void shouldMergeBothStreams() {
-        inputTopicOne.pipeInput("1", buildKafkaPersonValue(1L, "Aaran", "Abbott"));
-        inputTopicTwo.pipeInput("2", buildKafkaPersonValue(2L, "Brendan", "Tillman"));
+        KeyValue<String, KafkaPerson> personOne = KeyValue.pair("1", buildKafkaPersonValue("Aaran", "Abbott"));
+        KeyValue<String, KafkaPerson> personTwo = KeyValue.pair("2", buildKafkaPersonValue("Brendan", "Tillman"));
+
+        inputTopicOne.pipeKeyValueList(Collections.singletonList(personOne));
+        inputTopicTwo.pipeKeyValueList(Collections.singletonList(personTwo));
+
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
-        assertThat(results.get(0).key).isEqualTo("1");
-        assertThat(results.get(0).value.getId()).isEqualTo(1L);
-        assertThat(results.get(0).value.getFirstName()).isEqualTo("Aaran");
-        assertThat(results.get(0).value.getLastName()).isEqualTo("Abbott");
-
-        assertThat(results.get(1).key).isEqualTo("2");
-        assertThat(results.get(1).value.getId()).isEqualTo(2L);
-        assertThat(results.get(1).value.getFirstName()).isEqualTo("Brendan");
-        assertThat(results.get(1).value.getLastName()).isEqualTo("Tillman");
+        assertThat(results.get(0)).isEqualTo(personOne);
+        assertThat(results.get(1)).isEqualTo(personTwo);
     }
 
-    private KafkaPerson buildKafkaPersonValue(Long id, String firstName, String lastName) {
+    private KafkaPerson buildKafkaPersonValue(String firstName, String lastName) {
         return KafkaPerson.newBuilder()
-                .setId(id)
+                .setId(1L)
                 .setFirstName(firstName)
                 .setLastName(lastName)
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .setNationality(CountryCode.FR)
                 .build();
     }

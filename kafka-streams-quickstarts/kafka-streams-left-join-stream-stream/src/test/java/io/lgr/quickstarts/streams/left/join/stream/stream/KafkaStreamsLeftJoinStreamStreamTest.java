@@ -51,7 +51,7 @@ class KafkaStreamsLeftJoinStreamStreamTest {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsLeftJoinStreamStreamTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
         inputTopicOne = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
@@ -77,192 +77,126 @@ class KafkaStreamsLeftJoinStreamStreamTest {
     }
 
     @Test
-    void shouldRekeyBothInputTopics() {
-        inputTopicOne.pipeInput("1", buildKafkaPersonValue("Callie", "Acosta"));
-        inputTopicTwo.pipeInput("2", buildKafkaPersonValue("Finnley", "Acosta"));
+    void shouldRekey() {
+        KafkaPerson personLeft = buildKafkaPersonValue("Callie", "Acosta");
+        KafkaPerson personRight = buildKafkaPersonValue("Finnley", "Acosta");
+
+        inputTopicOne.pipeInput("1", personLeft);
+        inputTopicTwo.pipeInput("2", personRight);
+
         List<KeyValue<String, KafkaPerson>> topicOneResults = rekeyInputTopicOne.readKeyValuesToList();
         List<KeyValue<String, KafkaPerson>> topicTwoResults = rekeyInputTopicTwo.readKeyValuesToList();
 
         assertThat(topicOneResults).hasSize(1);
-        assertThat(topicOneResults.get(0).key).isEqualTo("Acosta");
-        assertThat(topicOneResults.get(0).value.getFirstName()).isEqualTo("Callie");
-        assertThat(topicOneResults.get(0).value.getLastName()).isEqualTo("Acosta");
+        assertThat(topicOneResults.get(0)).isEqualTo(KeyValue.pair("Acosta", personLeft));
 
         assertThat(topicTwoResults).hasSize(1);
-        assertThat(topicTwoResults.get(0).key).isEqualTo("Acosta");
-        assertThat(topicTwoResults.get(0).value.getFirstName()).isEqualTo("Finnley");
-        assertThat(topicTwoResults.get(0).value.getLastName()).isEqualTo("Acosta");
+        assertThat(topicTwoResults.get(0)).isEqualTo(KeyValue.pair("Acosta", personRight));
     }
 
     @Test
     void shouldJoinWhenTimeWindowIsRespected() {
+        KafkaPerson personLeftOne = buildKafkaPersonValue("Callie", "Acosta");
+        KafkaPerson personLeftTwo = buildKafkaPersonValue("Oscar", "Rhodes");
+        KafkaPerson personRightOne = buildKafkaPersonValue("Tyra", "Acosta");
+        KafkaPerson personRightTwo = buildKafkaPersonValue("Finnlay", "Rhodes");
+        KafkaPerson personRightThree = buildKafkaPersonValue("Robby", "Acosta");
+
         Instant start = Instant.parse("2000-01-01T01:00:00.00Z");
-        inputTopicOne.pipeInput(new TestRecord<>("1", buildKafkaPersonValue("Callie", "Acosta"), start));
-        inputTopicTwo.pipeInput(new TestRecord<>("2", buildKafkaPersonValue("Zubayr", "Acosta"), start
-                .minus(5, ChronoUnit.MINUTES)));
-        inputTopicTwo.pipeInput(new TestRecord<>("3", buildKafkaPersonValue("Tayyab", "Acosta"), start
-                .minus(1, ChronoUnit.MINUTES)));
-        inputTopicTwo.pipeInput(new TestRecord<>("4", buildKafkaPersonValue("Tyra", "Acosta"), start
-                .plus(1, ChronoUnit.MINUTES)));
-        inputTopicTwo.pipeInput(new TestRecord<>("5", buildKafkaPersonValue("Robby", "Acosta"), start
-                .plus(2, ChronoUnit.MINUTES)));
-
-        List<KeyValue<String, KafkaJoinPersons>> results = joinOutputTopic.readKeyValuesToList();
-
-        assertThat(results).hasSize(4);
-        assertThat(results.get(0).key).isEqualTo("Acosta");
-        assertThat(results.get(0).value.getPersonOne().getFirstName()).isEqualTo("Callie");
-        assertThat(results.get(0).value.getPersonTwo().getFirstName()).isEqualTo("Zubayr");
-
-        assertThat(results.get(1).key).isEqualTo("Acosta");
-        assertThat(results.get(1).value.getPersonOne().getFirstName()).isEqualTo("Callie");
-        assertThat(results.get(1).value.getPersonTwo().getFirstName()).isEqualTo("Tayyab");
-
-        assertThat(results.get(2).key).isEqualTo("Acosta");
-        assertThat(results.get(2).value.getPersonOne().getFirstName()).isEqualTo("Callie");
-        assertThat(results.get(2).value.getPersonTwo().getFirstName()).isEqualTo("Tyra");
-
-        assertThat(results.get(3).key).isEqualTo("Acosta");
-        assertThat(results.get(3).value.getPersonOne().getFirstName()).isEqualTo("Callie");
-        assertThat(results.get(3).value.getPersonTwo().getFirstName()).isEqualTo("Robby");
-
-        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
-        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Callie");
-            assertThat(record.value.getLastName()).isEqualTo("Acosta");
-        }
-
-        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
-        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Zubayr");
-            assertThat(record.value.getLastName()).isEqualTo("Acosta");
-
-            record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Tayyab");
-            assertThat(record.value.getLastName()).isEqualTo("Acosta");
-
-            record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Tyra");
-            assertThat(record.value.getLastName()).isEqualTo("Acosta");
-
-            record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Robby");
-            assertThat(record.value.getLastName()).isEqualTo("Acosta");
-        }
-    }
-
-    @Test
-    void shouldJoinWhenTimeWindowIsRespectedMultipleJoins() {
-        Instant start = Instant.parse("2000-01-01T01:00:00.00Z");
-        inputTopicOne.pipeInput(new TestRecord<>("1", buildKafkaPersonValue("Callie", "Acosta"), start));
-        inputTopicTwo.pipeInput(new TestRecord<>("2", buildKafkaPersonValue("Tyra", "Acosta"), start
-                .plus(1, ChronoUnit.MINUTES)));
-        inputTopicTwo.pipeInput(new TestRecord<>("3", buildKafkaPersonValue("Finnlay", "Rhodes"), start
-                .plus(1, ChronoUnit.MINUTES)
-                .plusSeconds(30)));
-        inputTopicTwo.pipeInput(new TestRecord<>("4", buildKafkaPersonValue("Robby", "Acosta"), start
-                .plus(2, ChronoUnit.MINUTES)));
-        inputTopicOne.pipeInput(new TestRecord<>("5", buildKafkaPersonValue("Oscar", "Rhodes"), start
-                .plus(3, ChronoUnit.MINUTES)));
+        inputTopicOne.pipeInput(new TestRecord<>("1", personLeftOne, start));
+        inputTopicTwo.pipeInput(new TestRecord<>("2", personRightOne, start.plus(1, ChronoUnit.MINUTES)));
+        inputTopicTwo.pipeInput(new TestRecord<>("3", personRightTwo, start.plus(1, ChronoUnit.MINUTES).plusSeconds(30)));
+        inputTopicTwo.pipeInput(new TestRecord<>("4", personRightThree, start.plus(2, ChronoUnit.MINUTES)));
+        inputTopicOne.pipeInput(new TestRecord<>("5", personLeftTwo, start.plus(3, ChronoUnit.MINUTES)));
 
         List<KeyValue<String, KafkaJoinPersons>> results = joinOutputTopic.readKeyValuesToList();
 
         assertThat(results).hasSize(3);
-        assertThat(results.get(0).key).isEqualTo("Acosta");
-        assertThat(results.get(0).value.getPersonOne().getFirstName()).isEqualTo("Callie");
-        assertThat(results.get(0).value.getPersonTwo().getFirstName()).isEqualTo("Tyra");
+        assertThat(results.get(0)).isEqualTo(KeyValue.pair("Acosta", KafkaJoinPersons.newBuilder()
+                .setPersonOne(personLeftOne)
+                .setPersonTwo(personRightOne)
+                .build()));
 
-        assertThat(results.get(1).key).isEqualTo("Acosta");
-        assertThat(results.get(1).value.getPersonOne().getFirstName()).isEqualTo("Callie");
-        assertThat(results.get(1).value.getPersonTwo().getFirstName()).isEqualTo("Robby");
+        assertThat(results.get(1)).isEqualTo(KeyValue.pair("Acosta", KafkaJoinPersons.newBuilder()
+                .setPersonOne(personLeftOne)
+                .setPersonTwo(personRightThree)
+                .build()));
 
-        assertThat(results.get(2).key).isEqualTo("Rhodes");
-        assertThat(results.get(2).value.getPersonOne().getFirstName()).isEqualTo("Oscar");
-        assertThat(results.get(2).value.getPersonTwo().getFirstName()).isEqualTo("Finnlay");
+        assertThat(results.get(2)).isEqualTo(KeyValue.pair("Rhodes", KafkaJoinPersons.newBuilder()
+                .setPersonOne(personLeftTwo)
+                .setPersonTwo(personRightTwo)
+                .build()));
 
+        // Test state stores content
         WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Callie");
-            assertThat(record.value.getLastName()).isEqualTo("Acosta");
-
-            record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Oscar");
-            assertThat(record.value.getLastName()).isEqualTo("Rhodes");
+            assertThat(iterator.next().value).isEqualTo(personLeftOne);
+            assertThat(iterator.next().value).isEqualTo(personLeftTwo);
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Tyra");
-            assertThat(record.value.getLastName()).isEqualTo("Acosta");
-
-            record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Robby");
-            assertThat(record.value.getLastName()).isEqualTo("Acosta");
-
-            record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Finnlay");
-            assertThat(record.value.getLastName()).isEqualTo("Rhodes");
+            assertThat(iterator.next().value).isEqualTo(personRightOne);
+            assertThat(iterator.next().value).isEqualTo(personRightThree);
+            assertThat(iterator.next().value).isEqualTo(personRightTwo);
         }
     }
 
     @Test
-    void shouldNotJoinWhenTimeWindowIsNotRespected() {
+    void shouldEmitLeftPersonWhenTimeWindowIsNotRespected() {
+        KafkaPerson personLeftOne = buildKafkaPersonValue("Callie", "Acosta");
+        KafkaPerson personRightOne = buildKafkaPersonValue("Zubayr", "Acosta");
+
         Instant start = Instant.parse("2000-01-01T01:00:00.00Z");
-        inputTopicOne.pipeInput(new TestRecord<>("1", buildKafkaPersonValue("Callie", "Acosta"), start));
-        inputTopicTwo.pipeInput(new TestRecord<>("2", buildKafkaPersonValue("Zubayr", "Acosta"), start
-                .minus(6, ChronoUnit.MINUTES)));
-        inputTopicTwo.pipeInput(new TestRecord<>("3", buildKafkaPersonValue("Robby", "Acosta"), start
-                .plus(3, ChronoUnit.MINUTES)));
+        inputTopicOne.pipeInput(new TestRecord<>("1", personLeftOne, start));
+        inputTopicTwo.pipeInput(new TestRecord<>("2", personRightOne, start.plus(3, ChronoUnit.MINUTES)));
 
         List<KeyValue<String, KafkaJoinPersons>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertThat(results).isEmpty();
+        assertThat(results).hasSize(1);
+        assertThat(results.get(0)).isEqualTo(KeyValue.pair("Acosta", KafkaJoinPersons.newBuilder()
+                .setPersonOne(personLeftOne)
+                .setPersonTwo(null)
+                .build()));
 
+        // Test state stores content
         WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Callie");
-            assertThat(record.value.getLastName()).isEqualTo("Acosta");
+            assertThat(iterator.next().value).isEqualTo(personLeftOne);
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Zubayr");
-            assertThat(record.value.getLastName()).isEqualTo("Acosta");
-
-            record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Robby");
-            assertThat(record.value.getLastName()).isEqualTo("Acosta");
+            assertThat(iterator.next().value).isEqualTo(personRightOne);
         }
     }
 
     @Test
-    void shouldNotJoinWhenNoMatchingValue() {
+    void shouldEmitLeftPersonWhenNoMatchingValue() {
+        KafkaPerson personLeftOne = buildKafkaPersonValue("Callie", "Acosta");
+        KafkaPerson personRightOne = buildKafkaPersonValue("Zubayr", "Rhodes");
+
         Instant start = Instant.parse("2000-01-01T01:00:00.00Z");
-        inputTopicOne.pipeInput(new TestRecord<>("1", buildKafkaPersonValue("Callie", "Acosta"), start));
-        inputTopicTwo.pipeInput(new TestRecord<>("2", buildKafkaPersonValue("Zubayr", "Rhodes"), start));
+        inputTopicOne.pipeInput(new TestRecord<>("1", personLeftOne, start));
+        inputTopicTwo.pipeInput(new TestRecord<>("2", personRightOne, start.plus(3, ChronoUnit.MINUTES)));
 
         List<KeyValue<String, KafkaJoinPersons>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertThat(results).isEmpty();
+        assertThat(results).hasSize(1);
+        assertThat(results.get(0)).isEqualTo(KeyValue.pair("Acosta", KafkaJoinPersons.newBuilder()
+                .setPersonOne(personLeftOne)
+                .setPersonTwo(null)
+                .build()));
 
+        // Test state stores content
         WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Callie");
-            assertThat(record.value.getLastName()).isEqualTo("Acosta");
+            assertThat(iterator.next().value).isEqualTo(personLeftOne);
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> record = iterator.next();
-            assertThat(record.value.getFirstName()).isEqualTo("Zubayr");
-            assertThat(record.value.getLastName()).isEqualTo("Rhodes");
+            assertThat(iterator.next().value).isEqualTo(personRightOne);
         }
     }
 

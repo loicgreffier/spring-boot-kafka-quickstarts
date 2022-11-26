@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -42,7 +43,7 @@ class KafkaStreamsRepartitionTest {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsRepartitionTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
@@ -60,11 +61,13 @@ class KafkaStreamsRepartitionTest {
 
     @Test
     void shouldRepartitionRecordsInNewTopic() {
-        inputTopic.pipeInput("1", buildKafkaPersonValue());
+        KeyValue<String, KafkaPerson> person = KeyValue.pair("1", buildKafkaPersonValue());
+        inputTopic.pipeKeyValueList(Collections.singletonList(person));
+
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
         assertThat(results).hasSize(1);
-        assertThat(results.get(0).key).isEqualTo("1");
+        assertThat(results.get(0)).isEqualTo(person);
     }
 
     private KafkaPerson buildKafkaPersonValue() {
@@ -72,7 +75,7 @@ class KafkaStreamsRepartitionTest {
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .setNationality(CountryCode.FR)
                 .build();
     }

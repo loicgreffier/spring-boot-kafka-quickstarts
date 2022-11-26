@@ -40,7 +40,7 @@ class KafkaProducerAvroTest {
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 
         Future<RecordMetadata> record = producerRunner.send(message);
@@ -61,7 +61,7 @@ class KafkaProducerAvroTest {
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 
         Future<RecordMetadata> record = producerRunner.send(message);

@@ -46,7 +46,7 @@ class KafkaStreamsLeftJoinStreamTableTest {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsLeftJoinStreamTableTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
         personInputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
@@ -70,38 +70,42 @@ class KafkaStreamsLeftJoinStreamTableTest {
 
     @Test
     void shouldRekey() {
-        personInputTopic.pipeInput("1", buildKafkaPersonValue());
+        KafkaPerson person = buildKafkaPersonValue();
+        personInputTopic.pipeInput("1", person);
 
         List<KeyValue<String, KafkaPerson>> results = personRekeyOutputTopic.readKeyValuesToList();
 
         assertThat(results).hasSize(1);
         assertThat(results.get(0).key).isEqualTo("FR");
-        assertThat(results.get(0).value.getFirstName()).isEqualTo("First name");
-        assertThat(results.get(0).value.getLastName()).isEqualTo("Last name");
+        assertThat(results.get(0).value).isEqualTo(person);
     }
 
     @Test
     void shouldJoinPersonToCountry() {
-        countryInputTopic.pipeInput("FR", buildKafkaCountryValue());
-        personInputTopic.pipeInput("1", buildKafkaPersonValue());
+        KafkaCountry country = buildKafkaCountryValue();
+        KafkaPerson person = buildKafkaPersonValue();
+
+        countryInputTopic.pipeInput("FR", country);
+        personInputTopic.pipeInput("1", person);
 
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
 
         assertThat(results).hasSize(1);
         assertThat(results.get(0).key).isEqualTo("FR");
-        assertThat(results.get(0).value.getPerson().getId()).isEqualTo(1L);
-        assertThat(results.get(0).value.getCountry().getName()).isEqualTo("France");
+        assertThat(results.get(0).value.getPerson()).isEqualTo(person);
+        assertThat(results.get(0).value.getCountry()).isEqualTo(country);
     }
 
     @Test
     void shouldEmitValueEvenIfNoCountry() {
-        personInputTopic.pipeInput("1", buildKafkaPersonValue());
+        KafkaPerson person = buildKafkaPersonValue();
+        personInputTopic.pipeInput("1", person);
 
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
 
         assertThat(results).hasSize(1);
         assertThat(results.get(0).key).isEqualTo("FR");
-        assertThat(results.get(0).value.getPerson().getId()).isEqualTo(1L);
+        assertThat(results.get(0).value.getPerson()).isEqualTo(person);
         assertThat(results.get(0).value.getCountry()).isNull();
     }
 
@@ -110,7 +114,7 @@ class KafkaStreamsLeftJoinStreamTableTest {
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .setNationality(CountryCode.FR)
                 .build();
     }

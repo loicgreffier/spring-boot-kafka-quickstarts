@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -46,7 +45,7 @@ class KafkaStreamsAggregateTest {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsAggregateTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
@@ -67,6 +66,8 @@ class KafkaStreamsAggregateTest {
         inputTopic.pipeKeyValueList(buildKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+
+        assertThat(results).hasSize(6);
         assertThat(results.get(0).key).isEqualTo("Abbott");
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott")).hasSize(1);
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
@@ -103,13 +104,13 @@ class KafkaStreamsAggregateTest {
     }
 
     private List<KeyValue<String, KafkaPerson>> buildKafkaPersonRecords() {
-        return Arrays.asList(
-                KeyValue.pair("1", KafkaPerson.newBuilder().setId(1L).setFirstName("Aaran").setLastName("Abbott").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("2", KafkaPerson.newBuilder().setId(2L).setFirstName("Brendan").setLastName("Abbott").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("3", KafkaPerson.newBuilder().setId(3L).setFirstName("Bret").setLastName("Holman").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("4", KafkaPerson.newBuilder().setId(2L).setFirstName("Daimhin").setLastName("Abbott").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("5", KafkaPerson.newBuilder().setId(3L).setFirstName("Jiao").setLastName("Patton").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("6", KafkaPerson.newBuilder().setId(3L).setFirstName("Jude").setLastName("Holman").setBirthDate(Instant.now()).build())
+        return List.of(
+                KeyValue.pair("1", KafkaPerson.newBuilder().setId(1L).setFirstName("Aaran").setLastName("Abbott").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).build()),
+                KeyValue.pair("2", KafkaPerson.newBuilder().setId(2L).setFirstName("Brendan").setLastName("Abbott").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).build()),
+                KeyValue.pair("3", KafkaPerson.newBuilder().setId(3L).setFirstName("Bret").setLastName("Holman").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).build()),
+                KeyValue.pair("4", KafkaPerson.newBuilder().setId(2L).setFirstName("Daimhin").setLastName("Abbott").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).build()),
+                KeyValue.pair("5", KafkaPerson.newBuilder().setId(3L).setFirstName("Jiao").setLastName("Patton").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).build()),
+                KeyValue.pair("6", KafkaPerson.newBuilder().setId(3L).setFirstName("Jude").setLastName("Holman").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).build())
         );
     }
 }

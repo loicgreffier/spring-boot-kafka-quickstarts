@@ -17,9 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,7 +39,7 @@ class KafkaStreamsFilterTest {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsFilterTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
@@ -59,7 +57,9 @@ class KafkaStreamsFilterTest {
 
     @Test
     void shouldFilterBadLastName() {
-        inputTopic.pipeInput("1", buildKafkaPersonValue("First name", "Last name"));
+        KeyValue<String, KafkaPerson> person = KeyValue.pair("1", buildKafkaPersonValue("First name", "Last name"));
+        inputTopic.pipeKeyValueList(Collections.singletonList(person));
+
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
         assertThat(results).isEmpty();
@@ -67,7 +67,9 @@ class KafkaStreamsFilterTest {
 
     @Test
     void shouldFilterBadFirstName() {
-        inputTopic.pipeInput("1", buildKafkaPersonValue("Diego", "Abbott"));
+        KeyValue<String, KafkaPerson> person = KeyValue.pair("1", buildKafkaPersonValue("Diego", "Abbott"));
+        inputTopic.pipeKeyValueList(Collections.singletonList(person));
+
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
         assertThat(results).isEmpty();
@@ -75,14 +77,13 @@ class KafkaStreamsFilterTest {
 
     @Test
     void shouldNotFilter() {
-        inputTopic.pipeInput("1", buildKafkaPersonValue("Akan", "Abbott"));
+        KeyValue<String, KafkaPerson> person = KeyValue.pair("1", buildKafkaPersonValue("Akan", "Abbott"));
+        inputTopic.pipeKeyValueList(Collections.singletonList(person));
+
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
         assertThat(results).hasSize(1);
-        assertThat(results.get(0).key).isEqualTo("1");
-        assertThat(results.get(0).value.getId()).isEqualTo(1L);
-        assertThat(results.get(0).value.getFirstName()).isEqualTo("Akan");
-        assertThat(results.get(0).value.getLastName()).isEqualTo("Abbott");
+        assertThat(results.get(0)).isEqualTo(person);
     }
 
     private KafkaPerson buildKafkaPersonValue(String firstName, String lastName) {
@@ -90,7 +91,7 @@ class KafkaStreamsFilterTest {
                 .setId(1L)
                 .setFirstName(firstName)
                 .setLastName(lastName)
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build();
     }
 }

@@ -42,7 +42,7 @@ class KafkaConsumerAvroTest {
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -60,7 +60,7 @@ class KafkaConsumerAvroTest {
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));

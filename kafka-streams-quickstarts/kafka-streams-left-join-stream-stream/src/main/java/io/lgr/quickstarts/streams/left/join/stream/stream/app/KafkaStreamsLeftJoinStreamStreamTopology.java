@@ -40,8 +40,7 @@ public class KafkaStreamsLeftJoinStreamStreamTopology {
                                     .build();
                         },
                         JoinWindows
-                                .ofTimeDifferenceAndGrace(Duration.ofMinutes(2), Duration.ofSeconds(30))
-                                .before(Duration.ofMinutes(5)),
+                                .ofTimeDifferenceAndGrace(Duration.ofMinutes(2), Duration.ofSeconds(30)),
                         StreamJoined
                                 .<String, KafkaPerson, KafkaPerson>with(Serdes.String(), CustomSerdes.getValueSerdes(), CustomSerdes.getValueSerdes())
                                 .withName(Topic.PERSON_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC.toString())

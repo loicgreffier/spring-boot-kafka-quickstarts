@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -43,7 +44,7 @@ class KafkaStreamsBranchTest {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsBranchTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
@@ -67,62 +68,45 @@ class KafkaStreamsBranchTest {
 
     @Test
     void shouldBranchToTopicA() {
-        KafkaPerson person = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("Calder")
-                .setLastName("Acosta")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopic.pipeInput("1", person);
+        KeyValue<String, KafkaPerson> person = KeyValue.pair("1", buildKafkaPersonValue("Calder", "Acosta"));
+        inputTopic.pipeKeyValueList(Collections.singletonList(person));
 
         List<KeyValue<String, KafkaPerson>> results = outputTopicA.readKeyValuesToList();
 
+        KeyValue<String, KafkaPerson> expected = KeyValue.pair("1", buildKafkaPersonValue("CALDER", "ACOSTA"));
+
         assertThat(results).hasSize(1);
-        assertThat(results.get(0).key).isEqualTo("1");
-        assertThat(results.get(0).value.getId()).isEqualTo(1L);
-        assertThat(results.get(0).value.getFirstName()).isEqualTo("CALDER");
-        assertThat(results.get(0).value.getLastName()).isEqualTo("ACOSTA");
+        assertThat(results.get(0)).isEqualTo(expected);
     }
 
     @Test
     void shouldBranchToTopicB() {
-        KafkaPerson person = KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("Abir")
-                .setLastName("Barron")
-                .setBirthDate(Instant.now())
-                .build();
-
-        inputTopic.pipeInput("1", person);
+        KeyValue<String, KafkaPerson> person = KeyValue.pair("1", buildKafkaPersonValue("Abir", "Barron"));
+        inputTopic.pipeKeyValueList(Collections.singletonList(person));
 
         List<KeyValue<String, KafkaPerson>> results = outputTopicB.readKeyValuesToList();
 
         assertThat(results).hasSize(1);
-        assertThat(results.get(0).key).isEqualTo("1");
-        assertThat(results.get(0).value.getId()).isEqualTo(1L);
-        assertThat(results.get(0).value.getFirstName()).isEqualTo("Abir");
-        assertThat(results.get(0).value.getLastName()).isEqualTo("Barron");
+        assertThat(results.get(0)).isEqualTo(person);
     }
 
     @Test
     void shouldBranchToDefaultTopic() {
-        inputTopic.pipeInput("1", buildKafkaPersonValue());
+        KeyValue<String, KafkaPerson> person = KeyValue.pair("1", buildKafkaPersonValue("Mathew", "Jennings"));
+        inputTopic.pipeKeyValueList(Collections.singletonList(person));
+
         List<KeyValue<String, KafkaPerson>> results = outputTopicDefault.readKeyValuesToList();
 
         assertThat(results).hasSize(1);
-        assertThat(results.get(0).key).isEqualTo("1");
-        assertThat(results.get(0).value.getId()).isEqualTo(1L);
-        assertThat(results.get(0).value.getFirstName()).isEqualTo("Mathew");
-        assertThat(results.get(0).value.getLastName()).isEqualTo("Jennings");
+        assertThat(results.get(0)).isEqualTo(person);
     }
 
-    private KafkaPerson buildKafkaPersonValue() {
+    private KafkaPerson buildKafkaPersonValue(String firstName, String lastName) {
         return KafkaPerson.newBuilder()
                 .setId(1L)
-                .setFirstName("Mathew")
-                .setLastName("Jennings")
-                .setBirthDate(Instant.now())
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build();
     }
 }

@@ -47,7 +47,7 @@ class KafkaStreamsCogroupTest {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsCogroupTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
         inputTopicOne = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
@@ -67,11 +67,12 @@ class KafkaStreamsCogroupTest {
     }
 
     @Test
-    void shouldAggregateFirstNamesByLastNameStreamOneOnly() {
+    void shouldAggregateFirstNamesByLastNameStreamOne() {
         inputTopicOne.pipeKeyValueList(buildFirstKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
 
+        assertThat(results).hasSize(3);
         assertThat(results.get(0).key).isEqualTo("Abbott");
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott")).hasSize(1);
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
@@ -92,10 +93,12 @@ class KafkaStreamsCogroupTest {
     }
 
     @Test
-    void shouldAggregateFirstNamesByLastNameStreamTwoOnly() {
+    void shouldAggregateFirstNamesByLastNameStreamTwo() {
         inputTopicTwo.pipeKeyValueList(buildFirstKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+
+        assertThat(results).hasSize(3);
         assertThat(results.get(0).key).isEqualTo("Abbott");
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott")).hasSize(1);
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
@@ -121,6 +124,8 @@ class KafkaStreamsCogroupTest {
         inputTopicTwo.pipeKeyValueList(buildSecondKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+
+        assertThat(results).hasSize(6);
         assertThat(results.get(0).key).isEqualTo("Abbott");
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott")).hasSize(1);
         assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
@@ -158,17 +163,17 @@ class KafkaStreamsCogroupTest {
 
     private List<KeyValue<String, KafkaPerson>> buildFirstKafkaPersonRecords() {
         return Arrays.asList(
-                KeyValue.pair("1", KafkaPerson.newBuilder().setId(1L).setFirstName("Aaran").setLastName("Abbott").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("2", KafkaPerson.newBuilder().setId(2L).setFirstName("Brendan").setLastName("Abbott").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("3", KafkaPerson.newBuilder().setId(3L).setFirstName("Bret").setLastName("Holman").setBirthDate(Instant.now()).build())
+                KeyValue.pair("1", KafkaPerson.newBuilder().setId(1L).setFirstName("Aaran").setLastName("Abbott").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).build()),
+                KeyValue.pair("2", KafkaPerson.newBuilder().setId(2L).setFirstName("Brendan").setLastName("Abbott").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).build()),
+                KeyValue.pair("3", KafkaPerson.newBuilder().setId(3L).setFirstName("Bret").setLastName("Holman").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).build())
         );
     }
 
     private List<KeyValue<String, KafkaPerson>> buildSecondKafkaPersonRecords() {
         return Arrays.asList(
-                KeyValue.pair("4", KafkaPerson.newBuilder().setId(1L).setFirstName("Daimhin").setLastName("Abbott").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("5", KafkaPerson.newBuilder().setId(2L).setFirstName("Jude").setLastName("Holman").setBirthDate(Instant.now()).build()),
-                KeyValue.pair("6", KafkaPerson.newBuilder().setId(3L).setFirstName("Kacey").setLastName("Wyatt").setBirthDate(Instant.now()).build())
+                KeyValue.pair("4", KafkaPerson.newBuilder().setId(1L).setFirstName("Daimhin").setLastName("Abbott").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).build()),
+                KeyValue.pair("5", KafkaPerson.newBuilder().setId(2L).setFirstName("Jude").setLastName("Holman").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).build()),
+                KeyValue.pair("6", KafkaPerson.newBuilder().setId(3L).setFirstName("Kacey").setLastName("Wyatt").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).build())
         );
     }
 }

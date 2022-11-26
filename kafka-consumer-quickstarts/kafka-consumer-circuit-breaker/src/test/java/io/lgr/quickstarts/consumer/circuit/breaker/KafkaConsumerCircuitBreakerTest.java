@@ -41,7 +41,7 @@ class KafkaConsumerCircuitBreakerTest {
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -59,14 +59,14 @@ class KafkaConsumerCircuitBreakerTest {
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 
         ConsumerRecord<String, KafkaPerson> message2 = new ConsumerRecord<>(Topic.PERSON_TOPIC.toString(), 0, 2, "2", KafkaPerson.newBuilder()
                 .setId(2L)
                 .setFirstName("First name")
                 .setLastName("Last name")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));

@@ -42,7 +42,7 @@ class KafkaStreamsSelectKeyTest {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsSelectKeyTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
@@ -60,11 +60,13 @@ class KafkaStreamsSelectKeyTest {
 
     @Test
     void shouldSelectLastNameAsNewKey() {
-        inputTopic.pipeInput("1", buildKafkaPersonValue());
+        KafkaPerson person = buildKafkaPersonValue();
+        inputTopic.pipeInput("1", person);
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
         assertThat(results).hasSize(1);
         assertThat(results.get(0).key).isEqualTo("Last name");
+        assertThat(results.get(0).value).isEqualTo(person);
     }
 
     private KafkaPerson buildKafkaPersonValue() {
@@ -72,7 +74,7 @@ class KafkaStreamsSelectKeyTest {
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .setNationality(CountryCode.FR)
                 .build();
     }

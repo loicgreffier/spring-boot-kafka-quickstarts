@@ -20,21 +20,21 @@ class FirstNameByLastNameAggregatorTest {
                 .setId(1L)
                 .setFirstName("Aaran")
                 .setLastName("Abbott")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build(), kafkaPersonGroup);
 
         firstNameByLastNameAggregator.apply("Abbott", KafkaPerson.newBuilder()
                 .setId(2L)
                 .setFirstName("Brendan")
                 .setLastName("Abbott")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build(), kafkaPersonGroup);
 
         firstNameByLastNameAggregator.apply("Holman", KafkaPerson.newBuilder()
                 .setId(3L)
                 .setFirstName("Bret")
                 .setLastName("Holman")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build(), kafkaPersonGroup);
 
         assertThat(kafkaPersonGroup.getFirstNameByLastName()).hasSize(2);

@@ -46,7 +46,7 @@ class KafkaStreamsReduceTest {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsReduceTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
@@ -67,6 +67,8 @@ class KafkaStreamsReduceTest {
         inputTopic.pipeKeyValueList(buildKafkaPersonRecords());
 
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+
+        assertThat(results).hasSize(11);
         assertThat(results.get(0).key).isEqualTo(CountryCode.FR.toString());
         assertThat(results.get(0).value.getId()).isEqualTo(1);
 

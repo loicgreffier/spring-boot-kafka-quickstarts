@@ -2,7 +2,7 @@
 
 This module shows:
 - Kafka Streams API: `join()` between KStream and KStream, `selectKey()`, `peek()`
-- sliding time windows in join operations (join windows)
+- sliding time windows
 - unit tests with Topology Test Driver
 
 This module does:

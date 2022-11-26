@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -47,7 +46,7 @@ class KafkaStreamsCountTest {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsCountTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
@@ -68,6 +67,8 @@ class KafkaStreamsCountTest {
         inputTopic.pipeKeyValueList(buildKafkaPersonRecords());
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
+
+        assertThat(results).hasSize(8);
         assertThat(results.get(0).key).isEqualTo(CountryCode.FR.toString());
         assertThat(results.get(0).value).isEqualTo(1);
 
@@ -103,15 +104,15 @@ class KafkaStreamsCountTest {
     }
 
     private List<KeyValue<String, KafkaPerson>> buildKafkaPersonRecords() {
-        return Arrays.asList(
-                KeyValue.pair("1", KafkaPerson.newBuilder().setId(1L).setFirstName("Aaran").setLastName("Abbott").setBirthDate(Instant.now()).setNationality(CountryCode.FR).build()),
-                KeyValue.pair("2", KafkaPerson.newBuilder().setId(2L).setFirstName("Brendan").setLastName("Abbott").setBirthDate(Instant.now()).setNationality(CountryCode.CH).build()),
-                KeyValue.pair("3", KafkaPerson.newBuilder().setId(3L).setFirstName("Bret").setLastName("Holman").setBirthDate(Instant.now()).setNationality(CountryCode.FR).build()),
-                KeyValue.pair("4", KafkaPerson.newBuilder().setId(4L).setFirstName("Daimhin").setLastName("Abbott").setBirthDate(Instant.now()).setNationality(CountryCode.ES).build()),
-                KeyValue.pair("5", KafkaPerson.newBuilder().setId(5L).setFirstName("Jiao").setLastName("Patton").setBirthDate(Instant.now()).setNationality(CountryCode.GB).build()),
-                KeyValue.pair("6", KafkaPerson.newBuilder().setId(6L).setFirstName("Acevedo").setLastName("Holman").setBirthDate(Instant.now()).setNationality(CountryCode.CH).build()),
-                KeyValue.pair("7", KafkaPerson.newBuilder().setId(7L).setFirstName("Bennett").setLastName("Patton").setBirthDate(Instant.now()).setNationality(CountryCode.DE).build()),
-                KeyValue.pair("8", KafkaPerson.newBuilder().setId(8L).setFirstName("Donaldson").setLastName("Holman").setBirthDate(Instant.now()).setNationality(CountryCode.IT).build())
+        return List.of(
+                KeyValue.pair("1", KafkaPerson.newBuilder().setId(1L).setFirstName("Aaran").setLastName("Abbott").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).setNationality(CountryCode.FR).build()),
+                KeyValue.pair("2", KafkaPerson.newBuilder().setId(2L).setFirstName("Brendan").setLastName("Abbott").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).setNationality(CountryCode.CH).build()),
+                KeyValue.pair("3", KafkaPerson.newBuilder().setId(3L).setFirstName("Bret").setLastName("Holman").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).setNationality(CountryCode.FR).build()),
+                KeyValue.pair("4", KafkaPerson.newBuilder().setId(4L).setFirstName("Daimhin").setLastName("Abbott").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).setNationality(CountryCode.ES).build()),
+                KeyValue.pair("5", KafkaPerson.newBuilder().setId(5L).setFirstName("Jiao").setLastName("Patton").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).setNationality(CountryCode.GB).build()),
+                KeyValue.pair("6", KafkaPerson.newBuilder().setId(6L).setFirstName("Acevedo").setLastName("Holman").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).setNationality(CountryCode.CH).build()),
+                KeyValue.pair("7", KafkaPerson.newBuilder().setId(7L).setFirstName("Bennett").setLastName("Patton").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).setNationality(CountryCode.DE).build()),
+                KeyValue.pair("8", KafkaPerson.newBuilder().setId(8L).setFirstName("Donaldson").setLastName("Holman").setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z")).setNationality(CountryCode.IT).build())
         );
     }
 }

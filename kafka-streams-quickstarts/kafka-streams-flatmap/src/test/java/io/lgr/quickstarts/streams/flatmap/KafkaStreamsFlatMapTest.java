@@ -41,7 +41,7 @@ class KafkaStreamsFlatMapTest {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsFlatMapTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.ofEpochMilli(1577836800000L));
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
@@ -60,6 +60,7 @@ class KafkaStreamsFlatMapTest {
     @Test
     void shouldChangeKeyAndFlatMapFirstNameAndLastName() {
         inputTopic.pipeInput("1", buildKafkaPersonValue());
+
         List<KeyValue<String, String>> results = outputTopic.readKeyValuesToList();
 
         assertThat(results).hasSize(2);
@@ -74,7 +75,7 @@ class KafkaStreamsFlatMapTest {
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
-                .setBirthDate(Instant.now())
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build();
     }
 }
