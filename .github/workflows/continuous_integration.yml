@@ -28,7 +28,7 @@ jobs:
       - name: Test with Maven
         run: mvn -B test
 
-      - name: Build with Jib
+      - name: Build and Publish Docker
         run: mvn -B -DskipTests package jib:build -Djib.to.auth.username=$DOCKER_USER -Djib.to.auth.password=$DOCKER_TOKEN
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
