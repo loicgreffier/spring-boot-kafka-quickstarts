@@ -7,7 +7,7 @@ This module shows:
 
 This module does:
 - consume <String,KafkaPerson> records from a topic named PERSON_TOPIC
-- handle deserialization exceptions and seek the poison pill
+- handle deserialization exceptions and seek the poison pill. If the poison pill is in the middle of a batch of good records, the poll method is smart enough to firstly return the good records (first loop) then throw the deserialization exception (second loop) that we handle by seeking to the next offset. No good records will be lost
 
 ## Requirements
 
