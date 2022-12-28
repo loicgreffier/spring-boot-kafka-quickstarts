@@ -37,7 +37,7 @@ class KafkaConsumerAvroTest {
     }
 
     @Test
-    void testConsumptionSuccess() {
+    void shouldConsumeSuccessfully() {
         ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(Topic.PERSON_TOPIC.toString(), 0, 0, "1", KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
@@ -55,7 +55,7 @@ class KafkaConsumerAvroTest {
     }
 
     @Test
-    void testConsumptionFailedOnPoisonPill() {
+    void shouldFailOnPoisonPill() {
         ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(Topic.PERSON_TOPIC.toString(), 0, 0, "1", KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")

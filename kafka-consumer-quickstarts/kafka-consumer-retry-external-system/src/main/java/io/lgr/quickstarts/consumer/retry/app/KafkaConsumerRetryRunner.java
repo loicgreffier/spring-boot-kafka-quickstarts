@@ -3,6 +3,7 @@ package io.lgr.quickstarts.consumer.retry.app;
 import io.lgr.quickstarts.consumer.retry.constants.Topic;
 import io.lgr.quickstarts.consumer.retry.properties.ConsumerProperties;
 import io.lgr.quickstarts.consumer.retry.services.ExternalService;
+import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.*;
@@ -12,7 +13,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;

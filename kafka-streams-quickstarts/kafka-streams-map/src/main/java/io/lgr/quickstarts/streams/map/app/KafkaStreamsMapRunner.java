@@ -2,6 +2,7 @@ package io.lgr.quickstarts.streams.map.app;
 
 import io.lgr.quickstarts.streams.map.properties.StreamsProperties;
 import io.lgr.quickstarts.streams.map.serdes.CustomSerdes;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -13,8 +14,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PreDestroy;
 
 @Slf4j
 @Component

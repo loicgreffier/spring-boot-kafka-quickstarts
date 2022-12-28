@@ -48,7 +48,7 @@ class KafkaConsumerRetryTest {
     }
 
     @Test
-    void testConsumptionSuccess() {
+    void shouldConsumeSuccessfully() {
         ConsumerRecord<String, String> message = new ConsumerRecord<>(Topic.STRING_TOPIC.toString(), 0, 0, "1", "Message 1");
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -62,7 +62,7 @@ class KafkaConsumerRetryTest {
     }
 
     @Test
-    void testRewindToOffsetOnExternalSystemError() throws Exception {
+    void shouldRewindOffsetOnExternalSystemError() throws Exception {
         ConsumerRecord<String, String> message = new ConsumerRecord<>(Topic.STRING_TOPIC.toString(), 0, 0, "1", "Message 1");
         ConsumerRecord<String, String> message2 = new ConsumerRecord<>(Topic.STRING_TOPIC.toString(), 0, 1, "2", "Message 2");
         ConsumerRecord<String, String> message3 = new ConsumerRecord<>(Topic.STRING_TOPIC.toString(), 0, 2, "3", "Message 3");
@@ -89,7 +89,7 @@ class KafkaConsumerRetryTest {
     }
 
     @Test
-    void testRewindToEarliestOnExternalSystemError() throws Exception {
+    void shouldRewindToEarliestOnExternalSystemError() throws Exception {
         ConsumerRecord<String, String> message = new ConsumerRecord<>(Topic.STRING_TOPIC.toString(), 0, 0, "1", "Message 1");
         for (int i = 0; i < 2; i++) {
             mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -107,7 +107,7 @@ class KafkaConsumerRetryTest {
     }
 
     @Test
-    void testRewindToLatestOnExternalSystemError() throws Exception {
+    void shouldRewindToLatestOnExternalSystemError() throws Exception {
         ConsumerProperties consumerProperties = new ConsumerProperties();
         consumerProperties.getProperties().put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, OffsetResetStrategy.LATEST.toString());
         consumerRunner = new KafkaConsumerRetryRunner(mockConsumer, externalService, consumerProperties);

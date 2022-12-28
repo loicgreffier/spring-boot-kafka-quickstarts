@@ -3,6 +3,7 @@ package io.lgr.quickstarts.streams.print.app;
 import io.lgr.quickstarts.streams.print.properties.ApplicationProperties;
 import io.lgr.quickstarts.streams.print.properties.StreamsProperties;
 import io.lgr.quickstarts.streams.print.serdes.CustomSerdes;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -15,7 +16,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

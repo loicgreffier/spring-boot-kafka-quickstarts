@@ -36,7 +36,7 @@ class KafkaConsumerCircuitBreakerTest {
     }
 
     @Test
-    void testConsumptionSuccess() {
+    void shouldConsumeSuccessfully() {
         ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(Topic.PERSON_TOPIC.toString(), 0, 0, "1", KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
@@ -54,7 +54,7 @@ class KafkaConsumerCircuitBreakerTest {
     }
 
     @Test
-    void testCircuitBreaker() {
+    void shouldBreakCircuitOnPoisonPill() {
         ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(Topic.PERSON_TOPIC.toString(), 0, 0, "1", KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")

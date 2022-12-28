@@ -18,7 +18,7 @@ class KafkaProducerSimpleTest {
     private MockProducer<String, String> mockProducer;
 
     @Test
-    void testSendSuccess() throws ExecutionException, InterruptedException {
+    void shouldSendSuccessfully() throws ExecutionException, InterruptedException {
         mockProducer = new MockProducer<>(true, new StringSerializer(), new StringSerializer());
         producerRunner = new KafkaProducerSimpleRunner(mockProducer);
 
@@ -33,7 +33,7 @@ class KafkaProducerSimpleTest {
     }
 
     @Test
-    void testSendFailure() {
+    void shouldSendWithFailure() {
         mockProducer = new MockProducer<>(false, new StringSerializer(), new StringSerializer());
         producerRunner = new KafkaProducerSimpleRunner(mockProducer);
 

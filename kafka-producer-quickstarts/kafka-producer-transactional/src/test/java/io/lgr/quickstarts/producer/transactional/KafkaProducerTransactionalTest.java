@@ -18,7 +18,7 @@ class KafkaProducerTransactionalTest {
     private MockProducer<String, String> mockProducer;
 
     @Test
-    void testTransactionAborted() {
+    void shouldAbortTransaction() {
         mockProducer = new MockProducer<>(true, new StringSerializer(), new StringSerializer());
         mockProducer.initTransactions();
         producerRunner = new KafkaProducerTransactionalRunner(mockProducer);
@@ -35,7 +35,7 @@ class KafkaProducerTransactionalTest {
     }
 
     @Test
-    void testTransactionCommitted() {
+    void shouldCommitTransaction() {
         mockProducer = new MockProducer<>(true, new StringSerializer(), new StringSerializer());
         mockProducer.initTransactions();
         producerRunner = new KafkaProducerTransactionalRunner(mockProducer);

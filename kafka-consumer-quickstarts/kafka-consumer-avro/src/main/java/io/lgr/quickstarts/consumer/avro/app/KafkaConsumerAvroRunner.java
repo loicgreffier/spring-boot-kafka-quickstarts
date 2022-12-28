@@ -2,6 +2,7 @@ package io.lgr.quickstarts.consumer.avro.app;
 
 import io.lgr.quickstarts.avro.KafkaPerson;
 import io.lgr.quickstarts.consumer.avro.constants.Topic;
+import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.CommitFailedException;
@@ -9,12 +10,10 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.WakeupException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.Collections;
 
@@ -67,7 +66,6 @@ public class KafkaConsumerAvroRunner implements ApplicationRunner {
 
     @PreDestroy
     public void preDestroy() {
-
         kafkaConsumer.wakeup();
     }
 }

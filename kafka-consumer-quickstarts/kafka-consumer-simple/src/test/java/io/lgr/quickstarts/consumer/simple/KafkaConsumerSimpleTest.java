@@ -36,7 +36,7 @@ class KafkaConsumerSimpleTest {
     }
 
     @Test
-    void testConsumptionSuccess() {
+    void shouldConsumeSuccessfully() {
         ConsumerRecord<String, String> message = new ConsumerRecord<>(Topic.STRING_TOPIC.toString(), 0, 0, "1", "Message 1");
         message.headers().add("headerKey", "headerValue 1".getBytes(StandardCharsets.UTF_8));
 
@@ -50,7 +50,7 @@ class KafkaConsumerSimpleTest {
     }
 
     @Test
-    void testConsumptionFailedOnPoisonPill() {
+    void shouldFailOnPoisonPill() {
         ConsumerRecord<String, String> message1 = new ConsumerRecord<>(Topic.STRING_TOPIC.toString(), 0, 0, "1", "Message 1");
         ConsumerRecord<String, String> message2 = new ConsumerRecord<>(Topic.STRING_TOPIC.toString(), 0, 2, "2", "Message 2");
 

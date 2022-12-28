@@ -3,6 +3,7 @@ package io.lgr.quickstarts.streams.producer.person.app;
 import io.lgr.quickstarts.avro.CountryCode;
 import io.lgr.quickstarts.avro.KafkaPerson;
 import io.lgr.quickstarts.streams.producer.person.constants.Topic;
+import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Producer;
@@ -12,7 +13,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
 import java.time.Instant;
 import java.util.Random;
 import java.util.concurrent.Future;

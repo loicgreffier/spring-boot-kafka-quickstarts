@@ -32,7 +32,7 @@ class KafkaProducerAvroTest {
     }
 
     @Test
-    void testSendSuccess() throws ExecutionException, InterruptedException {
+    void shouldSendSuccessfully() throws ExecutionException, InterruptedException {
         mockProducer = new MockProducer<>(true, new StringSerializer(), serializer);
         producerRunner = new KafkaProducerAvroRunner(mockProducer);
 
@@ -53,7 +53,7 @@ class KafkaProducerAvroTest {
     }
 
     @Test
-    void testSendFailure() {
+    void shouldSendWithFailure() {
         mockProducer = new MockProducer<>(false, new StringSerializer(), serializer);
         producerRunner = new KafkaProducerAvroRunner(mockProducer);
 

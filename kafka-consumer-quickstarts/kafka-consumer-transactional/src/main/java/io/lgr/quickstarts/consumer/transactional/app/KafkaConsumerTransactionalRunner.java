@@ -1,6 +1,7 @@
 package io.lgr.quickstarts.consumer.transactional.app;
 
 import io.lgr.quickstarts.consumer.transactional.constants.Topic;
+import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.CommitFailedException;
@@ -12,7 +13,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.List;
 
