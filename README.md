@@ -74,15 +74,15 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 | Module                                                                                                  | Library       | Operations                                                         | Additional Content                    |
 |:--------------------------------------------------------------------------------------------------------|---------------|--------------------------------------------------------------------|---------------------------------------|
 | [Join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table)           | Kafka Streams | `join()` between KStream and GlobalKTable, `peek()`                | Topology Test Driver                  |
-| [Join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-join-stream-stream)                       | Kafka Streams | `join()` between KStream and KStream, `selectKey()`, `peek()`      | Sliding Windows, Topology Test Driver |
+| [Join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-join-stream-stream)                       | Kafka Streams | `join()` between KStream and KStream, `selectKey()`, `peek()`      | Join Windows, Topology Test Driver |
 | [Join Stream-Table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)                         | Kafka Streams | `join()` between KStream and KTable, `selectKey()`, `peek()`       | Topology Test Driver                  |
 | [Left join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-global-table) | Kafka Streams | `leftJoin()` between KStream and GlobalKTable, `peek()`            | Topology Test Driver                  |
-| [Left join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-left-join-stream-stream)             | Kafka Streams | `leftJoin()` between KStream and KStream, `selectKey()`, `peek()`  | Sliding Windows, Topology Test Driver |
+| [Left join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-left-join-stream-stream)             | Kafka Streams | `leftJoin()` between KStream and KStream, `selectKey()`, `peek()`  | Join Windows, Topology Test Driver |
 | [Left join Stream-Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-table)               | Kafka Streams | `leftJoin()` between KStream and KTable, `selectKey()`, `peek()`   | Topology Test Driver                  |
-| [Outer join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-outer-join-stream-stream)           | Kafka Streams | `outerJoin()` between KStream and KStream, `selectKey()`, `peek()` | Sliding Windows, Topology Test Driver |
+| [Outer join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-outer-join-stream-stream)           | Kafka Streams | `outerJoin()` between KStream and KStream, `selectKey()`, `peek()` | Join Windows, Topology Test Driver |
 
 #### Windowing
 
 | Module                                                                             | Library       | Operations | Note                                                           |
 |:-----------------------------------------------------------------------------------|---------------|------------|----------------------------------------------------------------|
-| [Sliding time window](/kafka-streams-quickstarts/kafka-streams-join-stream-stream) | Kafka Streams |            | All KStream-KStream join examples contain sliding time windows |
+| [Sliding Window](/kafka-streams-quickstarts/kafka-streams-join-stream-stream) | Kafka Streams |            | All KStream-KStream join examples contain sliding time windows |
