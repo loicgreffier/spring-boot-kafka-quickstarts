@@ -37,7 +37,7 @@ class KafkaStreamsMapValuesTest {
         properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "mock://" +  getClass().getName());
         properties.setProperty(StreamsConfig.STATE_DIR_CONFIG, STATE_DIR);
 
-        Map<String, String> serdesProperties = Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://");
+        Map<String, String> serdesProperties = Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://" + getClass().getName());
         CustomSerdes.setSerdesConfig(serdesProperties);
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
@@ -55,7 +55,7 @@ class KafkaStreamsMapValuesTest {
     void tearDown() throws IOException {
         testDriver.close();
         Files.deleteIfExists(Paths.get(STATE_DIR));
-        MockSchemaRegistry.dropScope(getClass().getName());
+        MockSchemaRegistry.dropScope("mock://" + getClass().getName());
     }
 
     @Test

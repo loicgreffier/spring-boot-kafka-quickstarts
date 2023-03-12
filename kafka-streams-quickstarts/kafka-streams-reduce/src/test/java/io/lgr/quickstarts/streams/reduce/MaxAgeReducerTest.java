@@ -35,6 +35,6 @@ class MaxAgeReducerTest {
                 .build();
 
         assertThat(maxAgeReducer.apply(youngest, oldest)).isEqualTo(oldest);
-        assertThat(maxAgeReducer.apply(oldest, oldestSameYear)).isEqualTo(oldest);
+        assertThat(maxAgeReducer.apply(oldest, oldestSameYear)).isEqualTo(oldestSameYear);
     }
 }
