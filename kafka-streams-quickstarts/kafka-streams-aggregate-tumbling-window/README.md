@@ -11,9 +11,9 @@ The aggregator combines each KafkaPerson with the same key into a KafkaPersonGro
 The aggregations are performed by time window of 5 minutes each.
 
 ```json
-{"firstNameByLastName":{"Last name 1":{"First name 1", "First name 2", "First name 3")}}
-{"firstNameByLastName":{"Last name 2":{"First name 4", "First name 5", "First name 6")}}
-{"firstNameByLastName":{"Last name 3":{"First name 7", "First name 8", "First name 9")}}
+{"firstNameByLastName":{"Last name 1":{"First name 1", "First name 2", "First name 3"}}}
+{"firstNameByLastName":{"Last name 2":{"First name 4", "First name 5", "First name 6"}}}
+{"firstNameByLastName":{"Last name 3":{"First name 7", "First name 8", "First name 9"}}}
 ```
 
 ![topology.png](topology.png)
