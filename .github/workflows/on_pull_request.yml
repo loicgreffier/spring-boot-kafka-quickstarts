@@ -25,3 +25,9 @@ jobs:
 
       - name: Test with Maven
         run: mvn -B test
+
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v3
+        with:
+          report_paths: '**/target/surefire-reports/TEST-*.xml'

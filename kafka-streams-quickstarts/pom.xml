@@ -11,29 +11,30 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>kafka-streams-aggregate</module>
+        <module>kafka-streams-aggregate-tumbling-window</module>
         <module>kafka-streams-branch</module>
         <module>kafka-streams-cogroup</module>
+        <module>kafka-streams-count</module>
         <module>kafka-streams-filter</module>
         <module>kafka-streams-flatmap</module>
         <module>kafka-streams-flatmap-values</module>
         <module>kafka-streams-foreach</module>
         <module>kafka-streams-join-stream-global-table</module>
+        <module>kafka-streams-join-stream-stream</module>
         <module>kafka-streams-join-stream-table</module>
         <module>kafka-streams-left-join-stream-global-table</module>
+        <module>kafka-streams-left-join-stream-stream</module>
         <module>kafka-streams-left-join-stream-table</module>
         <module>kafka-streams-map</module>
         <module>kafka-streams-map-values</module>
         <module>kafka-streams-merge</module>
+        <module>kafka-streams-outer-join-stream-stream</module>
         <module>kafka-streams-print</module>
+        <module>kafka-streams-reduce</module>
         <module>kafka-streams-repartition</module>
         <module>kafka-streams-select-key</module>
         <module>specific-producers</module>
-        <module>kafka-streams-aggregate</module>
-        <module>kafka-streams-count</module>
-        <module>kafka-streams-reduce</module>
-        <module>kafka-streams-join-stream-stream</module>
-        <module>kafka-streams-left-join-stream-stream</module>
-        <module>kafka-streams-outer-join-stream-stream</module>
     </modules>
 
     <artifactId>kafka-streams-quickstarts</artifactId>

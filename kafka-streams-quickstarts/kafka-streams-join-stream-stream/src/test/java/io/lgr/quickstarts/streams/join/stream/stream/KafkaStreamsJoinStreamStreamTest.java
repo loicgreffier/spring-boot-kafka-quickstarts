@@ -43,7 +43,7 @@ class KafkaStreamsJoinStreamStreamTest {
     void setUp() {
         Properties properties = new Properties();
         properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-join-stream-stream-test");
-        properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "mock://" +  getClass().getName());
+        properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "mock://" + getClass().getName());
         properties.setProperty(StreamsConfig.STATE_DIR_CONFIG, STATE_DIR);
 
         Map<String, String> serdesProperties = Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://" + getClass().getName());
@@ -130,15 +130,38 @@ class KafkaStreamsJoinStreamStreamTest {
         // Test state stores content
         WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
-            assertThat(iterator.next().value).isEqualTo(personLeftOne);
-            assertThat(iterator.next().value).isEqualTo(personLeftTwo);
+            KeyValue<Windowed<String>, KafkaPerson> storedPersonLeftOne = iterator.next();
+            assertThat(storedPersonLeftOne.key.key()).isEqualTo("Acosta");
+            assertThat(storedPersonLeftOne.key.window().startTime()).isEqualTo("2000-01-01T01:00:00.00Z");
+            assertThat(storedPersonLeftOne.key.window().endTime()).isEqualTo("2000-01-01T01:04:00.00Z");
+            assertThat(storedPersonLeftOne.value).isEqualTo(personLeftOne);
+
+            KeyValue<Windowed<String>, KafkaPerson> storedPersonLeftTwo = iterator.next();
+            assertThat(storedPersonLeftTwo.key.key()).isEqualTo("Rhodes");
+            assertThat(storedPersonLeftTwo.key.window().startTime()).isEqualTo("2000-01-01T01:03:00.00Z");
+            assertThat(storedPersonLeftTwo.key.window().endTime()).isEqualTo("2000-01-01T01:07:00.00Z");
+            assertThat(storedPersonLeftTwo.value).isEqualTo(personLeftTwo);
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-other-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
-            assertThat(iterator.next().value).isEqualTo(personRightOne);
-            assertThat(iterator.next().value).isEqualTo(personRightThree);
-            assertThat(iterator.next().value).isEqualTo(personRightTwo);
+            KeyValue<Windowed<String>, KafkaPerson> storedPersonRightOne = iterator.next();
+            assertThat(storedPersonRightOne.key.key()).isEqualTo("Acosta");
+            assertThat(storedPersonRightOne.key.window().startTime()).isEqualTo("2000-01-01T01:01:00.00Z");
+            assertThat(storedPersonRightOne.key.window().endTime()).isEqualTo("2000-01-01T01:05:00.00Z");
+            assertThat(storedPersonRightOne.value).isEqualTo(personRightOne);
+
+            KeyValue<Windowed<String>, KafkaPerson> storedPersonRightThree = iterator.next();
+            assertThat(storedPersonRightThree.key.key()).isEqualTo("Acosta");
+            assertThat(storedPersonRightThree.key.window().startTime()).isEqualTo("2000-01-01T01:02:00.00Z");
+            assertThat(storedPersonRightThree.key.window().endTime()).isEqualTo("2000-01-01T01:06:00.00Z");
+            assertThat(storedPersonRightThree.value).isEqualTo(personRightThree);
+
+            KeyValue<Windowed<String>, KafkaPerson> storedPersonRightTwo = iterator.next();
+            assertThat(storedPersonRightTwo.key.key()).isEqualTo("Rhodes");
+            assertThat(storedPersonRightTwo.key.window().startTime()).isEqualTo("2000-01-01T01:01:30.00Z");
+            assertThat(storedPersonRightTwo.key.window().endTime()).isEqualTo("2000-01-01T01:05:30.00Z");
+            assertThat(storedPersonRightTwo.value).isEqualTo(personRightTwo);
         }
     }
 
@@ -160,12 +183,22 @@ class KafkaStreamsJoinStreamStreamTest {
         // Test state stores content
         WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
-            assertThat(iterator.next().value).isEqualTo(personLeftOne);
+            KeyValue<Windowed<String>, KafkaPerson> storedPersonLeftOne = iterator.next();
+            assertThat(storedPersonLeftOne.key.key()).isEqualTo("Acosta");
+            assertThat(storedPersonLeftOne.key.window().startTime()).isEqualTo("2000-01-01T01:00:00.00Z");
+            assertThat(storedPersonLeftOne.key.window().endTime()).isEqualTo("2000-01-01T01:04:00.00Z");
+            assertThat(storedPersonLeftOne.value).isEqualTo(personLeftOne);
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-other-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
-            assertThat(iterator.next().value).isEqualTo(personRightTwo);
+            KeyValue<Windowed<String>, KafkaPerson> storedPersonRightTwo = iterator.next();
+            assertThat(storedPersonRightTwo.key.key()).isEqualTo("Acosta");
+            assertThat(storedPersonRightTwo.key.window().startTime()).isEqualTo("2000-01-01T01:03:00.00Z");
+            assertThat(storedPersonRightTwo.key.window().endTime()).isEqualTo("2000-01-01T01:07:00.00Z");
+            assertThat(storedPersonRightTwo.value).isEqualTo(personRightTwo);
+
+            assertThat(iterator.hasNext()).isFalse(); // Should not contain personRightOne as 2-minute time window is expired
         }
     }
 
@@ -185,12 +218,20 @@ class KafkaStreamsJoinStreamStreamTest {
         // Test state stores content
         WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
-            assertThat(iterator.next().value).isEqualTo(personLeftOne);
+            KeyValue<Windowed<String>, KafkaPerson> storedPersonLeftOne = iterator.next();
+            assertThat(storedPersonLeftOne.key.key()).isEqualTo("Acosta");
+            assertThat(storedPersonLeftOne.key.window().startTime()).isEqualTo("2000-01-01T01:00:00.00Z");
+            assertThat(storedPersonLeftOne.key.window().endTime()).isEqualTo("2000-01-01T01:04:00.00Z");
+            assertThat(storedPersonLeftOne.value).isEqualTo(personLeftOne);
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-other-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
-            assertThat(iterator.next().value).isEqualTo(personRightOne);
+            KeyValue<Windowed<String>, KafkaPerson> storedPersonRightTwo = iterator.next();
+            assertThat(storedPersonRightTwo.key.key()).isEqualTo("Rhodes");
+            assertThat(storedPersonRightTwo.key.window().startTime()).isEqualTo("2000-01-01T01:03:00.00Z");
+            assertThat(storedPersonRightTwo.key.window().endTime()).isEqualTo("2000-01-01T01:07:00.00Z");
+            assertThat(storedPersonRightTwo.value).isEqualTo(personRightOne);
         }
     }
 

@@ -69,38 +69,28 @@ class KafkaStreamsAggregateTest {
 
         assertThat(results).hasSize(6);
         assertThat(results.get(0).key).isEqualTo("Abbott");
-        assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott")).hasSize(1);
-        assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
+        assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott")).containsExactly("Aaran");
 
         assertThat(results.get(1).key).isEqualTo("Abbott");
-        assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott")).hasSize(2);
-        assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
-        assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott").get(1)).isEqualTo("Brendan");
+        assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott")).containsExactly("Aaran", "Brendan");
 
         assertThat(results.get(2).key).isEqualTo("Holman");
-        assertThat(results.get(2).value.getFirstNameByLastName().get("Holman")).hasSize(1);
-        assertThat(results.get(2).value.getFirstNameByLastName().get("Holman").get(0)).isEqualTo("Bret");
+        assertThat(results.get(2).value.getFirstNameByLastName().get("Holman")).containsExactly("Bret");
 
         assertThat(results.get(3).key).isEqualTo("Abbott");
-        assertThat(results.get(3).value.getFirstNameByLastName().get("Abbott")).hasSize(3);
-        assertThat(results.get(3).value.getFirstNameByLastName().get("Abbott").get(0)).isEqualTo("Aaran");
-        assertThat(results.get(3).value.getFirstNameByLastName().get("Abbott").get(1)).isEqualTo("Brendan");
-        assertThat(results.get(3).value.getFirstNameByLastName().get("Abbott").get(2)).isEqualTo("Daimhin");
+        assertThat(results.get(3).value.getFirstNameByLastName().get("Abbott")).containsExactly("Aaran", "Brendan", "Daimhin");
 
         assertThat(results.get(4).key).isEqualTo("Patton");
-        assertThat(results.get(4).value.getFirstNameByLastName().get("Patton")).hasSize(1);
-        assertThat(results.get(4).value.getFirstNameByLastName().get("Patton").get(0)).isEqualTo("Jiao");
+        assertThat(results.get(4).value.getFirstNameByLastName().get("Patton")).containsExactly("Jiao");
 
         assertThat(results.get(5).key).isEqualTo("Holman");
-        assertThat(results.get(5).value.getFirstNameByLastName().get("Holman")).hasSize(2);
-        assertThat(results.get(5).value.getFirstNameByLastName().get("Holman").get(0)).isEqualTo("Bret");
-        assertThat(results.get(5).value.getFirstNameByLastName().get("Holman").get(1)).isEqualTo("Jude");
+        assertThat(results.get(5).value.getFirstNameByLastName().get("Holman")).containsExactly("Bret", "Jude");
 
         KeyValueStore<String, ValueAndTimestamp<KafkaPersonGroup>> stateStore = testDriver.getTimestampedKeyValueStore(StateStore.PERSON_AGGREGATE_STATE_STORE.toString());
 
-        assertThat(stateStore.get("Abbott").value().getFirstNameByLastName().get("Abbott")).contains("Aaran", "Brendan", "Daimhin");
-        assertThat(stateStore.get("Holman").value().getFirstNameByLastName().get("Holman")).contains("Bret", "Jude");
-        assertThat(stateStore.get("Patton").value().getFirstNameByLastName().get("Patton")).contains("Jiao");
+        assertThat(stateStore.get("Abbott").value().getFirstNameByLastName().get("Abbott")).containsExactly("Aaran", "Brendan", "Daimhin");
+        assertThat(stateStore.get("Holman").value().getFirstNameByLastName().get("Holman")).containsExactly("Bret", "Jude");
+        assertThat(stateStore.get("Patton").value().getFirstNameByLastName().get("Patton")).containsExactly("Jiao");
     }
 
     private List<KeyValue<String, KafkaPerson>> buildKafkaPersonRecords() {
