@@ -35,6 +35,7 @@
         <module>kafka-streams-repartition</module>
         <module>kafka-streams-select-key</module>
         <module>specific-producers</module>
+        <module>kafka-streams-aggregate-hopping-window</module>
     </modules>
 
     <artifactId>kafka-streams-quickstarts</artifactId>

@@ -1,0 +1,17 @@
+{
+  "namespace": "io.lgr.quickstarts.avro",
+  "type": "record",
+  "name": "KafkaPersonGroup",
+  "fields": [
+    {
+      "name": "firstNameByLastName",
+      "type": {
+        "type": "map",
+        "values": {
+          "type": "array",
+          "items" : "string"
+        }
+      }
+    }
+  ]
+}

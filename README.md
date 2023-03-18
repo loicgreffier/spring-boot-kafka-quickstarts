@@ -18,21 +18,21 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 ### Producers
 
-| Module                                                                    | Library       | API      | Additional Content                |
-|---------------------------------------------------------------------------|---------------|----------|-----------------------------------|
-| [Avro](/kafka-producer-quickstarts/kafka-producer-avro)                   | Kafka Clients | Producer | Apache Avro, Mock producer        |
-| [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | Producer | Header, Mock producer             |
-| [Transactional](/kafka-producer-quickstarts/kafka-producer-transactional) | Kafka Clients | Producer | Kafka transactions, Mock producer |
+| Module                                                                    | Library       | API      | Additional Content           |
+|---------------------------------------------------------------------------|---------------|----------|------------------------------|
+| [Avro](/kafka-producer-quickstarts/kafka-producer-avro)                   | Kafka Clients | Producer | Mock producer                |
+| [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | Producer | Record header, Mock producer |
+| [Transactional](/kafka-producer-quickstarts/kafka-producer-transactional) | Kafka Clients | Producer | Mock producer                |
 
 ### Consumers
 
-| Module                                                                                    | Library       | API      | Additional Content                                                     |
-|:------------------------------------------------------------------------------------------|---------------|----------|------------------------------------------------------------------------|
-| [Avro](/kafka-consumer-quickstarts/kafka-consumer-avro)                                   | Kafka Clients | Consumer | Apache Avro, Mock consumer                                             |
-| [Circuit breaker](/kafka-consumer-quickstarts/kafka-consumer-circuit-breaker)             | Kafka Clients | Consumer | Deserialization/poison pill error handling, Mock consumer              |
-| [Retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system) | Kafka Clients | Consumer | External system interfacing with strong retry mechanism, Mock consumer |
-| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                               | Kafka Clients | Consumer | Header, Mock consumer                                                  |
-| [Transactional](/kafka-consumer-quickstarts/kafka-consumer-transactional)                 | Kafka Clients | Consumer | Kafka transactions, Isolation level                                    |
+| Module                                                                                    | Library       | API      | Additional Content           | Note                                                    |
+|:------------------------------------------------------------------------------------------|---------------|----------|------------------------------|---------------------------------------------------------|
+| [Avro](/kafka-consumer-quickstarts/kafka-consumer-avro)                                   | Kafka Clients | Consumer | Mock consumer                |                                                         |
+| [Circuit breaker](/kafka-consumer-quickstarts/kafka-consumer-circuit-breaker)             | Kafka Clients | Consumer | Mock consumer                | Deserialization/poison pill error handling              |
+| [Retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system) | Kafka Clients | Consumer | Mock consumer                | External system interfacing with strong retry mechanism |
+| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                               | Kafka Clients | Consumer | Record header, Mock consumer |                                                         |
+| [Transactional](/kafka-consumer-quickstarts/kafka-consumer-transactional)                 | Kafka Clients | Consumer |                              | Isolation level                                         |
 
 ### Streams
 
@@ -63,28 +63,30 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 #### Aggregate
 
-| Module                                                                                          | Library       | Operations                                                                           | Additional Content   |
-|:------------------------------------------------------------------------------------------------|---------------|--------------------------------------------------------------------------------------|----------------------|
-| [Aggregate](/kafka-streams-quickstarts/kafka-streams-aggregate)                                 | Kafka Streams | `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()`                 | Topology Test Driver |
-| [Aggregate Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | `windowedBy()`, `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()` | Topology Test Driver |
-| [Count](/kafka-streams-quickstarts/kafka-streams-count)                                         | Kafka Streams | `count()`, `groupBy()`, `toStream()`, `peek()`                                       | Topology Test Driver |
-| [Reduce](/kafka-streams-quickstarts/kafka-streams-reduce)                                       | Kafka Streams | `reduce()`, `groupBy()`, `toStream()`, `peek()`                                      | Topology Test Driver |
+| Module                                                                                          | Library       | Operations                                                                                       | Additional Content   |
+|:------------------------------------------------------------------------------------------------|---------------|--------------------------------------------------------------------------------------------------|----------------------|
+| [Aggregate](/kafka-streams-quickstarts/kafka-streams-aggregate)                                 | Kafka Streams | `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()`                             | Topology Test Driver |
+| [Aggregate Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | `windowedBy()`, `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()`             | Topology Test Driver |
+| [Aggregate Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | `windowedBy().advanceBy()`, `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()` | Topology Test Driver |
+| [Count](/kafka-streams-quickstarts/kafka-streams-count)                                         | Kafka Streams | `count()`, `groupBy()`, `toStream()`, `peek()`                                                   | Topology Test Driver |
+| [Reduce](/kafka-streams-quickstarts/kafka-streams-reduce)                                       | Kafka Streams | `reduce()`, `groupBy()`, `toStream()`, `peek()`                                                  | Topology Test Driver |
 
 #### Join
 
-| Module                                                                                                  | Library       | Operations                                                                        | Additional Content                 |
-|:--------------------------------------------------------------------------------------------------------|---------------|-----------------------------------------------------------------------------------|------------------------------------|
-| [Join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table)           | Kafka Streams | `join()` between KStream and GlobalKTable, `peek()`                               | Topology Test Driver               |
-| [Join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-join-stream-stream)                       | Kafka Streams | `join()` between KStream and KStream, `JoinWindows`, `selectKey()`, `peek()`      | Join Windows, Topology Test Driver |
-| [Join Stream-Table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)                         | Kafka Streams | `join()` between KStream and KTable, `selectKey()`, `peek()`                      | Topology Test Driver               |
-| [Left join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-global-table) | Kafka Streams | `leftJoin()` between KStream and GlobalKTable, `peek()`                           | Topology Test Driver               |
-| [Left join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-left-join-stream-stream)             | Kafka Streams | `leftJoin()` between KStream and KStream, `JoinWindows`, `selectKey()`, `peek()`  | Join Windows, Topology Test Driver |
-| [Left join Stream-Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-table)               | Kafka Streams | `leftJoin()` between KStream and KTable, `selectKey()`, `peek()`                  | Topology Test Driver               |
-| [Outer join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-outer-join-stream-stream)           | Kafka Streams | `outerJoin()` between KStream and KStream, `JoinWindows`, `selectKey()`, `peek()` | Join Windows, Topology Test Driver |
+| Module                                                                                                  | Library       | Operations                                                                        | Additional Content   |
+|:--------------------------------------------------------------------------------------------------------|---------------|-----------------------------------------------------------------------------------|----------------------|
+| [Join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table)           | Kafka Streams | `join()` between KStream and GlobalKTable, `peek()`                               | Topology Test Driver |
+| [Join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-join-stream-stream)                       | Kafka Streams | `join()` between KStream and KStream, `JoinWindows`, `selectKey()`, `peek()`      | Topology Test Driver |
+| [Join Stream-Table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)                         | Kafka Streams | `join()` between KStream and KTable, `selectKey()`, `peek()`                      | Topology Test Driver |
+| [Left join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-global-table) | Kafka Streams | `leftJoin()` between KStream and GlobalKTable, `peek()`                           | Topology Test Driver |
+| [Left join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-left-join-stream-stream)             | Kafka Streams | `leftJoin()` between KStream and KStream, `JoinWindows`, `selectKey()`, `peek()`  | Topology Test Driver |
+| [Left join Stream-Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-table)               | Kafka Streams | `leftJoin()` between KStream and KTable, `selectKey()`, `peek()`                  | Topology Test Driver |
+| [Outer join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-outer-join-stream-stream)           | Kafka Streams | `outerJoin()` between KStream and KStream, `JoinWindows`, `selectKey()`, `peek()` | Topology Test Driver |
 
 #### Windowing
 
-| Module                                                                                | Library       | Operations     | Note                                                           |
-|:--------------------------------------------------------------------------------------|---------------|----------------|----------------------------------------------------------------|
-| [Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | `windowedBy()` |                                                                |
-| [Sliding Window](/kafka-streams-quickstarts/kafka-streams-join-stream-stream)         | Kafka Streams | `JoinWindows`  | All KStream-KStream join examples contain sliding time windows |
+| Module                                                                                | Library       | Operations                 | Note                                                           |
+|:--------------------------------------------------------------------------------------|---------------|----------------------------|----------------------------------------------------------------|
+| [Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | `windowedBy()`             |                                                                |
+| [Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | `windowedBy().advanceBy()` |                                                                |
+| [Sliding Window](/kafka-streams-quickstarts/kafka-streams-join-stream-stream)         | Kafka Streams | `JoinWindows`              | All KStream-KStream join examples contain sliding time windows |
