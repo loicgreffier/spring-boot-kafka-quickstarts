@@ -127,30 +127,41 @@ class KafkaStreamsAggregateTumblingWindowTest {
 
     @Test
     void shouldNotAggregateFirstNamesByLastNameWhenTimeWindowIsNotRespected() {
-        KafkaPerson personOne = buildKafkaPersonValue("Aaran", "Abbott");
-        KafkaPerson personTwo = buildKafkaPersonValue("Brendan", "Abbott");
+        KafkaPerson personOne = buildKafkaPersonValue("Bret", "Holman");
+        KafkaPerson personTwo = buildKafkaPersonValue("Aaran", "Abbott");
+        KafkaPerson personThree = buildKafkaPersonValue("Brendan", "Abbott");
 
         Instant start = Instant.parse("2000-01-01T01:00:00.00Z");
         inputTopic.pipeInput(new TestRecord<>("1", personOne, start));
-        inputTopic.pipeInput(new TestRecord<>("2", personTwo, start.plus(6, ChronoUnit.MINUTES)));
+        inputTopic.pipeInput(new TestRecord<>("2", personTwo, start.plus(4, ChronoUnit.MINUTES)));
+        inputTopic.pipeInput(new TestRecord<>("3", personThree, start.plus(6, ChronoUnit.MINUTES)));
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
 
-        assertThat(results).hasSize(2);
-        assertThat(results.get(0).key).isEqualTo("Abbott@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z");
-        assertThat(results.get(0).value.getFirstNameByLastName().get("Abbott")).containsExactly("Aaran");
+        assertThat(results).hasSize(3);
+        assertThat(results.get(0).key).isEqualTo("Holman@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z");
+        assertThat(results.get(0).value.getFirstNameByLastName().get("Holman")).containsExactly("Bret");
 
-        assertThat(results.get(1).key).isEqualTo("Abbott@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z");
-        assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott")).containsExactly("Brendan");
+        assertThat(results.get(1).key).isEqualTo("Abbott@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z");
+        assertThat(results.get(1).value.getFirstNameByLastName().get("Abbott")).containsExactly("Aaran");
+
+        assertThat(results.get(2).key).isEqualTo("Abbott@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z");
+        assertThat(results.get(2).value.getFirstNameByLastName().get("Abbott")).containsExactly("Brendan");
 
         WindowStore<String, KafkaPersonGroup> stateStore = testDriver.getWindowStore(StateStore.PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE.toString());
 
         try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPersonGroup> firstWindowAggregation = iterator.next();
-            assertThat(firstWindowAggregation.key.key()).isEqualTo("Abbott");
-            assertThat(firstWindowAggregation.key.window().startTime()).isEqualTo("2000-01-01T01:00:00.00Z");
-            assertThat(firstWindowAggregation.key.window().endTime()).isEqualTo("2000-01-01T01:05:00.00Z");
-            assertThat(firstWindowAggregation.value.getFirstNameByLastName().get("Abbott")).containsExactly("Aaran");
+            KeyValue<Windowed<String>, KafkaPersonGroup> secondWindowAggregationAbbott = iterator.next();
+            assertThat(secondWindowAggregationAbbott.key.key()).isEqualTo("Abbott");
+            assertThat(secondWindowAggregationAbbott.key.window().startTime()).isEqualTo("2000-01-01T01:00:00.00Z");
+            assertThat(secondWindowAggregationAbbott.key.window().endTime()).isEqualTo("2000-01-01T01:05:00.00Z");
+            assertThat(secondWindowAggregationAbbott.value.getFirstNameByLastName().get("Abbott")).containsExactly("Aaran");
+
+            KeyValue<Windowed<String>, KafkaPersonGroup> firstWindowAggregationHolman = iterator.next();
+            assertThat(firstWindowAggregationHolman.key.key()).isEqualTo("Holman");
+            assertThat(firstWindowAggregationHolman.key.window().startTime()).isEqualTo("2000-01-01T01:00:00.00Z");
+            assertThat(firstWindowAggregationHolman.key.window().endTime()).isEqualTo("2000-01-01T01:05:00.00Z");
+            assertThat(firstWindowAggregationHolman.value.getFirstNameByLastName().get("Holman")).containsExactly("Bret");
 
             KeyValue<Windowed<String>, KafkaPersonGroup> secondWindowAggregation = iterator.next();
             assertThat(secondWindowAggregation.key.key()).isEqualTo("Abbott");
