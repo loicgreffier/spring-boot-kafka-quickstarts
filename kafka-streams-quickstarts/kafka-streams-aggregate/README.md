@@ -12,9 +12,9 @@ This module does:
 The aggregator combines each KafkaPerson with the same key into a KafkaPersonGroup object and aggregate first names by last name.
 
 ```json
-{"firstNameByLastName":{"Last name 1":{"First name 1", "First name 2", "First name 3")}}
-{"firstNameByLastName":{"Last name 2":{"First name 4", "First name 5", "First name 6")}}
-{"firstNameByLastName":{"Last name 3":{"First name 7", "First name 8", "First name 9")}}
+{"firstNameByLastName":{"Last name 1":{"First name 1", "First name 2", "First name 3"}}}
+{"firstNameByLastName":{"Last name 2":{"First name 4", "First name 5", "First name 6"}}}
+{"firstNameByLastName":{"Last name 3":{"First name 7", "First name 8", "First name 9"}}}
 ```
 
 - Write the result into a new topic named PERSON_AGGREGATE_TOPIC.
