@@ -10,8 +10,8 @@ This module does:
 
 - Stream records of type <String,KafkaPerson> records from topics named PERSON_TOPIC and PERSON_TOPIC_TWO.
 - Join records by last name within a 2-minute time window and a 30-second grace period for delayed records.
-- Build a new KafkaJoinPersons object that holds both persons. If no person has been matched, a value holding the left or right person is still emitted as a `outerJoin()` is performed
-- Writes the result into a new topic named PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC
+- Build a new KafkaJoinPersons object that holds both persons. If no person has been matched, a value holding the left or right person is still emitted as a `outerJoin()` is performed.
+- Writes the result into a new topic named PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC.
 
 ![topology.png](topology.png)
 

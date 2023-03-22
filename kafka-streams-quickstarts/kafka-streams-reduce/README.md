@@ -9,6 +9,7 @@ This module does:
 
 - Stream records of type <String,KafkaPerson> from a topic named PERSON_TOPIC.
 - Group the stream by nationality and reduce it by keeping the KafkaPerson with the maximum age for each nationality. 
+- Write the result into a new topic named PERSON_REDUCE_TOPIC.
 
 ![topology.png](topology.png)
 
