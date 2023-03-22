@@ -9,7 +9,7 @@ This module does:
 
 - Stream records of type <String,KafkaPerson> from a topic named PERSON_TOPIC.
 - Map the KafkaPerson value attributes into uppercase.
-- Write back the result into a new topic named PERSON_MAP_VALUES_TOPIC
+- Write back the result into a new topic named PERSON_MAP_VALUES_TOPIC.
 
 ![topology.png](topology.png)
 
