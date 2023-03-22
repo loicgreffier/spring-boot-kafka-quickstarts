@@ -1,35 +1,39 @@
 # Consumer Retry External System
 
-This module shows:
-- Kafka Clients consumer API
-- unit tests with Mock consumer
+This module demonstrates:
+
+- The use of the Kafka Clients consumer API.
+- The use of unit tests with a Mock consumer.
 
 This module does:
-- consume <String,String> records from a topic named STRING_TOPIC
-- send records to a fake external system, and perform retries through a strong retry mechanism if the call did fail
+
+- Consume <String,String> records from a topic named STRING_TOPIC.
+- Send records to a fake external system and perform retries through a strong retry mechanism if the call fails.
 
 ## Requirements
 
-To compile and run this demo you will need:
+To compile and run this demo, you will need the following:
+
 - Java 17
 - Maven
 - Docker
 
-## Run the app
+## Running the Application
 
-For manual run:
-- start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in Docker
-- produce <String,String> records to a topic named STRING_TOPIC. The [producer simple](../../kafka-producer-quickstarts/kafka-producer-simple) can be used
-- start the consumer
+To run the application manually, please follow the steps below:
 
-For Docker run:
-- start the provided docker-compose 
+- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
+- Produce <String,String> records to a topic named STRING_TOPIC. You can use the [producer simple](../../kafka-producer-quickstarts/kafka-producer-simple) to do this.
+- Start the consumer.
 
+To run the application in Docker, please use the following command:
+
+```console
+docker-compose up -d
 ```
-docker compose up -d
-```
 
-The docker compose runs:
+This command will start the following services in Docker:
+
 - 1 Zookeeper
 - 1 Kafka broker
 - 1 Control Center

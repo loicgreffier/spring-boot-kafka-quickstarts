@@ -1,34 +1,36 @@
 # Consumer Simple
 
-This module shows:
-- Kafka Clients consumer API
-- unit tests with Mock consumer
+This module demonstrates:
 
-This module does:
-- consume <String,String> records from a topic named STRING_TOPIC
+- The use of the Kafka Clients consumer API.
+- The use of unit tests with a Mock consumer.
+
+This module consumes records of type <String,String> from a topic named STRING_TOPIC.
 
 ## Requirements
 
-To compile and run this demo you will need:
+To compile and run this demo, you will need the following:
+
 - Java 17
 - Maven
 - Docker
 
-## Run the app
+## Running the Application
 
-For manual run:
-- start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in Docker
-- produce <String,String> records to a topic named STRING_TOPIC. The [producer simple](../../kafka-producer-quickstarts/kafka-producer-simple) can be used
-- start the consumer
+To run the application manually, please follow the steps below:
 
-For Docker run:
-- start the provided docker-compose 
+- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
+- Produce records of type <String,String> to a topic named STRING_TOPIC. You can use the [producer simple](../../kafka-producer-quickstarts/kafka-producer-simple) to do this.
+- Start the consumer.
 
+To run the application in Docker, please use the following command:
+
+```console
+docker-compose up -d
 ```
-docker compose up -d
-```
 
-The docker compose runs:
+This command will start the following services in Docker:
+
 - 1 Zookeeper
 - 1 Kafka broker
 - 1 Control Center

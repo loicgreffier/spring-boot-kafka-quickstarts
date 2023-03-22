@@ -1,12 +1,14 @@
 # Kafka Streams Aggregate Tumbling Window
 
-This module shows:
-- Kafka Streams API: `windowedBy()`, `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()`
-- unit tests with Topology Test Driver
+This module demonstrates:
+
+- The use of the Kafka Streams API: `windowedBy()`, `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()`.
+- The use of unit tests with Topology Test Driver.
 
 This module does:
-- stream <String,KafkaPerson> records from a topic named PERSON_TOPIC
-- group the stream by last name and apply an aggregator. 
+
+- Stream records of type <String,KafkaPerson> from a topic named PERSON_TOPIC.
+- Group the stream by last name and apply an aggregator.
 The aggregator combines each KafkaPerson with the same key into a KafkaPersonGroup object and aggregate first names by last name.
 The aggregations are performed by time window of 5 minutes each.
 
@@ -16,30 +18,34 @@ The aggregations are performed by time window of 5 minutes each.
 {"firstNameByLastName":{"Last name 3":{"First name 7", "First name 8", "First name 9"}}}
 ```
 
+- Write the result into a new topic named PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC.
+
 ![topology.png](topology.png)
 
 ## Requirements
 
-To compile and run this demo you will need:
+To compile and run this demo, you will need the following:
+
 - Java 17
 - Maven
 - Docker
 
-## Run the app
+## Running the Application
 
-For manual run:
-- start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in Docker
-- produce <String,KafkaPerson> records to a topic named PERSON_TOPIC. The [producer person](../specific-producers/kafka-streams-producer-person) can be used
-- start the Kafka Streams
+To run the application manually, please follow the steps below:
 
-For Docker run:
-- start the provided docker-compose 
+- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
+- Produce records of type <String,KafkaPerson> to a topic named PERSON_TOPIC. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
+- Start the Kafka Streams.
 
+To run the application in Docker, please use the following command:
+
+```console
+docker-compose up -d
 ```
-docker compose up -d
-```
 
-The docker compose runs:
+This command will start the following services in Docker:
+
 - 1 Zookeeper
 - 1 Kafka broker
 - 1 Schema registry
