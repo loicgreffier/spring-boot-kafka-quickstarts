@@ -1,5 +1,5 @@
 {
-  "namespace": "io.lgr.quickstarts.avro",
+  "namespace": "io.github.loicgreffier.avro",
   "type": "record",
   "name": "KafkaJoinPersons",
   "fields": [
