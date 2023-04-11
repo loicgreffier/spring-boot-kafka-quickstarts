@@ -2,7 +2,7 @@
 
 This module demonstrates:
 
-- The use of the Kafka Streams API: `outerJoin()` between KStream and KStream, `selectKey()`, `peek()`.
+- The use of the Kafka Streams DSL: `outerJoin()` between KStream and KStream, `selectKey()`, `peek()`.
 - The use of sliding time windows.
 - The use of unit tests with Topology Test Driver.
 

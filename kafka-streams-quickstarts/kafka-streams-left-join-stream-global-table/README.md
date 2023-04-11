@@ -2,7 +2,7 @@
 
 This module demonstrates:
 
-- The use of the Kafka Streams API: `leftJoin()` between KStream and GlobalKTable, `peek()`.
+- The use of the Kafka Streams DSL: `leftJoin()` between KStream and GlobalKTable, `peek()`.
 - The use of unit tests with Topology Test Driver.
 
 This module does:

@@ -2,7 +2,7 @@
 
 This module demonstrates:
 
-- The use of the Kafka Streams API: `windowedBy().advanceBy()`, `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()`.
+- The use of the Kafka Streams DSL: `aggregate()`, `windowedBy().advanceBy()`, `groupByKey()`, `selectKey()`, `toStream()`, `peek()`.
 - The use of unit tests with Topology Test Driver.
 
 This module does:

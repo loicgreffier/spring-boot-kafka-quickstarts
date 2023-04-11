@@ -2,7 +2,7 @@
 
 This module demonstrates:
 
-- The use of the Kafka Clients consumer API.
+- The use of the Kafka Clients consumer DSL.
 - The use of unit tests with a Mock consumer.
 
 This module consumes records of type <String,String> from a topic named STRING_TOPIC.

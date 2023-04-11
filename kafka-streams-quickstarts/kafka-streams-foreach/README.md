@@ -1,6 +1,6 @@
 # Kafka Streams Foreach
 
-This module demonstrates the use of the Kafka Streams API: `foreach()`.
+This module demonstrates the use of the Kafka Streams DSL: `foreach()`.
 
 This module does:
 

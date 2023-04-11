@@ -1,6 +1,6 @@
 # Kafka Streams Print
 
-This module demonstrates the use of the Kafka Streams API: `print()`, `peek()`.
+This module demonstrates the use of the Kafka Streams DSL: `print()`, `peek()`.
 
 This module does:
 

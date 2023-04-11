@@ -2,7 +2,7 @@
 
 This module demonstrates:
 
-- The use of the Kafka Clients consumer API.
+- The use of the Kafka Clients consumer DSL.
 - The use of isolation level.
 
 This module consumes records of type <String,String> from topics named FIRST_STRING_TOPIC and SECOND_STRING_TOPIC with an isolation_level set to `read_committed`.

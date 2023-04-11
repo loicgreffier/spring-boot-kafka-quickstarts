@@ -2,7 +2,7 @@
 
 This module demonstrates:
 
-- The use of the Kafka Clients producer API.
+- The use of the Kafka Clients producer DSL.
 - The use of Apache Avro.
 - The use of unit tests with a Mock consumer.
 

@@ -2,7 +2,7 @@
 
 This module demonstrates:
 
-- The use of the Kafka Clients producer API.
+- The use of the Kafka Clients producer DSL.
 - The use of unit tests with a Mock consumer.
 
 This module produces <String,String> records to a topic named STRING_TOPIC.

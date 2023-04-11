@@ -2,7 +2,7 @@
 
 This module demonstrates:
 
-- The use of the Kafka Streams API: `filter()`, `filterNot()`, `peek()`.
+- The use of the Kafka Streams DSL: `filter()`, `filterNot()`, `peek()`.
 - The use of unit tests with Topology Test Driver.
 
 This module does:
