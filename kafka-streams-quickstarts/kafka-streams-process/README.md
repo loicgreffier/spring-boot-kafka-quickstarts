@@ -2,7 +2,7 @@
 
 This module demonstrates:
 
-- The use of the Kafka Streams and Processor API: `process()`
+- The use of the Kafka Streams API: `process()`
 - The use of the Processor API
   - The access to the processor context
   - The creation of a state store and its connection to the processor
