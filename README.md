@@ -95,4 +95,4 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 | Module                                                      | Library       | Main Concept               | Additional Content                    |
 |:------------------------------------------------------------|---------------|----------------------------|---------------------------------------|
-| [Process](/kafka-streams-quickstarts/kafka-streams-process) | Kafka Streams | `process()`, Processor API | State Store DSL, Topology Test Driver |
+| [Process](/kafka-streams-quickstarts/kafka-streams-process) | Kafka Streams | `process()`, Processor API | State Store, Topology Test Driver |
