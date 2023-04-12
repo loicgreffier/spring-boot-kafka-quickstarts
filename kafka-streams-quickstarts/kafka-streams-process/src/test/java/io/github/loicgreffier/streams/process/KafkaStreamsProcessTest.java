@@ -91,7 +91,7 @@ class KafkaStreamsProcessTest {
         assertThat(results.get(3).value.getPartition()).isZero();
         assertThat(results.get(3).value.getOffset()).isEqualTo(3);
 
-        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(StateStore.PERSON_PROCESS_STATE_STORE.toString());
+        KeyValueStore<String, Integer> stateStore = testDriver.getKeyValueStore(StateStore.PERSON_PROCESS_STATE_STORE.toString());
 
         assertThat(stateStore.get("Abbott")).isEqualTo(2);
         assertThat(stateStore.get("Holman")).isEqualTo(2);
