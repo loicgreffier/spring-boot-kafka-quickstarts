@@ -11,6 +11,7 @@ import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Set;
 
@@ -20,7 +21,7 @@ public class KeyValueProcessor implements ProcessorSupplier<String, KafkaPerson,
     public Processor<String, KafkaPerson, String, KafkaPersonMetadata> get() {
         return new Processor<>() {
             private ProcessorContext<String, KafkaPersonMetadata> context;
-            private KeyValueStore<String, Long> countStore;
+            private KeyValueStore<String, Integer> countStore;
 
             @Override
             public void init(ProcessorContext<String, KafkaPersonMetadata> context) {
@@ -42,13 +43,14 @@ public class KeyValueProcessor implements ProcessorSupplier<String, KafkaPerson,
                         .setOffset(recordMetadata != null ? recordMetadata.offset() : null)
                         .build();
 
-                Long currentValue = countStore.get(newKey);
+                Integer currentValue = countStore.get(newKey);
                 if (currentValue == null) {
-                    countStore.put(newKey, 1L);
+                    countStore.put(newKey, 1);
                 } else {
                     countStore.put(newKey, currentValue + 1);
                 }
 
+                message.headers().add("headerKey", "headerValue".getBytes(StandardCharsets.UTF_8));
                 context.forward(message.withKey(message.value().getLastName()).withValue(newValue));
             }
 
@@ -61,9 +63,9 @@ public class KeyValueProcessor implements ProcessorSupplier<String, KafkaPerson,
 
     @Override
     public Set<StoreBuilder<?>> stores() {
-        final StoreBuilder<KeyValueStore<String, Long>> countStoreBuilder = Stores
+        final StoreBuilder<KeyValueStore<String, Integer>> countStoreBuilder = Stores
                         .keyValueStoreBuilder(Stores.persistentKeyValueStore(StateStore.PERSON_PROCESS_STATE_STORE.toString()),
-                                Serdes.String(), Serdes.Long());
+                                Serdes.String(), Serdes.Integer());
         return Collections.singleton(countStoreBuilder);
     }
 }
