@@ -21,7 +21,7 @@ public class KeyValueProcessor implements ProcessorSupplier<String, KafkaPerson,
     public Processor<String, KafkaPerson, String, KafkaPersonMetadata> get() {
         return new Processor<>() {
             private ProcessorContext<String, KafkaPersonMetadata> context;
-            private KeyValueStore<String, Integer> countStore;
+            private KeyValueStore<String, Long> countStore;
 
             @Override
             public void init(ProcessorContext<String, KafkaPersonMetadata> context) {
@@ -43,9 +43,9 @@ public class KeyValueProcessor implements ProcessorSupplier<String, KafkaPerson,
                         .setOffset(recordMetadata != null ? recordMetadata.offset() : null)
                         .build();
 
-                Integer currentValue = countStore.get(newKey);
+                Long currentValue = countStore.get(newKey);
                 if (currentValue == null) {
-                    countStore.put(newKey, 1);
+                    countStore.put(newKey, 1L);
                 } else {
                     countStore.put(newKey, currentValue + 1);
                 }
@@ -63,9 +63,9 @@ public class KeyValueProcessor implements ProcessorSupplier<String, KafkaPerson,
 
     @Override
     public Set<StoreBuilder<?>> stores() {
-        final StoreBuilder<KeyValueStore<String, Integer>> countStoreBuilder = Stores
+        final StoreBuilder<KeyValueStore<String, Long>> countStoreBuilder = Stores
                         .keyValueStoreBuilder(Stores.persistentKeyValueStore(StateStore.PERSON_PROCESS_STATE_STORE.toString()),
-                                Serdes.String(), Serdes.Integer());
+                                Serdes.String(), Serdes.Long());
         return Collections.singleton(countStoreBuilder);
     }
 }

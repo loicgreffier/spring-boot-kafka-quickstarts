@@ -8,6 +8,7 @@ import io.github.loicgreffier.streams.process.app.KafkaStreamsProcessTopology;
 import io.github.loicgreffier.streams.process.constants.StateStore;
 import io.github.loicgreffier.streams.process.constants.Topic;
 import io.github.loicgreffier.streams.process.serdes.CustomSerdes;
+import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.*;
@@ -30,6 +31,7 @@ class KafkaStreamsProcessTest {
     private final static String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, KafkaPerson> inputTopic;
+    private TestOutputTopic<String, Long> changelogOutputTopic;
     private TestOutputTopic<String, KafkaPersonMetadata> outputTopic;
 
     @BeforeEach
@@ -48,6 +50,9 @@ class KafkaStreamsProcessTest {
 
         inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
                 CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
+
+        changelogOutputTopic = testDriver.createOutputTopic("streams-process-test-" + StateStore.PERSON_PROCESS_STATE_STORE + "-changelog", new StringDeserializer(),
+                new LongDeserializer());
 
         outputTopic = testDriver.createOutputTopic(Topic.PERSON_PROCESS_TOPIC.toString(), new StringDeserializer(),
                 CustomSerdes.<KafkaPersonMetadata>getValueSerdes().deserializer());
@@ -91,10 +96,22 @@ class KafkaStreamsProcessTest {
         assertThat(results.get(3).value.getPartition()).isZero();
         assertThat(results.get(3).value.getOffset()).isEqualTo(3);
 
-        KeyValueStore<String, Integer> stateStore = testDriver.getKeyValueStore(StateStore.PERSON_PROCESS_STATE_STORE.toString());
+        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(StateStore.PERSON_PROCESS_STATE_STORE.toString());
 
         assertThat(stateStore.get("Abbott")).isEqualTo(2);
         assertThat(stateStore.get("Holman")).isEqualTo(2);
+
+        List<KeyValue<String, Long>> changelogResults = changelogOutputTopic.readKeyValuesToList();
+
+        assertThat(changelogResults).hasSize(4);
+        assertThat(changelogResults.get(0).key).isEqualTo("Abbott");
+        assertThat(changelogResults.get(0).value).isEqualTo(1L);
+        assertThat(changelogResults.get(1).key).isEqualTo("Abbott");
+        assertThat(changelogResults.get(1).value).isEqualTo(2L);
+        assertThat(changelogResults.get(2).key).isEqualTo("Holman");
+        assertThat(changelogResults.get(2).value).isEqualTo(1L);
+        assertThat(changelogResults.get(3).key).isEqualTo("Holman");
+        assertThat(changelogResults.get(3).value).isEqualTo(2L);
     }
 
     private List<KeyValue<String, KafkaPerson>> buildKafkaPersonRecords() {
