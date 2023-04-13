@@ -33,6 +33,7 @@
         <module>kafka-streams-outer-join-stream-stream</module>
         <module>kafka-streams-print</module>
         <module>kafka-streams-process</module>
+        <module>kafka-streams-process-values</module>
         <module>kafka-streams-reduce</module>
         <module>kafka-streams-repartition</module>
         <module>kafka-streams-select-key</module>

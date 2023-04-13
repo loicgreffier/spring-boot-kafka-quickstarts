@@ -1,20 +1,20 @@
-# Kafka Streams Process
+# Kafka Streams Process Values
 
 This module demonstrates:
 
-- The use of the Kafka Streams DSL: `process()`
+- The use of the Kafka Streams DSL: `processValues()`
 - The use of the Processor API
   - The access to the processor context
-  - The creation of a state store and its connection to the processor
+  - The creation of a timestamp state store and its connection to the processor
 - The use of unit tests with Topology Test Driver.
 
 This module does:
 
 - Stream records of type <String,KafkaPerson> from a topic named PERSON_TOPIC.
 - Process the stream with a custom processor that:
-  - transforms each record by changing the key to the last name and enriching the value with metadata such as topic, partition, and offset.
-  - counts each occurrence of the records by last name and stores the result in a state store.
-- Write back the result into a new topic named PERSON_PROCESS_TOPIC.
+  - transforms each record by enriching the value with metadata such as topic, partition, and offset.
+  - counts each occurrence of the records by last name and stores the result in a timestamped state store.
+- Write back the result into a new topic named PERSON_PROCESS_VALUES_TOPIC.
 
 ![topology.png](topology.png)
 
@@ -47,4 +47,4 @@ This command will start the following services in Docker:
 - 1 Schema registry
 - 1 Control Center
 - 1 producer person
-- 1 Kafka Streams process
+- 1 Kafka Streams process values

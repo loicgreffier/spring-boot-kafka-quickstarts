@@ -1,0 +1,43 @@
+{
+  "namespace": "io.github.loicgreffier.avro",
+  "type": "record",
+  "name": "KafkaPersonMetadata",
+  "fields": [
+    {
+      "name": "person",
+      "type": [
+        "null",
+        "KafkaPerson"
+      ],
+      "default": null,
+      "doc": "Person"
+    },
+    {
+      "name": "offset",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Person offset"
+    },
+    {
+      "name": "partition",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "Person partition"
+    },
+    {
+      "name": "topic",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "Person topic"
+    }
+  ]
+}
