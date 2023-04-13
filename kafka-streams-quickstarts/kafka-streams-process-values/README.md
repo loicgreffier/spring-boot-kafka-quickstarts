@@ -5,7 +5,7 @@ This module demonstrates:
 - The use of the Kafka Streams DSL: `processValues()`
 - The use of the Processor API
   - The access to the processor context
-  - The creation of a timestamp state store and its connection to the processor
+  - The creation of a timestamped state store and its connection to the processor
 - The use of unit tests with Topology Test Driver.
 
 This module does:
