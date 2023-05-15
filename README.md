@@ -29,6 +29,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 | Module                                                                                    | Library       | Main Concept                                            | Additional Content     |
 |:------------------------------------------------------------------------------------------|---------------|---------------------------------------------------------|------------------------|
+| [Avro Generic](/kafka-consumer-quickstarts/kafka-consumer-avro-generic)                   | Kafka Clients | Generic Avro                                            | Mock consumer          |
 | [Avro Specific](/kafka-consumer-quickstarts/kafka-consumer-avro-specific)                 | Kafka Clients | Specific Avro                                           | Mock consumer          |
 | [Circuit breaker](/kafka-consumer-quickstarts/kafka-consumer-circuit-breaker)             | Kafka Clients | Deserialization/poison pill error handling              | Mock consumer          |
 | [Retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system) | Kafka Clients | External system interfacing with strong retry mechanism | Mock consumer          |
