@@ -78,10 +78,10 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
 
-  kafka-producer-avro:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-producer-avro-1.0.0
-    hostname: kafka-producer-avro
-    container_name: kafka-producer-avro
+  kafka-producer-avro-specific:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-producer-avro-specific-1.0.0
+    hostname: kafka-producer-avro-specific
+    container_name: kafka-producer-avro-specific
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
@@ -108,7 +108,7 @@ services:
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
-      - kafka-producer-avro
+      - kafka-producer-avro-specific
     ports:
       - "8083:8080"
     restart: unless-stopped

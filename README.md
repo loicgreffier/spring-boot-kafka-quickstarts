@@ -20,7 +20,8 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 | Module                                                                    | Library       | Main Concept      | Additional Content     |
 |---------------------------------------------------------------------------|---------------|-------------------|------------------------|
-| [Avro](/kafka-producer-quickstarts/kafka-producer-avro)                   | Kafka Clients | Specific Avro     | Mock producer          |
+| [Avro Specific](/kafka-producer-quickstarts/kafka-producer-avro-specific) | Kafka Clients | Specific Avro     | Mock producer          |
+| [Avro Generic](/kafka-producer-quickstarts/kafka-producer-avro-generic)   | Kafka Clients | Generic Avro      | Mock producer          |
 | [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | String Production | Headers, Mock producer |
 | [Transactional](/kafka-producer-quickstarts/kafka-producer-transactional) | Kafka Clients | Transaction       | Mock producer          |
 

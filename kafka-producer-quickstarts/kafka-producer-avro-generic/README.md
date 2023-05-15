@@ -1,12 +1,12 @@
-# Producer Transactional
+# Producer Avro Generic
 
 This module demonstrates:
 
 - The use of the Kafka Clients producer DSL.
-- The use of Kafka transactions.
+- The use of Apache Avro and generic records.
 - The use of unit tests with a Mock producer.
 
-This module produces <String,String> transactional records to two topics named FIRST_STRING_TOPIC and SECOND_STRING_TOPIC.
+This module produces <String, KafkaPerson> records to a topic named PERSON_TOPIC.
 
 ## Requirements
 
@@ -33,5 +33,6 @@ This command will start the following services in Docker:
 
 - 1 Zookeeper
 - 1 Kafka broker
+- 1 Schema registry
 - 1 Control Center
-- 1 producer transactional
+- 1 producer Avro Generic

@@ -12,6 +12,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class KafkaProducerSimpleTest {
     private KafkaProducerSimpleRunner producerRunner;
@@ -45,10 +47,8 @@ class KafkaProducerSimpleTest {
         assertThat(mockProducer.history()).hasSize(1);
         assertThat(mockProducer.history().get(0)).isEqualTo(message);
 
-        try {
-            record.get();
-        } catch (ExecutionException | InterruptedException ex) {
-            assert(ex.getCause()).equals(exception);
-        }
+        ExecutionException executionException = assertThrows(ExecutionException.class, record::get);
+
+        assertEquals(executionException.getCause(), exception);
     }
 }

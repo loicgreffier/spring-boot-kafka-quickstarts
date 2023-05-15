@@ -78,10 +78,10 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
 
-  kafka-producer-avro-specific:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-producer-avro-specific-1.0.0
-    hostname: kafka-producer-avro-specific
-    container_name: kafka-producer-avro-specific
+  kafka-producer-avro-generic:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-producer-avro-generic-1.0.0
+    hostname: kafka-producer-avro-generic
+    container_name: kafka-producer-avro-generic
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
@@ -89,28 +89,6 @@ services:
       - schema-registry
     ports:
       - "8082:8080"
-    restart: unless-stopped
-    environment:
-      SPRING_APPLICATION_JSON: |
-        {
-          "kafka": {
-            "properties": {
-              "bootstrap.servers": "broker:29092",
-              "schema.registry.url": "http://schema-registry:8081"
-            }
-          }
-        }
-
-  kafka-consumer-avro:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-consumer-avro-1.0.0
-    hostname: kafka-consumer-avro
-    container_name: kafka-consumer-avro
-    networks:
-      - spring-boot-kafka-quickstarts
-    depends_on:
-      - kafka-producer-avro-specific
-    ports:
-      - "8083:8080"
     restart: unless-stopped
     environment:
       SPRING_APPLICATION_JSON: |
