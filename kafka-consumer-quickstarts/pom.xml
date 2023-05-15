@@ -10,11 +10,12 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
+        <module>kafka-consumer-avro-specific</module>
         <module>kafka-consumer-simple</module>
-        <module>kafka-consumer-avro</module>
         <module>kafka-consumer-circuit-breaker</module>
         <module>kafka-consumer-retry-external-system</module>
         <module>kafka-consumer-transactional</module>
+        <module>kafka-consumer-avro-generic</module>
     </modules>
 
     <artifactId>kafka-consumer-quickstarts</artifactId>

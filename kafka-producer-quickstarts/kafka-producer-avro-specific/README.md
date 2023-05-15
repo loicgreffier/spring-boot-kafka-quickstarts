@@ -6,7 +6,7 @@ This module demonstrates:
 - The use of Apache Avro and specific records.
 - The use of unit tests with a Mock producer.
 
-This module produces <String, KafkaPerson> records to a topic named PERSON_TOPIC.
+This module produces <String,KafkaPerson> records to a topic named PERSON_TOPIC.
 
 ## Requirements
 

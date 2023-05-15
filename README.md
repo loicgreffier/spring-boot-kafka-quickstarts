@@ -20,8 +20,8 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 | Module                                                                    | Library       | Main Concept      | Additional Content     |
 |---------------------------------------------------------------------------|---------------|-------------------|------------------------|
-| [Avro Specific](/kafka-producer-quickstarts/kafka-producer-avro-specific) | Kafka Clients | Specific Avro     | Mock producer          |
 | [Avro Generic](/kafka-producer-quickstarts/kafka-producer-avro-generic)   | Kafka Clients | Generic Avro      | Mock producer          |
+| [Avro Specific](/kafka-producer-quickstarts/kafka-producer-avro-specific) | Kafka Clients | Specific Avro     | Mock producer          |
 | [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | String Production | Headers, Mock producer |
 | [Transactional](/kafka-producer-quickstarts/kafka-producer-transactional) | Kafka Clients | Transaction       | Mock producer          |
 
@@ -29,7 +29,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 | Module                                                                                    | Library       | Main Concept                                            | Additional Content     |
 |:------------------------------------------------------------------------------------------|---------------|---------------------------------------------------------|------------------------|
-| [Avro](/kafka-consumer-quickstarts/kafka-consumer-avro)                                   | Kafka Clients | Specific Avro                                           | Mock consumer          |
+| [Avro Specific](/kafka-consumer-quickstarts/kafka-consumer-avro-specific)                 | Kafka Clients | Specific Avro                                           | Mock consumer          |
 | [Circuit breaker](/kafka-consumer-quickstarts/kafka-consumer-circuit-breaker)             | Kafka Clients | Deserialization/poison pill error handling              | Mock consumer          |
 | [Retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system) | Kafka Clients | External system interfacing with strong retry mechanism | Mock consumer          |
 | [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                               | Kafka Clients | String Consumption                                      | Headers, Mock consumer |

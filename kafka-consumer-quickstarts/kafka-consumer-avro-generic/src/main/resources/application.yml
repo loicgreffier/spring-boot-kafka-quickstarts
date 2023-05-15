@@ -1,0 +1,16 @@
+kafka:
+  properties:
+    bootstrap.servers: localhost:9092
+    schema.registry.url: http://localhost:8081
+    key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+    group.id: consumer-avro-generic
+    client.id: consumer-avro-generic
+    enable.auto.commit: false
+    auto.offset.reset: earliest
+    max.poll.interval.ms: 300000
+    max.poll.records: 500
+    heartbeat.interval.ms: 3000
+    session.timeout.ms: 45000
+    fetch.min.bytes: 1
+    fetch.max.wait.ms: 500
