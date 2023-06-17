@@ -1,15 +1,9 @@
 package io.github.loicgreffier.streams.producer.country.constants;
 
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-public enum Topic {
-    COUNTRY_TOPIC("COUNTRY_TOPIC");
-
-    private final String topicName;
-
-    @Override
-    public String toString() {
-        return topicName;
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public abstract class Topic {
+    public static final String COUNTRY_TOPIC = "COUNTRY_TOPIC";
 }

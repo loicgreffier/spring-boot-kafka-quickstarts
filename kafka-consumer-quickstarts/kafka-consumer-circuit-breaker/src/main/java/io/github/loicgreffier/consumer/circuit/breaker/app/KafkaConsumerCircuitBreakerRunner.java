@@ -1,6 +1,5 @@
 package io.github.loicgreffier.consumer.circuit.breaker.app;
 
-import io.github.loicgreffier.consumer.circuit.breaker.constants.Topic;
 import io.github.loicgreffier.avro.KafkaPerson;
 import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
@@ -18,6 +17,8 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.util.Collections;
 
+import static io.github.loicgreffier.consumer.circuit.breaker.constants.Topic.PERSON_TOPIC;
+
 @Slf4j
 @Component
 @AllArgsConstructor
@@ -27,9 +28,9 @@ public class KafkaConsumerCircuitBreakerRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try {
-            log.info("Subscribing to {} topic", Topic.PERSON_TOPIC);
+            log.info("Subscribing to {} topic", PERSON_TOPIC);
 
-            kafkaConsumer.subscribe(Collections.singleton(Topic.PERSON_TOPIC.toString()), new KafkaConsumerCircuitBreakerListener());
+            kafkaConsumer.subscribe(Collections.singleton(PERSON_TOPIC), new KafkaConsumerCircuitBreakerListener());
 
             while (true) {
                 try {

@@ -1,7 +1,6 @@
 package io.github.loicgreffier.streams.left.join.stream.global.table.app;
 
-import io.github.loicgreffier.streams.left.join.stream.global.table.properties.StreamsProperties;
-import io.github.loicgreffier.streams.left.join.stream.global.table.serdes.CustomSerdes;
+import io.github.loicgreffier.streams.left.join.stream.global.table.properties.KafkaStreamsProperties;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
@@ -22,24 +21,22 @@ public class KafkaStreamsLeftJoinStreamGlobalTableRunner implements ApplicationR
     private ConfigurableApplicationContext applicationContext;
 
     @Autowired
-    private StreamsProperties streamsProperties;
+    private KafkaStreamsProperties properties;
 
     private KafkaStreams kafkaStreams;
 
     @Override
     public void run(ApplicationArguments args) {
-        CustomSerdes.setSerdesConfig(streamsProperties.getProperties());
-
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsLeftJoinStreamGlobalTableTopology.topology(streamsBuilder);
         Topology topology = streamsBuilder.build();
-        log.info("Description of the topology:\n {}", topology.describe());
+        log.info("Topology description:\n {}", topology.describe());
 
-        kafkaStreams = new KafkaStreams(topology, streamsProperties.asProperties());
+        kafkaStreams = new KafkaStreams(topology, properties.asProperties());
 
         kafkaStreams.setUncaughtExceptionHandler(exception -> {
             log.error("A not covered exception occurred in {} Kafka Streams. Shutting down...",
-                    streamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG), exception);
+                    properties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG), exception);
 
             applicationContext.close();
             return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
@@ -48,7 +45,7 @@ public class KafkaStreamsLeftJoinStreamGlobalTableRunner implements ApplicationR
         kafkaStreams.setStateListener((newState, oldState) -> {
             if (newState.equals(KafkaStreams.State.ERROR)) {
                 log.error("The {} Kafka Streams is in error state...",
-                        streamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
+                        properties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
 
                 applicationContext.close();
             }

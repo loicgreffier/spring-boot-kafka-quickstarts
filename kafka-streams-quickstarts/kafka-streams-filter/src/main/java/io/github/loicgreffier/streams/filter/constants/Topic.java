@@ -1,16 +1,10 @@
 package io.github.loicgreffier.streams.filter.constants;
 
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-public enum Topic {
-    PERSON_TOPIC("PERSON_TOPIC"),
-    PERSON_FILTER_TOPIC("PERSON_FILTER_TOPIC");
-
-    private final String topicName;
-
-    @Override
-    public String toString() {
-        return topicName;
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public abstract class Topic {
+    public static final String PERSON_TOPIC = "PERSON_TOPIC";
+    public static final String PERSON_FILTER_TOPIC = "PERSON_FILTER_TOPIC";
 }

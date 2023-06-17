@@ -1,15 +1,15 @@
 # Kafka Streams Filter
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Streams DSL: `filter()`, `filterNot()`, `peek()`.
-- The use of unit tests with Topology Test Driver.
+- The usage of the Kafka Streams DSL, including `filter()`, `filterNot()` and `peek()`.
+- Unit testing using the Topology Test Driver.
 
-This module does:
+In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`. 
+The following tasks are performed:
 
-- Stream records of type <String,KafkaPerson> from a topic named PERSON_TOPIC.
-- Filter KafkaPerson records to only keep those having both last name and first name starting with "A".
-- Write the result into a new topic named PERSON_FILTER_TOPIC.
+1. Apply a filter to only keep the `KafkaPerson` records where both the last name and first name start with "A".
+2. Write the resulting filtered records to a new topic named `PERSON_FILTER_TOPIC`.
 
 ![topology.png](topology.png)
 
@@ -26,7 +26,7 @@ To compile and run this demo, you will need the following:
 To run the application manually, please follow the steps below:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type <String,KafkaPerson> to a topic named PERSON_TOPIC. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
+- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
 - Start the Kafka Streams.
 
 To run the application in Docker, please use the following command:

@@ -1,11 +1,11 @@
 # Consumer Simple
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Clients consumer DSL.
-- The use of unit tests with a Mock consumer.
+- The usage of the Kafka Clients consumer DSL.
+- The usage of unit tests with a Mock consumer.
 
-This module consumes records of type <String,String> from a topic named STRING_TOPIC.
+This module consumes records of type `<String, String>` from a topic named `STRING_TOPIC`.
 
 ## Requirements
 
@@ -20,7 +20,7 @@ To compile and run this demo, you will need the following:
 To run the application manually, please follow the steps below:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type <String,String> to a topic named STRING_TOPIC. You can use the [producer simple](../../kafka-producer-quickstarts/kafka-producer-simple) to do this.
+- Produce records of type `<String, String>` to a topic named `STRING_TOPIC`. You can use the [producer simple](../../kafka-producer-quickstarts/kafka-producer-simple) to do this.
 - Start the consumer.
 
 To run the application in Docker, please use the following command:

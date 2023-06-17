@@ -1,15 +1,17 @@
 package io.github.loicgreffier.streams.count.app;
 
-import io.github.loicgreffier.streams.count.constants.StateStore;
-import io.github.loicgreffier.streams.count.constants.Topic;
 import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.streams.count.serdes.CustomSerdes;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.kstream.Grouped;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.state.KeyValueStore;
+
+import static io.github.loicgreffier.streams.count.constants.StateStore.PERSON_COUNT_STATE_STORE;
+import static io.github.loicgreffier.streams.count.constants.Topic.*;
 
 @Slf4j
 public class KafkaStreamsCountTopology {
@@ -17,14 +19,12 @@ public class KafkaStreamsCountTopology {
 
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
+                .<String, KafkaPerson>stream(PERSON_TOPIC)
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-                .groupBy((key, person) -> person.getNationality().toString(),
-                        Grouped.with("GROUP_BY", Serdes.String(), CustomSerdes.getValueSerdes()))
-                .count(Named.as("COUNT"), Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as(StateStore.PERSON_COUNT_STATE_STORE.toString())
-                        .withKeySerde(Serdes.String())
+                .groupBy((key, person) -> person.getNationality().toString(), Grouped.as(GROUP_PERSON_BY_NATIONALITY_TOPIC))
+                .count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as(PERSON_COUNT_STATE_STORE)
                         .withValueSerde(Serdes.Long()))
                 .toStream()
-                .to(Topic.PERSON_COUNT_TOPIC.toString(), Produced.with(Serdes.String(), Serdes.Long()));
+                .to(PERSON_COUNT_TOPIC, Produced.valueSerde(Serdes.Long()));
     }
 }

@@ -1,6 +1,5 @@
 package io.github.loicgreffier.streams.producer.person.app;
 
-import io.github.loicgreffier.streams.producer.person.constants.Topic;
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaPerson;
 import jakarta.annotation.PreDestroy;
@@ -18,6 +17,9 @@ import java.util.Random;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import static io.github.loicgreffier.streams.producer.person.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.producer.person.constants.Topic.PERSON_TOPIC_TWO;
+
 @Slf4j
 @Component
 @AllArgsConstructor
@@ -30,11 +32,8 @@ public class KafkaStreamsProducerPersonRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         int i = 0;
         while (true) {
-            ProducerRecord<String, KafkaPerson> messageOne = new ProducerRecord<>(Topic.PERSON_TOPIC.toString(),
-                    String.valueOf(i), buildKafkaPerson(i));
-
-            ProducerRecord<String, KafkaPerson> messageTwo = new ProducerRecord<>(Topic.PERSON_TOPIC_TWO.toString(),
-                    String.valueOf(i), buildKafkaPerson(i));
+            ProducerRecord<String, KafkaPerson> messageOne = new ProducerRecord<>(PERSON_TOPIC, String.valueOf(i), buildKafkaPerson(i));
+            ProducerRecord<String, KafkaPerson> messageTwo = new ProducerRecord<>(PERSON_TOPIC_TWO, String.valueOf(i), buildKafkaPerson(i));
 
             send(messageOne);
             send(messageTwo);

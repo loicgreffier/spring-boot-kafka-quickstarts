@@ -1,7 +1,6 @@
 package io.github.loicgreffier.consumer.avro.specific.app;
 
 import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.consumer.avro.specific.constants.Topic;
 import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +16,8 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.util.Collections;
 
+import static io.github.loicgreffier.consumer.avro.specific.constants.Topic.PERSON_TOPIC;
+
 @Slf4j
 @Component
 @AllArgsConstructor
@@ -26,9 +27,9 @@ public class KafkaConsumerAvroSpecificRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try {
-            log.info("Subscribing to {} topic", Topic.PERSON_TOPIC);
+            log.info("Subscribing to {} topic", PERSON_TOPIC);
 
-            kafkaConsumer.subscribe(Collections.singleton(Topic.PERSON_TOPIC.toString()), new KafkaConsumerAvroSpecificRebalanceListener());
+            kafkaConsumer.subscribe(Collections.singleton(PERSON_TOPIC), new KafkaConsumerAvroSpecificRebalanceListener());
 
             while (true) {
                 ConsumerRecords<String, KafkaPerson> messages = kafkaConsumer.poll(Duration.ofMillis(1000));

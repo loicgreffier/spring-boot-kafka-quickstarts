@@ -3,15 +3,14 @@ package io.github.loicgreffier.streams.join.stream.table.app;
 import io.github.loicgreffier.avro.KafkaCountry;
 import io.github.loicgreffier.avro.KafkaJoinPersonCountry;
 import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.streams.join.stream.table.constants.StateStore;
-import io.github.loicgreffier.streams.join.stream.table.constants.Topic;
-import io.github.loicgreffier.streams.join.stream.table.serdes.CustomSerdes;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.*;
-import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.kstream.Joined;
+import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Materialized;
+
+import static io.github.loicgreffier.streams.join.stream.table.constants.StateStore.COUNTRY_TABLE_JOIN_STREAM_TABLE_STATE_STORE;
+import static io.github.loicgreffier.streams.join.stream.table.constants.Topic.*;
 
 @Slf4j
 public class KafkaStreamsJoinStreamTableTopology {
@@ -19,14 +18,10 @@ public class KafkaStreamsJoinStreamTableTopology {
 
     public static void topology(StreamsBuilder streamsBuilder) {
         KTable<String, KafkaCountry> countryTable = streamsBuilder
-                .table(Topic.COUNTRY_TOPIC.toString(),
-                        Consumed.with(Serdes.String(), CustomSerdes.getValueSerdes()),
-                        Materialized.<String, KafkaCountry, KeyValueStore<Bytes, byte[]>>as(StateStore.COUNTRY_TABLE_JOIN_STREAM_TABLE_STATE_STORE.toString())
-                                .withKeySerde(Serdes.String())
-                                .withValueSerde(CustomSerdes.getValueSerdes()));
+                .table(COUNTRY_TOPIC, Materialized.as(COUNTRY_TABLE_JOIN_STREAM_TABLE_STATE_STORE));
 
         streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
+                .<String, KafkaPerson>stream(PERSON_TOPIC)
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .selectKey((key, person) -> person.getNationality().toString())
                 .join(countryTable,
@@ -38,7 +33,7 @@ public class KafkaStreamsJoinStreamTableTopology {
                                     .setCountry(country)
                                     .build();
                         },
-                        Joined.with(Serdes.String(), CustomSerdes.getValueSerdes(), CustomSerdes.getValueSerdes(), Topic.PERSON_JOIN_STREAM_TABLE_REKEY_TOPIC.toString()))
-                .to(Topic.PERSON_COUNTRY_JOIN_STREAM_TABLE_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
+                        Joined.as(PERSON_JOIN_STREAM_TABLE_REKEY_TOPIC))
+                .to(PERSON_COUNTRY_JOIN_STREAM_TABLE_TOPIC);
     }
 }

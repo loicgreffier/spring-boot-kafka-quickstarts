@@ -1,6 +1,5 @@
 package io.github.loicgreffier.consumer.simple.app;
 
-import io.github.loicgreffier.consumer.simple.constants.Topic;
 import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +17,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 
+import static io.github.loicgreffier.consumer.simple.constants.Topic.STRING_TOPIC;
+
 @Slf4j
 @Component
 @AllArgsConstructor
@@ -27,9 +28,9 @@ public class KafkaConsumerSimpleRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try {
-            log.info("Subscribing to {} topic", Topic.STRING_TOPIC);
+            log.info("Subscribing to {} topic", STRING_TOPIC);
 
-            kafkaConsumer.subscribe(Collections.singleton(Topic.STRING_TOPIC.toString()), new KafkaConsumerSimpleRebalanceListener());
+            kafkaConsumer.subscribe(Collections.singleton(STRING_TOPIC), new KafkaConsumerSimpleRebalanceListener());
 
             while (true) {
                 ConsumerRecords<String, String> messages = kafkaConsumer.poll(Duration.ofMillis(1000));

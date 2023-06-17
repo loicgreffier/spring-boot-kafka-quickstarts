@@ -1,6 +1,5 @@
 package io.github.loicgreffier.producer.transactional.app;
 
-import io.github.loicgreffier.producer.transactional.constants.Topic;
 import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +18,9 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import static io.github.loicgreffier.producer.transactional.constants.Topic.FIRST_STRING_TOPIC;
+import static io.github.loicgreffier.producer.transactional.constants.Topic.SECOND_STRING_TOPIC;
+
 @Slf4j
 @Component
 @AllArgsConstructor
@@ -32,10 +34,10 @@ public class KafkaProducerTransactionalRunner implements ApplicationRunner {
 
         int i = 0;
         while (true) {
-            ProducerRecord<String, String> firstMessage = new ProducerRecord<>(Topic.FIRST_STRING_TOPIC.toString(),
+            ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC,
                     String.valueOf(i), String.format("Message %s", i));
 
-            ProducerRecord<String, String> secondMessage = new ProducerRecord<>(Topic.SECOND_STRING_TOPIC.toString(),
+            ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC,
                     String.valueOf(i), String.format("Message %s", i));
 
             sendInTransaction(Arrays.asList(firstMessage, secondMessage));

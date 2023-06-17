@@ -1,19 +1,18 @@
 package io.github.loicgreffier.streams.cogroup.app;
 
-import io.github.loicgreffier.streams.cogroup.app.aggregator.FirstNameByLastNameAggregator;
-import io.github.loicgreffier.streams.cogroup.constants.StateStore;
-import io.github.loicgreffier.streams.cogroup.constants.Topic;
-import io.github.loicgreffier.streams.cogroup.serdes.CustomSerdes;
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.avro.KafkaPersonGroup;
+import io.github.loicgreffier.streams.cogroup.app.aggregator.FirstNameByLastNameAggregator;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.*;
-import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.kstream.Grouped;
+import org.apache.kafka.streams.kstream.KGroupedStream;
+import org.apache.kafka.streams.kstream.Materialized;
 
 import java.util.HashMap;
+
+import static io.github.loicgreffier.streams.cogroup.constants.StateStore.PERSON_COGROUP_AGGREGATE_STATE_STORE;
+import static io.github.loicgreffier.streams.cogroup.constants.Topic.*;
 
 @Slf4j
 public class KafkaStreamsCogroupTopology {
@@ -23,25 +22,20 @@ public class KafkaStreamsCogroupTopology {
         final FirstNameByLastNameAggregator aggregator = new FirstNameByLastNameAggregator();
 
         final KGroupedStream<String, KafkaPerson> groupedStreamOne = streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
+                .<String, KafkaPerson>stream(PERSON_TOPIC)
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-                .groupBy((key, person) -> person.getLastName(),
-                        Grouped.with("GROUP_BY_" + Topic.PERSON_TOPIC, Serdes.String(), CustomSerdes.getValueSerdes()));
+                .groupBy((key, person) -> person.getLastName(), Grouped.as(GROUP_PERSON_BY_LAST_NAME_TOPIC));
 
         final KGroupedStream<String, KafkaPerson> groupedStreamTwo = streamsBuilder
-                .stream(Topic.PERSON_TOPIC_TWO.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
+                .<String, KafkaPerson>stream(PERSON_TOPIC_TWO)
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-                .groupBy((key, person) -> person.getLastName(),
-                        Grouped.with("GROUP_BY_" + Topic.PERSON_TOPIC_TWO, Serdes.String(), CustomSerdes.getValueSerdes()));
+                .groupBy((key, person) -> person.getLastName(), Grouped.as(GROUP_PERSON_BY_LAST_NAME_TOPIC_TWO));
 
         groupedStreamOne
                 .cogroup(aggregator)
                 .cogroup(groupedStreamTwo, aggregator)
-                .aggregate(() -> new KafkaPersonGroup(new HashMap<>()), Named.as("AGGREGATE_PERSON_TOPICS"),
-                        Materialized.<String, KafkaPersonGroup, KeyValueStore<Bytes, byte[]>>as(StateStore.PERSON_COGROUP_AGGREGATE_STATE_STORE.toString())
-                        .withKeySerde(Serdes.String())
-                        .withValueSerde(CustomSerdes.getValueSerdes()))
+                .aggregate(() -> new KafkaPersonGroup(new HashMap<>()), Materialized.as(PERSON_COGROUP_AGGREGATE_STATE_STORE))
                 .toStream()
-                .to(Topic.PERSON_COGROUP_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
+                .to(PERSON_COGROUP_TOPIC);
     }
 }

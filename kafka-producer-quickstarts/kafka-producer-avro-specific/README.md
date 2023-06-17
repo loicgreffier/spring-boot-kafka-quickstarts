@@ -1,12 +1,12 @@
 # Producer Avro Specific
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Clients producer DSL.
-- The use of Apache Avro and specific records.
-- The use of unit tests with a Mock producer.
+- The usage of the Kafka Clients producer DSL.
+- The usage of Apache Avro and specific records.
+- The usage of unit tests with a Mock producer.
 
-This module produces <String,KafkaPerson> records to a topic named PERSON_TOPIC.
+This module produces records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`.
 
 ## Requirements
 

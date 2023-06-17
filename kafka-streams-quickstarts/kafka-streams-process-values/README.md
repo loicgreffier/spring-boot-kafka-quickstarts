@@ -1,20 +1,16 @@
 # Kafka Streams Process Values
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Streams DSL: `processValues()`
-- The use of the Processor API
-  - The access to the processor context
-  - The creation of a timestamped state store and its connection to the processor
-- The use of unit tests with Topology Test Driver.
+- The usage of the Kafka Streams DSL, including `processValues()`.
+- Accessing and enriching records with metadata using the processor context.
+- Unit testing with the Topology Test Driver.
 
-This module does:
+In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`.
+The following tasks are performed:
 
-- Stream records of type <String,KafkaPerson> from a topic named PERSON_TOPIC.
-- Process the stream with a custom processor that:
-  - transforms each record by enriching the value with metadata such as topic, partition, and offset.
-  - counts each occurrence of the records by last name and stores the result in a timestamped state store.
-- Write back the result into a new topic named PERSON_PROCESS_VALUES_TOPIC.
+1. Each record is processed using a custom processor that enriches the value with metadata such as the topic, partition, and offset information.
+2. The processed records with enriched metadata are written to a new topic named `PERSON_PROCESS_VALUES_TOPIC`.
 
 ![topology.png](topology.png)
 
@@ -31,7 +27,7 @@ To compile and run this demo, you will need the following:
 To run the application manually, please follow the steps below:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type <String,KafkaPerson> to a topic named PERSON_TOPIC. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
+- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
 - Start the Kafka Streams.
 
 To run the application in Docker, please use the following command:

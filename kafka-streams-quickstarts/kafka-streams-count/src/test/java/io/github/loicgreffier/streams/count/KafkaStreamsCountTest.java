@@ -2,15 +2,11 @@ package io.github.loicgreffier.streams.count;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
-import io.github.loicgreffier.streams.count.constants.StateStore;
-import io.github.loicgreffier.streams.count.constants.Topic;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.streams.count.app.KafkaStreamsCountTopology;
-import io.github.loicgreffier.streams.count.serdes.CustomSerdes;
-import org.apache.kafka.common.serialization.LongDeserializer;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.common.serialization.*;
 import org.apache.kafka.streams.*;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
@@ -26,40 +22,50 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static io.github.loicgreffier.streams.count.constants.StateStore.PERSON_COUNT_STATE_STORE;
+import static io.github.loicgreffier.streams.count.constants.Topic.PERSON_COUNT_TOPIC;
+import static io.github.loicgreffier.streams.count.constants.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class KafkaStreamsCountTest {
+    private static final String SCHEMA_REGISTRY_SCOPE = KafkaStreamsCountTest.class.getName();
+    private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + SCHEMA_REGISTRY_SCOPE;
     private final static String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
+
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, KafkaPerson> inputTopic;
     private TestOutputTopic<String, Long> outputTopic;
 
     @BeforeEach
     void setUp() {
+        // Dummy properties required for test driver
         Properties properties = new Properties();
         properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-count-test");
-        properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "mock://" + getClass().getName());
+        properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         properties.setProperty(StreamsConfig.STATE_DIR_CONFIG, STATE_DIR);
+        properties.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class.getName());
+        properties.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
+        properties.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
 
-        Map<String, String> serdesProperties = Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://" + getClass().getName());
-        CustomSerdes.setSerdesConfig(serdesProperties);
-
+        // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsCountTopology.topology(streamsBuilder);
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
-        inputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
-                CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
+        // Create Serde for input and output topics
+        Serde<KafkaPerson> personSerde = new SpecificAvroSerde<>();
+        Map<String, String> config = Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
+        personSerde.configure(config, false);
 
-        outputTopic = testDriver.createOutputTopic(Topic.PERSON_COUNT_TOPIC.toString(), new StringDeserializer(),
-                new LongDeserializer());
+        inputTopic = testDriver.createInputTopic(PERSON_TOPIC, new StringSerializer(), personSerde.serializer());
+        outputTopic = testDriver.createOutputTopic(PERSON_COUNT_TOPIC, new StringDeserializer(), new LongDeserializer());
     }
 
     @AfterEach
     void tearDown() throws IOException {
         testDriver.close();
         Files.deleteIfExists(Paths.get(STATE_DIR));
-        MockSchemaRegistry.dropScope("mock://" + getClass().getName());
+        MockSchemaRegistry.dropScope(MOCK_SCHEMA_REGISTRY_URL);
     }
 
     @Test
@@ -93,7 +99,7 @@ class KafkaStreamsCountTest {
         assertThat(results.get(7).key).isEqualTo(CountryCode.IT.toString());
         assertThat(results.get(7).value).isEqualTo(1);
 
-        KeyValueStore<String, ValueAndTimestamp<Long>> stateStore = testDriver.getTimestampedKeyValueStore(StateStore.PERSON_COUNT_STATE_STORE.toString());
+        KeyValueStore<String, ValueAndTimestamp<Long>> stateStore = testDriver.getTimestampedKeyValueStore(PERSON_COUNT_STATE_STORE);
 
         assertThat(stateStore.get(CountryCode.FR.toString()).value()).isEqualTo(2);
         assertThat(stateStore.get(CountryCode.CH.toString()).value()).isEqualTo(2);

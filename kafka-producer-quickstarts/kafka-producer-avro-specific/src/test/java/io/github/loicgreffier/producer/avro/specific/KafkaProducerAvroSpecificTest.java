@@ -2,9 +2,8 @@ package io.github.loicgreffier.producer.avro.specific;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
-import io.github.loicgreffier.producer.avro.specific.app.KafkaProducerAvroSpecificRunner;
-import io.github.loicgreffier.producer.avro.specific.constants.Topic;
 import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.producer.avro.specific.app.KafkaProducerAvroSpecificRunner;
 import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -18,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static io.github.loicgreffier.producer.avro.specific.constants.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,7 +38,7 @@ class KafkaProducerAvroSpecificTest {
         mockProducer = new MockProducer<>(true, new StringSerializer(), serializer);
         producerRunner = new KafkaProducerAvroSpecificRunner(mockProducer);
 
-        ProducerRecord<String, KafkaPerson> message = new ProducerRecord<>(Topic.PERSON_TOPIC.toString(), "1", KafkaPerson.newBuilder()
+        ProducerRecord<String, KafkaPerson> message = new ProducerRecord<>(PERSON_TOPIC, "1", KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
@@ -59,7 +59,7 @@ class KafkaProducerAvroSpecificTest {
         mockProducer = new MockProducer<>(false, new StringSerializer(), serializer);
         producerRunner = new KafkaProducerAvroSpecificRunner(mockProducer);
 
-        ProducerRecord<String, KafkaPerson> message = new ProducerRecord<>(Topic.PERSON_TOPIC.toString(), "1", KafkaPerson.newBuilder()
+        ProducerRecord<String, KafkaPerson> message = new ProducerRecord<>(PERSON_TOPIC, "1", KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")

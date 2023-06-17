@@ -1,11 +1,11 @@
 # Producer Simple
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Clients producer DSL.
-- The use of unit tests with a Mock producer.
+- The usage of the Kafka Clients producer DSL.
+- The usage of unit tests with a Mock producer.
 
-This module produces <String,String> records to a topic named STRING_TOPIC.
+This module produces records of type `<String, String>` to a topic named `STRING_TOPIC`.
 
 ## Requirements
 

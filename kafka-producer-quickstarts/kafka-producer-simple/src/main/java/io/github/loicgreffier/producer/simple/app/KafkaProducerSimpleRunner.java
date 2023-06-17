@@ -1,6 +1,5 @@
 package io.github.loicgreffier.producer.simple.app;
 
-import io.github.loicgreffier.producer.simple.constants.Topic;
 import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import static io.github.loicgreffier.producer.simple.constants.Topic.STRING_TOPIC;
+
 @Slf4j
 @Component
 @AllArgsConstructor
@@ -25,7 +26,7 @@ public class KafkaProducerSimpleRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         int i = 0;
         while (true) {
-            ProducerRecord<String, String> message = new ProducerRecord<>(Topic.STRING_TOPIC.toString(),
+            ProducerRecord<String, String> message = new ProducerRecord<>(STRING_TOPIC,
                     String.valueOf(i), String.format("Message %s", i));
             message.headers().add("headerKey", "headerValue".getBytes(StandardCharsets.UTF_8));
 

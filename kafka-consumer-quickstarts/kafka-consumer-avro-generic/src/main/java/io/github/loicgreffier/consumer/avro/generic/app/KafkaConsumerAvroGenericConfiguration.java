@@ -1,6 +1,6 @@
 package io.github.loicgreffier.consumer.avro.generic.app;
 
-import io.github.loicgreffier.consumer.avro.generic.properties.ConsumerProperties;
+import io.github.loicgreffier.consumer.avro.generic.properties.KafkaConsumerProperties;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Scope;
 public class KafkaConsumerAvroGenericConfiguration {
     @Bean
     @Scope("prototype")
-    public Consumer<String, GenericRecord> kafkaConsumerBean(ConsumerProperties consumerProperties) {
-        return new KafkaConsumer<>(consumerProperties.asProperties());
+    public Consumer<String, GenericRecord> kafkaConsumer(KafkaConsumerProperties properties) {
+        return new KafkaConsumer<>(properties.asProperties());
     }
 }

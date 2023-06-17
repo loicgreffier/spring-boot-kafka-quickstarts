@@ -1,17 +1,17 @@
 # Kafka Streams Outer Join Stream Stream
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Streams DSL: `outerJoin()` between KStream and KStream, `selectKey()`, `peek()`.
-- The use of sliding time windows.
-- The use of unit tests with Topology Test Driver.
+- The usage of the Kafka Streams DSL, including `outerJoin()` between KStream and KStream, `selectKey()` and `peek()`.
+- The usage of sliding time windows.
+- Unit testing using the Topology Test Driver.
 
-This module does:
+In this module, records of type `<String, KafkaPerson>` are streamed from two topics named `PERSON_TOPIC` and `PERSON_TOPIC_TWO`.
+The following tasks are performed:
 
-- Stream records of type <String,KafkaPerson> records from topics named PERSON_TOPIC and PERSON_TOPIC_TWO.
-- Join records by last name within a 2-minute time window and a 30-second grace period for delayed records.
-- Build a new KafkaJoinPersons object that holds both persons. If no person has been matched, a value holding the left or right person is still emitted as a `outerJoin()` is performed.
-- Writes the result into a new topic named PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC.
+1. Join the records on the last name within a 2-minute time window and a 30-second grace period for delayed records.
+2. Build a new `KafkaJoinPersons` object that holds both persons. If no person has been matched, a value holding the left or right person is still emitted as an outer join is performed.
+3. Write the resulting `KafkaJoinPersons` objects to a new topic named `PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC`.
 
 ![topology.png](topology.png)
 
@@ -28,7 +28,7 @@ To compile and run this demo, you will need the following:
 To run the application manually, please follow the steps below:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type <String,KafkaPerson> to topics named PERSON_TOPIC and PERSON_TOPIC_TWO. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
+- Produce records of type `<String, KafkaPerson>` to topics named `PERSON_TOPIC` and `PERSON_TOPIC_TWO`. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
 - Start the Kafka Streams.
 
 To run the application in Docker, please use the following command:

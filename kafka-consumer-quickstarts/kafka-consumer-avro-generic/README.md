@@ -1,12 +1,12 @@
 # Consumer Avro Generic
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Clients consumer DSL.
-- The use of Apache Avro and generic records.
-- The use of unit tests with a Mock consumer.
+- The usage of the Kafka Clients consumer DSL.
+- The usage of Apache Avro and generic records.
+- The usage of unit tests with a Mock consumer.
 
-This module consumes records of type <String,GenericRecord> from a topic named PERSON_TOPIC.
+This module consumes records of type `<String, GenericRecord>` from a topic named `PERSON_TOPIC`.
 
 ## Requirements
 
@@ -21,7 +21,7 @@ To compile and run this demo, you will need the following:
 To run the application manually, please follow the steps below:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type <String,GenericRecord> to a topic named PERSON_TOPIC. You can use the [producer Avro Generic](../../kafka-producer-quickstarts/kafka-producer-avro-generic) to do this.
+- Produce records of type `<String, GenericRecord>` to a topic named `PERSON_TOPIC`. You can use the [producer Avro Generic](../../kafka-producer-quickstarts/kafka-producer-avro-generic) to do this.
 - Start the consumer.
 
 To run the application in Docker, please use the following command:

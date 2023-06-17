@@ -1,8 +1,7 @@
 package io.github.loicgreffier.consumer.avro.specific;
 
-import io.github.loicgreffier.consumer.avro.specific.app.KafkaConsumerAvroSpecificRunner;
 import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.consumer.avro.specific.constants.Topic;
+import io.github.loicgreffier.consumer.avro.specific.app.KafkaConsumerAvroSpecificRunner;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
 import org.apache.kafka.clients.consumer.OffsetResetStrategy;
@@ -16,6 +15,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 
+import static io.github.loicgreffier.consumer.avro.specific.constants.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -27,7 +27,7 @@ class KafkaConsumerAvroSpecificTest {
 
     @BeforeEach
     void setUp() {
-        topicPartition = new TopicPartition(Topic.PERSON_TOPIC.toString(), 0);
+        topicPartition = new TopicPartition(PERSON_TOPIC, 0);
         mockConsumer = spy(new MockConsumer<>(OffsetResetStrategy.EARLIEST));
         mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(Collections.singletonList(topicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(topicPartition, 0L));
@@ -38,7 +38,7 @@ class KafkaConsumerAvroSpecificTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(Topic.PERSON_TOPIC.toString(), 0, 0, "1", KafkaPerson.newBuilder()
+        ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
@@ -56,7 +56,7 @@ class KafkaConsumerAvroSpecificTest {
 
     @Test
     void shouldFailOnPoisonPill() {
-        ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(Topic.PERSON_TOPIC.toString(), 0, 0, "1", KafkaPerson.newBuilder()
+        ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")

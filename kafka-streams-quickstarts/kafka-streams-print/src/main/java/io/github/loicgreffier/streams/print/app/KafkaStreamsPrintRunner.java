@@ -1,8 +1,7 @@
 package io.github.loicgreffier.streams.print.app;
 
 import io.github.loicgreffier.streams.print.properties.ApplicationProperties;
-import io.github.loicgreffier.streams.print.properties.StreamsProperties;
-import io.github.loicgreffier.streams.print.serdes.CustomSerdes;
+import io.github.loicgreffier.streams.print.properties.KafkaStreamsProperties;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
@@ -28,7 +27,7 @@ public class KafkaStreamsPrintRunner implements ApplicationRunner {
     private ConfigurableApplicationContext applicationContext;
 
     @Autowired
-    private StreamsProperties streamsProperties;
+    private KafkaStreamsProperties kafkaStreamsProperties;
 
     @Autowired
     private ApplicationProperties applicationProperties;
@@ -37,8 +36,6 @@ public class KafkaStreamsPrintRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws IOException {
-        CustomSerdes.setSerdesConfig(streamsProperties.getProperties());
-
         Path filePath = Paths.get(applicationProperties.getFilePath().substring(0, applicationProperties.getFilePath().lastIndexOf("/")));
         if (!Files.exists(filePath)) {
             Files.createDirectories(filePath);
@@ -47,13 +44,13 @@ public class KafkaStreamsPrintRunner implements ApplicationRunner {
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsPrintTopology.topology(streamsBuilder, applicationProperties.getFilePath());
         Topology topology = streamsBuilder.build();
-        log.info("Description of the topology:\n {}", topology.describe());
+        log.info("Topology description:\n {}", topology.describe());
 
-        kafkaStreams = new KafkaStreams(topology, streamsProperties.asProperties());
+        kafkaStreams = new KafkaStreams(topology, kafkaStreamsProperties.asProperties());
 
         kafkaStreams.setUncaughtExceptionHandler(exception -> {
             log.error("A not covered exception occurred in {} Kafka Streams. Shutting down...",
-                    streamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG), exception);
+                    kafkaStreamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG), exception);
 
             applicationContext.close();
             return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
@@ -62,7 +59,7 @@ public class KafkaStreamsPrintRunner implements ApplicationRunner {
         kafkaStreams.setStateListener((newState, oldState) -> {
             if (newState.equals(KafkaStreams.State.ERROR)) {
                 log.error("The {} Kafka Streams is in error state...",
-                        streamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
+                        kafkaStreamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
 
                 applicationContext.close();
             }

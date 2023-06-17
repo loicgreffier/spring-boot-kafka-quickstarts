@@ -1,11 +1,11 @@
 # Consumer Transactional
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Clients consumer DSL.
-- The use of isolation level.
+- The usage of the Kafka Clients consumer DSL.
+- The usage of isolation level.
 
-This module consumes records of type <String,String> from topics named FIRST_STRING_TOPIC and SECOND_STRING_TOPIC with an isolation_level set to `read_committed`.
+This module consumes records of type `<String, String>` from topics named `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`. It utilizes an isolation level of `read_committed` to ensure that only committed records are consumed, filtering out any uncommitted or transactionally aborted records.
 
 ## Requirements
 
@@ -20,7 +20,7 @@ To compile and run this demo, you will need the following:
 To run the application manually, please follow the steps below:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type <String,String> to topics named FIRST_STRING_TOPIC and SECOND_STRING_TOPIC. You can use the [producer transactional](../../kafka-producer-quickstarts/kafka-producer-transactional) to do this.
+- Produce records of type `<String, String>` to topics named `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`. You can use the [producer transactional](../../kafka-producer-quickstarts/kafka-producer-transactional) to do this.
 - Start the consumer.
 
 To run the application in Docker, please use the following command:

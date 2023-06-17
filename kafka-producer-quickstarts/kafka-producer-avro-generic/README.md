@@ -1,12 +1,12 @@
 # Producer Avro Generic
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Clients producer DSL.
-- The use of Apache Avro and generic records.
-- The use of unit tests with a Mock producer.
+- The usage of the Kafka Clients producer DSL.
+- The usage of Apache Avro and generic records.
+- The usage of unit tests with a Mock producer.
 
-This module produces <String,GenericRecord> records to a topic named PERSON_TOPIC.
+This module produces records of type `<String, GenericRecord>` to a topic named `PERSON_TOPIC`.
 
 ## Requirements
 

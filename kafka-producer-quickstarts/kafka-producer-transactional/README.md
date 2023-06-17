@@ -1,12 +1,12 @@
 # Producer Transactional
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Clients producer DSL.
-- The use of Kafka transactions.
-- The use of unit tests with a Mock producer.
+- The usage of the Kafka Clients producer DSL.
+- The usage of Kafka transactions.
+- The usage of unit tests with a Mock producer.
 
-This module produces <String,String> transactional records to two topics named FIRST_STRING_TOPIC and SECOND_STRING_TOPIC.
+This module produces transactional records of type `<String, String>` to two topics named `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`.
 
 ## Requirements
 

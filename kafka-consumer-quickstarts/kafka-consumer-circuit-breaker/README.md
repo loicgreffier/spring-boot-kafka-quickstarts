@@ -1,15 +1,17 @@
 # Consumer Circuit Breaker
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Clients consumer DSL.
-- The use of Apache Avro.
-- The use of unit tests with a Mock consumer.
+- The usage of the Kafka Clients consumer DSL.
+- The usage of Apache Avro
+- The usage of unit tests with a Mock consumer.
 
-This module does:
+This module performs the following tasks:
 
-- Consume records of type <String,KafkaPerson> from a topic named PERSON_TOPIC.
-- Handle deserialization exceptions and seek the poison pill. If a poison pill is found in the middle of a batch of good records, the `poll()` method will return the good records in the first loop, and then throw the deserialization exception in the second loop. We handle this by seeking to the next offset. No good records will be lost.
+- Consume records of type `<String, KafkaPerson>` from a topic named `PERSON_TOPIC`.
+- Handle deserialization exceptions and seek the poison pill.
+- If a poison pill is found in the middle of a batch of good records, the `poll()` method will return the good records in the first loop and then throw the deserialization exception in the second loop.
+- To ensure no good records are lost, the module seeks to the next offset.
 
 ## Requirements
 
@@ -24,7 +26,7 @@ To compile and run this demo, you will need the following:
 To run the application manually, please follow the steps below:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type <String,KafkaPerson> to a topic named PERSON_TOPIC. You can use the [producer Avro Specific](../../kafka-producer-quickstarts/kafka-producer-avro-specific) to do this.
+- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use the [producer Avro Specific](../../kafka-producer-quickstarts/kafka-producer-avro-specific) to do this.
 - Make sure a deserialization exception will occur by either:
   - Deleting the Avro schema from the schema registry.
   - Producing a String message in the middle of Avro messages.

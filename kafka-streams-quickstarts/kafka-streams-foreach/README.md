@@ -1,11 +1,11 @@
 # Kafka Streams Foreach
 
-This module demonstrates the use of the Kafka Streams DSL: `foreach()`.
+This module demonstrates the usage of the Kafka Streams DSL `foreach()`.
 
-This module does:
+In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`.
+The following tasks are performed:
 
-- Stream records of type <String,KafkaPerson> from a topic named PERSON_TOPIC.
-- Log the KafkaPerson records.
+1. Apply a `foreach()` operation to log each `KafkaPerson` record.
 
 ![topology.png](topology.png)
 
@@ -22,7 +22,7 @@ To compile and run this demo, you will need the following:
 To run the application manually, please follow the steps below:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type <String,KafkaPerson> to a topic named PERSON_TOPIC. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
+- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
 - Start the Kafka Streams.
 
 To run the application in Docker, please use the following command:

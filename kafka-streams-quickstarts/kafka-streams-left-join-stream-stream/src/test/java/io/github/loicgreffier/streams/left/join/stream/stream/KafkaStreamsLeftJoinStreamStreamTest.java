@@ -2,12 +2,12 @@ package io.github.loicgreffier.streams.left.join.stream.stream;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
-import io.github.loicgreffier.streams.left.join.stream.stream.constants.StateStore;
-import io.github.loicgreffier.streams.left.join.stream.stream.constants.Topic;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.github.loicgreffier.avro.KafkaJoinPersons;
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.streams.left.join.stream.stream.app.KafkaStreamsLeftJoinStreamStreamTopology;
-import io.github.loicgreffier.streams.left.join.stream.stream.serdes.CustomSerdes;
+import org.apache.kafka.common.serialization.Serde;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.*;
@@ -28,10 +28,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static io.github.loicgreffier.streams.left.join.stream.stream.constants.StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE;
+import static io.github.loicgreffier.streams.left.join.stream.stream.constants.Topic.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class KafkaStreamsLeftJoinStreamStreamTest {
+    private static final String SCHEMA_REGISTRY_SCOPE = KafkaStreamsLeftJoinStreamStreamTest.class.getName();
+    private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + SCHEMA_REGISTRY_SCOPE;
     private final static String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
+
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, KafkaPerson> inputTopicOne;
     private TestInputTopic<String, KafkaPerson> inputTopicTwo;
@@ -41,39 +46,42 @@ class KafkaStreamsLeftJoinStreamStreamTest {
 
     @BeforeEach
     void setUp() {
+        // Dummy properties required for test driver
         Properties properties = new Properties();
         properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-left-join-stream-stream-test");
-        properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "mock://" +  getClass().getName());
+        properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         properties.setProperty(StreamsConfig.STATE_DIR_CONFIG, STATE_DIR);
+        properties.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class.getName());
+        properties.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
+        properties.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
 
-        Map<String, String> serdesProperties = Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://" + getClass().getName());
-        CustomSerdes.setSerdesConfig(serdesProperties);
-
+        // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsLeftJoinStreamStreamTopology.topology(streamsBuilder);
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
-        inputTopicOne = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
-                CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
+        // Create Serde for input and output topics
+        Serde<KafkaPerson> personSerde = new SpecificAvroSerde<>();
+        Serde<KafkaJoinPersons> joinPersonsSerde = new SpecificAvroSerde<>();
+        Map<String, String> config = Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
+        personSerde.configure(config, false);
+        joinPersonsSerde.configure(config, false);
 
-        inputTopicTwo = testDriver.createInputTopic(Topic.PERSON_TOPIC_TWO.toString(), new StringSerializer(),
-                CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
-
-        rekeyInputTopicOne = testDriver.createOutputTopic("streams-left-join-stream-stream-test-" + Topic.PERSON_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC + "-left-repartition", new StringDeserializer(),
-                CustomSerdes.<KafkaPerson>getValueSerdes().deserializer());
-
-        rekeyInputTopicTwo = testDriver.createOutputTopic("streams-left-join-stream-stream-test-" + Topic.PERSON_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC + "-right-repartition", new StringDeserializer(),
-                CustomSerdes.<KafkaPerson>getValueSerdes().deserializer());
-
-        joinOutputTopic = testDriver.createOutputTopic(Topic.PERSON_LEFT_JOIN_STREAM_STREAM_TOPIC.toString(), new StringDeserializer(),
-                CustomSerdes.<KafkaJoinPersons>getValueSerdes().deserializer());
+        inputTopicOne = testDriver.createInputTopic(PERSON_TOPIC, new StringSerializer(), personSerde.serializer());
+        inputTopicTwo = testDriver.createInputTopic(PERSON_TOPIC_TWO, new StringSerializer(), personSerde.serializer());
+        rekeyInputTopicOne = testDriver.createOutputTopic("streams-left-join-stream-stream-test-" + PERSON_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC + "-left-repartition", new StringDeserializer(),
+                personSerde.deserializer());
+        rekeyInputTopicTwo = testDriver.createOutputTopic("streams-left-join-stream-stream-test-" + PERSON_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC + "-right-repartition", new StringDeserializer(),
+                personSerde.deserializer());
+        joinOutputTopic = testDriver.createOutputTopic(PERSON_LEFT_JOIN_STREAM_STREAM_TOPIC, new StringDeserializer(),
+                joinPersonsSerde.deserializer());
     }
 
     @AfterEach
     void tearDown() throws IOException {
         testDriver.close();
         Files.deleteIfExists(Paths.get(STATE_DIR));
-        MockSchemaRegistry.dropScope("mock://" + getClass().getName());
+        MockSchemaRegistry.dropScope(MOCK_SCHEMA_REGISTRY_URL);
     }
 
     @Test
@@ -128,7 +136,7 @@ class KafkaStreamsLeftJoinStreamStreamTest {
                 .build()));
 
         // Test state stores content
-        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> storedPersonLeftOne = iterator.next();
             assertThat(storedPersonLeftOne.key.key()).isEqualTo("Acosta");
@@ -143,7 +151,7 @@ class KafkaStreamsLeftJoinStreamStreamTest {
             assertThat(storedPersonLeftTwo.value).isEqualTo(personLeftTwo);
         }
 
-        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
+        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> storedPersonRightOne = iterator.next();
             assertThat(storedPersonRightOne.key.key()).isEqualTo("Acosta");
@@ -183,7 +191,7 @@ class KafkaStreamsLeftJoinStreamStreamTest {
                 .build()));
 
         // Test state stores content
-        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> storedPersonLeftOne = iterator.next();
             assertThat(storedPersonLeftOne.key.key()).isEqualTo("Acosta");
@@ -192,7 +200,7 @@ class KafkaStreamsLeftJoinStreamStreamTest {
             assertThat(storedPersonLeftOne.value).isEqualTo(personLeftOne);
         }
 
-        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
+        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> storedPersonRightOne = iterator.next();
             assertThat(storedPersonRightOne.key.key()).isEqualTo("Acosta");
@@ -220,7 +228,7 @@ class KafkaStreamsLeftJoinStreamStreamTest {
                 .build()));
 
         // Test state stores content
-        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+        WindowStore<String, KafkaPerson> leftStateStore = testDriver.getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> storedPersonLeftOne = iterator.next();
             assertThat(storedPersonLeftOne.key.key()).isEqualTo("Acosta");
@@ -229,7 +237,7 @@ class KafkaStreamsLeftJoinStreamStreamTest {
             assertThat(storedPersonLeftOne.value).isEqualTo(personLeftOne);
         }
 
-        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
+        WindowStore<String, KafkaPerson> rightStateStore = testDriver.getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> storedPersonRightOne = iterator.next();
             assertThat(storedPersonRightOne.key.key()).isEqualTo("Rhodes");

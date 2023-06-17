@@ -1,7 +1,6 @@
 package io.github.loicgreffier.producer.simple;
 
 import io.github.loicgreffier.producer.simple.app.KafkaProducerSimpleRunner;
-import io.github.loicgreffier.producer.simple.constants.Topic;
 import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static io.github.loicgreffier.producer.simple.constants.Topic.STRING_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,7 +24,7 @@ class KafkaProducerSimpleTest {
         mockProducer = new MockProducer<>(true, new StringSerializer(), new StringSerializer());
         producerRunner = new KafkaProducerSimpleRunner(mockProducer);
 
-        ProducerRecord<String, String> message = new ProducerRecord<>(Topic.STRING_TOPIC.toString(), "1", "Message 1");
+        ProducerRecord<String, String> message = new ProducerRecord<>(STRING_TOPIC, "1", "Message 1");
         Future<RecordMetadata> record = producerRunner.send(message);
 
         assertThat(mockProducer.history()).hasSize(1);
@@ -39,7 +39,7 @@ class KafkaProducerSimpleTest {
         mockProducer = new MockProducer<>(false, new StringSerializer(), new StringSerializer());
         producerRunner = new KafkaProducerSimpleRunner(mockProducer);
 
-        ProducerRecord<String, String> message = new ProducerRecord<>(Topic.STRING_TOPIC.toString(), "1", "Message 1");
+        ProducerRecord<String, String> message = new ProducerRecord<>(STRING_TOPIC, "1", "Message 1");
         Future<RecordMetadata> record = producerRunner.send(message);
         RuntimeException exception = new RuntimeException("Error sending message");
         mockProducer.errorNext(exception);

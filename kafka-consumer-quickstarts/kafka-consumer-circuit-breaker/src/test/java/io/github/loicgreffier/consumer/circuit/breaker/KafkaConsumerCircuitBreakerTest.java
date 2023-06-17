@@ -2,7 +2,6 @@ package io.github.loicgreffier.consumer.circuit.breaker;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.consumer.circuit.breaker.app.KafkaConsumerCircuitBreakerRunner;
-import io.github.loicgreffier.consumer.circuit.breaker.constants.Topic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
 import org.apache.kafka.clients.consumer.OffsetResetStrategy;
@@ -16,6 +15,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 
+import static io.github.loicgreffier.consumer.circuit.breaker.constants.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +26,7 @@ class KafkaConsumerCircuitBreakerTest {
 
     @BeforeEach
     void setUp() {
-        topicPartition = new TopicPartition(Topic.PERSON_TOPIC.toString(), 0);
+        topicPartition = new TopicPartition(PERSON_TOPIC, 0);
         mockConsumer = spy(new MockConsumer<>(OffsetResetStrategy.EARLIEST));
         mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(Collections.singletonList(topicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(topicPartition, 0L));
@@ -37,7 +37,7 @@ class KafkaConsumerCircuitBreakerTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(Topic.PERSON_TOPIC.toString(), 0, 0, "1", KafkaPerson.newBuilder()
+        ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
@@ -55,14 +55,14 @@ class KafkaConsumerCircuitBreakerTest {
 
     @Test
     void shouldBreakCircuitOnPoisonPill() {
-        ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(Topic.PERSON_TOPIC.toString(), 0, 0, "1", KafkaPerson.newBuilder()
+        ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", KafkaPerson.newBuilder()
                 .setId(1L)
                 .setFirstName("First name")
                 .setLastName("Last name")
                 .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 
-        ConsumerRecord<String, KafkaPerson> message2 = new ConsumerRecord<>(Topic.PERSON_TOPIC.toString(), 0, 2, "2", KafkaPerson.newBuilder()
+        ConsumerRecord<String, KafkaPerson> message2 = new ConsumerRecord<>(PERSON_TOPIC, 0, 2, "2", KafkaPerson.newBuilder()
                 .setId(2L)
                 .setFirstName("First name")
                 .setLastName("Last name")

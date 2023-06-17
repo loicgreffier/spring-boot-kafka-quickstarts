@@ -1,16 +1,16 @@
 # Kafka Streams Map
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Streams DSL: `map()`, `peek()`.
-- The use of unit tests with Topology Test Driver.
+- The usage of the Kafka Streams DSL, including `map()` and`peek()`.
+- Unit testing using the Topology Test Driver.
 
-This module does:
+In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`.
+The following tasks are performed:
 
-- Stream records of type <String,KafkaPerson> from a topic named PERSON_TOPIC.
-- Map the KafkaPerson value attributes into uppercase.
-- Use the last name attribute as key for the stream.
-- Write back the result into a new topic named PERSON_MAP_TOPIC.
+1. Map the attributes of the `KafkaPerson` value into uppercase.
+2. Use the last name attribute as the key for the stream.
+3. Write back the result to a new topic named `PERSON_MAP_TOPIC`.
 
 ![topology.png](topology.png)
 

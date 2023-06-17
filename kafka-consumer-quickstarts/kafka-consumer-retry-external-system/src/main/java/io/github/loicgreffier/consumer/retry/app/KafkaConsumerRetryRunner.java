@@ -1,7 +1,6 @@
 package io.github.loicgreffier.consumer.retry.app;
 
-import io.github.loicgreffier.consumer.retry.constants.Topic;
-import io.github.loicgreffier.consumer.retry.properties.ConsumerProperties;
+import io.github.loicgreffier.consumer.retry.properties.KafkaConsumerProperties;
 import io.github.loicgreffier.consumer.retry.services.ExternalService;
 import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
@@ -18,21 +17,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.github.loicgreffier.consumer.retry.constants.Topic.STRING_TOPIC;
+
 @Slf4j
 @Component
 @AllArgsConstructor
 public class KafkaConsumerRetryRunner implements ApplicationRunner {
     private final Consumer<String, String> kafkaConsumer;
     private final ExternalService externalService;
-    private final ConsumerProperties consumerProperties;
+    private final KafkaConsumerProperties properties;
     private final Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
 
     @Override
     public void run(ApplicationArguments args) {
         try {
-            log.info("Subscribing to {} topic", Topic.STRING_TOPIC);
+            log.info("Subscribing to {} topic", STRING_TOPIC);
 
-            kafkaConsumer.subscribe(Collections.singleton(Topic.STRING_TOPIC.toString()), new KafkaConsumerRetryRebalanceListener(kafkaConsumer, offsets));
+            kafkaConsumer.subscribe(Collections.singleton(STRING_TOPIC), new KafkaConsumerRetryRebalanceListener(kafkaConsumer, offsets));
 
             while (true) {
                 ConsumerRecords<String, String> messages = kafkaConsumer.poll(Duration.ofMillis(1000));
@@ -80,7 +81,7 @@ public class KafkaConsumerRetryRunner implements ApplicationRunner {
 
     private void rewind() {
         if (offsets.isEmpty()) {
-            String autoOffsetReset = consumerProperties.getProperties().
+            String autoOffsetReset = properties.getProperties().
                     getOrDefault(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, OffsetResetStrategy.EARLIEST.name().toLowerCase());
 
             if (autoOffsetReset.equalsIgnoreCase(OffsetResetStrategy.EARLIEST.name().toLowerCase())) {

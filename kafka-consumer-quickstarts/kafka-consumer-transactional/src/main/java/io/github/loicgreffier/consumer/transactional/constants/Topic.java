@@ -1,16 +1,10 @@
 package io.github.loicgreffier.consumer.transactional.constants;
 
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-public enum Topic {
-    FIRST_STRING_TOPIC("FIRST_STRING_TOPIC"),
-    SECOND_STRING_TOPIC("SECOND_STRING_TOPIC");
-
-    private final String topicName;
-
-    @Override
-    public String toString() {
-        return topicName;
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public abstract class Topic {
+    public static final String FIRST_STRING_TOPIC = "FIRST_STRING_TOPIC";
+    public static final String SECOND_STRING_TOPIC = "SECOND_STRING_TOPIC";
 }

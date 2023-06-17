@@ -1,19 +1,18 @@
 package io.github.loicgreffier.streams.aggregate.app;
 
-import io.github.loicgreffier.streams.aggregate.constants.StateStore;
-import io.github.loicgreffier.streams.aggregate.constants.Topic;
-import io.github.loicgreffier.streams.aggregate.serdes.CustomSerdes;
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.avro.KafkaPersonGroup;
 import io.github.loicgreffier.streams.aggregate.app.aggregator.FirstNameByLastNameAggregator;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.*;
-import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.kstream.Grouped;
+import org.apache.kafka.streams.kstream.Materialized;
 
 import java.util.HashMap;
+
+import static io.github.loicgreffier.streams.aggregate.constants.StateStore.PERSON_AGGREGATE_STATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.constants.Topic.*;
+
 
 @Slf4j
 public class KafkaStreamsAggregateTopology {
@@ -21,14 +20,12 @@ public class KafkaStreamsAggregateTopology {
 
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
+                .<String, KafkaPerson>stream(PERSON_TOPIC)
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .selectKey((key, person) -> person.getLastName())
-                .groupByKey(Grouped.with("GROUP_BY_" + Topic.PERSON_TOPIC, Serdes.String(), CustomSerdes.getValueSerdes()))
-                .aggregate(() -> new KafkaPersonGroup(new HashMap<>()), new FirstNameByLastNameAggregator(), Named.as("AGGREGATE_PERSON_TOPIC"), Materialized.<String, KafkaPersonGroup, KeyValueStore<Bytes, byte[]>>as(StateStore.PERSON_AGGREGATE_STATE_STORE.toString())
-                        .withKeySerde(Serdes.String())
-                        .withValueSerde(CustomSerdes.getValueSerdes()))
+                .groupByKey(Grouped.as(GROUP_PERSON_BY_LAST_NAME_TOPIC))
+                .aggregate(() -> new KafkaPersonGroup(new HashMap<>()), new FirstNameByLastNameAggregator(), Materialized.as(PERSON_AGGREGATE_STATE_STORE))
                 .toStream()
-                .to(Topic.PERSON_AGGREGATE_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
+                .to(PERSON_AGGREGATE_TOPIC);
     }
 }

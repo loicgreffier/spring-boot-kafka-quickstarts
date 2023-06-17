@@ -1,14 +1,15 @@
 package io.github.loicgreffier.streams.branch.app;
 
 import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.streams.branch.constants.Topic;
-import io.github.loicgreffier.streams.branch.serdes.CustomSerdes;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.kstream.Branched;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Named;
 
 import java.util.Map;
+
+import static io.github.loicgreffier.streams.branch.constants.Topic.*;
 
 @Slf4j
 public class KafkaStreamsBranchTopology {
@@ -16,21 +17,21 @@ public class KafkaStreamsBranchTopology {
 
     public static void topology(StreamsBuilder streamsBuilder) {
         Map<String, KStream<String, KafkaPerson>> branches = streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
+                .<String, KafkaPerson>stream(PERSON_TOPIC)
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .split(Named.as("BRANCH_"))
                 .branch((key, value) -> value.getLastName().startsWith("A"),
                         Branched.withFunction(KafkaStreamsBranchTopology::toUppercase, "A"))
-                .branch((key, value) -> value.getLastName().startsWith("B"),
-                        Branched.as("B"))
-                .defaultBranch(Branched.withConsumer(stream -> stream
-                        .to(Topic.PERSON_BRANCH_DEFAULT_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()))));
+                .branch((key, value) ->
+                        value.getLastName().startsWith("B"), Branched.as("B"))
+                .defaultBranch(Branched.withConsumer(stream ->
+                        stream.to(PERSON_BRANCH_DEFAULT_TOPIC)));
 
         branches.get("BRANCH_A")
-                .to(Topic.PERSON_BRANCH_A_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
+                .to(PERSON_BRANCH_A_TOPIC);
 
         branches.get("BRANCH_B")
-                .to(Topic.PERSON_BRANCH_B_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
+                .to(PERSON_BRANCH_B_TOPIC);
     }
 
     private static KStream<String, KafkaPerson> toUppercase(KStream<String, KafkaPerson> streamPerson) {

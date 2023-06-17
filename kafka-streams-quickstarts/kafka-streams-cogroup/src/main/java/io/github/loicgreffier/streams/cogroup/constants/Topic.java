@@ -1,17 +1,13 @@
 package io.github.loicgreffier.streams.cogroup.constants;
 
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-public enum Topic {
-    PERSON_TOPIC("PERSON_TOPIC"),
-    PERSON_TOPIC_TWO("PERSON_TOPIC_TWO"),
-    PERSON_COGROUP_TOPIC("PERSON_COGROUP_TOPIC");
-
-    private final String topicName;
-
-    @Override
-    public String toString() {
-        return topicName;
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public abstract class Topic {
+    public static final String PERSON_TOPIC = "PERSON_TOPIC";
+    public static final String PERSON_TOPIC_TWO = "PERSON_TOPIC_TWO";
+    public static final String PERSON_COGROUP_TOPIC = "PERSON_COGROUP_TOPIC";
+    public static final String GROUP_PERSON_BY_LAST_NAME_TOPIC = "GROUP_PERSON_BY_LAST_NAME_TOPIC";
+    public static final String GROUP_PERSON_BY_LAST_NAME_TOPIC_TWO = "GROUP_PERSON_BY_LAST_NAME_TOPIC_TWO";
 }

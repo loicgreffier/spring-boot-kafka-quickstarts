@@ -1,13 +1,10 @@
 package io.github.loicgreffier.streams.repartition.app;
 
-import io.github.loicgreffier.streams.repartition.constants.Topic;
-import io.github.loicgreffier.streams.repartition.serdes.CustomSerdes;
-import io.github.loicgreffier.avro.KafkaPerson;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Repartitioned;
+
+import static io.github.loicgreffier.streams.repartition.constants.Topic.PERSON_TOPIC;
 
 @Slf4j
 public class KafkaStreamsRepartitionTopology {
@@ -15,11 +12,8 @@ public class KafkaStreamsRepartitionTopology {
 
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
+                .stream(PERSON_TOPIC)
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-                .repartition(Repartitioned
-                        .<String, KafkaPerson>with(Serdes.String(), CustomSerdes.getValueSerdes())
-                        .withName(Topic.PERSON_TOPIC.toString())
-                        .withNumberOfPartitions(3));
+                .repartition(Repartitioned.as(PERSON_TOPIC).withNumberOfPartitions(3));
     }
 }

@@ -1,7 +1,6 @@
 package io.github.loicgreffier.producer.transactional;
 
 import io.github.loicgreffier.producer.transactional.app.KafkaProducerTransactionalRunner;
-import io.github.loicgreffier.producer.transactional.constants.Topic;
 import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -23,8 +22,8 @@ class KafkaProducerTransactionalTest {
         mockProducer.initTransactions();
         producerRunner = new KafkaProducerTransactionalRunner(mockProducer);
 
-        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(Topic.FIRST_STRING_TOPIC.toString(), "3", "Message 1");
-        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(Topic.SECOND_STRING_TOPIC.toString(), "3", "Message 1");
+        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, "3", "Message 1");
+        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "3", "Message 1");
         producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
         assertThat(mockProducer.history()).isEmpty();
@@ -40,14 +39,14 @@ class KafkaProducerTransactionalTest {
         mockProducer.initTransactions();
         producerRunner = new KafkaProducerTransactionalRunner(mockProducer);
 
-        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(Topic.FIRST_STRING_TOPIC.toString(), "1", "Message 1");
-        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(Topic.SECOND_STRING_TOPIC.toString(), "1", "Message 1");
+        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, "1", "Message 1");
+        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "1", "Message 1");
         producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
         assertThat(mockProducer.history()).hasSize(2);
-        assertThat(mockProducer.history().get(0).topic()).isEqualTo(FIRST_STRING_TOPIC.toString());
+        assertThat(mockProducer.history().get(0).topic()).isEqualTo(FIRST_STRING_TOPIC);
         assertThat(mockProducer.history().get(0).value()).isEqualTo("Message 1");
-        assertThat(mockProducer.history().get(1).topic()).isEqualTo(SECOND_STRING_TOPIC.toString());
+        assertThat(mockProducer.history().get(1).topic()).isEqualTo(SECOND_STRING_TOPIC);
         assertThat(mockProducer.history().get(1).value()).isEqualTo("Message 1");
         assertThat(mockProducer.transactionInitialized()).isTrue();
         assertThat(mockProducer.transactionCommitted()).isTrue();

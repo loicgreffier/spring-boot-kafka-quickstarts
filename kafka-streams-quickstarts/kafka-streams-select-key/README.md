@@ -1,15 +1,15 @@
 # Kafka Streams Select Key
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Streams DSL: `selectKey()`, `peek()`.
-- The use of unit tests with Topology Test Driver.
+- The usage of the Processor API, including `selectKey()` and `peek()`.
+- Unit testing using the Topology Test Driver.
 
-This module does:
+In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`.
+The following tasks are performed:
 
-- Stream records of type <String,KafkaPerson> from a topic named PERSON_TOPIC.
-- Select the last name as a new key for each record.
-- Write the result into a new topic named PERSON_SELECT_KEY_TOPIC.
+1. Selects the last name of each record as the new key.
+2. Writes the resulting records into a new topic named `PERSON_SELECT_KEY_TOPIC`.
 
 ![topology.png](topology.png)
 

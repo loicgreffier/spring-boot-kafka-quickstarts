@@ -2,9 +2,14 @@ kafka:
   properties:
     bootstrap.servers: localhost:9092
     schema.registry.url: http://localhost:8081
+    default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+    default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
     application.id: streams-map
     client.id: streams-map
     state.dir: /tmp/kafka-streams-quickstarts
     acks: all
     auto.offset.reset: earliest
     avro.remove.java.properties: true
+    replication.factor: 1 # Consider setting to 3 in production
+    min.insync.replicas: 1 # Consider setting to 2 (replication.factor - 1) in production
+    num.stream.threads: 1

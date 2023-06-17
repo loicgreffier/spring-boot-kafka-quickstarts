@@ -1,20 +1,19 @@
 package io.github.loicgreffier.streams.aggregate.hopping.window.app;
 
-import io.github.loicgreffier.streams.aggregate.hopping.window.app.aggregator.FirstNameByLastNameAggregator;
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.avro.KafkaPersonGroup;
-import io.github.loicgreffier.streams.aggregate.hopping.window.constants.StateStore;
-import io.github.loicgreffier.streams.aggregate.hopping.window.constants.Topic;
-import io.github.loicgreffier.streams.aggregate.hopping.window.serdes.CustomSerdes;
+import io.github.loicgreffier.streams.aggregate.hopping.window.app.aggregator.FirstNameByLastNameAggregator;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.*;
-import org.apache.kafka.streams.state.WindowStore;
+import org.apache.kafka.streams.kstream.Grouped;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.TimeWindows;
 
 import java.time.Duration;
 import java.util.HashMap;
+
+import static io.github.loicgreffier.streams.aggregate.hopping.window.constants.StateStore.PERSON_AGGREGATE_HOPPING_WINDOW_STATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.hopping.window.constants.Topic.*;
 
 @Slf4j
 public class KafkaStreamsAggregateHoppingWindowTopology {
@@ -22,17 +21,14 @@ public class KafkaStreamsAggregateHoppingWindowTopology {
 
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-                .stream(Topic.PERSON_TOPIC.toString(), Consumed.with(Serdes.String(), CustomSerdes.<KafkaPerson>getValueSerdes()))
+                .<String, KafkaPerson>stream(PERSON_TOPIC)
                 .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
                 .selectKey((key, person) -> person.getLastName())
-                .groupByKey(Grouped.with("GROUP_BY_" + Topic.PERSON_TOPIC, Serdes.String(), CustomSerdes.getValueSerdes()))
+                .groupByKey(Grouped.as(GROUP_PERSON_BY_LAST_NAME_TOPIC))
                 .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(5)).advanceBy(Duration.ofMinutes(2)))
-                .aggregate(() -> new KafkaPersonGroup(new HashMap<>()), new FirstNameByLastNameAggregator(), Named.as("AGGREGATE_HOPPING_WINDOW_PERSON_TOPIC"),
-                        Materialized.<String, KafkaPersonGroup, WindowStore<Bytes, byte[]>>as(StateStore.PERSON_AGGREGATE_HOPPING_WINDOW_STATE_STORE.toString())
-                        .withKeySerde(Serdes.String())
-                        .withValueSerde(CustomSerdes.getValueSerdes()))
+                .aggregate(() -> new KafkaPersonGroup(new HashMap<>()), new FirstNameByLastNameAggregator(), Materialized.as(PERSON_AGGREGATE_HOPPING_WINDOW_STATE_STORE))
                 .toStream()
                 .selectKey((key, groupedPersons) -> key.key() + "@" + key.window().startTime() + "->" + key.window().endTime())
-                .to(Topic.PERSON_AGGREGATE_HOPPING_WINDOW_TOPIC.toString(), Produced.with(Serdes.String(), CustomSerdes.getValueSerdes()));
+                .to(PERSON_AGGREGATE_HOPPING_WINDOW_TOPIC);
     }
 }

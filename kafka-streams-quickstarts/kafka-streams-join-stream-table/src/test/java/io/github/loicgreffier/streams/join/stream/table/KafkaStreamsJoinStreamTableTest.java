@@ -2,13 +2,14 @@ package io.github.loicgreffier.streams.join.stream.table;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
-import io.github.loicgreffier.streams.join.stream.table.app.KafkaStreamsJoinStreamTableTopology;
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaCountry;
 import io.github.loicgreffier.avro.KafkaJoinPersonCountry;
 import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.streams.join.stream.table.constants.Topic;
-import io.github.loicgreffier.streams.join.stream.table.serdes.CustomSerdes;
+import io.github.loicgreffier.streams.join.stream.table.app.KafkaStreamsJoinStreamTableTopology;
+import org.apache.kafka.common.serialization.Serde;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.*;
@@ -24,10 +25,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static io.github.loicgreffier.streams.join.stream.table.constants.Topic.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class KafkaStreamsJoinStreamTableTest {
+    private static final String SCHEMA_REGISTRY_SCOPE = KafkaStreamsJoinStreamTableTest.class.getName();
+    private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + SCHEMA_REGISTRY_SCOPE;
     private final static String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
+
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, KafkaPerson> personInputTopic;
     private TestInputTopic<String, KafkaCountry> countryInputTopic;
@@ -36,36 +41,40 @@ class KafkaStreamsJoinStreamTableTest {
 
     @BeforeEach
     void setUp() {
+        // Dummy properties required for test driver
         Properties properties = new Properties();
         properties.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "streams-join-stream-table-test");
-        properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "mock://" +  getClass().getName());
+        properties.setProperty(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         properties.setProperty(StreamsConfig.STATE_DIR_CONFIG, STATE_DIR);
+        properties.setProperty(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class.getName());
+        properties.setProperty(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
+        properties.setProperty(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
 
-        Map<String, String> serdesProperties = Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://" + getClass().getName());
-        CustomSerdes.setSerdesConfig(serdesProperties);
-
+        // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsJoinStreamTableTopology.topology(streamsBuilder);
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00.00Z"));
 
-        personInputTopic = testDriver.createInputTopic(Topic.PERSON_TOPIC.toString(), new StringSerializer(),
-                CustomSerdes.<KafkaPerson>getValueSerdes().serializer());
+        // Create Serde for input and output topics
+        Serde<KafkaPerson> personSerde = new SpecificAvroSerde<>();
+        Serde<KafkaCountry> countrySerde = new SpecificAvroSerde<>();
+        Serde<KafkaJoinPersonCountry> joinPersonCountrySerde = new SpecificAvroSerde<>();
+        Map<String, String> config = Map.of(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
+        personSerde.configure(config, false);
+        countrySerde.configure(config, false);
+        joinPersonCountrySerde.configure(config, false);
 
-        countryInputTopic = testDriver.createInputTopic(Topic.COUNTRY_TOPIC.toString(), new StringSerializer(),
-                CustomSerdes.<KafkaCountry>getValueSerdes().serializer());
-
-        personRekeyOutputTopic = testDriver.createOutputTopic("streams-join-stream-table-test-" + Topic.PERSON_JOIN_STREAM_TABLE_REKEY_TOPIC + "-repartition", new StringDeserializer(),
-                CustomSerdes.<KafkaPerson>getValueSerdes().deserializer());
-
-        joinOutputTopic = testDriver.createOutputTopic(Topic.PERSON_COUNTRY_JOIN_STREAM_TABLE_TOPIC.toString(), new StringDeserializer(),
-                CustomSerdes.<KafkaJoinPersonCountry>getValueSerdes().deserializer());
+        personInputTopic = testDriver.createInputTopic(PERSON_TOPIC, new StringSerializer(), personSerde.serializer());
+        countryInputTopic = testDriver.createInputTopic(COUNTRY_TOPIC, new StringSerializer(), countrySerde.serializer());
+        personRekeyOutputTopic = testDriver.createOutputTopic("streams-join-stream-table-test-" + PERSON_JOIN_STREAM_TABLE_REKEY_TOPIC + "-repartition", new StringDeserializer(), personSerde.deserializer());
+        joinOutputTopic = testDriver.createOutputTopic(PERSON_COUNTRY_JOIN_STREAM_TABLE_TOPIC, new StringDeserializer(), joinPersonCountrySerde.deserializer());
     }
 
     @AfterEach
     void tearDown() throws IOException {
         testDriver.close();
         Files.deleteIfExists(Paths.get(STATE_DIR));
-        MockSchemaRegistry.dropScope("mock://" + getClass().getName());
+        MockSchemaRegistry.dropScope(MOCK_SCHEMA_REGISTRY_URL);
     }
 
     @Test

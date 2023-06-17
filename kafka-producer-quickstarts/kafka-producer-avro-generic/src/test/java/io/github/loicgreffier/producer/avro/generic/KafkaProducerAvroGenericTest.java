@@ -3,7 +3,6 @@ package io.github.loicgreffier.producer.avro.generic;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import io.github.loicgreffier.producer.avro.generic.app.KafkaProducerAvroGenericRunner;
-import io.github.loicgreffier.producer.avro.generic.constants.Topic;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -23,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static io.github.loicgreffier.producer.avro.generic.constants.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -52,7 +52,7 @@ class KafkaProducerAvroGenericTest {
         genericRecord.put("lastName", "Last name");
         genericRecord.put("birthDate", System.currentTimeMillis());
 
-        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(Topic.PERSON_TOPIC.toString(), "1", genericRecord);
+        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(PERSON_TOPIC, "1", genericRecord);
 
         Future<RecordMetadata> record = producerRunner.send(message);
 
@@ -77,7 +77,7 @@ class KafkaProducerAvroGenericTest {
         genericRecord.put("lastName", "Last name");
         genericRecord.put("birthDate", System.currentTimeMillis());
 
-        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(Topic.PERSON_TOPIC.toString(), "1", genericRecord);
+        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(PERSON_TOPIC, "1", genericRecord);
 
         Future<RecordMetadata> record = producerRunner.send(message);
         RuntimeException exception = new RuntimeException("Error sending message");
@@ -105,7 +105,7 @@ class KafkaProducerAvroGenericTest {
         genericRecord.put("lastName", "Last name");
         genericRecord.put("birthDate", System.currentTimeMillis());
 
-        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(Topic.PERSON_TOPIC.toString(), "1", genericRecord);
+        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(PERSON_TOPIC, "1", genericRecord);
 
         SerializationException serializationException = assertThrows(SerializationException.class, () -> producerRunner.send(message));
 

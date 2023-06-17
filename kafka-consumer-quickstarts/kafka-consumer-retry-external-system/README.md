@@ -1,14 +1,15 @@
 # Consumer Retry External System
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Clients consumer DSL.
-- The use of unit tests with a Mock consumer.
+- The usage of the Kafka Clients consumer DSL.
+- The usage of unit tests with a Mock consumer.
 
-This module does:
+This module performs the following tasks:
 
-- Consume <String,String> records from a topic named STRING_TOPIC.
-- Send records to a fake external system and perform retries through a strong retry mechanism if the call fails.
+- Consumes records of type `<String, String>` from a topic named `STRING_TOPIC`.
+- Sends the records to a fake external system.
+- Implements a strong retry mechanism to handle failures in the external system. If the call to the external system fails, the module retries the operation using the retry mechanism.
 
 ## Requirements
 
@@ -23,7 +24,7 @@ To compile and run this demo, you will need the following:
 To run the application manually, please follow the steps below:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce <String,String> records to a topic named STRING_TOPIC. You can use the [producer simple](../../kafka-producer-quickstarts/kafka-producer-simple) to do this.
+- Produce records of type `<String, String>` to a topic named `STRING_TOPIC`. You can use the [producer simple](../../kafka-producer-quickstarts/kafka-producer-simple) to do this.
 - Start the consumer.
 
 To run the application in Docker, please use the following command:

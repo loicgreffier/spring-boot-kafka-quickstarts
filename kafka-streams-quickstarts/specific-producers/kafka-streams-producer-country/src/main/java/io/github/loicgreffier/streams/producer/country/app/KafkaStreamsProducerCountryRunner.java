@@ -1,6 +1,5 @@
 package io.github.loicgreffier.streams.producer.country.app;
 
-import io.github.loicgreffier.streams.producer.country.constants.Topic;
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaCountry;
 import jakarta.annotation.PreDestroy;
@@ -16,6 +15,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import static io.github.loicgreffier.streams.producer.country.constants.Topic.COUNTRY_TOPIC;
+
 @Slf4j
 @Component
 @AllArgsConstructor
@@ -25,12 +26,10 @@ public class KafkaStreamsProducerCountryRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         for (KafkaCountry country : buildKafkaCountries()) {
-            ProducerRecord<String, KafkaCountry> message = new ProducerRecord<>(Topic.COUNTRY_TOPIC.toString(),
-                    country.getCode().toString(), country);
+            ProducerRecord<String, KafkaCountry> message = new ProducerRecord<>(COUNTRY_TOPIC, country.getCode().toString(), country);
 
             send(message);
         }
-
     }
 
     public Future<RecordMetadata> send(ProducerRecord<String, KafkaCountry> message) {

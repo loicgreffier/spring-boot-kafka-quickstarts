@@ -1,15 +1,9 @@
 package io.github.loicgreffier.streams.aggregate.hopping.window.constants;
 
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-public enum StateStore {
-    PERSON_AGGREGATE_HOPPING_WINDOW_STATE_STORE("PERSON_AGGREGATE_HOPPING_WINDOW_STATE_STORE");
-
-    private final String stateStoreName;
-
-    @Override
-    public String toString() {
-        return stateStoreName;
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public abstract class StateStore {
+    public static final String PERSON_AGGREGATE_HOPPING_WINDOW_STATE_STORE = "PERSON_AGGREGATE_HOPPING_WINDOW_STATE_STORE";
 }

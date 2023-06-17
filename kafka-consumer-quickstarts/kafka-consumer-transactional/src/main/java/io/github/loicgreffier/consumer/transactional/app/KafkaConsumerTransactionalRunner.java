@@ -1,6 +1,5 @@
 package io.github.loicgreffier.consumer.transactional.app;
 
-import io.github.loicgreffier.consumer.transactional.constants.Topic;
 import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +15,9 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.util.List;
 
+import static io.github.loicgreffier.consumer.transactional.constants.Topic.FIRST_STRING_TOPIC;
+import static io.github.loicgreffier.consumer.transactional.constants.Topic.SECOND_STRING_TOPIC;
+
 @Slf4j
 @Component
 @AllArgsConstructor
@@ -25,9 +27,9 @@ public class KafkaConsumerTransactionalRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try {
-            log.info("Subscribing to {} and {} topics", Topic.FIRST_STRING_TOPIC, Topic.SECOND_STRING_TOPIC);
+            log.info("Subscribing to {} and {} topics", FIRST_STRING_TOPIC, SECOND_STRING_TOPIC);
 
-            kafkaConsumer.subscribe(List.of(Topic.FIRST_STRING_TOPIC.toString(), Topic.SECOND_STRING_TOPIC.toString()),
+            kafkaConsumer.subscribe(List.of(FIRST_STRING_TOPIC, SECOND_STRING_TOPIC),
                     new KafkaConsumerTransactionalRebalanceListener());
 
             while (true) {

@@ -1,16 +1,15 @@
 # Kafka Streams Left Join Stream Global Table
 
-This module demonstrates:
+This module demonstrates the following:
 
-- The use of the Kafka Streams DSL: `leftJoin()` between KStream and GlobalKTable, `peek()`.
-- The use of unit tests with Topology Test Driver.
+- The usage of the Kafka Streams DSL, including `leftJoin()` between KStream and GlobalKTable and `peek()`.
+- Unit testing using the Topology Test Driver.
 
-This module does:
+In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`, and records of type `<String, KafkaCountry>` are streamed from a topic named `COUNTRY_TOPIC`.
+The following tasks are performed:
 
-- Stream records of type <String,KafkaPerson> from a topic named PERSON_TOPIC.
-- Stream records of type <String,KafkaCountry> from a topic named COUNTRY_TOPIC.
-- Join the two streams on the country code and create a new object KafkaJoinPersonCountry with the person and country information. If no country has been matched, a value holding the person is still emitted as a `leftJoin()` is performed.
-- Write the resulting KafkaJoinPersonCountry objects to a new topic named PERSON_COUNTRY_LEFT_JOIN_STREAM_GLOBAL_TABLE_TOPIC.
+1. Join the two streams on the country code and create a new object `KafkaJoinPersonCountry` that contains the person and country information. If no country is matched for a person, a value holding the person is still emitted as a result of the `leftJoin()` operation.
+2. Write the resulting `KafkaJoinPersonCountry` objects to a new topic named `PERSON_COUNTRY_LEFT_JOIN_STREAM_GLOBAL_TABLE_TOPIC`.
 
 ![topology.png](topology.png)
 

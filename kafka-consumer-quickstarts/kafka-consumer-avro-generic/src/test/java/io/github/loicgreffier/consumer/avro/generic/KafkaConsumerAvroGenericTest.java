@@ -1,7 +1,6 @@
 package io.github.loicgreffier.consumer.avro.generic;
 
 import io.github.loicgreffier.consumer.avro.generic.app.KafkaConsumerAvroGenericRunner;
-import io.github.loicgreffier.consumer.avro.generic.constants.Topic;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -22,6 +21,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 
+import static io.github.loicgreffier.consumer.avro.generic.constants.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,7 +34,7 @@ class KafkaConsumerAvroGenericTest {
 
     @BeforeEach
     void setUp() {
-        topicPartition = new TopicPartition(Topic.PERSON_TOPIC.toString(), 0);
+        topicPartition = new TopicPartition(PERSON_TOPIC, 0);
         mockConsumer = spy(new MockConsumer<>(OffsetResetStrategy.EARLIEST));
         mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(Collections.singletonList(topicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(topicPartition, 0L));
@@ -54,7 +54,7 @@ class KafkaConsumerAvroGenericTest {
         genericRecord.put("lastName", "Last name");
         genericRecord.put("birthDate", Timestamp.from(Instant.parse("2000-01-01T01:00:00.00Z")).getTime());
 
-        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(Topic.PERSON_TOPIC.toString(), 0, 0, "1", genericRecord);
+        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", genericRecord);
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -76,7 +76,7 @@ class KafkaConsumerAvroGenericTest {
         genericRecord.put("lastName", "Last name");
         genericRecord.put("birthDate", Timestamp.from(Instant.parse("2000-01-01T01:00:00.00Z")).getTime());
 
-        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(Topic.PERSON_TOPIC.toString(), 0, 0, "1", genericRecord);
+        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", genericRecord);
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(() -> {
