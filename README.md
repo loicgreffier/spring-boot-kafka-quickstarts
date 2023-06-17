@@ -40,7 +40,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 #### Source
 
-| Module                                                                            | Library       | Main Concept    |
+| Module                                                                            | Library       | DSL             |
 |:----------------------------------------------------------------------------------|---------------|-----------------|
 | [Global table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table) | Kafka Streams | `globalTable()` |
 | [Table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)               | Kafka Streams | `table()`       |
@@ -48,7 +48,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 #### Stateless
 
-| Module                                                                    | Library       | Main Concept              | Additional Content                                                       |
+| Module                                                                    | Library       | DSL                       | Additional Content                                                       |
 |:--------------------------------------------------------------------------|---------------|---------------------------|--------------------------------------------------------------------------|
 | [Branch](/kafka-streams-quickstarts/kafka-streams-branch)                 | Kafka Streams | `branch()`                | `peek()`, Topology Test Driver                                           |
 | [Cogroup](/kafka-streams-quickstarts/kafka-streams-cogroup)               | Kafka Streams | `cogroup()`               | `groupBy()`, `aggregate()`, `toStream()`, `peek()`, Topology Test Driver |
@@ -65,7 +65,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 #### Aggregate
 
-| Module                                                                                          | Library       | Main Concept                              | Additional Content                                                          |
+| Module                                                                                          | Library       | DSL                                       | Additional Content                                                          |
 |:------------------------------------------------------------------------------------------------|---------------|-------------------------------------------|-----------------------------------------------------------------------------|
 | [Aggregate](/kafka-streams-quickstarts/kafka-streams-aggregate)                                 | Kafka Streams | `aggregate()`                             | `groupByKey()`, `selectKey()`, `toStream()`, `peek()`, Topology Test Driver |
 | [Aggregate Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | `aggregate()`, `windowedBy()`             | `groupByKey()`, `selectKey()`, `toStream()`, `peek()`, Topology Test Driver |
@@ -75,7 +75,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 #### Join
 
-| Module                                                                                                  | Library       | Main Concept                                             | Additional Content                            |
+| Module                                                                                                  | Library       | DSL                                                      | Additional Content                            |
 |:--------------------------------------------------------------------------------------------------------|---------------|----------------------------------------------------------|-----------------------------------------------|
 | [Join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table)           | Kafka Streams | `join()` between KStream and GlobalKTable                | `peek()`, Topology Test Driver                |
 | [Join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-join-stream-stream)                       | Kafka Streams | `join()` between KStream and KStream, `JoinWindows`      | `selectKey()`, `peek()`, Topology Test Driver |
@@ -87,7 +87,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 #### Windowing
 
-| Module                                                                                | Library       | Main Concept               |
+| Module                                                                                | Library       | DSL                        |
 |:--------------------------------------------------------------------------------------|---------------|----------------------------|
 | [Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | `windowedBy()`             |
 | [Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | `windowedBy().advanceBy()` |
@@ -95,9 +95,9 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 #### Processor
 
-| Module                                                                                    | Library       | Main Concept                                  | Additional Content                                                              |
+| Module                                                                                    | Library       | DSL                                           | Additional Content                                                              |
 |:------------------------------------------------------------------------------------------|---------------|-----------------------------------------------|---------------------------------------------------------------------------------|
 | [Process](/kafka-streams-quickstarts/kafka-streams-process)                               | Kafka Streams | `process()`                                   | Headers, Topology Test Driver                                                   |
 | [Process values](/kafka-streams-quickstarts/kafka-streams-process-values)                 | Kafka Streams | `processValues()`                             | Headers, Topology Test Driver                                                   |
-| [Schedule](/kafka-streams-quickstarts/kafka-streams-schedule)                             | Kafka Streams | `process()`, `.schedule()`                    | Timestamped key-value Store, Wall Clock Time, Stream Time, Topology Test Driver |
-| [Schedule Store Cleanup](/kafka-streams-quickstarts/kafka-streams-schedule-store-cleanup) | Kafka Streams | `process()`, `addStateStore()`, `.schedule()` | Key-value Store, Stream Time, Topology Test Driver                              |
+| [Schedule](/kafka-streams-quickstarts/kafka-streams-schedule)                             | Kafka Streams | `process()`, `.schedule()`                    | Timestamped key-value store, Wall clock time, Stream time, Topology Test Driver |
+| [Schedule Store Cleanup](/kafka-streams-quickstarts/kafka-streams-schedule-store-cleanup) | Kafka Streams | `process()`, `addStateStore()`, `.schedule()` | Key-value store, Stream time, Topology Test Driver                              |
