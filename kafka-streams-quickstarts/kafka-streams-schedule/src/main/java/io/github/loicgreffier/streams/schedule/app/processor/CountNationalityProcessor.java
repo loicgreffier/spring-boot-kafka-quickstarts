@@ -17,6 +17,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 
+import static io.github.loicgreffier.streams.schedule.constants.StateStore.PERSON_SCHEDULE_STATE_STORE;
+
 @Slf4j
 public class CountNationalityProcessor implements Processor<String, KafkaPerson, String, Long> {
     private ProcessorContext<String, Long> context;
@@ -25,7 +27,7 @@ public class CountNationalityProcessor implements Processor<String, KafkaPerson,
     @Override
     public void init(ProcessorContext<String, Long> context) {
         this.context = context;
-        this.countNationalityStore = context.getStateStore(StateStore.PERSON_SCHEDULE_STATE_STORE.toString());
+        this.countNationalityStore = context.getStateStore(PERSON_SCHEDULE_STATE_STORE);
         context.schedule(Duration.ofMinutes(2), PunctuationType.WALL_CLOCK_TIME, this::punctuateWallClockTime);
         context.schedule(Duration.ofMinutes(1), PunctuationType.STREAM_TIME, this::punctuateStreamTime);
     }

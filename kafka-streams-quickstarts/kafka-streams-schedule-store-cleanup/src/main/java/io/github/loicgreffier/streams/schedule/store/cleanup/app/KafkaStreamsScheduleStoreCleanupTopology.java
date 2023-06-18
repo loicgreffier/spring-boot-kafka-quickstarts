@@ -23,11 +23,9 @@ public class KafkaStreamsScheduleStoreCleanupTopology {
                 .keyValueStoreBuilder(Stores.persistentKeyValueStore(PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE),
                         Serdes.String(), SerdesUtils.specificAvroValueSerdes());
 
-        KStream<String, KafkaPerson> personStream = streamsBuilder
+        streamsBuilder
                 .addStateStore(storeBuilder)
-                .stream(PERSON_TOPIC);
-
-        personStream
+                .<String, KafkaPerson>stream(PERSON_TOPIC)
                 .process(StoreCleanupProcessor::new, PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE)
                 .to(PERSON_TOPIC);
     }

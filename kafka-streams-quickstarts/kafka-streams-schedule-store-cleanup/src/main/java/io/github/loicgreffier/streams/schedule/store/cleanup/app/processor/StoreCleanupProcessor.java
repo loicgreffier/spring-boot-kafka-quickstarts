@@ -13,6 +13,8 @@ import org.apache.kafka.streams.state.KeyValueStore;
 
 import java.time.Duration;
 
+import static io.github.loicgreffier.streams.schedule.store.cleanup.constants.StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE;
+
 @Slf4j
 public class StoreCleanupProcessor implements Processor<String, KafkaPerson, String, KafkaPerson> {
     private ProcessorContext<String, KafkaPerson> context;
@@ -21,7 +23,7 @@ public class StoreCleanupProcessor implements Processor<String, KafkaPerson, Str
     @Override
     public void init(ProcessorContext<String, KafkaPerson> context) {
         this.context = context;
-        this.personStore = context.getStateStore(StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE.toString());
+        this.personStore = context.getStateStore(PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE);
         // Use stream time to avoid triggering unnecessary punctuation if no record comes
         context.schedule(Duration.ofMinutes(1), PunctuationType.STREAM_TIME, this::punctuateCleanStore);
     }
@@ -39,7 +41,7 @@ public class StoreCleanupProcessor implements Processor<String, KafkaPerson, Str
     }
 
     private void punctuateCleanStore(long timestamp) {
-        log.info("Resetting {} store ", StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE);
+        log.info("Resetting {} store ", PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE);
 
         try (KeyValueIterator<String, KafkaPerson> iterator = personStore.all()) {
             while (iterator.hasNext()) {

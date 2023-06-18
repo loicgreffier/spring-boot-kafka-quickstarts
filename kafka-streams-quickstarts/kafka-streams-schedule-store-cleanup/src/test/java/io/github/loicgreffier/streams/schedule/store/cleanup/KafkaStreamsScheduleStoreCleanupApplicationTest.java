@@ -28,6 +28,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Properties;
 
+import static io.github.loicgreffier.streams.schedule.store.cleanup.constants.StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE;
 import static io.github.loicgreffier.streams.schedule.store.cleanup.constants.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -82,7 +83,7 @@ class KafkaStreamsScheduleStoreCleanupApplicationTest {
         inputTopic.pipeInput(new TestRecord<>("2", personTwo, start.plus(20, ChronoUnit.SECONDS)));
         inputTopic.pipeInput(new TestRecord<>("3", personThree, start.plus(40, ChronoUnit.SECONDS)));
 
-        KeyValueStore<String, KafkaPerson> stateStore = testDriver.getKeyValueStore(StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE.toString());
+        KeyValueStore<String, KafkaPerson> stateStore = testDriver.getKeyValueStore(PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE);
 
         // 1st STREAM_TIME punctuate when personOne is pushed
         assertThat(stateStore.get("1")).isNull();

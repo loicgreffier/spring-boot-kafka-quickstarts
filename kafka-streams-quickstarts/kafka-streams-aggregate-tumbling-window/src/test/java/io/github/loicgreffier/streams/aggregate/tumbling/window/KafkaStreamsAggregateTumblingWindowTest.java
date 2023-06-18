@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constants.StateStore.PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE;
 import static io.github.loicgreffier.streams.aggregate.tumbling.window.constants.Topic.PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC;
 import static io.github.loicgreffier.streams.aggregate.tumbling.window.constants.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -114,7 +115,7 @@ class KafkaStreamsAggregateTumblingWindowTest {
         assertThat(results.get(5).key).isEqualTo("Holman@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z");
         assertThat(results.get(5).value.getFirstNameByLastName().get("Holman")).containsExactly("Bret", "Jude");
 
-        WindowStore<String, KafkaPersonGroup> stateStore = testDriver.getWindowStore(StateStore.PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE.toString());
+        WindowStore<String, KafkaPersonGroup> stateStore = testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE);
 
         try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
             KeyValue<Windowed<String>, KafkaPersonGroup> abbottAggregation = iterator.next();
@@ -160,7 +161,7 @@ class KafkaStreamsAggregateTumblingWindowTest {
         assertThat(results.get(2).key).isEqualTo("Abbott@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z");
         assertThat(results.get(2).value.getFirstNameByLastName().get("Abbott")).containsExactly("Brendan");
 
-        WindowStore<String, KafkaPersonGroup> stateStore = testDriver.getWindowStore(StateStore.PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE.toString());
+        WindowStore<String, KafkaPersonGroup> stateStore = testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE);
 
         try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
             KeyValue<Windowed<String>, KafkaPersonGroup> secondWindowAggregationAbbott = iterator.next();
