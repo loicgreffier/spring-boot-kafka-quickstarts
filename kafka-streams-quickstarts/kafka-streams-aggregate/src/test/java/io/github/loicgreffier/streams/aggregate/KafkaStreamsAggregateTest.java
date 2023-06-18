@@ -12,7 +12,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.*;
 import org.apache.kafka.streams.state.KeyValueStore;
-import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -98,11 +97,11 @@ class KafkaStreamsAggregateTest {
         assertThat(results.get(5).key).isEqualTo("Holman");
         assertThat(results.get(5).value.getFirstNameByLastName().get("Holman")).containsExactly("Bret", "Jude");
 
-        KeyValueStore<String, ValueAndTimestamp<KafkaPersonGroup>> stateStore = testDriver.getTimestampedKeyValueStore(PERSON_AGGREGATE_STATE_STORE);
+        KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver.getKeyValueStore(PERSON_AGGREGATE_STATE_STORE);
 
-        assertThat(stateStore.get("Abbott").value().getFirstNameByLastName().get("Abbott")).containsExactly("Aaran", "Brendan", "Daimhin");
-        assertThat(stateStore.get("Holman").value().getFirstNameByLastName().get("Holman")).containsExactly("Bret", "Jude");
-        assertThat(stateStore.get("Patton").value().getFirstNameByLastName().get("Patton")).containsExactly("Jiao");
+        assertThat(stateStore.get("Abbott").getFirstNameByLastName().get("Abbott")).containsExactly("Aaran", "Brendan", "Daimhin");
+        assertThat(stateStore.get("Holman").getFirstNameByLastName().get("Holman")).containsExactly("Bret", "Jude");
+        assertThat(stateStore.get("Patton").getFirstNameByLastName().get("Patton")).containsExactly("Jiao");
     }
 
     private List<KeyValue<String, KafkaPerson>> buildKafkaPersonRecords() {

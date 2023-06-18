@@ -70,6 +70,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 | [Aggregate](/kafka-streams-quickstarts/kafka-streams-aggregate)                                 | Kafka Streams | `aggregate()`                             | `groupByKey()`, `selectKey()`, `toStream()`, `peek()`, Topology Test Driver |
 | [Aggregate Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | `aggregate()`, `windowedBy()`             | `groupByKey()`, `selectKey()`, `toStream()`, `peek()`, Topology Test Driver |
 | [Aggregate Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | `aggregate()`, `windowedBy().advanceBy()` | `groupByKey()`, `selectKey()`, `toStream()`, `peek()`, Topology Test Driver |
+| [Average](/kafka-streams-quickstarts/kafka-streams-average)                                     | Kafka Streams | `aggregate()`                             | `groupBy()`, `mapValues()`, `toStream()`, `peek()`, Topology Test Driver    |
 | [Count](/kafka-streams-quickstarts/kafka-streams-count)                                         | Kafka Streams | `count()`                                 | `groupBy()`, `toStream()`, `peek()`, Topology Test Driver                   |
 | [Reduce](/kafka-streams-quickstarts/kafka-streams-reduce)                                       | Kafka Streams | `reduce()`                                | `groupBy()`, `toStream()`, `peek()`, Topology Test Driver                   |
 

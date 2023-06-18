@@ -91,10 +91,10 @@ class KafkaStreamsCogroupTest {
         assertThat(results.get(2).key).isEqualTo("Holman");
         assertThat(results.get(2).value.getFirstNameByLastName().get("Holman")).containsExactly("Bret");
 
-        KeyValueStore<String, ValueAndTimestamp<KafkaPersonGroup>> stateStore = testDriver.getTimestampedKeyValueStore(PERSON_COGROUP_AGGREGATE_STATE_STORE);
+        KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver.getKeyValueStore(PERSON_COGROUP_AGGREGATE_STATE_STORE);
 
-        assertThat(stateStore.get("Abbott").value().getFirstNameByLastName().get("Abbott")).contains("Aaran", "Brendan");
-        assertThat(stateStore.get("Holman").value().getFirstNameByLastName().get("Holman")).contains("Bret");
+        assertThat(stateStore.get("Abbott").getFirstNameByLastName().get("Abbott")).contains("Aaran", "Brendan");
+        assertThat(stateStore.get("Holman").getFirstNameByLastName().get("Holman")).contains("Bret");
     }
 
     @Test
@@ -113,10 +113,10 @@ class KafkaStreamsCogroupTest {
         assertThat(results.get(2).key).isEqualTo("Holman");
         assertThat(results.get(2).value.getFirstNameByLastName().get("Holman")).containsExactly("Bret");
 
-        KeyValueStore<String, ValueAndTimestamp<KafkaPersonGroup>> stateStore = testDriver.getTimestampedKeyValueStore(PERSON_COGROUP_AGGREGATE_STATE_STORE);
+        KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver.getKeyValueStore(PERSON_COGROUP_AGGREGATE_STATE_STORE);
 
-        assertThat(stateStore.get("Abbott").value().getFirstNameByLastName().get("Abbott")).contains("Aaran", "Brendan");
-        assertThat(stateStore.get("Holman").value().getFirstNameByLastName().get("Holman")).contains("Bret");
+        assertThat(stateStore.get("Abbott").getFirstNameByLastName().get("Abbott")).contains("Aaran", "Brendan");
+        assertThat(stateStore.get("Holman").getFirstNameByLastName().get("Holman")).contains("Bret");
     }
 
     @Test
@@ -145,11 +145,11 @@ class KafkaStreamsCogroupTest {
         assertThat(results.get(5).key).isEqualTo("Wyatt");
         assertThat(results.get(5).value.getFirstNameByLastName().get("Wyatt")).containsExactly("Kacey");
 
-        KeyValueStore<String, ValueAndTimestamp<KafkaPersonGroup>> stateStore = testDriver.getTimestampedKeyValueStore(PERSON_COGROUP_AGGREGATE_STATE_STORE);
+        KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver.getKeyValueStore(PERSON_COGROUP_AGGREGATE_STATE_STORE);
 
-        assertThat(stateStore.get("Abbott").value().getFirstNameByLastName().get("Abbott")).contains("Aaran", "Brendan", "Daimhin");
-        assertThat(stateStore.get("Holman").value().getFirstNameByLastName().get("Holman")).contains("Bret", "Jude");
-        assertThat(stateStore.get("Wyatt").value().getFirstNameByLastName().get("Wyatt")).contains("Kacey");
+        assertThat(stateStore.get("Abbott").getFirstNameByLastName().get("Abbott")).contains("Aaran", "Brendan", "Daimhin");
+        assertThat(stateStore.get("Holman").getFirstNameByLastName().get("Holman")).contains("Bret", "Jude");
+        assertThat(stateStore.get("Wyatt").getFirstNameByLastName().get("Wyatt")).contains("Kacey");
     }
 
     private List<KeyValue<String, KafkaPerson>> buildFirstKafkaPersonRecords() {

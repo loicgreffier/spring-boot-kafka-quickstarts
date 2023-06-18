@@ -1,0 +1,25 @@
+{
+  "namespace": "io.github.loicgreffier.avro",
+  "type": "record",
+  "name": "KafkaAverageAge",
+  "fields": [
+    {
+      "name": "count",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Person counter"
+    },
+    {
+      "name": "ageSum",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Age sum"
+    }
+  ]
+}

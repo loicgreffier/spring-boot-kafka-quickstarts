@@ -112,14 +112,14 @@ class KafkaStreamsReduceTest {
         assertThat(results.get(10).key).isEqualTo(CountryCode.DE.toString());
         assertThat(results.get(10).value.getId()).isEqualTo(9);
 
-        KeyValueStore<String, ValueAndTimestamp<KafkaPerson>> stateStore = testDriver.getTimestampedKeyValueStore(PERSON_REDUCE_STATE_STORE);
+        KeyValueStore<String, KafkaPerson> stateStore = testDriver.getKeyValueStore(PERSON_REDUCE_STATE_STORE);
 
-        assertThat(stateStore.get(CountryCode.FR.toString()).value().getId()).isEqualTo(5);
-        assertThat(stateStore.get(CountryCode.CH.toString()).value().getId()).isEqualTo(8);
-        assertThat(stateStore.get(CountryCode.ES.toString()).value().getId()).isEqualTo(4);
-        assertThat(stateStore.get(CountryCode.GB.toString()).value().getId()).isEqualTo(6);
-        assertThat(stateStore.get(CountryCode.DE.toString()).value().getId()).isEqualTo(9);
-        assertThat(stateStore.get(CountryCode.IT.toString()).value().getId()).isEqualTo(10);
+        assertThat(stateStore.get(CountryCode.FR.toString()).getId()).isEqualTo(5);
+        assertThat(stateStore.get(CountryCode.CH.toString()).getId()).isEqualTo(8);
+        assertThat(stateStore.get(CountryCode.ES.toString()).getId()).isEqualTo(4);
+        assertThat(stateStore.get(CountryCode.GB.toString()).getId()).isEqualTo(6);
+        assertThat(stateStore.get(CountryCode.DE.toString()).getId()).isEqualTo(9);
+        assertThat(stateStore.get(CountryCode.IT.toString()).getId()).isEqualTo(10);
     }
 
     private List<KeyValue<String, KafkaPerson>> buildKafkaPersonRecords() {

@@ -99,14 +99,14 @@ class KafkaStreamsCountTest {
         assertThat(results.get(7).key).isEqualTo(CountryCode.IT.toString());
         assertThat(results.get(7).value).isEqualTo(1);
 
-        KeyValueStore<String, ValueAndTimestamp<Long>> stateStore = testDriver.getTimestampedKeyValueStore(PERSON_COUNT_STATE_STORE);
+        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(PERSON_COUNT_STATE_STORE);
 
-        assertThat(stateStore.get(CountryCode.FR.toString()).value()).isEqualTo(2);
-        assertThat(stateStore.get(CountryCode.CH.toString()).value()).isEqualTo(2);
-        assertThat(stateStore.get(CountryCode.ES.toString()).value()).isEqualTo(1);
-        assertThat(stateStore.get(CountryCode.GB.toString()).value()).isEqualTo(1);
-        assertThat(stateStore.get(CountryCode.DE.toString()).value()).isEqualTo(1);
-        assertThat(stateStore.get(CountryCode.IT.toString()).value()).isEqualTo(1);
+        assertThat(stateStore.get(CountryCode.FR.toString())).isEqualTo(2);
+        assertThat(stateStore.get(CountryCode.CH.toString())).isEqualTo(2);
+        assertThat(stateStore.get(CountryCode.ES.toString())).isEqualTo(1);
+        assertThat(stateStore.get(CountryCode.GB.toString())).isEqualTo(1);
+        assertThat(stateStore.get(CountryCode.DE.toString())).isEqualTo(1);
+        assertThat(stateStore.get(CountryCode.IT.toString())).isEqualTo(1);
     }
 
     private List<KeyValue<String, KafkaPerson>> buildKafkaPersonRecords() {
