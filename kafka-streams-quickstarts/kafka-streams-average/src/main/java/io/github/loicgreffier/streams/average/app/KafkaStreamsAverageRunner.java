@@ -1,6 +1,5 @@
 package io.github.loicgreffier.streams.average.app;
 
-import io.github.loicgreffier.streams.average.app.aggregator.KafkaStreamsAverageTopology;
 import io.github.loicgreffier.streams.average.properties.KafkaStreamsProperties;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
