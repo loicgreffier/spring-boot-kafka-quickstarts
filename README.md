@@ -36,7 +36,7 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 | [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                               | Kafka Clients | String Consumption                                      | Headers, Mock consumer |
 | [Transactional](/kafka-consumer-quickstarts/kafka-consumer-transactional)                 | Kafka Clients | Isolation level                                         |                        |
 
-### Streams
+### Kafka Streams
 
 #### Source
 
