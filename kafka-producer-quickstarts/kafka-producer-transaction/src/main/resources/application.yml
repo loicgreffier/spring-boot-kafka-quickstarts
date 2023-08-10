@@ -1,0 +1,9 @@
+kafka:
+  properties:
+    bootstrap.servers: localhost:9092
+    key.serializer: org.apache.kafka.common.serialization.StringSerializer
+    value.serializer: org.apache.kafka.common.serialization.StringSerializer
+    client.id: producer-transaction
+    acks: all
+    enable.idempotence: true
+    transactional.id: producer-transaction

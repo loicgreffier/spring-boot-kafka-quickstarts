@@ -18,23 +18,23 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 ### Producers
 
-| Module                                                                    | Library       | Main Concept      | Additional Content     |
-|---------------------------------------------------------------------------|---------------|-------------------|------------------------|
-| [Avro Generic](/kafka-producer-quickstarts/kafka-producer-avro-generic)   | Kafka Clients | Generic Avro      | Mock producer          |
-| [Avro Specific](/kafka-producer-quickstarts/kafka-producer-avro-specific) | Kafka Clients | Specific Avro     | Mock producer          |
-| [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | String Production | Headers, Mock producer |
-| [Transactional](/kafka-producer-quickstarts/kafka-producer-transactional) | Kafka Clients | Transaction       | Mock producer          |
+| Module                                                                    | Library       | Main Concept             | Additional Content     |
+|---------------------------------------------------------------------------|---------------|--------------------------|------------------------|
+| [Avro Generic](/kafka-producer-quickstarts/kafka-producer-avro-generic)   | Kafka Clients | Generic Avro production  | Mock producer          |
+| [Avro Specific](/kafka-producer-quickstarts/kafka-producer-avro-specific) | Kafka Clients | Specific Avro production | Mock producer          |
+| [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | String production        | Headers, Mock producer |
+| [Transaction](/kafka-producer-quickstarts/kafka-producer-transaction)     | Kafka Clients | Transaction              | Mock producer          |
 
 ### Consumers
 
 | Module                                                                                    | Library       | Main Concept                                            | Additional Content     |
 |:------------------------------------------------------------------------------------------|---------------|---------------------------------------------------------|------------------------|
-| [Avro Generic](/kafka-consumer-quickstarts/kafka-consumer-avro-generic)                   | Kafka Clients | Generic Avro                                            | Mock consumer          |
-| [Avro Specific](/kafka-consumer-quickstarts/kafka-consumer-avro-specific)                 | Kafka Clients | Specific Avro                                           | Mock consumer          |
+| [Avro Generic](/kafka-consumer-quickstarts/kafka-consumer-avro-generic)                   | Kafka Clients | Generic Avro consumption                                | Mock consumer          |
+| [Avro Specific](/kafka-consumer-quickstarts/kafka-consumer-avro-specific)                 | Kafka Clients | Specific Avro consumption                               | Mock consumer          |
 | [Circuit breaker](/kafka-consumer-quickstarts/kafka-consumer-circuit-breaker)             | Kafka Clients | Deserialization/poison pill error handling              | Mock consumer          |
 | [Retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system) | Kafka Clients | External system interfacing with strong retry mechanism | Mock consumer          |
-| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                               | Kafka Clients | String Consumption                                      | Headers, Mock consumer |
-| [Transactional](/kafka-consumer-quickstarts/kafka-consumer-transactional)                 | Kafka Clients | Isolation level                                         |                        |
+| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                               | Kafka Clients | String consumption                                      | Headers, Mock consumer |
+| [Transaction](/kafka-consumer-quickstarts/kafka-consumer-transaction)                     | Kafka Clients | Isolation level                                         |                        |
 
 ### Kafka Streams
 

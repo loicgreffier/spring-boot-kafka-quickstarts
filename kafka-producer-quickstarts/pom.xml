@@ -16,7 +16,7 @@
         <module>kafka-producer-avro-generic</module>
         <module>kafka-producer-avro-specific</module>
         <module>kafka-producer-simple</module>
-        <module>kafka-producer-transactional</module>
+        <module>kafka-producer-transaction</module>
     </modules>
 
     <dependencies>
@@ -24,12 +24,6 @@
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
             <version>${kafka.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>${avro.version}</version>
         </dependency>
 
         <dependency>

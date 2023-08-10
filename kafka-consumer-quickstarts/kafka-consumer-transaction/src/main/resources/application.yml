@@ -1,0 +1,16 @@
+kafka:
+  properties:
+    bootstrap.servers: localhost:9092
+    key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    group.id: consumer-transaction
+    client.id: consumer-transaction
+    enable.auto.commit: false
+    auto.offset.reset: earliest
+    max.poll.interval.ms: 300000
+    max.poll.records: 500
+    heartbeat.interval.ms: 3000
+    session.timeout.ms: 45000
+    fetch.min.bytes: 1
+    fetch.max.wait.ms: 500
+    isolation.level: read_committed
