@@ -9,7 +9,7 @@ This module demonstrates the following:
 In this module, records of type `<String, KafkaPerson>` are streamed from two topics named `PERSON_TOPIC` and `PERSON_TOPIC_TWO`.
 The following tasks are performed:
 
-1. Join the records on the last name within a 2-minute time window and a 30-second grace period for delayed records.
+1. Join the records on the last name within a 5-minute time window and a 1-minute grace period for delayed records.
 2. Build a new `KafkaJoinPersons` object that holds both persons. If no person is matched for a record, a value holding the left person is still emitted as a result of the `leftJoin()` operation.
 3. Write the resulting `KafkaJoinPersons` objects to a new topic named `PERSON_LEFT_JOIN_STREAM_STREAM_TOPIC`.
 

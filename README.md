@@ -48,57 +48,57 @@ This repository contains a set of code samples around Kafka Clients, Kafka Strea
 
 #### Stateless
 
-| Module                                                                    | Library       | DSL                       | Additional Content                                                       |
-|:--------------------------------------------------------------------------|---------------|---------------------------|--------------------------------------------------------------------------|
-| [Branch](/kafka-streams-quickstarts/kafka-streams-branch)                 | Kafka Streams | `branch()`                | `peek()`, Topology Test Driver                                           |
-| [Cogroup](/kafka-streams-quickstarts/kafka-streams-cogroup)               | Kafka Streams | `cogroup()`               | `groupBy()`, `aggregate()`, `toStream()`, `peek()`, Topology Test Driver |
-| [Filter](/kafka-streams-quickstarts/kafka-streams-filter)                 | Kafka Streams | `filter()`, `filterNot()` | `peek()`, Topology Test Driver                                           |
-| [Flatmap](/kafka-streams-quickstarts/kafka-streams-flatmap)               | Kafka Streams | `flatMap()`               | `peek()`, Topology Test Driver                                           |
-| [Flatmap values](/kafka-streams-quickstarts/kafka-streams-flatmap-values) | Kafka Streams | `flatMapValues()`         | `peek()`, Topology Test Driver                                           |
-| [Foreach](/kafka-streams-quickstarts/kafka-streams-foreach)               | Kafka Streams | `foreach()`               |                                                                          |
-| [Map](/kafka-streams-quickstarts/kafka-streams-map)                       | Kafka Streams | `map()`                   | `peek()`, Topology Test Driver                                           |
-| [Map values](/kafka-streams-quickstarts/kafka-streams-map-values)         | Kafka Streams | `mapValues()`             | `peek()`, Topology Test Driver                                           |
-| [Merge](/kafka-streams-quickstarts/kafka-streams-merge)                   | Kafka Streams | `merge()`                 | `peek()`, Topology Test Driver                                           |
-| [Print](/kafka-streams-quickstarts/kafka-streams-print)                   | Kafka Streams | `print()`                 | `peek()`                                                                 |
-| [Repartition](/kafka-streams-quickstarts/kafka-streams-repartition)       | Kafka Streams | `repartition()`           | `peek()`, Topology Test Driver                                           |
-| [Select key](/kafka-streams-quickstarts/kafka-streams-select-key)         | Kafka Streams | `selectKey()`             | `peek()`, Topology Test Driver                                           |
+| Module                                                                    | Library       | DSL                       | Additional Content   |
+|:--------------------------------------------------------------------------|---------------|---------------------------|----------------------|
+| [Branch](/kafka-streams-quickstarts/kafka-streams-branch)                 | Kafka Streams | `branch()`                | Topology Test Driver |
+| [Cogroup](/kafka-streams-quickstarts/kafka-streams-cogroup)               | Kafka Streams | `cogroup()`               | Topology Test Driver |
+| [Filter](/kafka-streams-quickstarts/kafka-streams-filter)                 | Kafka Streams | `filter()`, `filterNot()` | Topology Test Driver |
+| [Flatmap](/kafka-streams-quickstarts/kafka-streams-flatmap)               | Kafka Streams | `flatMap()`               | Topology Test Driver |
+| [Flatmap values](/kafka-streams-quickstarts/kafka-streams-flatmap-values) | Kafka Streams | `flatMapValues()`         | Topology Test Driver |
+| [Foreach](/kafka-streams-quickstarts/kafka-streams-foreach)               | Kafka Streams | `foreach()`               |                      |
+| [Map](/kafka-streams-quickstarts/kafka-streams-map)                       | Kafka Streams | `map()`                   | Topology Test Driver |
+| [Map values](/kafka-streams-quickstarts/kafka-streams-map-values)         | Kafka Streams | `mapValues()`             | Topology Test Driver |
+| [Merge](/kafka-streams-quickstarts/kafka-streams-merge)                   | Kafka Streams | `merge()`                 | Topology Test Driver |
+| [Print](/kafka-streams-quickstarts/kafka-streams-print)                   | Kafka Streams | `print()`                 |                      |
+| [Repartition](/kafka-streams-quickstarts/kafka-streams-repartition)       | Kafka Streams | `repartition()`           | Topology Test Driver |
+| [Select key](/kafka-streams-quickstarts/kafka-streams-select-key)         | Kafka Streams | `selectKey()`             | Topology Test Driver |
 
 #### Aggregate
 
-| Module                                                                                          | Library       | DSL                                       | Additional Content                                                          |
-|:------------------------------------------------------------------------------------------------|---------------|-------------------------------------------|-----------------------------------------------------------------------------|
-| [Aggregate](/kafka-streams-quickstarts/kafka-streams-aggregate)                                 | Kafka Streams | `aggregate()`                             | `groupByKey()`, `selectKey()`, `toStream()`, `peek()`, Topology Test Driver |
-| [Aggregate Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | `aggregate()`, `windowedBy()`             | `groupByKey()`, `selectKey()`, `toStream()`, `peek()`, Topology Test Driver |
-| [Aggregate Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | `aggregate()`, `windowedBy().advanceBy()` | `groupByKey()`, `selectKey()`, `toStream()`, `peek()`, Topology Test Driver |
-| [Average](/kafka-streams-quickstarts/kafka-streams-average)                                     | Kafka Streams | `aggregate()`                             | `groupBy()`, `mapValues()`, `toStream()`, `peek()`, Topology Test Driver    |
-| [Count](/kafka-streams-quickstarts/kafka-streams-count)                                         | Kafka Streams | `count()`                                 | `groupBy()`, `toStream()`, `peek()`, Topology Test Driver                   |
-| [Reduce](/kafka-streams-quickstarts/kafka-streams-reduce)                                       | Kafka Streams | `reduce()`                                | `groupBy()`, `toStream()`, `peek()`, Topology Test Driver                   |
+| Module                                                                                          | Library       | DSL                                       | Additional Content                 |
+|:------------------------------------------------------------------------------------------------|---------------|-------------------------------------------|------------------------------------|
+| [Aggregate](/kafka-streams-quickstarts/kafka-streams-aggregate)                                 | Kafka Streams | `aggregate()`                             | Topology Test Driver               |
+| [Aggregate Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | `aggregate()`, `windowedBy()`             | Grace period, Topology Test Driver |
+| [Aggregate Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | `aggregate()`, `windowedBy().advanceBy()` | Grace period, Topology Test Driver |
+| [Average](/kafka-streams-quickstarts/kafka-streams-average)                                     | Kafka Streams | `aggregate()`                             | Topology Test Driver               |
+| [Count](/kafka-streams-quickstarts/kafka-streams-count)                                         | Kafka Streams | `count()`                                 | Topology Test Driver               |
+| [Reduce](/kafka-streams-quickstarts/kafka-streams-reduce)                                       | Kafka Streams | `reduce()`                                | Topology Test Driver               |
 
 #### Join
 
-| Module                                                                                                  | Library       | DSL                                                      | Additional Content                            |
-|:--------------------------------------------------------------------------------------------------------|---------------|----------------------------------------------------------|-----------------------------------------------|
-| [Join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table)           | Kafka Streams | `join()` between KStream and GlobalKTable                | `peek()`, Topology Test Driver                |
-| [Join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-join-stream-stream)                       | Kafka Streams | `join()` between KStream and KStream, `JoinWindows`      | `selectKey()`, `peek()`, Topology Test Driver |
-| [Join Stream-Table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)                         | Kafka Streams | `join()` between KStream and KTable                      | `selectKey()`, `peek()`, Topology Test Driver |
-| [Left join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-global-table) | Kafka Streams | `leftJoin()` between KStream and GlobalKTable            | `peek()`, Topology Test Driver                |
-| [Left join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-left-join-stream-stream)             | Kafka Streams | `leftJoin()` between KStream and KStream, `JoinWindows`  | `selectKey()`, `peek()`, Topology Test Driver |
-| [Left join Stream-Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-table)               | Kafka Streams | `leftJoin()` between KStream and KTable                  | `selectKey()`, `peek()`, Topology Test Driver |
-| [Outer join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-outer-join-stream-stream)           | Kafka Streams | `outerJoin()` between KStream and KStream, `JoinWindows` | `selectKey()`, `peek()`, Topology Test Driver |
+| Module                                                                                                  | Library       | DSL                                                      | Additional Content   |
+|:--------------------------------------------------------------------------------------------------------|---------------|----------------------------------------------------------|----------------------|
+| [Join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table)           | Kafka Streams | `join()` between KStream and GlobalKTable                | Topology Test Driver |
+| [Join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-join-stream-stream)                       | Kafka Streams | `join()` between KStream and KStream, `JoinWindows`      | Topology Test Driver |
+| [Join Stream-Table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)                         | Kafka Streams | `join()` between KStream and KTable                      | Topology Test Driver |
+| [Left join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-global-table) | Kafka Streams | `leftJoin()` between KStream and GlobalKTable            | Topology Test Driver |
+| [Left join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-left-join-stream-stream)             | Kafka Streams | `leftJoin()` between KStream and KStream, `JoinWindows`  | Topology Test Driver |
+| [Left join Stream-Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-table)               | Kafka Streams | `leftJoin()` between KStream and KTable                  | Topology Test Driver |
+| [Outer join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-outer-join-stream-stream)           | Kafka Streams | `outerJoin()` between KStream and KStream, `JoinWindows` | Topology Test Driver |
 
 #### Windowing
 
-| Module                                                                                | Library       | DSL                        |
-|:--------------------------------------------------------------------------------------|---------------|----------------------------|
-| [Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | `windowedBy()`             |
-| [Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | `windowedBy().advanceBy()` |
-| [Sliding Window](/kafka-streams-quickstarts/kafka-streams-join-stream-stream)         | Kafka Streams | `JoinWindows`              |
+| Module                                                                                | Library       | DSL                        | Additional Content                 |
+|:--------------------------------------------------------------------------------------|---------------|----------------------------|------------------------------------|
+| [Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | `windowedBy()`             | Grace period, Topology Test Driver |
+| [Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | `windowedBy().advanceBy()` | Grace period, Topology Test Driver |
+| [Sliding Window](/kafka-streams-quickstarts/kafka-streams-join-stream-stream)         | Kafka Streams | `JoinWindows`              | Topology Test Driver               |
 
 #### Processor
 
-| Module                                                                                    | Library       | DSL                                           | Additional Content                                                              |
-|:------------------------------------------------------------------------------------------|---------------|-----------------------------------------------|---------------------------------------------------------------------------------|
-| [Process](/kafka-streams-quickstarts/kafka-streams-process)                               | Kafka Streams | `process()`                                   | Headers, Topology Test Driver                                                   |
-| [Process values](/kafka-streams-quickstarts/kafka-streams-process-values)                 | Kafka Streams | `processValues()`                             | Headers, Topology Test Driver                                                   |
+| Module                                                                                    | Library       | DSL                                          | Additional Content                                                              |
+|:------------------------------------------------------------------------------------------|---------------|----------------------------------------------|---------------------------------------------------------------------------------|
+| [Process](/kafka-streams-quickstarts/kafka-streams-process)                               | Kafka Streams | `process()`                                  | Headers, Topology Test Driver                                                   |
+| [Process values](/kafka-streams-quickstarts/kafka-streams-process-values)                 | Kafka Streams | `processValues()`                            | Headers, Topology Test Driver                                                   |
 | [Schedule](/kafka-streams-quickstarts/kafka-streams-schedule)                             | Kafka Streams | `process()`, `schedule()`                    | Timestamped key-value store, Wall clock time, Stream time, Topology Test Driver |
 | [Schedule Store Cleanup](/kafka-streams-quickstarts/kafka-streams-schedule-store-cleanup) | Kafka Streams | `process()`, `addStateStore()`, `schedule()` | Key-value store, Stream time, Topology Test Driver                              |

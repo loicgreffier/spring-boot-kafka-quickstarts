@@ -10,7 +10,7 @@ The following tasks are performed:
 
 1. Group the stream by last name using `groupByKey()` operation.
 2. Apply an aggregator that combines each `KafkaPerson` record with the same last name into a `KafkaPersonGroup` object and aggregates the first names by last name.
-3. The aggregations are performed using a time window of 5 minutes and a 2-minute hop. This means that the aggregation is updated every 2 minutes based on a 5-minute window of data.
+3. The aggregations are performed using a 5-minutes time window with a 2-minute hop, and a 1-minute grace period for delayed records.
 4. Write the resulting records to a new topic named `PERSON_AGGREGATE_HOPPING_WINDOW_TOPIC`.
 
 The output records will be in the following format:

@@ -15,7 +15,7 @@ public class KafkaStreamsProperties {
     private final Map<String, String> properties = new HashMap<>();
 
     public Properties asProperties() {
-        final Properties config = new Properties();
+        Properties config = new Properties();
         config.putAll(properties);
         return config;
     }

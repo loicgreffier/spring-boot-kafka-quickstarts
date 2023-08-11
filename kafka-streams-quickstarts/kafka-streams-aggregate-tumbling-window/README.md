@@ -10,7 +10,7 @@ The following tasks are performed:
 
 1. Group the stream by last name using `groupByKey()` operation.
 2. Apply an aggregator that combines each `KafkaPerson` record with the same last name into a `KafkaPersonGroup` object and aggregates the first names by last name.
-3. The aggregations are performed using a tumbling window of 5 minutes. This means that the aggregation is updated every 5 minutes based on the data within the window.
+3. The aggregations are performed using a 5-minutes tumbling window and a 1-minute grace period for delayed records.
 4. Write the resulting records to a new topic named `PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC`.
 
 The output records will be in the following format:
