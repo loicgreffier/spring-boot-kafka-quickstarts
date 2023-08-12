@@ -1,5 +1,9 @@
 package io.github.loicgreffier.consumer.avro.generic.app;
 
+import static io.github.loicgreffier.consumer.avro.generic.constants.Topic.PERSON_TOPIC;
+
+import java.time.Duration;
+import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.CommitFailedException;
@@ -13,33 +17,45 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
-import java.util.Collections;
-
-import static io.github.loicgreffier.consumer.avro.generic.constants.Topic.PERSON_TOPIC;
-
+/**
+ * This class represents a Kafka consumer runner that subscribes to a specific topic and
+ * processes Kafka records.
+ */
 @Slf4j
 @Component
 public class ConsumerRunner {
+
     @Autowired
     private Consumer<String, GenericRecord> consumer;
 
+    /**
+     * Asynchronously starts the Kafka consumer when the application is ready.
+     * The asynchronous annotation is used to run the consumer in a separate thread and
+     * not block the main thread.
+     * The Kafka consumer processes generic Avro records, so it does not require
+     * to know the schema of the records.
+     */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         try {
             log.info("Subscribing to {} topic", PERSON_TOPIC);
 
-            consumer.subscribe(Collections.singleton(PERSON_TOPIC), new CustomConsumerRebalanceListener());
+            consumer.subscribe(Collections.singleton(PERSON_TOPIC),
+                new CustomConsumerRebalanceListener());
 
             while (true) {
-                ConsumerRecords<String, GenericRecord> messages = consumer.poll(Duration.ofMillis(1000));
+                ConsumerRecords<String, GenericRecord> messages =
+                    consumer.poll(Duration.ofMillis(1000));
                 log.info("Pulled {} records", messages.count());
 
                 for (ConsumerRecord<String, GenericRecord> message : messages) {
-                    log.info("Received offset = {}, partition = {}, key = {}, value_firstName = {}, value_lastName = {}",
-                            message.offset(), message.partition(), message.key(), message.value().get("firstName"),
-                            message.value().get("lastName"));
+                    log.info(
+                        "Received offset = {}, partition = {}, key = {}, value_firstName = {}, "
+                            + "value_lastName = {}",
+                        message.offset(), message.partition(), message.key(),
+                        message.value().get("firstName"),
+                        message.value().get("lastName"));
                 }
 
                 if (!messages.isEmpty()) {
@@ -54,6 +70,9 @@ public class ConsumerRunner {
         }
     }
 
+    /**
+     * Performs a synchronous commit of the consumed records.
+     */
     private void doCommitSync() {
         try {
             log.info("Committing the pulled records");

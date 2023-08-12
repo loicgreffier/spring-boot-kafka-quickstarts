@@ -1,4 +1,4 @@
-package io.github.loicgreffier.streams.producer.person.properties;
+package io.github.loicgreffier.consumer.avro.specific.properties;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,18 +8,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * This class represents Kafka producer properties configuration.
+ * This class represents Kafka consumer properties configuration.
  */
 @Getter
 @Configuration
 @ConfigurationProperties(prefix = "kafka")
-public class ProducerProperties {
+public class ConsumerProperties {
     private final Map<String, String> properties = new HashMap<>();
 
     /**
-     * Converts the producer properties into a Java Properties object.
+     * Converts the consumer properties into a Java Properties object.
      *
-     * @return A Properties object containing the Kafka producer properties.
+     * @return A Properties object containing the Kafka consumer properties.
      */
     public Properties asProperties() {
         Properties config = new Properties();

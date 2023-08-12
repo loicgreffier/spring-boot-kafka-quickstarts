@@ -1,6 +1,19 @@
 package io.github.loicgreffier.consumer.avro.generic;
 
+import static io.github.loicgreffier.consumer.avro.generic.constants.Topic.PERSON_TOPIC;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import io.github.loicgreffier.consumer.avro.generic.app.ConsumerRunner;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.Map;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -17,23 +30,14 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.Collections;
-import java.util.Map;
-
-import static io.github.loicgreffier.consumer.avro.generic.constants.Topic.PERSON_TOPIC;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
+/**
+ * This class contains unit tests for the Kafka consumer application.
+ */
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerAvroGenericApplicationTests {
     @Spy
-    private MockConsumer<String, GenericRecord> mockConsumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
+    private MockConsumer<String, GenericRecord> mockConsumer =
+        new MockConsumer<>(OffsetResetStrategy.EARLIEST);
 
     @InjectMocks
     private ConsumerRunner consumerRunner;
@@ -43,7 +47,8 @@ class KafkaConsumerAvroGenericApplicationTests {
     @BeforeEach
     void setUp() {
         topicPartition = new TopicPartition(PERSON_TOPIC, 0);
-        mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(Collections.singletonList(topicPartition)));
+        mockConsumer.schedulePollTask(
+            () -> mockConsumer.rebalance(Collections.singletonList(topicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(topicPartition, 0L));
         mockConsumer.updateEndOffsets(Map.of(topicPartition, 0L));
     }
@@ -57,9 +62,11 @@ class KafkaConsumerAvroGenericApplicationTests {
         genericRecord.put("id", 1L);
         genericRecord.put("firstName", "First name");
         genericRecord.put("lastName", "Last name");
-        genericRecord.put("birthDate", Timestamp.from(Instant.parse("2000-01-01T01:00:00.00Z")).getTime());
+        genericRecord.put("birthDate",
+            Timestamp.from(Instant.parse("2000-01-01T01:00:00.00Z")).getTime());
 
-        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", genericRecord);
+        ConsumerRecord<String, GenericRecord> message =
+            new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", genericRecord);
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -79,13 +86,16 @@ class KafkaConsumerAvroGenericApplicationTests {
         genericRecord.put("id", 1L);
         genericRecord.put("firstName", "First name");
         genericRecord.put("lastName", "Last name");
-        genericRecord.put("birthDate", Timestamp.from(Instant.parse("2000-01-01T01:00:00.00Z")).getTime());
+        genericRecord.put("birthDate",
+            Timestamp.from(Instant.parse("2000-01-01T01:00:00.00Z")).getTime());
 
-        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", genericRecord);
+        ConsumerRecord<String, GenericRecord> message =
+            new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", genericRecord);
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(() -> {
-            throw new RecordDeserializationException(topicPartition, 1, "Error deserializing", new Exception());
+            throw new RecordDeserializationException(topicPartition, 1, "Error deserializing",
+                new Exception());
         });
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
 
