@@ -18,14 +18,11 @@ import org.apache.kafka.streams.kstream.Produced;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaStreamsTopology {
-    
+
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.flatmapvalues.constants.Topic#PERSON_TOPIC} topic,
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic,
      * maps the value to a list of strings containing the first name and the last name.
-     * Write the result to the {@link
-     * io.github.loicgreffier.streams.flatmapvalues.constants.Topic#PERSON_FLATMAP_VALUES_TOPIC}
-     * topic.
+     * Write the result to the PERSON_FLATMAP_VALUES_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

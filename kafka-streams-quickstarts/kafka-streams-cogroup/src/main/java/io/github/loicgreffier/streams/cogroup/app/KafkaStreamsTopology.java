@@ -27,13 +27,10 @@ import org.apache.kafka.streams.kstream.Materialized;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.cogroup.constants.Topic#PERSON_TOPIC} topic
-     * and the {@link io.github.loicgreffier.streams.cogroup.constants.Topic#PERSON_TOPIC_TWO}
-     * topic. Both topics are grouped by last name and cogrouped.
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
+     * and the PERSON_TOPIC_TWO topic. Both topics are grouped by last name and cogrouped.
      * The cogrouped stream then aggregates the first names by last name.
-     * The result is written to the
-     * {@link io.github.loicgreffier.streams.cogroup.constants.Topic#PERSON_COGROUP_TOPIC} topic.
+     * The result is written to the PERSON_COGROUP_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

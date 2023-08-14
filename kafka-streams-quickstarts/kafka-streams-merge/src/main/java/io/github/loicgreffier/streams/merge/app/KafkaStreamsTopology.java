@@ -19,11 +19,9 @@ import org.apache.kafka.streams.kstream.KStream;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@link
-     * io.github.loicgreffier.streams.merge.constants.Topic#PERSON_TOPIC} topic
-     * and the {@link io.github.loicgreffier.streams.merge.constants.Topic#PERSON_TOPIC_TWO} topic,
-     * then merge the two streams into the
-     * {@link io.github.loicgreffier.streams.merge.constants.Topic#PERSON_MERGE_TOPIC} topic.
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
+     * and the PERSON_TOPIC_TWO topic, then merge the two streams into the
+     * PERSON_MERGE_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

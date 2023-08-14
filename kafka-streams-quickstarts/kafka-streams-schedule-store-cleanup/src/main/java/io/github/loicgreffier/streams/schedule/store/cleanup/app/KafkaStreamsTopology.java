@@ -23,12 +23,10 @@ import org.apache.kafka.streams.state.Stores;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.schedule.store.cleanup.constants.Topic#PERSON_TOPIC} topic
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
      * and processes the records with the {@link StoreCleanupProcessor} processor.
      * The state store is built before the processor is registered.
-     * The result is written to the {@link
-     * io.github.loicgreffier.streams.schedule.store.cleanup.constants.Topic#PERSON_TOPIC} topic.
+     * The result is written to the PERSON_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

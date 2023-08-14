@@ -32,8 +32,8 @@ public class ConsumerRunner {
      * Asynchronously starts the Kafka consumer when the application is ready.
      * The asynchronous annotation is used to run the consumer in a separate thread and
      * not block the main thread.
-     * The Kafka consumer processes generic Avro records, so it does not require
-     * to know the schema of the records.
+     * The Kafka consumer processes generic Avro records from the PERSON_TOPIC topic,
+     * so it does not require to know the schema of the records.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)

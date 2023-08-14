@@ -26,10 +26,8 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.count.constants.Topic#PERSON_TOPIC} topic,
-     * groups by nationality and counts the number of persons.
-     * Then, the result is written to the
-     * {@link io.github.loicgreffier.streams.count.constants.Topic#PERSON_COUNT_TOPIC} topic.
+     * PERSON_TOPIC topic, groups by nationality and counts the number of persons.
+     * Then, the result is written to the PERSON_COUNT_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

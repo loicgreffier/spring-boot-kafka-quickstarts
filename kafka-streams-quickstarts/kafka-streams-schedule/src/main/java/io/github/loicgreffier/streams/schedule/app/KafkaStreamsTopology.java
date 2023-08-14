@@ -28,13 +28,10 @@ import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.schedule.constants.Topic#PERSON_TOPIC} topic
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
      * and processes the records with the {@link CountNationalityProcessor} processor.
      * The processor supplier registers a {@link TimestampedKeyValueStore} state store
-     * when it is built.
-     * The result is written to the {@link
-     * io.github.loicgreffier.streams.schedule.constants.Topic#PERSON_SCHEDULE_TOPIC} topic.
+     * when it is built. The result is written to the PERSON_SCHEDULE_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

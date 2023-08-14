@@ -22,11 +22,10 @@ import org.apache.kafka.streams.kstream.Produced;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.flatmap.constants.Topic#PERSON_TOPIC} topic,
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic,
      * maps the value to a list of key-value pairs containing the first name and the last name
      * as key and value respectively. Upper case the key and write the result to the
-     * {@link io.github.loicgreffier.streams.flatmap.constants.Topic#PERSON_FLATMAP_TOPIC} topic.
+     * PERSON_FLATMAP_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

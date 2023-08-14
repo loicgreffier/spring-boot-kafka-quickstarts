@@ -25,11 +25,9 @@ import org.apache.kafka.streams.kstream.Produced;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.average.constants.Topic#PERSON_TOPIC} topic,
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic,
      * groups by nationality and aggregates the age sum and count.
-     * Then, the average age is computed. The result is written to the
-     * {@link io.github.loicgreffier.streams.average.constants.Topic#PERSON_AVERAGE_TOPIC} topic.
+     * Then, the average age is computed. The result is written to the PERSON_AVERAGE_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

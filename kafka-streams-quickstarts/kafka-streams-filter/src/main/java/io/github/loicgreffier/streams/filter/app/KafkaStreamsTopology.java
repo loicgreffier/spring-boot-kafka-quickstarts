@@ -18,10 +18,8 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.filter.constants.Topic#PERSON_TOPIC} topic,
-     * filters by last name and first name starting with "A".
-     * Then, the result is written to the
-     * {@link io.github.loicgreffier.streams.filter.constants.Topic#PERSON_FILTER_TOPIC} topic.
+     * PERSON_TOPIC topic, filters by last name and first name starting with "A".
+     * Then, the result is written to the PERSON_FILTER_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

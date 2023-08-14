@@ -25,15 +25,11 @@ import org.apache.kafka.streams.kstream.StreamJoined;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.join.stream.stream.constants.Topic#PERSON_TOPIC} topic
-     * and the {@link
-     * io.github.loicgreffier.streams.join.stream.stream.constants.Topic#PERSON_TOPIC_TWO}
-     * topic. The stream is joined to the other stream by last name with an inner join.
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
+     * and the PERSON_TOPIC_TWO topic. The stream is joined to the other stream
+     * by last name with an inner join.
      * The join window is 5 minutes and the grace period is 1 minute for late arriving events.
-     * The result is written to the {@link
-     * io.github.loicgreffier.streams.join.stream.stream.constants.Topic#PERSON_JOIN_STREAM_STREAM_TOPIC}
-     * topic.
+     * The result is written to the PERSON_JOIN_STREAM_STREAM_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

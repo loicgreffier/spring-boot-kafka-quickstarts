@@ -17,10 +17,9 @@ import org.apache.kafka.streams.StreamsBuilder;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@link
-     * io.github.loicgreffier.streams.mapvalues.constants.Topic#PERSON_TOPIC} topic,
-     * maps the first name and the last name to upper case. The result is written to the {@link
-     * io.github.loicgreffier.streams.mapvalues.constants.Topic#PERSON_MAP_VALUES_TOPIC} topic.
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic,
+     * maps the first name and the last name to upper case. The result is written to
+     * the PERSON_MAP_VALUES_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

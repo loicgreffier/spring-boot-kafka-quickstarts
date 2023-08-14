@@ -47,6 +47,7 @@ public class ConsumerRunner {
      * Asynchronously starts the Kafka consumer when the application is ready.
      * The asynchronous annotation is used to run the consumer in a separate thread and
      * not block the main thread.
+     * The Kafka consumer processes messages from the STRING_TOPIC topic.
      * If an error occurs during the external system call, the consumer pauses the topic-partitions
      * and rewinds to the failed record offset.
      * As the consumer is paused, it will not commit the offsets and the next

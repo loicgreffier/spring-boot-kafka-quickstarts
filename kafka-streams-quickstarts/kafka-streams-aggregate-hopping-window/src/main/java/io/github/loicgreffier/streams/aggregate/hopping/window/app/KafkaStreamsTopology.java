@@ -26,15 +26,12 @@ import org.apache.kafka.streams.kstream.TimeWindows;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.aggregate.hopping.window.constants.Topic#PERSON_TOPIC}
-     * topic, selects the key as the last name of the person, groups by key
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic,
+     * selects the key as the last name of the person, groups by key
      * and aggregates the first names by last name in a 5 minutes hopping window with
      * 1-minute grace period and 2 minutes advance period.
      * A new key is generated with the window start and end time.
-     * The result is written to the
-     * {@link io.github.loicgreffier.streams.aggregate.hopping.window.constants.Topic#PERSON_AGGREGATE_HOPPING_WINDOW_TOPIC}
-     * topic.
+     * The result is written to the PERSON_AGGREGATE_HOPPING_WINDOW_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

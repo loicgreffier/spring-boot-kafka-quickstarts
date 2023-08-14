@@ -71,8 +71,8 @@ public class CountNationalityProcessor implements Processor<String, KafkaPerson,
      * @param timestamp the timestamp of the punctuation.
      */
     private void resetCounters(long timestamp) {
-        try (
-            KeyValueIterator<String, ValueAndTimestamp<Long>> iterator = countNationalityStore.all()) {
+        try (KeyValueIterator<String, ValueAndTimestamp<Long>> iterator
+                 = countNationalityStore.all()) {
             while (iterator.hasNext()) {
                 KeyValue<String, ValueAndTimestamp<Long>> keyValue = iterator.next();
                 countNationalityStore.put(keyValue.key,
@@ -90,8 +90,8 @@ public class CountNationalityProcessor implements Processor<String, KafkaPerson,
      * @param timestamp the timestamp of the punctuation.
      */
     private void forwardCounters(long timestamp) {
-        try (
-            KeyValueIterator<String, ValueAndTimestamp<Long>> iterator = countNationalityStore.all()) {
+        try (KeyValueIterator<String, ValueAndTimestamp<Long>> iterator
+                 = countNationalityStore.all()) {
             while (iterator.hasNext()) {
                 KeyValue<String, ValueAndTimestamp<Long>> keyValue = iterator.next();
                 context.forward(

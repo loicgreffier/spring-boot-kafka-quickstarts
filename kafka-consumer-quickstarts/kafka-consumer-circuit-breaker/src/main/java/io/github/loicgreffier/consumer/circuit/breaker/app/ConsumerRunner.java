@@ -33,8 +33,9 @@ public class ConsumerRunner {
      * Asynchronously starts the Kafka consumer when the application is ready.
      * The asynchronous annotation is used to run the consumer in a separate thread and
      * not block the main thread.
-     * The Kafka consumer handles deserialization errors. When a deserialization error occurs,
-     * the consumer seeks to the next offset in order to skip the record that caused the error.
+     * The Kafka consumer processes messages from the PERSON_TOPIC topic and
+     * handles deserialization errors. When a deserialization error occurs, the consumer seeks to
+     * the next offset in order to skip the record that caused the error.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)

@@ -23,13 +23,10 @@ import org.apache.kafka.streams.kstream.Materialized;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@link
-     * io.github.loicgreffier.streams.join.stream.global.table.constants.Topic#PERSON_TOPIC} topic
-     * and the {@link
-     * io.github.loicgreffier.streams.join.stream.global.table.constants.Topic#COUNTRY_TOPIC}
-     * topic as a global table. The stream is joined to the global table by nationality with an
-     * inner join. The result is written to the
-     * {@link io.github.loicgreffier.streams.join.stream.global.table.constants.Topic#PERSON_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC} topic.
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
+     * and the COUNTRY_TOPIC topic as a global table. The stream is joined to the global table
+     * by nationality with an inner join. The result is written to the
+     * PERSON_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

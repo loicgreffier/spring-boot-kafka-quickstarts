@@ -37,7 +37,7 @@ public class ProducerRunner {
      * Asynchronously starts the Kafka producer when the application is ready.
      * The asynchronous annotation is used to run the producer in a separate thread and
      * not block the main thread.
-     * The Kafka producer produces generic Avro records.
+     * The Kafka producer produces generic Avro records to the PERSON_TOPIC topic.
      *
      * @throws IOException if the schema file cannot be read
      */

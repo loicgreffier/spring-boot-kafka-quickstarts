@@ -22,11 +22,9 @@ import org.apache.kafka.streams.kstream.Materialized;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.reduce.constants.Topic#PERSON_TOPIC} topic,
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic,
      * groups by nationality and reduces the stream to the person with the max age.
-     * Then, the result is written to the
-     * {@link io.github.loicgreffier.streams.reduce.constants.Topic#PERSON_REDUCE_TOPIC} topic.
+     * Then, the result is written to the PERSON_REDUCE_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

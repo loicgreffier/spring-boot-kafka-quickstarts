@@ -23,19 +23,15 @@ import org.apache.kafka.streams.kstream.Named;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.branch.constants.Topic#PERSON_TOPIC} topic.
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic.
      * Then, the stream is split into two branches:
      * <ul>
      *     <li>the first branch is filtered by the last name starting with "A".</li>
      *     <li>the second branch is filtered by the last name starting with "B".</li>
      *     <li>the default branch is used for all other last names.</li>
      * </ul>
-     * The result is written to the
-     * {@link io.github.loicgreffier.streams.branch.constants.Topic#PERSON_BRANCH_A_TOPIC} topic,
-     * {@link io.github.loicgreffier.streams.branch.constants.Topic#PERSON_BRANCH_B_TOPIC} topic and
-     * {@link io.github.loicgreffier.streams.branch.constants.Topic#PERSON_BRANCH_DEFAULT_TOPIC}
-     * topic.
+     * The result is written to the PERSON_BRANCH_A_TOPIC topic, PERSON_BRANCH_B_TOPIC topic and
+     * PERSON_BRANCH_DEFAULT_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

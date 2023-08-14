@@ -24,12 +24,10 @@ import org.apache.kafka.streams.kstream.Materialized;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.aggregate.constants.Topic#PERSON_TOPIC} topic,
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic,
      * selects the key as the last name of the person, groups by key
-     * and aggregates the first names by last name. The result is written to the
-     * {@link io.github.loicgreffier.streams.aggregate.constants.Topic#PERSON_AGGREGATE_TOPIC}
-     * topic.
+     * and aggregates the first names by last name.
+     * The result is written to the PERSON_AGGREGATE_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

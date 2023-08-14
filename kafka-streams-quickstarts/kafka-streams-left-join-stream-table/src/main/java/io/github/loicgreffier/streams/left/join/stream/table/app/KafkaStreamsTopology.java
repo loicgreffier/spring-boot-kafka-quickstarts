@@ -25,15 +25,11 @@ import org.apache.kafka.streams.kstream.Materialized;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@link
-     * io.github.loicgreffier.streams.left.join.stream.table.constants.Topic#PERSON_TOPIC} topic
-     * and the {@link
-     * io.github.loicgreffier.streams.left.join.stream.table.constants.Topic#COUNTRY_TOPIC}
-     * topic as a table. The stream is joined to the table by nationality with a left join
-     * which means a person can exist without a country (a value of null is returned for the
-     * country if there is no match). The result is written to the {@link
-     * io.github.loicgreffier.streams.left.join.stream.table.constants.Topic#PERSON_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC}
-     * topic.
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
+     * and the COUNTRY_TOPIC topic as a table. The stream is joined to the table
+     * by nationality with a left join which means a person can exist
+     * without a country (a value of null is returned for the country if there is no match).
+     * The result is written to the PERSON_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

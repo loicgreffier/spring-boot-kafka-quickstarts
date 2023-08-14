@@ -25,18 +25,13 @@ import org.apache.kafka.streams.kstream.StreamJoined;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.outer.join.stream.stream.constants.Topic#PERSON_TOPIC} topic
-     * and the {@link
-     * io.github.loicgreffier.streams.outer.join.stream.stream.constants.Topic#PERSON_TOPIC_TWO}
-     * topic. The stream is joined to the other stream by last name with an outer join,
-     * which means a person from the first stream can exist without a matching person
-     * from the second stream and vice versa (a value of null is returned for the person
-     * if there is no match).
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
+     * and the PERSON_TOPIC_TWO topic. The stream is joined to the other stream
+     * by last name with an outer join, which means a person from the first stream can exist
+     * without a matching person from the second stream and vice versa
+     * (a value of null is returned for the person if there is no match).
      * The join window is 5 minutes and the grace period is 1 minute for late arriving events.
-     * The result is written to the {@link
-     * io.github.loicgreffier.streams.outer.join.stream.stream.constants.Topic#PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC}
-     * topic.
+     * The result is written to the PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

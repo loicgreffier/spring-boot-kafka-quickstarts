@@ -18,11 +18,9 @@ import org.apache.kafka.streams.StreamsBuilder;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * {@link io.github.loicgreffier.streams.processvalues.constants.Topic#PERSON_TOPIC} topic
+     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
      * and processes the records with the {@link PersonMetadataFixedKeyProcessor} processor.
-     * The result is written to the {@link
-     * io.github.loicgreffier.streams.processvalues.constants.Topic#PERSON_PROCESS_VALUES_TOPIC} topic.
+     * The result is written to the PERSON_PROCESS_VALUES_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
