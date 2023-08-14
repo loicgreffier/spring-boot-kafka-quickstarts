@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * This class contains integration tests for the {@link KafkaStreamsTopology} class.
+ * This class contains unit tests for the {@link KafkaStreamsTopology} class.
  */
 class KafkaStreamsScheduleStoreCleanupApplicationTests {
     private static final String SCHEMA_REGISTRY_SCOPE =

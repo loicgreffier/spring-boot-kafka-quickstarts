@@ -7,6 +7,9 @@ import io.github.loicgreffier.streams.reduce.app.reducer.MaxAgeReducer;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
 
+/**
+ * This class contains unit tests for the {@link MaxAgeReducer} class.
+ */
 class MaxAgeReducerTests {
     @Test
     void shouldKeepOldestPerson() {
