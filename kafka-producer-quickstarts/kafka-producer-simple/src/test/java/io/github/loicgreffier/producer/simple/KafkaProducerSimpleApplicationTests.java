@@ -33,7 +33,7 @@ class KafkaProducerSimpleApplicationTests {
     @Test
     void shouldSendSuccessfully() throws ExecutionException, InterruptedException {
         ProducerRecord<String, String> message =
-            new ProducerRecord<>(STRING_TOPIC, "1", "Message 1");
+            new ProducerRecord<>(STRING_TOPIC, "1", "John Doe");
         Future<RecordMetadata> record = producerRunner.send(message);
         mockProducer.completeNext();
 
@@ -47,7 +47,7 @@ class KafkaProducerSimpleApplicationTests {
     @Test
     void shouldSendWithFailure() {
         ProducerRecord<String, String> message =
-            new ProducerRecord<>(STRING_TOPIC, "1", "Message 1");
+            new ProducerRecord<>(STRING_TOPIC, "1", "John Doe");
         Future<RecordMetadata> record = producerRunner.send(message);
         RuntimeException exception = new RuntimeException("Error sending message");
         mockProducer.errorNext(exception);

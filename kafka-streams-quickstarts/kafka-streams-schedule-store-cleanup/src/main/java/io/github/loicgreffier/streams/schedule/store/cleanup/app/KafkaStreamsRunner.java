@@ -10,13 +10,14 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * This class represents a Kafka Streams runner that runs a topology.
+ */
 @Slf4j
 @Component
 public class KafkaStreamsRunner {
@@ -28,6 +29,12 @@ public class KafkaStreamsRunner {
 
     private KafkaStreams kafkaStreams;
 
+    /**
+     * Starts the Kafka Streams when the application is ready.
+     * The Kafka Streams topology is built in the {@link KafkaStreamsTopology} class.
+     * Initializes the {@link SerdesUtils} class with the serdes configuration
+     * (e.g. the schema registry URL, etc.).
+     */
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         SerdesUtils.setSerdesConfig(properties.getProperties());
@@ -41,7 +48,7 @@ public class KafkaStreamsRunner {
 
         kafkaStreams.setUncaughtExceptionHandler(exception -> {
             log.error("A not covered exception occurred in {} Kafka Streams. Shutting down...",
-                    properties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG), exception);
+                properties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG), exception);
 
             applicationContext.close();
             return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
@@ -50,7 +57,7 @@ public class KafkaStreamsRunner {
         kafkaStreams.setStateListener((newState, oldState) -> {
             if (newState.equals(KafkaStreams.State.ERROR)) {
                 log.error("The {} Kafka Streams is in error state...",
-                        properties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
+                    properties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
 
                 applicationContext.close();
             }
@@ -59,6 +66,10 @@ public class KafkaStreamsRunner {
         kafkaStreams.start();
     }
 
+
+    /**
+     * Closes the Kafka Streams when the application is stopped.
+     */
     @PreDestroy
     public void preDestroy() {
         log.info("Closing streams");

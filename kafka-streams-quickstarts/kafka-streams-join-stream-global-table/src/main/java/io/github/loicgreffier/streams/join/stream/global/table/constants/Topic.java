@@ -3,9 +3,13 @@ package io.github.loicgreffier.streams.join.stream.global.table.constants;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+/**
+ * This abstract class represents topic name constants.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
     public static final String COUNTRY_TOPIC = "COUNTRY_TOPIC";
     public static final String PERSON_TOPIC = "PERSON_TOPIC";
-    public static final String PERSON_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC = "PERSON_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC";
+    public static final String PERSON_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC =
+        "PERSON_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC";
 }

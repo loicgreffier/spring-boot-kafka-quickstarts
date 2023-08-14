@@ -60,8 +60,8 @@ class KafkaConsumerAvroGenericApplicationTests {
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "First name");
-        genericRecord.put("lastName", "Last name");
+        genericRecord.put("firstName", "John");
+        genericRecord.put("lastName", "Doe");
         genericRecord.put("birthDate",
             Timestamp.from(Instant.parse("2000-01-01T01:00:00.00Z")).getTime());
 
@@ -84,8 +84,8 @@ class KafkaConsumerAvroGenericApplicationTests {
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "First name");
-        genericRecord.put("lastName", "Last name");
+        genericRecord.put("firstName", "John");
+        genericRecord.put("lastName", "Doe");
         genericRecord.put("birthDate",
             Timestamp.from(Instant.parse("2000-01-01T01:00:00.00Z")).getTime());
 

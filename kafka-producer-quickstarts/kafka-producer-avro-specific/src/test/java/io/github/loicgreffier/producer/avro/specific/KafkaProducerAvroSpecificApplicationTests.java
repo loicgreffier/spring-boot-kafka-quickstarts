@@ -48,8 +48,8 @@ class KafkaProducerAvroSpecificApplicationTests {
         ProducerRecord<String, KafkaPerson> message =
             new ProducerRecord<>(PERSON_TOPIC, "1", KafkaPerson.newBuilder()
                 .setId(1L)
-                .setFirstName("First name")
-                .setLastName("Last name")
+                .setFirstName("John")
+                .setLastName("Doe")
                 .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 
@@ -68,8 +68,8 @@ class KafkaProducerAvroSpecificApplicationTests {
         ProducerRecord<String, KafkaPerson> message =
             new ProducerRecord<>(PERSON_TOPIC, "1", KafkaPerson.newBuilder()
                 .setId(1L)
-                .setFirstName("First name")
-                .setLastName("Last name")
+                .setFirstName("John")
+                .setLastName("Doe")
                 .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 

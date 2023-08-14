@@ -51,8 +51,8 @@ class KafkaConsumerCircuitBreakerApplicationTests {
         ConsumerRecord<String, KafkaPerson> message =
             new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", KafkaPerson.newBuilder()
                 .setId(1L)
-                .setFirstName("First name")
-                .setLastName("Last name")
+                .setFirstName("John")
+                .setLastName("Doe")
                 .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 
@@ -70,16 +70,16 @@ class KafkaConsumerCircuitBreakerApplicationTests {
         ConsumerRecord<String, KafkaPerson> message =
             new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", KafkaPerson.newBuilder()
                 .setId(1L)
-                .setFirstName("First name")
-                .setLastName("Last name")
+                .setFirstName("John")
+                .setLastName("Doe")
                 .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 
         ConsumerRecord<String, KafkaPerson> message2 =
             new ConsumerRecord<>(PERSON_TOPIC, 0, 2, "2", KafkaPerson.newBuilder()
                 .setId(2L)
-                .setFirstName("First name")
-                .setLastName("Last name")
+                .setFirstName("John")
+                .setLastName("Doe")
                 .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 

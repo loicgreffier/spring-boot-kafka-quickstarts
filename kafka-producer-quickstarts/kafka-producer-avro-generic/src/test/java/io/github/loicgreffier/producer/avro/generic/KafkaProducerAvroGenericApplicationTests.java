@@ -55,8 +55,8 @@ class KafkaProducerAvroGenericApplicationTests {
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "First name");
-        genericRecord.put("lastName", "Last name");
+        genericRecord.put("firstName", "John");
+        genericRecord.put("lastName", "Doe");
         genericRecord.put("birthDate", System.currentTimeMillis());
 
         ProducerRecord<String, GenericRecord> message =
@@ -79,8 +79,8 @@ class KafkaProducerAvroGenericApplicationTests {
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "First name");
-        genericRecord.put("lastName", "Last name");
+        genericRecord.put("firstName", "John");
+        genericRecord.put("lastName", "Doe");
         genericRecord.put("birthDate", System.currentTimeMillis());
 
         ProducerRecord<String, GenericRecord> message =
@@ -103,8 +103,8 @@ class KafkaProducerAvroGenericApplicationTests {
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", "aStringThatShouldBeALong");
-        genericRecord.put("firstName", "First name");
-        genericRecord.put("lastName", "Last name");
+        genericRecord.put("firstName", "John");
+        genericRecord.put("lastName", "Doe");
         genericRecord.put("birthDate", System.currentTimeMillis());
 
         ProducerRecord<String, GenericRecord> message =

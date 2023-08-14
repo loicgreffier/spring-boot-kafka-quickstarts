@@ -32,9 +32,9 @@ class KafkaProducerTransactionApplicationTests {
         mockProducer.initTransactions();
 
         ProducerRecord<String, String> firstMessage =
-            new ProducerRecord<>(FIRST_STRING_TOPIC, "3", "Message 1");
+            new ProducerRecord<>(FIRST_STRING_TOPIC, "3", "John Doe");
         ProducerRecord<String, String> secondMessage =
-            new ProducerRecord<>(SECOND_STRING_TOPIC, "3", "Message 1");
+            new ProducerRecord<>(SECOND_STRING_TOPIC, "4", "Jane Smith");
         producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
         assertThat(mockProducer.history()).isEmpty();
@@ -49,16 +49,16 @@ class KafkaProducerTransactionApplicationTests {
         mockProducer.initTransactions();
 
         ProducerRecord<String, String> firstMessage =
-            new ProducerRecord<>(FIRST_STRING_TOPIC, "1", "Message 1");
+            new ProducerRecord<>(FIRST_STRING_TOPIC, "1", "John Doe");
         ProducerRecord<String, String> secondMessage =
-            new ProducerRecord<>(SECOND_STRING_TOPIC, "1", "Message 1");
+            new ProducerRecord<>(SECOND_STRING_TOPIC, "2", "Jane Smith");
         producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
         assertThat(mockProducer.history()).hasSize(2);
         assertThat(mockProducer.history().get(0).topic()).isEqualTo(FIRST_STRING_TOPIC);
-        assertThat(mockProducer.history().get(0).value()).isEqualTo("Message 1");
+        assertThat(mockProducer.history().get(0).value()).isEqualTo("John Doe");
         assertThat(mockProducer.history().get(1).topic()).isEqualTo(SECOND_STRING_TOPIC);
-        assertThat(mockProducer.history().get(1).value()).isEqualTo("Message 1");
+        assertThat(mockProducer.history().get(1).value()).isEqualTo("Jane Smith");
         assertThat(mockProducer.transactionInitialized()).isTrue();
         assertThat(mockProducer.transactionCommitted()).isTrue();
         assertThat(mockProducer.transactionAborted()).isFalse();

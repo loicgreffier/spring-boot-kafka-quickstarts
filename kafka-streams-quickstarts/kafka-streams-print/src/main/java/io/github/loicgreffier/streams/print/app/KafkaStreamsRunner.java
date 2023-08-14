@@ -3,6 +3,10 @@ package io.github.loicgreffier.streams.print.app;
 import io.github.loicgreffier.streams.print.properties.ApplicationProperties;
 import io.github.loicgreffier.streams.print.properties.KafkaStreamsProperties;
 import jakarta.annotation.PreDestroy;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -10,18 +14,14 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
+/**
+ * This class represents a Kafka Streams runner that runs a topology.
+ */
 @Slf4j
 @Component
 public class KafkaStreamsRunner {
@@ -36,9 +36,14 @@ public class KafkaStreamsRunner {
 
     private KafkaStreams kafkaStreams;
 
+    /**
+     * Starts the Kafka Streams when the application is ready.
+     * The Kafka Streams topology is built in the {@link KafkaStreamsTopology} class.
+     */
     @EventListener(ApplicationReadyEvent.class)
     public void run() throws IOException {
-        Path filePath = Paths.get(applicationProperties.getFilePath().substring(0, applicationProperties.getFilePath().lastIndexOf("/")));
+        Path filePath = Paths.get(applicationProperties.getFilePath()
+            .substring(0, applicationProperties.getFilePath().lastIndexOf("/")));
         if (!Files.exists(filePath)) {
             Files.createDirectories(filePath);
         }
@@ -52,7 +57,8 @@ public class KafkaStreamsRunner {
 
         kafkaStreams.setUncaughtExceptionHandler(exception -> {
             log.error("A not covered exception occurred in {} Kafka Streams. Shutting down...",
-                    kafkaStreamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG), exception);
+                kafkaStreamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG),
+                exception);
 
             applicationContext.close();
             return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
@@ -61,7 +67,7 @@ public class KafkaStreamsRunner {
         kafkaStreams.setStateListener((newState, oldState) -> {
             if (newState.equals(KafkaStreams.State.ERROR)) {
                 log.error("The {} Kafka Streams is in error state...",
-                        kafkaStreamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
+                    kafkaStreamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
 
                 applicationContext.close();
             }
@@ -70,6 +76,9 @@ public class KafkaStreamsRunner {
         kafkaStreams.start();
     }
 
+    /**
+     * Closes the Kafka Streams when the application is stopped.
+     */
     @PreDestroy
     public void preDestroy() {
         log.info("Closing streams");

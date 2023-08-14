@@ -1,51 +1,51 @@
 package io.github.loicgreffier.streams.aggregate.hopping.window;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.avro.KafkaPersonGroup;
 import io.github.loicgreffier.streams.aggregate.hopping.window.app.aggregator.FirstNameByLastNameAggregator;
-import org.junit.jupiter.api.Test;
-
 import java.time.Instant;
 import java.util.HashMap;
+import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+/**
+ * This class contains unit tests for the {@link FirstNameByLastNameAggregator} class.
+ */
 class FirstNameByLastNameAggregatorTests {
     @Test
     void shouldAggregateFirstNamesByLastName() {
-        FirstNameByLastNameAggregator firstNameByLastNameAggregator = new FirstNameByLastNameAggregator();
-        KafkaPersonGroup kafkaPersonGroup = new KafkaPersonGroup(new HashMap<>());
+        FirstNameByLastNameAggregator aggregator = new FirstNameByLastNameAggregator();
+        KafkaPersonGroup group = new KafkaPersonGroup(new HashMap<>());
 
-        firstNameByLastNameAggregator.apply("Allen", KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("Aaran")
-                .setLastName("Allen")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
-                .build(), kafkaPersonGroup);
+        aggregator.apply("Doe", KafkaPerson.newBuilder()
+            .setId(1L)
+            .setFirstName("John")
+            .setLastName("Doe")
+            .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
+            .build(), group);
 
-        firstNameByLastNameAggregator.apply("Allen", KafkaPerson.newBuilder()
-                .setId(2L)
-                .setFirstName("Brendan")
-                .setLastName("Allen")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
-                .build(), kafkaPersonGroup);
+        aggregator.apply("Doe", KafkaPerson.newBuilder()
+            .setId(2L)
+            .setFirstName("Michael")
+            .setLastName("Doe")
+            .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
+            .build(), group);
 
-        firstNameByLastNameAggregator.apply("Wise", KafkaPerson.newBuilder()
-                .setId(3L)
-                .setFirstName("Bret")
-                .setLastName("Wise")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
-                .build(), kafkaPersonGroup);
+        aggregator.apply("Smith", KafkaPerson.newBuilder()
+            .setId(3L)
+            .setFirstName("Jane")
+            .setLastName("Smith")
+            .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
+            .build(), group);
 
-        assertThat(kafkaPersonGroup.getFirstNameByLastName()).hasSize(2);
+        assertThat(group.getFirstNameByLastName()).containsKey("Doe");
+        assertThat(group.getFirstNameByLastName().get("Doe")).hasSize(2);
+        assertThat(group.getFirstNameByLastName().get("Doe").get(0)).isEqualTo("John");
+        assertThat(group.getFirstNameByLastName().get("Doe").get(1)).isEqualTo("Michael");
 
-        assertThat(kafkaPersonGroup.getFirstNameByLastName()).containsKey("Allen");
-        assertThat(kafkaPersonGroup.getFirstNameByLastName().get("Allen")).hasSize(2);
-        assertThat(kafkaPersonGroup.getFirstNameByLastName().get("Allen").get(0)).isEqualTo("Aaran");
-        assertThat(kafkaPersonGroup.getFirstNameByLastName().get("Allen").get(1)).isEqualTo("Brendan");
-
-        assertThat(kafkaPersonGroup.getFirstNameByLastName()).containsKey("Wise");
-        assertThat(kafkaPersonGroup.getFirstNameByLastName().get("Wise")).hasSize(1);
-        assertThat(kafkaPersonGroup.getFirstNameByLastName().get("Wise").get(0)).isEqualTo("Bret");
+        assertThat(group.getFirstNameByLastName()).containsKey("Smith");
+        assertThat(group.getFirstNameByLastName().get("Smith")).hasSize(1);
+        assertThat(group.getFirstNameByLastName().get("Smith").get(0)).isEqualTo("Jane");
     }
 }

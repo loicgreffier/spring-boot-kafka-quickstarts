@@ -52,8 +52,8 @@ class KafkaConsumerAvroSpecificApplicationTests {
         ConsumerRecord<String, KafkaPerson> message =
             new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", KafkaPerson.newBuilder()
                 .setId(1L)
-                .setFirstName("First name")
-                .setLastName("Last name")
+                .setFirstName("John")
+                .setLastName("Doe")
                 .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 
@@ -71,8 +71,8 @@ class KafkaConsumerAvroSpecificApplicationTests {
         ConsumerRecord<String, KafkaPerson> message =
             new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", KafkaPerson.newBuilder()
                 .setId(1L)
-                .setFirstName("First name")
-                .setLastName("Last name")
+                .setFirstName("John")
+                .setLastName("Doe")
                 .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
                 .build());
 

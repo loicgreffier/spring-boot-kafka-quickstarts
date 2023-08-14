@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * This abstract class represents topic constants for Kafka topics.
+ * This abstract class represents topic name constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
