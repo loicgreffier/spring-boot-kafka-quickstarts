@@ -37,9 +37,9 @@ import org.junit.jupiter.api.Test;
 /**
  * This class contains unit tests for the {@link KafkaStreamsTopology} class.
  */
-class KafkaStreamsJoinStreamGtableApplicationTests {
+class KafkaStreamsJoinStreamGltableApplicationTests {
     private static final String SCHEMA_REGISTRY_SCOPE =
-        KafkaStreamsJoinStreamGtableApplicationTests.class.getName();
+        KafkaStreamsJoinStreamGltableApplicationTests.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + SCHEMA_REGISTRY_SCOPE;
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
