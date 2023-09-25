@@ -38,7 +38,7 @@
         <kafka.version>3.5.1</kafka.version>
         <kafka-avro-serializer.version>7.5.0</kafka-avro-serializer.version>
         <kafka-streams-avro-serde.version>7.5.0</kafka-streams-avro-serde.version>
-        <lombok.version>1.18.28</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <maven.checkstyle.plugin>3.3.0</maven.checkstyle.plugin>
     </properties>
 
