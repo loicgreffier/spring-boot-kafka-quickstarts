@@ -6,11 +6,13 @@ This module demonstrates the following:
 - The usage of sliding time windows.
 - Unit testing using the Topology Test Driver.
 
-In this module, records of type `<String, KafkaPerson>` are streamed from two topics named `PERSON_TOPIC` and `PERSON_TOPIC_TWO`.
+In this module, records of type `<String, KafkaPerson>` are streamed from two topics named `PERSON_TOPIC`
+and `PERSON_TOPIC_TWO`.
 The following tasks are performed:
 
 1. Join the records on the last name within a 5-minute time window and a 1-minute grace period for delayed records.
-2. Build a new `KafkaJoinPersons` object that holds both persons. If no person is matched for a record, a value holding the left person is still emitted as a result of the `leftJoin()` operation.
+2. Build a new `KafkaJoinPersons` object that holds both persons. If no person is matched for a record, a value holding
+   the left person is still emitted as a result of the `leftJoin()` operation.
 3. Write the resulting `KafkaJoinPersons` objects to a new topic named `PERSON_LEFT_JOIN_STREAM_STREAM_TOPIC`.
 
 ![topology.png](topology.png)
@@ -19,7 +21,7 @@ The following tasks are performed:
 
 To compile and run this demo, you will need the following:
 
-- Java 17
+- Java 21
 - Maven
 - Docker
 
@@ -27,8 +29,11 @@ To compile and run this demo, you will need the following:
 
 To run the application manually, please follow the steps below:
 
-- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaPerson>` to topics named `PERSON_TOPIC` and `PERSON_TOPIC_TWO`. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
+- Start
+  a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp)
+  in a Docker environment.
+- Produce records of type `<String, KafkaPerson>` to topics named `PERSON_TOPIC` and `PERSON_TOPIC_TWO`. You can use
+  the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
 - Start the Kafka Streams.
 
 To run the application in Docker, please use the following command:

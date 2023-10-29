@@ -11,7 +11,7 @@ This module produces records of type `<String, String>` to a topic named `STRING
 
 To compile and run this demo, you will need the following:
 
-- Java 17
+- Java 21
 - Maven
 - Docker
 
@@ -19,7 +19,9 @@ To compile and run this demo, you will need the following:
 
 To run the application manually, please follow the steps below:
 
-- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
+- Start
+  a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp)
+  in a Docker environment.
 - Start the producer.
 
 To run the application in Docker, please use the following command:

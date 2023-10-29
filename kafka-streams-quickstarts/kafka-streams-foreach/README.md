@@ -13,7 +13,7 @@ The following tasks are performed:
 
 To compile and run this demo, you will need the following:
 
-- Java 17
+- Java 21
 - Maven
 - Docker
 
@@ -21,8 +21,11 @@ To compile and run this demo, you will need the following:
 
 To run the application manually, please follow the steps below:
 
-- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
+- Start
+  a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp)
+  in a Docker environment.
+- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use
+  the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
 - Start the Kafka Streams.
 
 To run the application in Docker, please use the following command:

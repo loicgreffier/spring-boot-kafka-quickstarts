@@ -33,7 +33,7 @@
     <properties>
         <avro.version>1.11.3</avro.version>
         <checkstyle.version>10.12.4</checkstyle.version>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <jib-maven-plugin.version>3.4.0</jib-maven-plugin.version>
         <kafka.version>3.5.1</kafka.version>
         <kafka-avro-serializer.version>7.5.1</kafka-avro-serializer.version>
@@ -98,7 +98,7 @@
                 <version>${jib-maven-plugin.version}</version>
                 <configuration>
                     <from>
-                        <image>eclipse-temurin:17.0.3_7-jre</image>
+                        <image>eclipse-temurin:21_35-jre</image>
                     </from>
                     <to>
                         <image>

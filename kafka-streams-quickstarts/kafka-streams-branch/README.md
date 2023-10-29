@@ -9,9 +9,11 @@ In this module, records of type `<String, KafkaPerson>` are streamed from a topi
 The following tasks are performed:
 
 1. Split the records into different topics based on the last name of each `KafkaPerson` record:
-  - Persons with a last name starting with "A" are sent to a topic named `PERSON_BRANCH_A_TOPIC`. Both the first name and last name are converted to uppercase.
-  - Persons with a last name starting with "B" are sent to a topic named `PERSON_BRANCH_B_TOPIC`.
-  - Other persons (with last names not starting with "A" or "B") are sent to a topic named `PERSON_BRANCH_DEFAULT_TOPIC`.
+
+- Persons with a last name starting with "A" are sent to a topic named `PERSON_BRANCH_A_TOPIC`. Both the first name and
+  last name are converted to uppercase.
+- Persons with a last name starting with "B" are sent to a topic named `PERSON_BRANCH_B_TOPIC`.
+- Other persons (with last names not starting with "A" or "B") are sent to a topic named `PERSON_BRANCH_DEFAULT_TOPIC`.
 
 ![topology.png](topology.png)
 
@@ -19,7 +21,7 @@ The following tasks are performed:
 
 To compile and run this demo, you will need the following:
 
-- Java 17
+- Java 21
 - Maven
 - Docker
 
@@ -27,8 +29,11 @@ To compile and run this demo, you will need the following:
 
 To run the application manually, please follow the steps below:
 
-- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
+- Start
+  a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp)
+  in a Docker environment.
+- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use
+  the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
 - Start the Kafka Streams.
 
 To run the application in Docker, please use the following command:

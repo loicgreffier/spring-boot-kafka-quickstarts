@@ -6,13 +6,14 @@ This module demonstrates the following:
 - The usage of Kafka transactions.
 - The usage of unit tests with a Mock producer.
 
-This module produces transactional records of type `<String, String>` to two topics named `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`.
+This module produces transactional records of type `<String, String>` to two topics named `FIRST_STRING_TOPIC`
+and `SECOND_STRING_TOPIC`.
 
 ## Requirements
 
 To compile and run this demo, you will need the following:
 
-- Java 17
+- Java 21
 - Maven
 - Docker
 
@@ -20,7 +21,9 @@ To compile and run this demo, you will need the following:
 
 To run the application manually, please follow the steps below:
 
-- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
+- Start
+  a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp)
+  in a Docker environment.
 - Start the producer.
 
 To run the application in Docker, please use the following command:

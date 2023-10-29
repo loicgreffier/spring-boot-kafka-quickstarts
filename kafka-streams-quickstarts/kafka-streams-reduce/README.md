@@ -9,7 +9,8 @@ In this module, records of type `<String, KafkaPerson>` are streamed from a topi
 The following tasks are performed:
 
 1. Group the stream by nationality using the `groupBy()` function.
-2. Reduce each group by keeping the `KafkaPerson` with the maximum age for each nationality using the `reduce()` function.
+2. Reduce each group by keeping the `KafkaPerson` with the maximum age for each nationality using the `reduce()`
+   function.
 3. Write the resulting KafkaPerson objects to a new topic named `PERSON_REDUCE_TOPIC`.
 
 ![topology.png](topology.png)
@@ -18,7 +19,7 @@ The following tasks are performed:
 
 To compile and run this demo, you will need the following:
 
-- Java 17
+- Java 21
 - Maven
 - Docker
 
@@ -26,8 +27,11 @@ To compile and run this demo, you will need the following:
 
 To run the application manually, please follow the steps below:
 
-- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
+- Start
+  a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp)
+  in a Docker environment.
+- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use
+  the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
 - Start the Kafka Streams.
 
 To run the application in Docker, please use the following command:

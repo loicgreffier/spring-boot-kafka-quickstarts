@@ -2,15 +2,18 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Streams DSL, including `aggregate()`, `windowedBy().advanceBy()`, `groupByKey()`, `selectKey()`, `toStream()` and `peek()`.
+- The usage of the Kafka Streams DSL,
+  including `aggregate()`, `windowedBy().advanceBy()`, `groupByKey()`, `selectKey()`, `toStream()` and `peek()`.
 - Unit testing using the Topology Test Driver.
 
-In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`. 
+In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`.
 The following tasks are performed:
 
 1. Group the stream by last name using `groupByKey()` operation.
-2. Apply an aggregator that combines each `KafkaPerson` record with the same last name into a `KafkaPersonGroup` object and aggregates the first names by last name.
-3. The aggregations are performed using a 5-minutes time window with a 2-minute hop, and a 1-minute grace period for delayed records.
+2. Apply an aggregator that combines each `KafkaPerson` record with the same last name into a `KafkaPersonGroup` object
+   and aggregates the first names by last name.
+3. The aggregations are performed using a 5-minutes time window with a 2-minute hop, and a 1-minute grace period for
+   delayed records.
 4. Write the resulting records to a new topic named `PERSON_AGGREGATE_HOPPING_WINDOW_TOPIC`.
 
 The output records will be in the following format:
@@ -27,7 +30,7 @@ The output records will be in the following format:
 
 To compile and run this demo, you will need the following:
 
-- Java 17
+- Java 21
 - Maven
 - Docker
 
@@ -35,8 +38,11 @@ To compile and run this demo, you will need the following:
 
 To run the application manually, please follow the steps below:
 
-- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
+- Start
+  a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp)
+  in a Docker environment.
+- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use
+  the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
 - Start the Kafka Streams.
 
 To run the application in Docker, please use the following command:
