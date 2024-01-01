@@ -32,7 +32,7 @@
 
     <properties>
         <avro.version>1.11.3</avro.version>
-        <checkstyle.version>10.12.6</checkstyle.version>
+        <checkstyle.version>10.12.7</checkstyle.version>
         <java.version>21</java.version>
         <jib-maven-plugin.version>3.4.0</jib-maven-plugin.version>
         <kafka.version>3.5.1</kafka.version>
