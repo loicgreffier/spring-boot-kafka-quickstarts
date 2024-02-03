@@ -7,7 +7,7 @@ import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.processor.PunctuationType;
-import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ContextualProcessor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueIterator;
@@ -17,8 +17,8 @@ import org.apache.kafka.streams.state.KeyValueStore;
  * This class represents a processor that fills and cleans a state store.
  */
 @Slf4j
-public class StoreCleanupProcessor implements Processor<String, KafkaPerson, String, KafkaPerson> {
-    private ProcessorContext<String, KafkaPerson> context;
+public class StoreCleanupProcessor extends
+    ContextualProcessor<String, KafkaPerson, String, KafkaPerson> {
     private KeyValueStore<String, KafkaPerson> personStore;
 
     /**
@@ -31,7 +31,7 @@ public class StoreCleanupProcessor implements Processor<String, KafkaPerson, Str
      */
     @Override
     public void init(ProcessorContext<String, KafkaPerson> context) {
-        this.context = context;
+        super.init(context);
         this.personStore = context.getStateStore(PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE);
         context.schedule(Duration.ofMinutes(1), PunctuationType.STREAM_TIME,
             this::forwardTombstones);
@@ -68,7 +68,7 @@ public class StoreCleanupProcessor implements Processor<String, KafkaPerson, Str
         try (KeyValueIterator<String, KafkaPerson> iterator = personStore.all()) {
             while (iterator.hasNext()) {
                 KeyValue<String, KafkaPerson> keyValue = iterator.next();
-                context.forward(new Record<>(keyValue.key, null, timestamp));
+                context().forward(new Record<>(keyValue.key, null, timestamp));
             }
         }
     }

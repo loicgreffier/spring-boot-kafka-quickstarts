@@ -10,7 +10,7 @@ import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.processor.PunctuationType;
-import org.apache.kafka.streams.processor.api.Processor;
+import org.apache.kafka.streams.processor.api.ContextualProcessor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueIterator;
@@ -21,8 +21,8 @@ import org.apache.kafka.streams.state.ValueAndTimestamp;
  * This class represents a processor the messages by nationality.
  */
 @Slf4j
-public class CountNationalityProcessor implements Processor<String, KafkaPerson, String, Long> {
-    private ProcessorContext<String, Long> context;
+public class CountNationalityProcessor
+    extends ContextualProcessor<String, KafkaPerson, String, Long> {
     private TimestampedKeyValueStore<String, Long> countNationalityStore;
 
     /**
@@ -38,7 +38,7 @@ public class CountNationalityProcessor implements Processor<String, KafkaPerson,
      */
     @Override
     public void init(ProcessorContext<String, Long> context) {
-        this.context = context;
+        super.init(context);
         this.countNationalityStore = context.getStateStore(PERSON_SCHEDULE_STATE_STORE);
         context.schedule(Duration.ofMinutes(2), PunctuationType.WALL_CLOCK_TIME,
             this::resetCounters);
@@ -94,7 +94,7 @@ public class CountNationalityProcessor implements Processor<String, KafkaPerson,
                  = countNationalityStore.all()) {
             while (iterator.hasNext()) {
                 KeyValue<String, ValueAndTimestamp<Long>> keyValue = iterator.next();
-                context.forward(
+                context().forward(
                     new Record<>(keyValue.key, keyValue.value.value(), keyValue.value.timestamp()));
                 log.info("{} persons of {} nationality at {}", keyValue.value.value(), keyValue.key,
                     new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(timestamp)));
