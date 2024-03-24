@@ -1,7 +1,7 @@
 package io.github.loicgreffier.producer.transaction.app;
 
-import static io.github.loicgreffier.producer.transaction.constants.Topic.FIRST_STRING_TOPIC;
-import static io.github.loicgreffier.producer.transaction.constants.Topic.SECOND_STRING_TOPIC;
+import static io.github.loicgreffier.producer.transaction.constant.Topic.FIRST_STRING_TOPIC;
+import static io.github.loicgreffier.producer.transaction.constant.Topic.SECOND_STRING_TOPIC;
 
 import java.util.Arrays;
 import java.util.List;

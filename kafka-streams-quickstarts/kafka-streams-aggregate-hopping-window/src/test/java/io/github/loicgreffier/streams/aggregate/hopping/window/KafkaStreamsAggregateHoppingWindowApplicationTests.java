@@ -1,8 +1,8 @@
 package io.github.loicgreffier.streams.aggregate.hopping.window;
 
-import static io.github.loicgreffier.streams.aggregate.hopping.window.constants.StateStore.PERSON_AGGREGATE_HOPPING_WINDOW_STATE_STORE;
-import static io.github.loicgreffier.streams.aggregate.hopping.window.constants.Topic.PERSON_AGGREGATE_HOPPING_WINDOW_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.hopping.window.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.StateStore.PERSON_AGGREGATE_HOPPING_WINDOW_STATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.Topic.PERSON_AGGREGATE_HOPPING_WINDOW_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

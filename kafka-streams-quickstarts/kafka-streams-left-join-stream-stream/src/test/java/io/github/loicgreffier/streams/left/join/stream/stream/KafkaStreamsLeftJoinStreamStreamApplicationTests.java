@@ -1,10 +1,10 @@
 package io.github.loicgreffier.streams.left.join.stream.stream;
 
-import static io.github.loicgreffier.streams.left.join.stream.stream.constants.StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE;
-import static io.github.loicgreffier.streams.left.join.stream.stream.constants.Topic.PERSON_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC;
-import static io.github.loicgreffier.streams.left.join.stream.stream.constants.Topic.PERSON_LEFT_JOIN_STREAM_STREAM_TOPIC;
-import static io.github.loicgreffier.streams.left.join.stream.stream.constants.Topic.PERSON_TOPIC;
-import static io.github.loicgreffier.streams.left.join.stream.stream.constants.Topic.PERSON_TOPIC_TWO;
+import static io.github.loicgreffier.streams.left.join.stream.stream.constant.StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE;
+import static io.github.loicgreffier.streams.left.join.stream.stream.constant.Topic.PERSON_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC;
+import static io.github.loicgreffier.streams.left.join.stream.stream.constant.Topic.PERSON_LEFT_JOIN_STREAM_STREAM_TOPIC;
+import static io.github.loicgreffier.streams.left.join.stream.stream.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.left.join.stream.stream.constant.Topic.PERSON_TOPIC_TWO;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.print.app;
 
-import io.github.loicgreffier.streams.print.properties.ApplicationProperties;
-import io.github.loicgreffier.streams.print.properties.KafkaStreamsProperties;
+import io.github.loicgreffier.streams.print.property.ApplicationProperties;
+import io.github.loicgreffier.streams.print.property.KafkaStreamsProperties;
 import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.nio.file.Files;

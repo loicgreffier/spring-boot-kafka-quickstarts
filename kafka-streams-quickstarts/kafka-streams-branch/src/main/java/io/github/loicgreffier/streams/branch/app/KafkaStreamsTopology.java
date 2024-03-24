@@ -1,9 +1,9 @@
 package io.github.loicgreffier.streams.branch.app;
 
-import static io.github.loicgreffier.streams.branch.constants.Topic.PERSON_BRANCH_A_TOPIC;
-import static io.github.loicgreffier.streams.branch.constants.Topic.PERSON_BRANCH_B_TOPIC;
-import static io.github.loicgreffier.streams.branch.constants.Topic.PERSON_BRANCH_DEFAULT_TOPIC;
-import static io.github.loicgreffier.streams.branch.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_BRANCH_A_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_BRANCH_B_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_BRANCH_DEFAULT_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import java.util.Map;

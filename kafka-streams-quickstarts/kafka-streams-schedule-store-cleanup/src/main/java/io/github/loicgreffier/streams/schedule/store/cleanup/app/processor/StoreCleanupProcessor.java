@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.schedule.store.cleanup.app.processor;
 
-import static io.github.loicgreffier.streams.schedule.store.cleanup.constants.StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE;
+import static io.github.loicgreffier.streams.schedule.store.cleanup.constant.StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import java.time.Duration;

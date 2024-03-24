@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.producer.person.config;
 
 import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.streams.producer.person.properties.ProducerProperties;
+import io.github.loicgreffier.streams.producer.person.property.ProducerProperties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.springframework.context.annotation.Bean;

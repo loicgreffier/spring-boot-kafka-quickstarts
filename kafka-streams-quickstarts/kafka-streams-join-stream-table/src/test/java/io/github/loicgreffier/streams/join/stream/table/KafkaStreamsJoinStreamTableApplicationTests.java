@@ -1,9 +1,9 @@
 package io.github.loicgreffier.streams.join.stream.table;
 
-import static io.github.loicgreffier.streams.join.stream.table.constants.Topic.COUNTRY_TOPIC;
-import static io.github.loicgreffier.streams.join.stream.table.constants.Topic.PERSON_COUNTRY_JOIN_STREAM_TABLE_TOPIC;
-import static io.github.loicgreffier.streams.join.stream.table.constants.Topic.PERSON_JOIN_STREAM_TABLE_REKEY_TOPIC;
-import static io.github.loicgreffier.streams.join.stream.table.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.COUNTRY_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.PERSON_COUNTRY_JOIN_STREAM_TABLE_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.PERSON_JOIN_STREAM_TABLE_REKEY_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

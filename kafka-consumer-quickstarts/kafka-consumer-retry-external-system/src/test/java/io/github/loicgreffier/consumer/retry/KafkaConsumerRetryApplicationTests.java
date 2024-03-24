@@ -1,6 +1,6 @@
 package io.github.loicgreffier.consumer.retry;
 
-import static io.github.loicgreffier.consumer.retry.constants.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.consumer.retry.constant.Topic.STRING_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -10,8 +10,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.github.loicgreffier.consumer.retry.app.ConsumerRunner;
-import io.github.loicgreffier.consumer.retry.properties.ConsumerProperties;
-import io.github.loicgreffier.consumer.retry.services.ExternalService;
+import io.github.loicgreffier.consumer.retry.property.ConsumerProperties;
+import io.github.loicgreffier.consumer.retry.service.ExternalService;
 import java.util.Collections;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;

@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.repartition;
 
-import static io.github.loicgreffier.streams.repartition.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.repartition.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

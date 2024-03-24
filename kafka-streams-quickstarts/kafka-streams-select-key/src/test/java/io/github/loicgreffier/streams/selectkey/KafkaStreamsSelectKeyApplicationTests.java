@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.selectkey;
 
-import static io.github.loicgreffier.streams.selectkey.constants.Topic.PERSON_SELECT_KEY_TOPIC;
-import static io.github.loicgreffier.streams.selectkey.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.selectkey.constant.Topic.PERSON_SELECT_KEY_TOPIC;
+import static io.github.loicgreffier.streams.selectkey.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

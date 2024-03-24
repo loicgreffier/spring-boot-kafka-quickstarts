@@ -1,8 +1,8 @@
 package io.github.loicgreffier.streams.average;
 
-import static io.github.loicgreffier.streams.average.constants.StateStore.PERSON_AVERAGE_STATE_STORE;
-import static io.github.loicgreffier.streams.average.constants.Topic.PERSON_AVERAGE_TOPIC;
-import static io.github.loicgreffier.streams.average.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.StateStore.PERSON_AVERAGE_STATE_STORE;
+import static io.github.loicgreffier.streams.average.constant.Topic.PERSON_AVERAGE_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

@@ -1,6 +1,6 @@
 package io.github.loicgreffier.consumer.simple.app;
 
-import static io.github.loicgreffier.consumer.simple.constants.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.consumer.simple.constant.Topic.STRING_TOPIC;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;

@@ -1,8 +1,8 @@
 package io.github.loicgreffier.producer.avro.generic.app;
 
-import static io.github.loicgreffier.producer.avro.generic.constants.Name.FIRST_NAMES;
-import static io.github.loicgreffier.producer.avro.generic.constants.Name.LAST_NAMES;
-import static io.github.loicgreffier.producer.avro.generic.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.producer.avro.generic.constant.Name.FIRST_NAMES;
+import static io.github.loicgreffier.producer.avro.generic.constant.Name.LAST_NAMES;
+import static io.github.loicgreffier.producer.avro.generic.constant.Topic.PERSON_TOPIC;
 
 import java.io.File;
 import java.io.IOException;

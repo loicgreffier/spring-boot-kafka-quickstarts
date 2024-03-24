@@ -1,6 +1,6 @@
 package io.github.loicgreffier.consumer.circuit.breaker.app;
 
-import static io.github.loicgreffier.consumer.circuit.breaker.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.consumer.circuit.breaker.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import java.time.Duration;

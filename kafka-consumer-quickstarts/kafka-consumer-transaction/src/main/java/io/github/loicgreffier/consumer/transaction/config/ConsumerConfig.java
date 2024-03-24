@@ -1,6 +1,6 @@
 package io.github.loicgreffier.consumer.transaction.config;
 
-import io.github.loicgreffier.consumer.transaction.properties.ConsumerProperties;
+import io.github.loicgreffier.consumer.transaction.property.ConsumerProperties;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,6 @@
 package io.github.loicgreffier.consumer.avro.generic.config;
 
-import io.github.loicgreffier.consumer.avro.generic.properties.ConsumerProperties;
+import io.github.loicgreffier.consumer.avro.generic.property.ConsumerProperties;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;

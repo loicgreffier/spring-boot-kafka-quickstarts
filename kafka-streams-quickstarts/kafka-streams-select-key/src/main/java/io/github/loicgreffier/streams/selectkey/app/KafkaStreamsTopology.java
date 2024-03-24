@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.selectkey.app;
 
-import static io.github.loicgreffier.streams.selectkey.constants.Topic.PERSON_SELECT_KEY_TOPIC;
-import static io.github.loicgreffier.streams.selectkey.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.selectkey.constant.Topic.PERSON_SELECT_KEY_TOPIC;
+import static io.github.loicgreffier.streams.selectkey.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import lombok.AccessLevel;

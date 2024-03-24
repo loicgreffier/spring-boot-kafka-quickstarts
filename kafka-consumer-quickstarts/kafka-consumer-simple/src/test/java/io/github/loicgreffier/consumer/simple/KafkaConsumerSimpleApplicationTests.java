@@ -1,6 +1,6 @@
 package io.github.loicgreffier.consumer.simple;
 
-import static io.github.loicgreffier.consumer.simple.constants.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.consumer.simple.constant.Topic.STRING_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;

@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.schedule.store.cleanup.app;
 
-import static io.github.loicgreffier.streams.schedule.store.cleanup.constants.StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE;
-import static io.github.loicgreffier.streams.schedule.store.cleanup.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.schedule.store.cleanup.constant.StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE;
+import static io.github.loicgreffier.streams.schedule.store.cleanup.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.streams.schedule.store.cleanup.app.processor.StoreCleanupProcessor;

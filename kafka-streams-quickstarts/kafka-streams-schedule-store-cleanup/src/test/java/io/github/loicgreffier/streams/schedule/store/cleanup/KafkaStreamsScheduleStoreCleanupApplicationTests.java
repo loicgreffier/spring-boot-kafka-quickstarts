@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.schedule.store.cleanup;
 
-import static io.github.loicgreffier.streams.schedule.store.cleanup.constants.StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE;
-import static io.github.loicgreffier.streams.schedule.store.cleanup.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.schedule.store.cleanup.constant.StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE;
+import static io.github.loicgreffier.streams.schedule.store.cleanup.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

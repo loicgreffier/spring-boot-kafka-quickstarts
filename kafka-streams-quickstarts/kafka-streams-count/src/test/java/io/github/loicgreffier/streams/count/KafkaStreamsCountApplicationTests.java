@@ -1,8 +1,8 @@
 package io.github.loicgreffier.streams.count;
 
-import static io.github.loicgreffier.streams.count.constants.StateStore.PERSON_COUNT_STATE_STORE;
-import static io.github.loicgreffier.streams.count.constants.Topic.PERSON_COUNT_TOPIC;
-import static io.github.loicgreffier.streams.count.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.count.constant.StateStore.PERSON_COUNT_STATE_STORE;
+import static io.github.loicgreffier.streams.count.constant.Topic.PERSON_COUNT_TOPIC;
+import static io.github.loicgreffier.streams.count.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.filter.app;
 
-import io.github.loicgreffier.streams.filter.properties.KafkaStreamsProperties;
+import io.github.loicgreffier.streams.filter.property.KafkaStreamsProperties;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;

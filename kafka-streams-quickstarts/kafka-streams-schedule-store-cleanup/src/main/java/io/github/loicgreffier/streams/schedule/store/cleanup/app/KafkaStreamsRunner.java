@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.schedule.store.cleanup.app;
 
-import io.github.loicgreffier.streams.schedule.store.cleanup.properties.KafkaStreamsProperties;
+import io.github.loicgreffier.streams.schedule.store.cleanup.property.KafkaStreamsProperties;
 import io.github.loicgreffier.streams.schedule.store.cleanup.serdes.SerdesUtils;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;

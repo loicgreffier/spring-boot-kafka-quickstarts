@@ -1,9 +1,9 @@
 package io.github.loicgreffier.streams.average.app;
 
-import static io.github.loicgreffier.streams.average.constants.StateStore.PERSON_AVERAGE_STATE_STORE;
-import static io.github.loicgreffier.streams.average.constants.Topic.GROUP_PERSON_BY_NATIONALITY_TOPIC;
-import static io.github.loicgreffier.streams.average.constants.Topic.PERSON_AVERAGE_TOPIC;
-import static io.github.loicgreffier.streams.average.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.StateStore.PERSON_AVERAGE_STATE_STORE;
+import static io.github.loicgreffier.streams.average.constant.Topic.GROUP_PERSON_BY_NATIONALITY_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.Topic.PERSON_AVERAGE_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaAverageAge;
 import io.github.loicgreffier.avro.KafkaPerson;

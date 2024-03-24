@@ -1,8 +1,8 @@
 package io.github.loicgreffier.streams.schedule.app;
 
-import static io.github.loicgreffier.streams.schedule.constants.StateStore.PERSON_SCHEDULE_STATE_STORE;
-import static io.github.loicgreffier.streams.schedule.constants.Topic.PERSON_SCHEDULE_TOPIC;
-import static io.github.loicgreffier.streams.schedule.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.schedule.constant.StateStore.PERSON_SCHEDULE_STATE_STORE;
+import static io.github.loicgreffier.streams.schedule.constant.Topic.PERSON_SCHEDULE_TOPIC;
+import static io.github.loicgreffier.streams.schedule.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.streams.schedule.app.processor.CountNationalityProcessor;

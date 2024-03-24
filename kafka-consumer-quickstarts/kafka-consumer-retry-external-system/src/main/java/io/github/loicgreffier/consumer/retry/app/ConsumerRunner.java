@@ -1,9 +1,9 @@
 package io.github.loicgreffier.consumer.retry.app;
 
-import static io.github.loicgreffier.consumer.retry.constants.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.consumer.retry.constant.Topic.STRING_TOPIC;
 
-import io.github.loicgreffier.consumer.retry.properties.ConsumerProperties;
-import io.github.loicgreffier.consumer.retry.services.ExternalService;
+import io.github.loicgreffier.consumer.retry.property.ConsumerProperties;
+import io.github.loicgreffier.consumer.retry.service.ExternalService;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;

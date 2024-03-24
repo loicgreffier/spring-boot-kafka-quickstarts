@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.map.app;
 
-import static io.github.loicgreffier.streams.map.constants.Topic.PERSON_MAP_TOPIC;
-import static io.github.loicgreffier.streams.map.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.map.constant.Topic.PERSON_MAP_TOPIC;
+import static io.github.loicgreffier.streams.map.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import lombok.AccessLevel;

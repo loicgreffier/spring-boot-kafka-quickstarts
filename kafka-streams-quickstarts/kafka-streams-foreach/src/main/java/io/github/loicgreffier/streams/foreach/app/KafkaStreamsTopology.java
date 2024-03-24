@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.foreach.app;
 
-import static io.github.loicgreffier.streams.foreach.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.foreach.constant.Topic.PERSON_TOPIC;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

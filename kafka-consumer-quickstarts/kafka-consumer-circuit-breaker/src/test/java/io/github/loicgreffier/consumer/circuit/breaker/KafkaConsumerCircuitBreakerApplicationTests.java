@@ -1,6 +1,6 @@
 package io.github.loicgreffier.consumer.circuit.breaker;
 
-import static io.github.loicgreffier.consumer.circuit.breaker.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.consumer.circuit.breaker.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;

@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.filter;
 
-import static io.github.loicgreffier.streams.filter.constants.Topic.PERSON_FILTER_TOPIC;
-import static io.github.loicgreffier.streams.filter.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.filter.constant.Topic.PERSON_FILTER_TOPIC;
+import static io.github.loicgreffier.streams.filter.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

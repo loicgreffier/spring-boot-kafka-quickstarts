@@ -1,6 +1,6 @@
 package io.github.loicgreffier.producer.simple.config;
 
-import io.github.loicgreffier.producer.simple.properties.ProducerProperties;
+import io.github.loicgreffier.producer.simple.property.ProducerProperties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.springframework.context.annotation.Bean;

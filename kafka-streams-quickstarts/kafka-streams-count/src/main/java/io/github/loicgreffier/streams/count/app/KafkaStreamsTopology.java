@@ -1,9 +1,9 @@
 package io.github.loicgreffier.streams.count.app;
 
-import static io.github.loicgreffier.streams.count.constants.StateStore.PERSON_COUNT_STATE_STORE;
-import static io.github.loicgreffier.streams.count.constants.Topic.GROUP_PERSON_BY_NATIONALITY_TOPIC;
-import static io.github.loicgreffier.streams.count.constants.Topic.PERSON_COUNT_TOPIC;
-import static io.github.loicgreffier.streams.count.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.count.constant.StateStore.PERSON_COUNT_STATE_STORE;
+import static io.github.loicgreffier.streams.count.constant.Topic.GROUP_PERSON_BY_NATIONALITY_TOPIC;
+import static io.github.loicgreffier.streams.count.constant.Topic.PERSON_COUNT_TOPIC;
+import static io.github.loicgreffier.streams.count.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import lombok.AccessLevel;

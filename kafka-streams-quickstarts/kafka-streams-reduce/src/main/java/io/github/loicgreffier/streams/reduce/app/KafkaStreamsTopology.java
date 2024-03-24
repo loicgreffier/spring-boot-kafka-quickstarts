@@ -1,9 +1,9 @@
 package io.github.loicgreffier.streams.reduce.app;
 
-import static io.github.loicgreffier.streams.reduce.constants.StateStore.PERSON_REDUCE_STATE_STORE;
-import static io.github.loicgreffier.streams.reduce.constants.Topic.GROUP_PERSON_BY_NATIONALITY_TOPIC;
-import static io.github.loicgreffier.streams.reduce.constants.Topic.PERSON_REDUCE_TOPIC;
-import static io.github.loicgreffier.streams.reduce.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.reduce.constant.StateStore.PERSON_REDUCE_STATE_STORE;
+import static io.github.loicgreffier.streams.reduce.constant.Topic.GROUP_PERSON_BY_NATIONALITY_TOPIC;
+import static io.github.loicgreffier.streams.reduce.constant.Topic.PERSON_REDUCE_TOPIC;
+import static io.github.loicgreffier.streams.reduce.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.streams.reduce.app.reducer.MaxAgeReducer;

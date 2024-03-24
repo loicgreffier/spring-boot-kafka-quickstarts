@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.processvalues;
 
-import static io.github.loicgreffier.streams.processvalues.constants.Topic.PERSON_PROCESS_VALUES_TOPIC;
-import static io.github.loicgreffier.streams.processvalues.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.processvalues.constant.Topic.PERSON_PROCESS_VALUES_TOPIC;
+import static io.github.loicgreffier.streams.processvalues.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

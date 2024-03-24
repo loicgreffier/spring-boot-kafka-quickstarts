@@ -1,6 +1,6 @@
 package io.github.loicgreffier.producer.simple;
 
-import static io.github.loicgreffier.producer.simple.constants.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.producer.simple.constant.Topic.STRING_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

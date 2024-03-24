@@ -1,8 +1,8 @@
 package io.github.loicgreffier.producer.avro.specific.app;
 
-import static io.github.loicgreffier.producer.avro.specific.constants.Name.FIRST_NAMES;
-import static io.github.loicgreffier.producer.avro.specific.constants.Name.LAST_NAMES;
-import static io.github.loicgreffier.producer.avro.specific.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.producer.avro.specific.constant.Name.FIRST_NAMES;
+import static io.github.loicgreffier.producer.avro.specific.constant.Name.LAST_NAMES;
+import static io.github.loicgreffier.producer.avro.specific.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import java.time.Instant;

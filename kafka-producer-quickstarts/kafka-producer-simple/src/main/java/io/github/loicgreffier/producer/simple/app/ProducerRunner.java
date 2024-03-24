@@ -1,6 +1,6 @@
 package io.github.loicgreffier.producer.simple.app;
 
-import static io.github.loicgreffier.producer.simple.constants.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.producer.simple.constant.Topic.STRING_TOPIC;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;

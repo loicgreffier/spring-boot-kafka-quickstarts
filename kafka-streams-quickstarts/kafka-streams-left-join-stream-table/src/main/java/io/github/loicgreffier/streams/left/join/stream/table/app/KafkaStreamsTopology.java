@@ -1,10 +1,10 @@
 package io.github.loicgreffier.streams.left.join.stream.table.app;
 
-import static io.github.loicgreffier.streams.left.join.stream.table.constants.StateStore.COUNTRY_STATE_STORE;
-import static io.github.loicgreffier.streams.left.join.stream.table.constants.Topic.COUNTRY_TOPIC;
-import static io.github.loicgreffier.streams.left.join.stream.table.constants.Topic.PERSON_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC;
-import static io.github.loicgreffier.streams.left.join.stream.table.constants.Topic.PERSON_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC;
-import static io.github.loicgreffier.streams.left.join.stream.table.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.left.join.stream.table.constant.StateStore.COUNTRY_STATE_STORE;
+import static io.github.loicgreffier.streams.left.join.stream.table.constant.Topic.COUNTRY_TOPIC;
+import static io.github.loicgreffier.streams.left.join.stream.table.constant.Topic.PERSON_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC;
+import static io.github.loicgreffier.streams.left.join.stream.table.constant.Topic.PERSON_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC;
+import static io.github.loicgreffier.streams.left.join.stream.table.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaCountry;
 import io.github.loicgreffier.avro.KafkaJoinPersonCountry;

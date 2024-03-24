@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.repartition.app;
 
-import static io.github.loicgreffier.streams.repartition.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.repartition.constant.Topic.PERSON_TOPIC;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -1,11 +1,11 @@
 package io.github.loicgreffier.streams.cogroup.app;
 
-import static io.github.loicgreffier.streams.cogroup.constants.StateStore.PERSON_COGROUP_AGGREGATE_STATE_STORE;
-import static io.github.loicgreffier.streams.cogroup.constants.Topic.GROUP_PERSON_BY_LAST_NAME_TOPIC;
-import static io.github.loicgreffier.streams.cogroup.constants.Topic.GROUP_PERSON_BY_LAST_NAME_TOPIC_TWO;
-import static io.github.loicgreffier.streams.cogroup.constants.Topic.PERSON_COGROUP_TOPIC;
-import static io.github.loicgreffier.streams.cogroup.constants.Topic.PERSON_TOPIC;
-import static io.github.loicgreffier.streams.cogroup.constants.Topic.PERSON_TOPIC_TWO;
+import static io.github.loicgreffier.streams.cogroup.constant.StateStore.PERSON_COGROUP_AGGREGATE_STATE_STORE;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.GROUP_PERSON_BY_LAST_NAME_TOPIC;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.GROUP_PERSON_BY_LAST_NAME_TOPIC_TWO;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.PERSON_COGROUP_TOPIC;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.PERSON_TOPIC_TWO;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.avro.KafkaPersonGroup;

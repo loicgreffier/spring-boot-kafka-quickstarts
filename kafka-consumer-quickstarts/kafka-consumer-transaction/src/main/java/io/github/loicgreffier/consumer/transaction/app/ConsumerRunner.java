@@ -1,7 +1,7 @@
 package io.github.loicgreffier.consumer.transaction.app;
 
-import static io.github.loicgreffier.consumer.transaction.constants.Topic.FIRST_STRING_TOPIC;
-import static io.github.loicgreffier.consumer.transaction.constants.Topic.SECOND_STRING_TOPIC;
+import static io.github.loicgreffier.consumer.transaction.constant.Topic.FIRST_STRING_TOPIC;
+import static io.github.loicgreffier.consumer.transaction.constant.Topic.SECOND_STRING_TOPIC;
 
 import java.time.Duration;
 import java.util.List;

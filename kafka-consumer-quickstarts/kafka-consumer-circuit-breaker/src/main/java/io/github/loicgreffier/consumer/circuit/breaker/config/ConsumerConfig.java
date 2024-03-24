@@ -1,7 +1,7 @@
 package io.github.loicgreffier.consumer.circuit.breaker.config;
 
 import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.consumer.circuit.breaker.properties.ConsumerProperties;
+import io.github.loicgreffier.consumer.circuit.breaker.property.ConsumerProperties;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.context.annotation.Bean;

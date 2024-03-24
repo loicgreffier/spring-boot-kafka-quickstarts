@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.process.app;
 
-import static io.github.loicgreffier.streams.process.constants.Topic.PERSON_PROCESS_TOPIC;
-import static io.github.loicgreffier.streams.process.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.process.constant.Topic.PERSON_PROCESS_TOPIC;
+import static io.github.loicgreffier.streams.process.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.streams.process.app.processor.PersonMetadataProcessor;

@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.producer.country.app;
 
-import static io.github.loicgreffier.streams.producer.country.constants.Topic.COUNTRY_TOPIC;
+import static io.github.loicgreffier.streams.producer.country.constant.Topic.COUNTRY_TOPIC;
 
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaCountry;

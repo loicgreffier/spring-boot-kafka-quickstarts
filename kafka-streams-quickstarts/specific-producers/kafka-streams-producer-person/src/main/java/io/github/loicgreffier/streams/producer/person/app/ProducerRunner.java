@@ -1,9 +1,9 @@
 package io.github.loicgreffier.streams.producer.person.app;
 
-import static io.github.loicgreffier.streams.producer.person.constants.Name.FIRST_NAMES;
-import static io.github.loicgreffier.streams.producer.person.constants.Name.LAST_NAMES;
-import static io.github.loicgreffier.streams.producer.person.constants.Topic.PERSON_TOPIC;
-import static io.github.loicgreffier.streams.producer.person.constants.Topic.PERSON_TOPIC_TWO;
+import static io.github.loicgreffier.streams.producer.person.constant.Name.FIRST_NAMES;
+import static io.github.loicgreffier.streams.producer.person.constant.Name.LAST_NAMES;
+import static io.github.loicgreffier.streams.producer.person.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.producer.person.constant.Topic.PERSON_TOPIC_TWO;
 
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaPerson;

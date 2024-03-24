@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.flatmap;
 
-import static io.github.loicgreffier.streams.flatmap.constants.Topic.PERSON_FLATMAP_TOPIC;
-import static io.github.loicgreffier.streams.flatmap.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.flatmap.constant.Topic.PERSON_FLATMAP_TOPIC;
+import static io.github.loicgreffier.streams.flatmap.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

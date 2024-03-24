@@ -1,6 +1,6 @@
 package io.github.loicgreffier.consumer.avro.generic.app;
 
-import static io.github.loicgreffier.consumer.avro.generic.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.consumer.avro.generic.constant.Topic.PERSON_TOPIC;
 
 import java.time.Duration;
 import java.util.Collections;

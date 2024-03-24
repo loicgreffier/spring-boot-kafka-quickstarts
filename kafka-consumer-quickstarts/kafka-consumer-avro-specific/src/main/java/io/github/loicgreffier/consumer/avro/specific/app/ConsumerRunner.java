@@ -1,6 +1,6 @@
 package io.github.loicgreffier.consumer.avro.specific.app;
 
-import static io.github.loicgreffier.consumer.avro.specific.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.consumer.avro.specific.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import java.time.Duration;

@@ -1,8 +1,8 @@
 package io.github.loicgreffier.streams.merge;
 
-import static io.github.loicgreffier.streams.merge.constants.Topic.PERSON_MERGE_TOPIC;
-import static io.github.loicgreffier.streams.merge.constants.Topic.PERSON_TOPIC;
-import static io.github.loicgreffier.streams.merge.constants.Topic.PERSON_TOPIC_TWO;
+import static io.github.loicgreffier.streams.merge.constant.Topic.PERSON_MERGE_TOPIC;
+import static io.github.loicgreffier.streams.merge.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.merge.constant.Topic.PERSON_TOPIC_TWO;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.aggregate.tumbling.window.app;
 
-import io.github.loicgreffier.streams.aggregate.tumbling.window.properties.KafkaStreamsProperties;
+import io.github.loicgreffier.streams.aggregate.tumbling.window.property.KafkaStreamsProperties;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;

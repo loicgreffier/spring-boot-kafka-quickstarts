@@ -1,6 +1,6 @@
 package io.github.loicgreffier.producer.avro.generic;
 
-import static io.github.loicgreffier.producer.avro.generic.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.producer.avro.generic.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

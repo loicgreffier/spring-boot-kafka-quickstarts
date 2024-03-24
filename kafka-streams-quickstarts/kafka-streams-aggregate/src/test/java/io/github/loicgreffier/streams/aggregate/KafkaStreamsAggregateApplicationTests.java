@@ -1,8 +1,8 @@
 package io.github.loicgreffier.streams.aggregate;
 
-import static io.github.loicgreffier.streams.aggregate.constants.StateStore.PERSON_AGGREGATE_STATE_STORE;
-import static io.github.loicgreffier.streams.aggregate.constants.Topic.PERSON_AGGREGATE_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.constant.StateStore.PERSON_AGGREGATE_STATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.constant.Topic.PERSON_AGGREGATE_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

@@ -1,8 +1,8 @@
 package io.github.loicgreffier.streams.merge.app;
 
-import static io.github.loicgreffier.streams.merge.constants.Topic.PERSON_MERGE_TOPIC;
-import static io.github.loicgreffier.streams.merge.constants.Topic.PERSON_TOPIC;
-import static io.github.loicgreffier.streams.merge.constants.Topic.PERSON_TOPIC_TWO;
+import static io.github.loicgreffier.streams.merge.constant.Topic.PERSON_MERGE_TOPIC;
+import static io.github.loicgreffier.streams.merge.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.merge.constant.Topic.PERSON_TOPIC_TWO;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import lombok.AccessLevel;

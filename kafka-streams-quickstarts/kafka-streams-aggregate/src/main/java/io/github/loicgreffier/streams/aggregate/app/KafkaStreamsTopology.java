@@ -1,9 +1,9 @@
 package io.github.loicgreffier.streams.aggregate.app;
 
-import static io.github.loicgreffier.streams.aggregate.constants.StateStore.PERSON_AGGREGATE_STATE_STORE;
-import static io.github.loicgreffier.streams.aggregate.constants.Topic.GROUP_PERSON_BY_LAST_NAME_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.constants.Topic.PERSON_AGGREGATE_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.constant.StateStore.PERSON_AGGREGATE_STATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.constant.Topic.GROUP_PERSON_BY_LAST_NAME_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.constant.Topic.PERSON_AGGREGATE_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.avro.KafkaPersonGroup;

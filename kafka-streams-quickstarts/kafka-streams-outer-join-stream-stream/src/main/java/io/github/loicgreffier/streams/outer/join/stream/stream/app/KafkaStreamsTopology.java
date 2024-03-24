@@ -1,10 +1,10 @@
 package io.github.loicgreffier.streams.outer.join.stream.stream.app;
 
-import static io.github.loicgreffier.streams.outer.join.stream.stream.constants.StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STATE_STORE;
-import static io.github.loicgreffier.streams.outer.join.stream.stream.constants.Topic.PERSON_OUTER_JOIN_STREAM_STREAM_REKEY_TOPIC;
-import static io.github.loicgreffier.streams.outer.join.stream.stream.constants.Topic.PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC;
-import static io.github.loicgreffier.streams.outer.join.stream.stream.constants.Topic.PERSON_TOPIC;
-import static io.github.loicgreffier.streams.outer.join.stream.stream.constants.Topic.PERSON_TOPIC_TWO;
+import static io.github.loicgreffier.streams.outer.join.stream.stream.constant.StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STATE_STORE;
+import static io.github.loicgreffier.streams.outer.join.stream.stream.constant.Topic.PERSON_OUTER_JOIN_STREAM_STREAM_REKEY_TOPIC;
+import static io.github.loicgreffier.streams.outer.join.stream.stream.constant.Topic.PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC;
+import static io.github.loicgreffier.streams.outer.join.stream.stream.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.outer.join.stream.stream.constant.Topic.PERSON_TOPIC_TWO;
 
 import io.github.loicgreffier.avro.KafkaJoinPersons;
 import io.github.loicgreffier.avro.KafkaPerson;

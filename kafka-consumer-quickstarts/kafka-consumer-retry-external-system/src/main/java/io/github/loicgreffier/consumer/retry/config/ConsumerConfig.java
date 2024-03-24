@@ -1,6 +1,6 @@
 package io.github.loicgreffier.consumer.retry.config;
 
-import io.github.loicgreffier.consumer.retry.properties.ConsumerProperties;
+import io.github.loicgreffier.consumer.retry.property.ConsumerProperties;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.context.annotation.Bean;

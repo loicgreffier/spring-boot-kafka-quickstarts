@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.filter.app;
 
-import static io.github.loicgreffier.streams.filter.constants.Topic.PERSON_FILTER_TOPIC;
-import static io.github.loicgreffier.streams.filter.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.filter.constant.Topic.PERSON_FILTER_TOPIC;
+import static io.github.loicgreffier.streams.filter.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import lombok.AccessLevel;

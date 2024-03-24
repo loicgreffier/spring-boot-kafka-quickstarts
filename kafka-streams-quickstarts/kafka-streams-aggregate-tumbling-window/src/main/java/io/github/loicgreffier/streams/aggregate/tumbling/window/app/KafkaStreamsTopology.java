@@ -1,9 +1,9 @@
 package io.github.loicgreffier.streams.aggregate.tumbling.window.app;
 
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constants.StateStore.PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE;
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constants.Topic.GROUP_PERSON_BY_LAST_NAME_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constants.Topic.PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.StateStore.PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.GROUP_PERSON_BY_LAST_NAME_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.avro.KafkaPersonGroup;

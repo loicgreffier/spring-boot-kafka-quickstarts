@@ -1,9 +1,9 @@
 package io.github.loicgreffier.streams.cogroup;
 
-import static io.github.loicgreffier.streams.cogroup.constants.StateStore.PERSON_COGROUP_AGGREGATE_STATE_STORE;
-import static io.github.loicgreffier.streams.cogroup.constants.Topic.PERSON_COGROUP_TOPIC;
-import static io.github.loicgreffier.streams.cogroup.constants.Topic.PERSON_TOPIC;
-import static io.github.loicgreffier.streams.cogroup.constants.Topic.PERSON_TOPIC_TWO;
+import static io.github.loicgreffier.streams.cogroup.constant.StateStore.PERSON_COGROUP_AGGREGATE_STATE_STORE;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.PERSON_COGROUP_TOPIC;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.PERSON_TOPIC_TWO;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

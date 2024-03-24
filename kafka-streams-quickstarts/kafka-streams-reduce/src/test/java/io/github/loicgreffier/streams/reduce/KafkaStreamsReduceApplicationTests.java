@@ -1,8 +1,8 @@
 package io.github.loicgreffier.streams.reduce;
 
-import static io.github.loicgreffier.streams.reduce.constants.StateStore.PERSON_REDUCE_STATE_STORE;
-import static io.github.loicgreffier.streams.reduce.constants.Topic.PERSON_REDUCE_TOPIC;
-import static io.github.loicgreffier.streams.reduce.constants.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.reduce.constant.StateStore.PERSON_REDUCE_STATE_STORE;
+import static io.github.loicgreffier.streams.reduce.constant.Topic.PERSON_REDUCE_TOPIC;
+import static io.github.loicgreffier.streams.reduce.constant.Topic.PERSON_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;

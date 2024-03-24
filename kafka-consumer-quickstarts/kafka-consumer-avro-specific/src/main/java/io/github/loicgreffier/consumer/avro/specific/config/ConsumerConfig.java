@@ -1,7 +1,7 @@
 package io.github.loicgreffier.consumer.avro.specific.config;
 
 import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.consumer.avro.specific.properties.ConsumerProperties;
+import io.github.loicgreffier.consumer.avro.specific.property.ConsumerProperties;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.flatmapvalues.app;
 
-import io.github.loicgreffier.streams.flatmapvalues.properties.KafkaStreamsProperties;
+import io.github.loicgreffier.streams.flatmapvalues.property.KafkaStreamsProperties;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
