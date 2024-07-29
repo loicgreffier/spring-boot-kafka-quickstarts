@@ -37,7 +37,7 @@
         <jib-maven-plugin.version>3.4.3</jib-maven-plugin.version>
         <kafka.version>3.6.1</kafka.version>
         <kafka-avro-serializer.version>7.7.0</kafka-avro-serializer.version>
-        <kafka-streams-avro-serde.version>7.6.2</kafka-streams-avro-serde.version>
+        <kafka-streams-avro-serde.version>7.7.0</kafka-streams-avro-serde.version>
         <lombok.version>1.18.34</lombok.version>
         <maven.checkstyle.plugin>3.4.0</maven.checkstyle.plugin>
     </properties>
