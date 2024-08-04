@@ -37,21 +37,20 @@ class KafkaProducerAvroSpecificApplicationTests {
     };
 
     @Spy
-    private MockProducer<String, KafkaPerson> mockProducer =
-        new MockProducer<>(false, new StringSerializer(), serializer);
+    private MockProducer<String, KafkaPerson> mockProducer = new MockProducer<>(
+        false, new StringSerializer(), serializer);
 
     @InjectMocks
     private ProducerRunner producerRunner;
 
     @Test
     void shouldSendSuccessfully() throws ExecutionException, InterruptedException {
-        ProducerRecord<String, KafkaPerson> message =
-            new ProducerRecord<>(PERSON_TOPIC, "1", KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("John")
-                .setLastName("Doe")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
-                .build());
+        ProducerRecord<String, KafkaPerson> message = new ProducerRecord<>(PERSON_TOPIC, "1", KafkaPerson.newBuilder()
+            .setId(1L)
+            .setFirstName("John")
+            .setLastName("Doe")
+            .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
+            .build());
 
         Future<RecordMetadata> record = producerRunner.send(message);
         mockProducer.completeNext();
@@ -65,13 +64,12 @@ class KafkaProducerAvroSpecificApplicationTests {
 
     @Test
     void shouldSendWithFailure() {
-        ProducerRecord<String, KafkaPerson> message =
-            new ProducerRecord<>(PERSON_TOPIC, "1", KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("John")
-                .setLastName("Doe")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
-                .build());
+        ProducerRecord<String, KafkaPerson> message = new ProducerRecord<>(PERSON_TOPIC, "1", KafkaPerson.newBuilder()
+            .setId(1L)
+            .setFirstName("John")
+            .setLastName("Doe")
+            .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
+            .build());
 
         Future<RecordMetadata> record = producerRunner.send(message);
         RuntimeException exception = new RuntimeException("Error sending message");

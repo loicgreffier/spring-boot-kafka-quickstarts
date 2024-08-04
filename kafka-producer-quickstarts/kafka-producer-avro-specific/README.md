@@ -2,7 +2,7 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Clients producer DSL.
+- The usage of the Kafka Clients producer API.
 - The usage of Apache Avro and specific records.
 - The usage of unit tests with a Mock producer.
 
@@ -20,9 +20,7 @@ To compile and run this demo, you will need the following:
 
 To run the application manually, please follow the steps below:
 
-- Start
-  a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp)
-  in a Docker environment.
+- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
 - Start the producer.
 
 To run the application in Docker, please use the following command:

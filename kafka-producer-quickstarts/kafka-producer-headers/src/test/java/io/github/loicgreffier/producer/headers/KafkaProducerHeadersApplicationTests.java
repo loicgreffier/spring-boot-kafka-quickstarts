@@ -1,11 +1,11 @@
-package io.github.loicgreffier.producer.simple;
+package io.github.loicgreffier.producer.headers;
 
-import static io.github.loicgreffier.producer.simple.constant.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.producer.headers.constant.Topic.STRING_TOPIC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.github.loicgreffier.producer.simple.app.ProducerRunner;
+import io.github.loicgreffier.producer.headers.app.ProducerRunner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.apache.kafka.clients.producer.MockProducer;
@@ -22,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * This class contains unit tests for the Kafka producer application.
  */
 @ExtendWith(MockitoExtension.class)
-class KafkaProducerSimpleApplicationTests {
+class KafkaProducerHeadersApplicationTests {
     @Spy
     private MockProducer<String, String> mockProducer = new MockProducer<>(
         false,

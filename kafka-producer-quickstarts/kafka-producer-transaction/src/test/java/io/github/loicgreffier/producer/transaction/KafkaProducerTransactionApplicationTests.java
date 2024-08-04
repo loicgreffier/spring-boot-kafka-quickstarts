@@ -21,8 +21,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class KafkaProducerTransactionApplicationTests {
     @Spy
-    private MockProducer<String, String> mockProducer =
-        new MockProducer<>(false, new StringSerializer(), new StringSerializer());
+    private MockProducer<String, String> mockProducer = new MockProducer<>(
+        false,
+        new StringSerializer(),
+        new StringSerializer()
+    );
 
     @InjectMocks
     private ProducerRunner producerRunner;
@@ -31,10 +34,8 @@ class KafkaProducerTransactionApplicationTests {
     void shouldAbortTransaction() {
         mockProducer.initTransactions();
 
-        ProducerRecord<String, String> firstMessage =
-            new ProducerRecord<>(FIRST_STRING_TOPIC, "3", "John Doe");
-        ProducerRecord<String, String> secondMessage =
-            new ProducerRecord<>(SECOND_STRING_TOPIC, "4", "Jane Smith");
+        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, "3", "John Doe");
+        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "4", "Jane Smith");
         producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
         assertThat(mockProducer.history()).isEmpty();
@@ -48,10 +49,8 @@ class KafkaProducerTransactionApplicationTests {
     void shouldCommitTransaction() {
         mockProducer.initTransactions();
 
-        ProducerRecord<String, String> firstMessage =
-            new ProducerRecord<>(FIRST_STRING_TOPIC, "1", "John Doe");
-        ProducerRecord<String, String> secondMessage =
-            new ProducerRecord<>(SECOND_STRING_TOPIC, "2", "Jane Smith");
+        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, "1", "John Doe");
+        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "2", "Jane Smith");
         producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
         assertThat(mockProducer.history()).hasSize(2);

@@ -49,8 +49,11 @@ public class ProducerRunner {
 
         int i = 0;
         while (true) {
-            ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(PERSON_TOPIC,
-                String.valueOf(i), buildGenericRecord(schema, i));
+            ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(
+                PERSON_TOPIC,
+                String.valueOf(i),
+                buildGenericRecord(schema, i)
+            );
 
             send(message);
 

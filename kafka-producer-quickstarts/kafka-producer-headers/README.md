@@ -1,13 +1,12 @@
-# Producer Transaction
+# Producer Headers
 
 This module demonstrates the following:
 
 - The usage of the Kafka Clients producer API.
-- The usage of Kafka transactions.
+- The usage of headers in Kafka records.
 - The usage of unit tests with a Mock producer.
 
-This module produces transactional records of type `<String, String>` to two topics named `FIRST_STRING_TOPIC`
-and `SECOND_STRING_TOPIC`.
+This module produces records of type `<String, String>` to a topic named `STRING_TOPIC`.
 
 ## Requirements
 
@@ -35,4 +34,5 @@ This command will start the following services in Docker:
 - 1 Zookeeper
 - 1 Kafka broker
 - 1 Control Center
-- 1 producer transaction
+- 1 producer headers
+

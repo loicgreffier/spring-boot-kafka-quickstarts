@@ -46,12 +46,17 @@ public class ProducerRunner {
 
         int i = 0;
         while (true) {
-            ProducerRecord<String, String> firstMessage =
-                new ProducerRecord<>(FIRST_STRING_TOPIC, String.valueOf(i),
-                    String.format("Message %s", i));
-            ProducerRecord<String, String> secondMessage =
-                new ProducerRecord<>(SECOND_STRING_TOPIC, String.valueOf(i),
-                    String.format("Message %s", i));
+            ProducerRecord<String, String> firstMessage = new ProducerRecord<>(
+                FIRST_STRING_TOPIC,
+                String.valueOf(i),
+                String.format("Message %s", i)
+            );
+
+            ProducerRecord<String, String> secondMessage = new ProducerRecord<>(
+                SECOND_STRING_TOPIC,
+                String.valueOf(i),
+                String.format("Message %s", i)
+            );
 
             sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 

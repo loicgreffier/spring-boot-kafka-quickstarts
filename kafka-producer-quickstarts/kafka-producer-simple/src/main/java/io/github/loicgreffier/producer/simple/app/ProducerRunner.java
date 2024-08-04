@@ -2,7 +2,6 @@ package io.github.loicgreffier.producer.simple.app;
 
 import static io.github.loicgreffier.producer.simple.constant.Topic.STRING_TOPIC;
 
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -36,10 +35,11 @@ public class ProducerRunner {
     public void run() {
         int i = 0;
         while (true) {
-            ProducerRecord<String, String> message =
-                new ProducerRecord<>(STRING_TOPIC, String.valueOf(i),
-                    String.format("Message %s", i));
-            message.headers().add("headerKey", "headerValue".getBytes(StandardCharsets.UTF_8));
+            ProducerRecord<String, String> message = new ProducerRecord<>(
+                STRING_TOPIC,
+                String.valueOf(i),
+                String.format("Message %s", i)
+            );
 
             send(message);
 

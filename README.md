@@ -19,12 +19,15 @@ to simplify the development of applications.
 
 ### Producers
 
-| Module                                                                    | Library       | Main Concept             | Additional Content     |
-|---------------------------------------------------------------------------|---------------|--------------------------|------------------------|
-| [Avro Generic](/kafka-producer-quickstarts/kafka-producer-avro-generic)   | Kafka Clients | Generic Avro production  | Mock producer          |
-| [Avro Specific](/kafka-producer-quickstarts/kafka-producer-avro-specific) | Kafka Clients | Specific Avro production | Mock producer          |
-| [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | String production        | Headers, Mock producer |
-| [Transaction](/kafka-producer-quickstarts/kafka-producer-transaction)     | Kafka Clients | Transaction              | Mock producer          |
+| Module                                                                    | Library       | Main Concept                                                  |
+|---------------------------------------------------------------------------|---------------|---------------------------------------------------------------|
+| [Avro Generic](/kafka-producer-quickstarts/kafka-producer-avro-generic)   | Kafka Clients | Produce generic Avro records                                  |
+| [Avro Specific](/kafka-producer-quickstarts/kafka-producer-avro-specific) | Kafka Clients | Produce specific Avro records                                 |
+| [Headers](/kafka-producer-quickstarts/kafka-producer-headers)             | Kafka Clients | Add record headers and produce records                        |
+| [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | Produce String records                                        |
+| [Transaction](/kafka-producer-quickstarts/kafka-producer-transaction)     | Kafka Clients | Guarantee atomicity between multiple topics with transactions |        
+
+Each producer module provides unit tests with the MockProducer API.
 
 ### Consumers
 

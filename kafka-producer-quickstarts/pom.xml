@@ -15,6 +15,7 @@
     <modules>
         <module>kafka-producer-avro-generic</module>
         <module>kafka-producer-avro-specific</module>
+        <module>kafka-producer-headers</module>
         <module>kafka-producer-simple</module>
         <module>kafka-producer-transaction</module>
     </modules>
