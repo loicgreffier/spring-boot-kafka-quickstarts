@@ -14,8 +14,7 @@ import org.apache.kafka.streams.processor.api.RecordMetadata;
  * and changes the key.
  */
 @Slf4j
-public class PersonMetadataProcessor
-    extends ContextualProcessor<String, KafkaPerson, String, KafkaPersonMetadata> {
+public class PersonMetadataProcessor extends ContextualProcessor<String, KafkaPerson, String, KafkaPersonMetadata> {
 
     /**
      * Process the message by adding metadata to the message

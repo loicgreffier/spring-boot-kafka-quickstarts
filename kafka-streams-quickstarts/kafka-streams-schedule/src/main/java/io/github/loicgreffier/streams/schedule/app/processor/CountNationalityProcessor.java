@@ -21,8 +21,7 @@ import org.apache.kafka.streams.state.ValueAndTimestamp;
  * This class represents a processor the messages by nationality.
  */
 @Slf4j
-public class CountNationalityProcessor
-    extends ContextualProcessor<String, KafkaPerson, String, Long> {
+public class CountNationalityProcessor extends ContextualProcessor<String, KafkaPerson, String, Long> {
     private TimestampedKeyValueStore<String, Long> countNationalityStore;
 
     /**

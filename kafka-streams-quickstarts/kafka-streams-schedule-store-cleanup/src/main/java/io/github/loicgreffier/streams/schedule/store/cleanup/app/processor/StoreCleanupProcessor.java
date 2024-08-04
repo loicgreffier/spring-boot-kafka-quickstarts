@@ -17,8 +17,7 @@ import org.apache.kafka.streams.state.KeyValueStore;
  * This class represents a processor that fills and cleans a state store.
  */
 @Slf4j
-public class StoreCleanupProcessor extends
-    ContextualProcessor<String, KafkaPerson, String, KafkaPerson> {
+public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaPerson, String, KafkaPerson> {
     private KeyValueStore<String, KafkaPerson> personStore;
 
     /**
