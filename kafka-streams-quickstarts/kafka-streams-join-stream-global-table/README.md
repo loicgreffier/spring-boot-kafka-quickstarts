@@ -28,13 +28,9 @@ To compile and run this demo, you will need the following:
 
 To run the application manually, please follow the steps below:
 
-- Start
-  a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp)
-  in a Docker environment.
-- Produce records of type `<String, KafkaCountry>` to a topic named `COUNTRY_TOPIC`. You can use
-  the [producer country](../specific-producers/kafka-streams-producer-country) to do this.
-- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use
-  the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
+- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
+- Produce records of type `<String, KafkaCountry>` to a topic named `COUNTRY_TOPIC`. You can use the [producer country](../specific-producers/kafka-streams-producer-country) to do this.
+- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use the [producer person](../specific-producers/kafka-streams-producer-person) to do this.
 - Start the Kafka Streams.
 
 To run the application in Docker, please use the following command:
@@ -45,10 +41,9 @@ docker-compose up -d
 
 This command will start the following services in Docker:
 
-- 1 Zookeeper
-- 1 Kafka broker
+- 1 Kafka broker KRaft
 - 1 Schema registry
 - 1 Control Center
-- 1 producer country
-- 1 producer person
-- 1 Kafka Streams join stream global table
+- 1 producer Country
+- 1 producer Person
+- 1 Kafka Streams Join Stream Global Table

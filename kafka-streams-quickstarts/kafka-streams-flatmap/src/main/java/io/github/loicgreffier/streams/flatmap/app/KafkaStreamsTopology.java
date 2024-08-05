@@ -33,10 +33,9 @@ public class KafkaStreamsTopology {
         streamsBuilder
             .<String, KafkaPerson>stream(PERSON_TOPIC)
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .flatMap((key, person) ->
-                Arrays.asList(
-                    KeyValue.pair(person.getFirstName().toUpperCase(), person.getFirstName()),
-                    KeyValue.pair(person.getLastName().toUpperCase(), person.getLastName())))
+            .flatMap((key, person) -> Arrays.asList(
+                KeyValue.pair(person.getFirstName().toUpperCase(), person.getFirstName()),
+                KeyValue.pair(person.getLastName().toUpperCase(), person.getLastName())))
             .to(PERSON_FLATMAP_TOPIC, Produced.valueSerde(Serdes.String()));
     }
 }

@@ -34,7 +34,8 @@ public class KafkaStreamsTopology {
         final StoreBuilder<KeyValueStore<String, KafkaPerson>> storeBuilder = Stores
             .keyValueStoreBuilder(
                 Stores.persistentKeyValueStore(PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE),
-                Serdes.String(), SerdesUtils.specificAvroValueSerdes());
+                Serdes.String(), SerdesUtils.specificAvroValueSerdes()
+            );
 
         streamsBuilder
             .addStateStore(storeBuilder)

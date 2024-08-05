@@ -42,10 +42,8 @@ public class KafkaStreamsTopology {
             .split(Named.as("BRANCH_"))
             .branch((key, value) -> value.getLastName().startsWith("A"),
                 Branched.withFunction(KafkaStreamsTopology::toUppercase, "A"))
-            .branch((key, value) ->
-                value.getLastName().startsWith("B"), Branched.as("B"))
-            .defaultBranch(Branched.withConsumer(stream ->
-                stream.to(PERSON_BRANCH_DEFAULT_TOPIC)));
+            .branch((key, value) -> value.getLastName().startsWith("B"), Branched.as("B"))
+            .defaultBranch(Branched.withConsumer(stream -> stream.to(PERSON_BRANCH_DEFAULT_TOPIC)));
 
         branches.get("BRANCH_A")
             .to(PERSON_BRANCH_A_TOPIC);
@@ -60,8 +58,7 @@ public class KafkaStreamsTopology {
      * @param streamPerson the stream of persons.
      * @return the stream of persons with uppercase first and last name.
      */
-    private static KStream<String, KafkaPerson> toUppercase(
-        KStream<String, KafkaPerson> streamPerson) {
+    private static KStream<String, KafkaPerson> toUppercase(KStream<String, KafkaPerson> streamPerson) {
         return streamPerson.mapValues(person -> {
             person.setFirstName(person.getFirstName().toUpperCase());
             person.setLastName(person.getLastName().toUpperCase());

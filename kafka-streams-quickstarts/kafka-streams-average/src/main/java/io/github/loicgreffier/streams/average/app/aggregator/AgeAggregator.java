@@ -25,8 +25,7 @@ public class AgeAggregator implements Aggregator<String, KafkaPerson, KafkaAvera
 
         LocalDate currentDate = LocalDate.now();
         LocalDate birthDate = LocalDate.ofInstant(kafkaPerson.getBirthDate(), ZoneOffset.UTC);
-        aggregate.setAgeSum(
-            aggregate.getAgeSum() + Period.between(birthDate, currentDate).getYears());
+        aggregate.setAgeSum(aggregate.getAgeSum() + Period.between(birthDate, currentDate).getYears());
         return aggregate;
     }
 }

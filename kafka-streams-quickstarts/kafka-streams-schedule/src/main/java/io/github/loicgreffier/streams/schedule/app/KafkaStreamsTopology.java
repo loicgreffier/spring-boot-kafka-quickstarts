@@ -44,7 +44,8 @@ public class KafkaStreamsTopology {
                     StoreBuilder<TimestampedKeyValueStore<String, Long>> storeBuilder = Stores
                         .timestampedKeyValueStoreBuilder(
                             Stores.persistentTimestampedKeyValueStore(PERSON_SCHEDULE_STATE_STORE),
-                            Serdes.String(), Serdes.Long());
+                            Serdes.String(), Serdes.Long()
+                        );
                     return Collections.singleton(storeBuilder);
                 }
 

@@ -64,8 +64,7 @@ public class KafkaStreamsTopology {
                         .build();
                 },
                 JoinWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)),
-                StreamJoined.<String, KafkaPerson, KafkaPerson>as(
-                        PERSON_OUTER_JOIN_STREAM_STREAM_STATE_STORE)
+                StreamJoined.<String, KafkaPerson, KafkaPerson>as(PERSON_OUTER_JOIN_STREAM_STREAM_STATE_STORE)
                     .withName(PERSON_OUTER_JOIN_STREAM_STREAM_REKEY_TOPIC)
             )
             .to(PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC);

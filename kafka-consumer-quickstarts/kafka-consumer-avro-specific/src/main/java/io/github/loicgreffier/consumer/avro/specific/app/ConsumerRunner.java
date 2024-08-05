@@ -42,8 +42,7 @@ public class ConsumerRunner {
             consumer.subscribe(Collections.singleton(PERSON_TOPIC), new CustomConsumerRebalanceListener());
 
             while (true) {
-                ConsumerRecords<String, KafkaPerson> messages =
-                    consumer.poll(Duration.ofMillis(1000));
+                ConsumerRecords<String, KafkaPerson> messages = consumer.poll(Duration.ofMillis(1000));
                 log.info("Pulled {} records", messages.count());
 
                 for (ConsumerRecord<String, KafkaPerson> message : messages) {

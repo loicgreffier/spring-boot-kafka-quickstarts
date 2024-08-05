@@ -9,12 +9,10 @@ import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaPerson;
 import java.time.Instant;
 import java.util.Random;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -27,7 +25,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProducerRunner {
-
     @Autowired
     private Producer<String, KafkaPerson> producer;
 
@@ -42,10 +39,17 @@ public class ProducerRunner {
     public void run() {
         int i = 0;
         while (true) {
-            ProducerRecord<String, KafkaPerson> messageOne =
-                new ProducerRecord<>(PERSON_TOPIC, String.valueOf(i), buildKafkaPerson(i));
-            ProducerRecord<String, KafkaPerson> messageTwo =
-                new ProducerRecord<>(PERSON_TOPIC_TWO, String.valueOf(i), buildKafkaPerson(i));
+            ProducerRecord<String, KafkaPerson> messageOne = new ProducerRecord<>(
+                PERSON_TOPIC,
+                String.valueOf(i),
+                buildKafkaPerson(i)
+            );
+
+            ProducerRecord<String, KafkaPerson> messageTwo = new ProducerRecord<>(
+                PERSON_TOPIC_TWO,
+                String.valueOf(i),
+                buildKafkaPerson(i)
+            );
 
             send(messageOne);
             send(messageTwo);
@@ -65,16 +69,17 @@ public class ProducerRunner {
      * Sends a message to the Kafka topic.
      *
      * @param message The message to send.
-     * @return A future of the record metadata.
      */
-    public Future<RecordMetadata> send(ProducerRecord<String, KafkaPerson> message) {
-        return producer.send(message, ((recordMetadata, e) -> {
+    public void send(ProducerRecord<String, KafkaPerson> message) {
+        producer.send(message, ((recordMetadata, e) -> {
             if (e != null) {
                 log.error(e.getMessage());
             } else {
                 log.info("Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
                     recordMetadata.topic(),
-                    recordMetadata.partition(), recordMetadata.offset(), message.key(),
+                    recordMetadata.partition(),
+                    recordMetadata.offset(),
+                    message.key(),
                     message.value());
             }
         }));
@@ -93,7 +98,7 @@ public class ProducerRunner {
             .setLastName(LAST_NAMES[new Random().nextInt(LAST_NAMES.length)])
             .setNationality(CountryCode.values()[new Random().nextInt(CountryCode.values().length)])
             .setBirthDate(Instant.ofEpochSecond(
-                new Random().nextLong(Instant.parse("1900-01-01T00:00:00.00Z").getEpochSecond(),
+                new Random().nextLong(Instant.parse("1900-01-01T00:00:00Z").getEpochSecond(),
                     Instant.now().getEpochSecond())))
             .build();
     }

@@ -40,20 +40,17 @@ public class KafkaStreamsTopology {
         final KGroupedStream<String, KafkaPerson> groupedStreamOne = streamsBuilder
             .<String, KafkaPerson>stream(PERSON_TOPIC)
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .groupBy((key, person) -> person.getLastName(),
-                Grouped.as(GROUP_PERSON_BY_LAST_NAME_TOPIC));
+            .groupBy((key, person) -> person.getLastName(), Grouped.as(GROUP_PERSON_BY_LAST_NAME_TOPIC));
 
         final KGroupedStream<String, KafkaPerson> groupedStreamTwo = streamsBuilder
             .<String, KafkaPerson>stream(PERSON_TOPIC_TWO)
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .groupBy((key, person) -> person.getLastName(),
-                Grouped.as(GROUP_PERSON_BY_LAST_NAME_TOPIC_TWO));
+            .groupBy((key, person) -> person.getLastName(), Grouped.as(GROUP_PERSON_BY_LAST_NAME_TOPIC_TWO));
 
         groupedStreamOne
             .cogroup(aggregator)
             .cogroup(groupedStreamTwo, aggregator)
-            .aggregate(() -> new KafkaPersonGroup(new HashMap<>()),
-                Materialized.as(PERSON_COGROUP_AGGREGATE_STATE_STORE))
+            .aggregate(() -> new KafkaPersonGroup(new HashMap<>()), Materialized.as(PERSON_COGROUP_AGGREGATE_STATE_STORE))
             .toStream()
             .to(PERSON_COGROUP_TOPIC);
     }

@@ -37,7 +37,9 @@ public class KafkaStreamsTopology {
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .groupBy((key, person) -> person.getNationality().toString(),
                 Grouped.as(GROUP_PERSON_BY_NATIONALITY_TOPIC))
-            .aggregate(() -> new KafkaAverageAge(0L, 0L), new AgeAggregator(),
+            .aggregate(() ->
+                new KafkaAverageAge(0L, 0L),
+                new AgeAggregator(),
                 Materialized.as(PERSON_AVERAGE_STATE_STORE))
             .mapValues(value -> value.getAgeSum() / value.getCount())
             .toStream()

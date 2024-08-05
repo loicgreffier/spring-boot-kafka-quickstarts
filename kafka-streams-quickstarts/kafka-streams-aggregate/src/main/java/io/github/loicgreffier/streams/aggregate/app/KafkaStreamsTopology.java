@@ -37,8 +37,11 @@ public class KafkaStreamsTopology {
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .selectKey((key, person) -> person.getLastName())
             .groupByKey(Grouped.as(GROUP_PERSON_BY_LAST_NAME_TOPIC))
-            .aggregate(() -> new KafkaPersonGroup(new HashMap<>()),
-                new FirstNameByLastNameAggregator(), Materialized.as(PERSON_AGGREGATE_STATE_STORE))
+            .aggregate(() ->
+                new KafkaPersonGroup(new HashMap<>()),
+                new FirstNameByLastNameAggregator(),
+                Materialized.as(PERSON_AGGREGATE_STATE_STORE)
+            )
             .toStream()
             .to(PERSON_AGGREGATE_TOPIC);
     }

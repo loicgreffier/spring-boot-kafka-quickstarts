@@ -5,11 +5,9 @@ import static io.github.loicgreffier.streams.producer.country.constant.Topic.COU
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaCountry;
 import java.util.List;
-import java.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProducerRunner {
-
     @Autowired
     private Producer<String, KafkaCountry> producer;
 
@@ -36,8 +33,12 @@ public class ProducerRunner {
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         for (KafkaCountry country : buildKafkaCountries()) {
-            ProducerRecord<String, KafkaCountry> message =
-                new ProducerRecord<>(COUNTRY_TOPIC, country.getCode().toString(), country);
+            ProducerRecord<String, KafkaCountry> message = new ProducerRecord<>(
+                COUNTRY_TOPIC,
+                country.getCode().toString(),
+                country
+            );
+
             send(message);
         }
     }
@@ -46,16 +47,17 @@ public class ProducerRunner {
      * Sends a message to the Kafka topic.
      *
      * @param message The message to send.
-     * @return A future of the record metadata.
      */
-    public Future<RecordMetadata> send(ProducerRecord<String, KafkaCountry> message) {
-        return producer.send(message, ((recordMetadata, e) -> {
+    public void send(ProducerRecord<String, KafkaCountry> message) {
+        producer.send(message, ((recordMetadata, e) -> {
             if (e != null) {
                 log.error(e.getMessage());
             } else {
                 log.info("Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
                     recordMetadata.topic(),
-                    recordMetadata.partition(), recordMetadata.offset(), message.key(),
+                    recordMetadata.partition(),
+                    recordMetadata.offset(),
+                    message.key(),
                     message.value());
             }
         }));

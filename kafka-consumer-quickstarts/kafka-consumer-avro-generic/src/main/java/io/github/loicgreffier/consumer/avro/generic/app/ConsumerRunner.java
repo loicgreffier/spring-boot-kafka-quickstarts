@@ -43,15 +43,14 @@ public class ConsumerRunner {
             consumer.subscribe(Collections.singleton(PERSON_TOPIC), new CustomConsumerRebalanceListener());
 
             while (true) {
-                ConsumerRecords<String, GenericRecord> messages =
-                    consumer.poll(Duration.ofMillis(1000));
+                ConsumerRecords<String, GenericRecord> messages = consumer.poll(Duration.ofMillis(1000));
                 log.info("Pulled {} records", messages.count());
 
                 for (ConsumerRecord<String, GenericRecord> message : messages) {
-                    log.info(
-                        "Received offset = {}, partition = {}, key = {}, value_firstName = {}, "
-                            + "value_lastName = {}",
-                        message.offset(), message.partition(), message.key(),
+                    log.info("Received offset = {}, partition = {}, key = {}, firstName = {}, lastName = {}",
+                        message.offset(),
+                        message.partition(),
+                        message.key(),
                         message.value().get("firstName"),
                         message.value().get("lastName"));
                 }

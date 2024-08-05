@@ -46,8 +46,7 @@ public class ConsumerRunner {
 
             while (true) {
                 try {
-                    ConsumerRecords<String, KafkaPerson> messages =
-                        consumer.poll(Duration.ofMillis(1000));
+                    ConsumerRecords<String, KafkaPerson> messages = consumer.poll(Duration.ofMillis(1000));
                     log.info("Pulled {} records", messages.count());
 
                     for (ConsumerRecord<String, KafkaPerson> message : messages) {
@@ -59,11 +58,9 @@ public class ConsumerRunner {
                         doCommitSync();
                     }
                 } catch (RecordDeserializationException e) {
-                    log.info(
-                        "Error while deserializing message from topic-partition {}-{} "
-                            + "at offset {}. Seeking to the next offset {}",
-                        e.topicPartition().topic(), e.topicPartition().partition(), e.offset(),
-                        e.offset() + 1);
+                    log.info("Error while deserializing message from topic-partition {}-{} "
+                            + "at offset {}. Seeking to the next offset {}.",
+                        e.topicPartition().topic(), e.topicPartition().partition(), e.offset(), e.offset() + 1);
                     consumer.seek(e.topicPartition(), e.offset() + 1);
                 }
             }

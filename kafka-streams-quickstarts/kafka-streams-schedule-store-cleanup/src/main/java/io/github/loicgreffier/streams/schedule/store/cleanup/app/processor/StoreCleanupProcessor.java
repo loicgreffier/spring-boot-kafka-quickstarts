@@ -31,9 +31,8 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaPers
     @Override
     public void init(ProcessorContext<String, KafkaPerson> context) {
         super.init(context);
-        this.personStore = context.getStateStore(PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE);
-        context.schedule(Duration.ofMinutes(1), PunctuationType.STREAM_TIME,
-            this::forwardTombstones);
+        personStore = context.getStateStore(PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE);
+        context.schedule(Duration.ofMinutes(1), PunctuationType.STREAM_TIME, this::forwardTombstones);
     }
 
     /**

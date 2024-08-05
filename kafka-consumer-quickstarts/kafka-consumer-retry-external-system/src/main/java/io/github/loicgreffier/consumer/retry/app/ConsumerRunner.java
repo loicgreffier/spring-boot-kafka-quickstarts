@@ -31,7 +31,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ConsumerRunner {
-
     @Autowired
     private Consumer<String, String> consumer;
 

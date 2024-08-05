@@ -23,7 +23,7 @@ to simplify the development of applications.
 |---------------------------------------------------------------------------|---------------|---------------------------------------------------------------|
 | [Avro Generic](/kafka-producer-quickstarts/kafka-producer-avro-generic)   | Kafka Clients | Produce generic Avro records                                  |
 | [Avro Specific](/kafka-producer-quickstarts/kafka-producer-avro-specific) | Kafka Clients | Produce specific Avro records                                 |
-| [Headers](/kafka-producer-quickstarts/kafka-producer-headers)             | Kafka Clients | Producer record with headers                                  |
+| [Headers](/kafka-producer-quickstarts/kafka-producer-headers)             | Kafka Clients | Producer records with headers                                 |
 | [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | Produce String records                                        |
 | [Transaction](/kafka-producer-quickstarts/kafka-producer-transaction)     | Kafka Clients | Guarantee atomicity between multiple topics with transactions |        
 

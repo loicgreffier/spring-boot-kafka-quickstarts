@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ConsumerRunner {
-
     @Autowired
     private Consumer<String, String> consumer;
 
@@ -46,8 +45,7 @@ public class ConsumerRunner {
                 log.info("Pulled {} records", messages.count());
 
                 for (ConsumerRecord<String, String> message : messages) {
-                    log.info(
-                        "Received offset = {}, partition = {}, key = {}, value = {}",
+                    log.info("Received offset = {}, partition = {}, key = {}, value = {}",
                         message.offset(), message.partition(), message.key(), message.value());
                 }
 
