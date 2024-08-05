@@ -50,7 +50,8 @@ public class KafkaStreamsTopology {
         groupedStreamOne
             .cogroup(aggregator)
             .cogroup(groupedStreamTwo, aggregator)
-            .aggregate(() -> new KafkaPersonGroup(new HashMap<>()), Materialized.as(PERSON_COGROUP_AGGREGATE_STATE_STORE))
+            .aggregate(() -> new KafkaPersonGroup(new HashMap<>()),
+                Materialized.as(PERSON_COGROUP_AGGREGATE_STATE_STORE))
             .toStream()
             .to(PERSON_COGROUP_TOPIC);
     }
