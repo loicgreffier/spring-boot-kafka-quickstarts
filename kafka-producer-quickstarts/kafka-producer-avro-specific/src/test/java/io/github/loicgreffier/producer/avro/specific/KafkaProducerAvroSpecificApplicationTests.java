@@ -1,9 +1,9 @@
 package io.github.loicgreffier.producer.avro.specific;
 
 import static io.github.loicgreffier.producer.avro.specific.constant.Topic.PERSON_TOPIC;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
@@ -55,11 +55,11 @@ class KafkaProducerAvroSpecificApplicationTests {
         Future<RecordMetadata> record = producerRunner.send(message);
         mockProducer.completeNext();
 
-        assertThat(record.get().hasOffset()).isTrue();
-        assertThat(record.get().offset()).isZero();
-        assertThat(record.get().partition()).isZero();
-        assertThat(mockProducer.history()).hasSize(1);
-        assertThat(mockProducer.history().get(0)).isEqualTo(message);
+        assertTrue(record.get().hasOffset());
+        assertEquals(0, record.get().offset());
+        assertEquals(0, record.get().partition());
+        assertEquals(1, mockProducer.history().size());
+        assertEquals(message, mockProducer.history().get(0));
     }
 
     @Test
@@ -77,7 +77,7 @@ class KafkaProducerAvroSpecificApplicationTests {
 
         ExecutionException executionException = assertThrows(ExecutionException.class, record::get);
         assertEquals(executionException.getCause(), exception);
-        assertThat(mockProducer.history()).hasSize(1);
-        assertThat(mockProducer.history().get(0)).isEqualTo(message);
+        assertEquals(1, mockProducer.history().size());
+        assertEquals(message, mockProducer.history().get(0));
     }
 }

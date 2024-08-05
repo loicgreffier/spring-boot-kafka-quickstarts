@@ -1,14 +1,13 @@
 package io.github.loicgreffier.consumer.simple;
 
 import static io.github.loicgreffier.consumer.simple.constant.Topic.STRING_TOPIC;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import io.github.loicgreffier.consumer.simple.app.ConsumerRunner;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -29,8 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerSimpleApplicationTests {
     @Spy
-    private MockConsumer<String, String> mockConsumer =
-        new MockConsumer<>(OffsetResetStrategy.EARLIEST);
+    private MockConsumer<String, String> mockConsumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
 
     @InjectMocks
     private ConsumerRunner consumerRunner;
@@ -48,26 +46,22 @@ class KafkaConsumerSimpleApplicationTests {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, String> message =
-            new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "John Doe");
-        message.headers().add("headerKey", "headerValue 1".getBytes(StandardCharsets.UTF_8));
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "John Doe");
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
 
         consumerRunner.run();
 
-        assertThat(mockConsumer.closed()).isTrue();
+        assertTrue(mockConsumer.closed());
 
-        verify(mockConsumer, times(1)).commitSync();
+        verify(mockConsumer).commitSync();
     }
 
     @Test
     void shouldFailOnPoisonPill() {
-        ConsumerRecord<String, String> message1 =
-            new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "John Doe");
-        ConsumerRecord<String, String> message2 =
-            new ConsumerRecord<>(STRING_TOPIC, 0, 2, "2", "Jane Smith");
+        ConsumerRecord<String, String> message1 = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "John Doe");
+        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(STRING_TOPIC, 0, 2, "2", "Jane Smith");
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message1));
         mockConsumer.schedulePollTask(() -> {
@@ -78,8 +72,8 @@ class KafkaConsumerSimpleApplicationTests {
 
         assertThrows(RecordDeserializationException.class, () -> consumerRunner.run());
 
-        assertThat(mockConsumer.closed()).isTrue();
+        assertTrue(mockConsumer.closed());
         verify(mockConsumer, times(3)).poll(any());
-        verify(mockConsumer, times(1)).commitSync();
+        verify(mockConsumer).commitSync();
     }
 }

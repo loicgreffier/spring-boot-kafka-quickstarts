@@ -1,7 +1,7 @@
 package io.github.loicgreffier.consumer.circuit.breaker;
 
 import static io.github.loicgreffier.consumer.circuit.breaker.constant.Topic.PERSON_TOPIC;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,8 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerCircuitBreakerApplicationTests {
     @Spy
-    private MockConsumer<String, KafkaPerson> mockConsumer =
-        new MockConsumer<>(OffsetResetStrategy.EARLIEST);
+    private MockConsumer<String, KafkaPerson> mockConsumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
 
     @InjectMocks
     private ConsumerRunner consumerRunner;
@@ -61,8 +60,8 @@ class KafkaConsumerCircuitBreakerApplicationTests {
 
         consumerRunner.run();
 
-        assertThat(mockConsumer.closed()).isTrue();
-        verify(mockConsumer, times(1)).commitSync();
+        assertTrue(mockConsumer.closed());
+        verify(mockConsumer).commitSync();
     }
 
     @Test
@@ -96,9 +95,9 @@ class KafkaConsumerCircuitBreakerApplicationTests {
 
         consumerRunner.run();
 
-        assertThat(mockConsumer.closed()).isTrue();
+        assertTrue(mockConsumer.closed());
         verify(mockConsumer, times(5)).poll(any());
         verify(mockConsumer, times(2)).commitSync();
-        verify(mockConsumer, times(1)).seek(topicPartition, 2);
+        verify(mockConsumer).seek(topicPartition, 2);
     }
 }

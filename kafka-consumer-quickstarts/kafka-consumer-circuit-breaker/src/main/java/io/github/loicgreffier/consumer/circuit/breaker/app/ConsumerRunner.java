@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ConsumerRunner {
-
     @Autowired
     private Consumer<String, KafkaPerson> consumer;
 
@@ -43,8 +42,7 @@ public class ConsumerRunner {
         try {
             log.info("Subscribing to {} topic", PERSON_TOPIC);
 
-            consumer.subscribe(Collections.singleton(PERSON_TOPIC),
-                new CustomConsumerRebalanceListener());
+            consumer.subscribe(Collections.singleton(PERSON_TOPIC), new CustomConsumerRebalanceListener());
 
             while (true) {
                 try {

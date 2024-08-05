@@ -1,15 +1,14 @@
-package io.github.loicgreffier.consumer.avro.specific;
+package io.github.loicgreffier.consumer.headers;
 
-import static io.github.loicgreffier.consumer.avro.specific.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.consumer.headers.constant.Topic.STRING_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.consumer.avro.specific.app.ConsumerRunner;
-import java.time.Instant;
+import io.github.loicgreffier.consumer.headers.app.ConsumerRunner;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -28,9 +27,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * This class contains unit tests for the Kafka consumer application.
  */
 @ExtendWith(MockitoExtension.class)
-class KafkaConsumerAvroSpecificApplicationTests {
+class KafkaConsumerHeadersApplicationTests {
     @Spy
-    private MockConsumer<String, KafkaPerson> mockConsumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
+    private MockConsumer<String, String> mockConsumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
 
     @InjectMocks
     private ConsumerRunner consumerRunner;
@@ -39,7 +38,7 @@ class KafkaConsumerAvroSpecificApplicationTests {
 
     @BeforeEach
     void setUp() {
-        topicPartition = new TopicPartition(PERSON_TOPIC, 0);
+        topicPartition = new TopicPartition(STRING_TOPIC, 0);
         mockConsumer.schedulePollTask(
             () -> mockConsumer.rebalance(Collections.singletonList(topicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(topicPartition, 0L));
@@ -48,13 +47,9 @@ class KafkaConsumerAvroSpecificApplicationTests {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, KafkaPerson> message =
-            new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("John")
-                .setLastName("Doe")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
-                .build());
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "John Doe");
+        message.headers().add("id", "1".getBytes(StandardCharsets.UTF_8));
+        message.headers().add("message", "John Doe".getBytes(StandardCharsets.UTF_8));
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -62,25 +57,21 @@ class KafkaConsumerAvroSpecificApplicationTests {
         consumerRunner.run();
 
         assertTrue(mockConsumer.closed());
+
         verify(mockConsumer).commitSync();
     }
 
     @Test
     void shouldFailOnPoisonPill() {
-        ConsumerRecord<String, KafkaPerson> message =
-            new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", KafkaPerson.newBuilder()
-                .setId(1L)
-                .setFirstName("John")
-                .setLastName("Doe")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00.00Z"))
-                .build());
+        ConsumerRecord<String, String> message1 = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "John Doe");
+        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(STRING_TOPIC, 0, 2, "2", "Jane Smith");
 
-        mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
+        mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message1));
         mockConsumer.schedulePollTask(() -> {
             throw new RecordDeserializationException(topicPartition, 1, "Error deserializing",
                 new Exception());
         });
-        mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
+        mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message2));
 
         assertThrows(RecordDeserializationException.class, () -> consumerRunner.run());
 

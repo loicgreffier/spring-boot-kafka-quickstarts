@@ -2,7 +2,9 @@ package io.github.loicgreffier.producer.transaction;
 
 import static io.github.loicgreffier.producer.transaction.constant.Topic.FIRST_STRING_TOPIC;
 import static io.github.loicgreffier.producer.transaction.constant.Topic.SECOND_STRING_TOPIC;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.loicgreffier.producer.transaction.app.ProducerRunner;
 import java.util.Arrays;
@@ -38,11 +40,11 @@ class KafkaProducerTransactionApplicationTests {
         ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "4", "Jane Smith");
         producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
-        assertThat(mockProducer.history()).isEmpty();
-        assertThat(mockProducer.transactionInitialized()).isTrue();
-        assertThat(mockProducer.transactionAborted()).isTrue();
-        assertThat(mockProducer.transactionCommitted()).isFalse();
-        assertThat(mockProducer.transactionInFlight()).isFalse();
+        assertTrue(mockProducer.history().isEmpty());
+        assertTrue(mockProducer.transactionInitialized());
+        assertTrue(mockProducer.transactionAborted());
+        assertFalse(mockProducer.transactionCommitted());
+        assertFalse(mockProducer.transactionInFlight());
     }
 
     @Test
@@ -53,14 +55,14 @@ class KafkaProducerTransactionApplicationTests {
         ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "2", "Jane Smith");
         producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
-        assertThat(mockProducer.history()).hasSize(2);
-        assertThat(mockProducer.history().get(0).topic()).isEqualTo(FIRST_STRING_TOPIC);
-        assertThat(mockProducer.history().get(0).value()).isEqualTo("John Doe");
-        assertThat(mockProducer.history().get(1).topic()).isEqualTo(SECOND_STRING_TOPIC);
-        assertThat(mockProducer.history().get(1).value()).isEqualTo("Jane Smith");
-        assertThat(mockProducer.transactionInitialized()).isTrue();
-        assertThat(mockProducer.transactionCommitted()).isTrue();
-        assertThat(mockProducer.transactionAborted()).isFalse();
-        assertThat(mockProducer.transactionInFlight()).isFalse();
+        assertEquals(2, mockProducer.history().size());
+        assertEquals(FIRST_STRING_TOPIC, mockProducer.history().get(0).topic());
+        assertEquals("John Doe", mockProducer.history().get(0).value());
+        assertEquals(SECOND_STRING_TOPIC, mockProducer.history().get(1).topic());
+        assertEquals("Jane Smith", mockProducer.history().get(1).value());
+        assertTrue(mockProducer.transactionInitialized());
+        assertTrue(mockProducer.transactionCommitted());
+        assertFalse(mockProducer.transactionAborted());
+        assertFalse(mockProducer.transactionInFlight());
     }
 }

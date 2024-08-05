@@ -23,7 +23,7 @@ to simplify the development of applications.
 |---------------------------------------------------------------------------|---------------|---------------------------------------------------------------|
 | [Avro Generic](/kafka-producer-quickstarts/kafka-producer-avro-generic)   | Kafka Clients | Produce generic Avro records                                  |
 | [Avro Specific](/kafka-producer-quickstarts/kafka-producer-avro-specific) | Kafka Clients | Produce specific Avro records                                 |
-| [Headers](/kafka-producer-quickstarts/kafka-producer-headers)             | Kafka Clients | Add record headers and produce records                        |
+| [Headers](/kafka-producer-quickstarts/kafka-producer-headers)             | Kafka Clients | Producer record with headers                                  |
 | [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | Produce String records                                        |
 | [Transaction](/kafka-producer-quickstarts/kafka-producer-transaction)     | Kafka Clients | Guarantee atomicity between multiple topics with transactions |        
 
@@ -31,14 +31,17 @@ Each producer module provides unit tests with the MockProducer API.
 
 ### Consumers
 
-| Module                                                                                    | Library       | Main Concept                                            | Additional Content     |
-|:------------------------------------------------------------------------------------------|---------------|---------------------------------------------------------|------------------------|
-| [Avro Generic](/kafka-consumer-quickstarts/kafka-consumer-avro-generic)                   | Kafka Clients | Generic Avro consumption                                | Mock consumer          |
-| [Avro Specific](/kafka-consumer-quickstarts/kafka-consumer-avro-specific)                 | Kafka Clients | Specific Avro consumption                               | Mock consumer          |
-| [Circuit breaker](/kafka-consumer-quickstarts/kafka-consumer-circuit-breaker)             | Kafka Clients | Deserialization/poison pill error handling              | Mock consumer          |
-| [Retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system) | Kafka Clients | External system interfacing with strong retry mechanism | Mock consumer          |
-| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                               | Kafka Clients | String consumption                                      | Headers, Mock consumer |
-| [Transaction](/kafka-consumer-quickstarts/kafka-consumer-transaction)                     | Kafka Clients | Isolation level                                         |                        |
+| Module                                                                                    | Library       | Main Concept                                          |
+|:------------------------------------------------------------------------------------------|---------------|-------------------------------------------------------|
+| [Avro Generic](/kafka-consumer-quickstarts/kafka-consumer-avro-generic)                   | Kafka Clients | Consume generic Avro records                          |
+| [Avro Specific](/kafka-consumer-quickstarts/kafka-consumer-avro-specific)                 | Kafka Clients | Consume specific Avro records                         |
+| [Circuit breaker](/kafka-consumer-quickstarts/kafka-consumer-circuit-breaker)             | Kafka Clients | Handle poison pills                                   |
+| [Headers](/kafka-consumer-quickstarts/kafka-consumer-headers)                             | Kafka Clients | Read records with headers                             |
+| [Retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system) | Kafka Clients | Retry mechanism on external processing system failure |                       
+| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                               | Kafka Clients | Consume String records                                |
+| [Transaction](/kafka-consumer-quickstarts/kafka-consumer-transaction)                     | Kafka Clients | Consume records from committed transactions           |
+
+Each consumer module provides unit tests with the MockConsumer API.
 
 ### Kafka Streams
 

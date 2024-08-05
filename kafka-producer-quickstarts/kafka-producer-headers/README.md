@@ -6,7 +6,7 @@ This module demonstrates the following:
 - The usage of headers in Kafka records.
 - The usage of unit tests with a Mock producer.
 
-This module produces records of type `<String, String>` to a topic named `STRING_TOPIC`.
+This module produces records of type `<String, String>` with headers to a topic named `STRING_TOPIC`.
 
 ## Requirements
 

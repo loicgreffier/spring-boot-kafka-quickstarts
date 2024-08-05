@@ -1,11 +1,10 @@
 package io.github.loicgreffier.consumer.retry;
 
 import static io.github.loicgreffier.consumer.retry.constant.Topic.STRING_TOPIC;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,8 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerRetryApplicationTests {
     @Spy
-    private MockConsumer<String, String> mockConsumer =
-        new MockConsumer<>(OffsetResetStrategy.EARLIEST);
+    private MockConsumer<String, String> mockConsumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
 
     @Mock
     private ExternalService externalService;
@@ -67,9 +65,9 @@ class KafkaConsumerRetryApplicationTests {
 
         consumerRunner.run();
 
-        assertThat(mockConsumer.closed()).isTrue();
+        assertTrue(mockConsumer.closed());
 
-        verify(mockConsumer, times(1)).commitSync();
+        verify(mockConsumer).commitSync();
     }
 
     @Test
@@ -100,10 +98,10 @@ class KafkaConsumerRetryApplicationTests {
 
         consumerRunner.run();
 
-        assertThat(mockConsumer.closed()).isTrue();
-        verify(mockConsumer, times(1)).pause(Collections.singleton(topicPartition));
-        verify(mockConsumer, times(1)).seek(topicPartition, new OffsetAndMetadata(1));
-        verify(mockConsumer, times(1)).resume(Collections.singleton(topicPartition));
+        assertTrue(mockConsumer.closed());
+        verify(mockConsumer).pause(Collections.singleton(topicPartition));
+        verify(mockConsumer).seek(topicPartition, new OffsetAndMetadata(1));
+        verify(mockConsumer).resume(Collections.singleton(topicPartition));
     }
 
     @Test
@@ -121,10 +119,10 @@ class KafkaConsumerRetryApplicationTests {
 
         consumerRunner.run();
 
-        assertThat(mockConsumer.closed()).isTrue();
-        verify(mockConsumer, times(1)).pause(Collections.singleton(topicPartition));
-        verify(mockConsumer, times(1)).seekToBeginning(Collections.singleton(topicPartition));
-        verify(mockConsumer, times(1)).resume(Collections.singleton(topicPartition));
+        assertTrue(mockConsumer.closed());
+        verify(mockConsumer).pause(Collections.singleton(topicPartition));
+        verify(mockConsumer).seekToBeginning(Collections.singleton(topicPartition));
+        verify(mockConsumer).resume(Collections.singleton(topicPartition));
     }
 
     @Test
@@ -144,9 +142,9 @@ class KafkaConsumerRetryApplicationTests {
 
         consumerRunner.run();
 
-        assertThat(mockConsumer.closed()).isTrue();
-        verify(mockConsumer, times(1)).pause(Collections.singleton(topicPartition));
-        verify(mockConsumer, times(1)).seekToEnd(Collections.singleton(topicPartition));
-        verify(mockConsumer, times(1)).resume(Collections.singleton(topicPartition));
+        assertTrue(mockConsumer.closed());
+        verify(mockConsumer).pause(Collections.singleton(topicPartition));
+        verify(mockConsumer).seekToEnd(Collections.singleton(topicPartition));
+        verify(mockConsumer).resume(Collections.singleton(topicPartition));
     }
 }

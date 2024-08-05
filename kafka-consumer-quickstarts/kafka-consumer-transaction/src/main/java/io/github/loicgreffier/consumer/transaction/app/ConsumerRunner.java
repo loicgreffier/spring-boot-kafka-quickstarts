@@ -42,8 +42,7 @@ public class ConsumerRunner {
         try {
             log.info("Subscribing to {} and {} topics", FIRST_STRING_TOPIC, SECOND_STRING_TOPIC);
 
-            consumer.subscribe(List.of(FIRST_STRING_TOPIC, SECOND_STRING_TOPIC),
-                new CustomConsumerRebalanceListener());
+            consumer.subscribe(List.of(FIRST_STRING_TOPIC, SECOND_STRING_TOPIC), new CustomConsumerRebalanceListener());
 
             while (true) {
                 ConsumerRecords<String, String> messages = consumer.poll(Duration.ofMillis(1000));

@@ -1,8 +1,8 @@
 package io.github.loicgreffier.consumer.avro.generic;
 
 import static io.github.loicgreffier.consumer.avro.generic.constant.Topic.PERSON_TOPIC;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,8 +36,7 @@ import org.springframework.core.io.ClassPathResource;
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerAvroGenericApplicationTests {
     @Spy
-    private MockConsumer<String, GenericRecord> mockConsumer =
-        new MockConsumer<>(OffsetResetStrategy.EARLIEST);
+    private MockConsumer<String, GenericRecord> mockConsumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
 
     @InjectMocks
     private ConsumerRunner consumerRunner;
@@ -73,8 +72,8 @@ class KafkaConsumerAvroGenericApplicationTests {
 
         consumerRunner.run();
 
-        assertThat(mockConsumer.closed()).isTrue();
-        verify(mockConsumer, times(1)).commitSync();
+        assertTrue(mockConsumer.closed());
+        verify(mockConsumer).commitSync();
     }
 
     @Test
@@ -101,8 +100,8 @@ class KafkaConsumerAvroGenericApplicationTests {
 
         assertThrows(RecordDeserializationException.class, () -> consumerRunner.run());
 
-        assertThat(mockConsumer.closed()).isTrue();
+        assertTrue(mockConsumer.closed());
         verify(mockConsumer, times(3)).poll(any());
-        verify(mockConsumer, times(1)).commitSync();
+        verify(mockConsumer).commitSync();
     }
 }

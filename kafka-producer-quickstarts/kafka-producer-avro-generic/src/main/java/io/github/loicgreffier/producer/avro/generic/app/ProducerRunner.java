@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProducerRunner {
-
     @Autowired
     private Producer<String, GenericRecord> producer;
 

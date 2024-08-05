@@ -48,9 +48,9 @@ public class ConsumerRunner {
      * The asynchronous annotation is used to run the consumer in a separate thread and
      * not block the main thread.
      * The Kafka consumer processes messages from the STRING_TOPIC topic.
-     * If an error occurs during the external system call, the consumer pauses the topic-partitions
-     * and rewinds to the failed record offset.
-     * As the consumer is paused, it will not commit the offsets and the next
+     * If an error occurs during the external system call, the consumer pauses the topic-partitions.
+     * and rewinds to the failed record offset as a call to poll() has automatically advanced the consumer offsets.
+     * The consumer being paused, it will not commit the offsets and the next
      * call to poll() will not return any records. Consequently, the consumer
      * will honor the pause duration given by the poll() timeout.
      * Once the pause duration is elapsed, the consumer will resume the topic-partitions
@@ -70,8 +70,7 @@ public class ConsumerRunner {
                 log.info("Pulled {} records", messages.count());
 
                 if (isPaused()) {
-                    log.info("Consumer was paused, resuming topic-partitions {}",
-                        consumer.assignment());
+                    log.info("Consumer was paused, resuming topic-partitions {}", consumer.assignment());
                     consumer.resume(consumer.assignment());
                 }
 
@@ -139,9 +138,8 @@ public class ConsumerRunner {
             if (entry.getValue() != null) {
                 consumer.seek(entry.getKey(), entry.getValue());
             } else {
-                log.warn(
-                    "Cannot rewind on {} to null offset, this could happen if the consumer "
-                        + "group was just created", entry.getKey());
+                log.warn("Cannot rewind on {} to null offset, this could happen if the consumer "
+                    + "group was just created", entry.getKey());
             }
         }
     }

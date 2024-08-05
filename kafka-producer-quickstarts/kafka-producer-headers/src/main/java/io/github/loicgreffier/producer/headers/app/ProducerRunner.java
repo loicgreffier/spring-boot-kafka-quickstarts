@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProducerRunner {
-
     @Autowired
     private Producer<String, String> producer;
 
@@ -44,7 +43,7 @@ public class ProducerRunner {
             );
 
             message.headers().add("id", String.valueOf(i).getBytes(StandardCharsets.UTF_8));
-            message.headers().add("value", String.format("Message %s", i).getBytes(StandardCharsets.UTF_8));
+            message.headers().add("message", String.format("Message %s", i).getBytes(StandardCharsets.UTF_8));
 
             send(message);
 

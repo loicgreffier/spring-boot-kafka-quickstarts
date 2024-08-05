@@ -1,9 +1,9 @@
 package io.github.loicgreffier.producer.headers;
 
 import static io.github.loicgreffier.producer.headers.constant.Topic.STRING_TOPIC;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.loicgreffier.producer.headers.app.ProducerRunner;
 import java.util.concurrent.ExecutionException;
@@ -39,11 +39,11 @@ class KafkaProducerHeadersApplicationTests {
         Future<RecordMetadata> record = producerRunner.send(message);
         mockProducer.completeNext();
 
-        assertThat(record.get().hasOffset()).isTrue();
-        assertThat(record.get().offset()).isZero();
-        assertThat(record.get().partition()).isZero();
-        assertThat(mockProducer.history()).hasSize(1);
-        assertThat(mockProducer.history().get(0)).isEqualTo(message);
+        assertTrue(record.get().hasOffset());
+        assertEquals(0, record.get().offset());
+        assertEquals(0, record.get().partition());
+        assertEquals(1, mockProducer.history().size());
+        assertEquals(message, mockProducer.history().get(0));
     }
 
     @Test
@@ -55,7 +55,7 @@ class KafkaProducerHeadersApplicationTests {
 
         ExecutionException executionException = assertThrows(ExecutionException.class, record::get);
         assertEquals(executionException.getCause(), exception);
-        assertThat(mockProducer.history()).hasSize(1);
-        assertThat(mockProducer.history().get(0)).isEqualTo(message);
+        assertEquals(1, mockProducer.history().size());
+        assertEquals(message, mockProducer.history().get(0));
     }
 }

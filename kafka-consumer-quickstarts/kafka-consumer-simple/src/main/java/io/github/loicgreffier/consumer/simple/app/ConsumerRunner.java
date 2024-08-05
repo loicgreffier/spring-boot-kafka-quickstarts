@@ -2,7 +2,6 @@ package io.github.loicgreffier.consumer.simple.app;
 
 import static io.github.loicgreffier.consumer.simple.constant.Topic.STRING_TOPIC;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.WakeupException;
-import org.apache.kafka.common.header.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -41,22 +39,16 @@ public class ConsumerRunner {
         try {
             log.info("Subscribing to {} topic", STRING_TOPIC);
 
-            consumer.subscribe(Collections.singleton(STRING_TOPIC),
-                new CustomConsumerRebalanceListener());
+            consumer.subscribe(Collections.singleton(STRING_TOPIC), new CustomConsumerRebalanceListener());
 
             while (true) {
                 ConsumerRecords<String, String> messages = consumer.poll(Duration.ofMillis(1000));
                 log.info("Pulled {} records", messages.count());
 
                 for (ConsumerRecord<String, String> message : messages) {
-                    Header header = message.headers().lastHeader("headerKey");
-                    String headerValue =
-                        header != null ? new String(header.value(), StandardCharsets.UTF_8) : "";
-
                     log.info(
-                        "Received offset = {}, partition = {}, key = {}, value = {}, header = {}",
-                        message.offset(), message.partition(), message.key(), message.value(),
-                        headerValue);
+                        "Received offset = {}, partition = {}, key = {}, value = {}",
+                        message.offset(), message.partition(), message.key(), message.value());
                 }
 
                 if (!messages.isEmpty()) {

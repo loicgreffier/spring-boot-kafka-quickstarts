@@ -1,13 +1,12 @@
-# Consumer Transactional
+# Consumer Headers
 
 This module demonstrates the following:
 
 - The usage of the Kafka Clients consumer API.
-- The usage of isolation level.
+- The usage of headers in Kafka records.
+- The usage of unit tests with a Mock consumer.
 
-This module consumes records of type `<String, String>` from topics named `FIRST_STRING_TOPIC`
-and `SECOND_STRING_TOPIC`. It utilizes an isolation level of `read_committed` to ensure that only committed records are
-consumed, filtering out any uncommitted or transactionally aborted records.
+This module consumes records of type `<String, String>` with headers from a topic named `STRING_TOPIC`.
 
 ## Requirements
 
@@ -22,7 +21,7 @@ To compile and run this demo, you will need the following:
 To run the application manually, please follow the steps below:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, String>` to topics named `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`. You can use the [producer transaction](../../kafka-producer-quickstarts/kafka-producer-transaction) to do this.
+- Produce records of type `<String, String>` with headers named `id` and `message` to a topic named `STRING_TOPIC`. You can use the [producer headers](../../kafka-producer-quickstarts/kafka-producer-headers) to do this.
 - Start the consumer.
 
 To run the application in Docker, please use the following command:
@@ -36,5 +35,5 @@ This command will start the following services in Docker:
 - 1 Zookeeper
 - 1 Kafka broker
 - 1 Control Center
-- 1 producer transaction
-- 1 consumer transaction
+- 1 producer headers
+- 1 consumer headers

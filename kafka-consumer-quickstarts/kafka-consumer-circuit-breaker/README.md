@@ -2,7 +2,7 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Clients consumer DSL.
+- The usage of the Kafka Clients consumer API.
 - The usage of Apache Avro
 - The usage of unit tests with a Mock consumer.
 
@@ -26,11 +26,8 @@ To compile and run this demo, you will need the following:
 
 To run the application manually, please follow the steps below:
 
-- Start
-  a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp)
-  in a Docker environment.
-- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use
-  the [producer Avro Specific](../../kafka-producer-quickstarts/kafka-producer-avro-specific) to do this.
+- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
+- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use the [producer Avro Specific](../../kafka-producer-quickstarts/kafka-producer-avro-specific) to do this.
 - Make sure a deserialization exception will occur by either:
     - Deleting the Avro schema from the schema registry.
     - Producing a String message in the middle of Avro messages.
