@@ -154,7 +154,8 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
 
         // The second record is not aggregated here because it is out of the time window
         // as the upper bound of tumbling window is exclusive.
-        // Its timestamp (01:05:00) is not included in the window (01:00:00->01:05:00)
+        // Its timestamp (01:05:00) is not included in the window [01:00:00->01:05:00)
+
         assertEquals("Doe@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
         assertIterableEquals(List.of("John"), results.get(0).value.getFirstNameByLastName().get("Doe"));
 
@@ -195,7 +196,7 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
             Instant.parse("2000-01-01T01:05:30Z")));
 
         // At this point, the stream time is 01:05:30. It exceeds by 30 seconds
-        // the upper bound of the window (01:00:00Z->01:05:00Z) where John is included.
+        // the upper bound of the window [01:00:00Z->01:05:00Z) where John is included.
         // However, the following delayed record "Gio" will be aggregated into the window
         // because the grace period is 1 minute.
 
@@ -210,9 +211,10 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         assertEquals("Doe@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z", results.get(1).key);
         assertIterableEquals(List.of("Michael"), results.get(1).value.getFirstNameByLastName().get("Doe"));
 
-        // Even if the stream time is 01:05:30 and the window (01:00:00Z->01:05:00Z) is supposed to be closed,
+        // Even if the stream time is 01:05:30 and the window [01:00:00Z->01:05:00Z) is supposed to be closed,
         // Gio whose timestamp is 01:03:00 is included in the window.
         // Stream time < window end time + grace period is true, so the record is aggregated.
+
         assertEquals("Doe@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(2).key);
         assertIterableEquals(List.of("John", "Gio"), results.get(2).value.getFirstNameByLastName().get("Doe"));
 

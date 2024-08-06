@@ -32,6 +32,9 @@ public class KafkaStreamsTopology {
      * 1-minute grace period and 2 minutes advance period.
      * A new key is generated with the window start and end time.
      * The result is written to the PERSON_AGGREGATE_HOPPING_WINDOW_TOPIC topic.
+     * Hopping windows are aligned to the epoch. The first window starts at 1970-01-01T00:00:00Z
+     * Then, every 2 minutes, a new window of 5 minutes is created as long as the stream time advances.
+     * A record belongs to a hopping window if its timestamp is in the range [windowStart, windowEnd).
      *
      * @param streamsBuilder the streams builder.
      */
