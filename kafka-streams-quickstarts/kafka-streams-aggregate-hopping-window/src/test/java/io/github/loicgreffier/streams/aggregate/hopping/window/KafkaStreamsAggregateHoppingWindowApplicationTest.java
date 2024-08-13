@@ -315,7 +315,10 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
             assertEquals("Simpson", keyValue02To07.key.key());
             assertEquals("2000-01-01T01:02:00Z", keyValue02To07.key.window().startTime().toString());
             assertEquals("2000-01-01T01:07:00Z", keyValue02To07.key.window().endTime().toString());
-            assertIterableEquals(List.of("Marge", "Bart"), keyValue02To07.value.getFirstNameByLastName().get("Simpson"));
+            assertIterableEquals(
+                List.of("Marge", "Bart"),
+                keyValue02To07.value.getFirstNameByLastName().get("Simpson")
+            );
 
             KeyValue<Windowed<String>, KafkaPersonGroup> keyValue04To09 = iterator.next();
             assertEquals("Simpson", keyValue04To09.key.key());
