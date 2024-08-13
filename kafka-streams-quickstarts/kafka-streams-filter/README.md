@@ -8,7 +8,7 @@ This module demonstrates the following:
 In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`.
 The following tasks are performed:
 
-1. Apply a filter to only keep the `KafkaPerson` records where both the last name and first name start with "A".
+1. Apply a filter to only keep the `KafkaPerson` records where the last name starts with the letter `S` and the first name starts with the letter `H`.
 2. Write the resulting filtered records to a new topic named `PERSON_FILTER_TOPIC`.
 
 ![topology.png](topology.png)

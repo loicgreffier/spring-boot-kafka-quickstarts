@@ -51,7 +51,7 @@ This section contains quickstarts around the Kafka Streams API with unit tests u
 
 | Module                                                                            | Library       |                              | DSL             |
 |:----------------------------------------------------------------------------------|---------------|------------------------------|-----------------|
-| [Global table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table) | Kafka Streams | Source topic as global table | `globalTable()` |
+| [Global Table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table) | Kafka Streams | Source topic as global table | `globalTable()` |
 | [Table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)               | Kafka Streams | Source topic as table        | `table()`       |
 | [Stream](/kafka-streams-quickstarts/kafka-streams-map)                            | Kafka Streams | Source topic as stream       | `stream()`      |
 
@@ -74,14 +74,15 @@ This section contains quickstarts around the Kafka Streams API with unit tests u
 
 #### Aggregate
 
-| Module                                                                                          | Library       | Content                                                                                                                                    | DSL                                                          |
-|:------------------------------------------------------------------------------------------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
-| [Aggregate](/kafka-streams-quickstarts/kafka-streams-aggregate)                                 | Kafka Streams | Aggregate a stream by key in a single object                                                                                               | `groupByKey()`, `aggregate()`                                |
-| [Aggregate Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | Aggregate records of a stream by key and by 5-minute time window updated every 5 minutes. Highlight grace period impact on delayed records | `groupByKey()`, `aggregate()`, `windowedBy()`, `advanceBy()` |
-| [Aggregate Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | Aggregate records of a stream by key and by 5-minute time window updated every 2 minutes. Highlight grace period impact on delayed records | `groupByKey()`, `aggregate()`, `windowedBy()`                |
-| [Average](/kafka-streams-quickstarts/kafka-streams-average)                                     | Kafka Streams | Compute an average value of a stream by key                                                                                                | `groupBy()`, `aggregate()`                                   |
-| [Count](/kafka-streams-quickstarts/kafka-streams-count)                                         | Kafka Streams | Count the number of records of a stream by key                                                                                             | `groupBy()`, `count()`                                       |
-| [Reduce](/kafka-streams-quickstarts/kafka-streams-reduce)                                       | Kafka Streams | Reduce the records of a stream by key                                                                                                      | `groupBy()`, `reduce()`                                      |
+| Module                                                                                          | Library       | Content                                                              | DSL                                                          |
+|:------------------------------------------------------------------------------------------------|---------------|----------------------------------------------------------------------|--------------------------------------------------------------|
+| [Aggregate](/kafka-streams-quickstarts/kafka-streams-aggregate)                                 | Kafka Streams | Aggregate a stream by key in a single object                         | `groupByKey()`, `aggregate()`                                |
+| [Aggregate Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | Aggregate a stream by key and by hopping window with a grace period  | `groupByKey()`, `aggregate()`, `windowedBy()`, `advanceBy()` |
+| [Aggregate Sliding Window](/kafka-streams-quickstarts/kafka-streams-aggregate-sliding-window)   | Kafka Streams | Aggregate a stream by key and by sliding window with a grace period  | `groupByKey()`, `aggregate()`, `windowedBy()`                |
+| [Aggregate Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | Aggregate a stream by key and by tumbling window with a grace period | `groupByKey()`, `aggregate()`, `windowedBy()`                |
+| [Average](/kafka-streams-quickstarts/kafka-streams-average)                                     | Kafka Streams | Compute an average value of a stream by key                          | `groupBy()`, `aggregate()`                                   |
+| [Count](/kafka-streams-quickstarts/kafka-streams-count)                                         | Kafka Streams | Count the number of records of a stream by key                       | `groupBy()`, `count()`                                       |
+| [Reduce](/kafka-streams-quickstarts/kafka-streams-reduce)                                       | Kafka Streams | Reduce the records of a stream by key                                | `groupBy()`, `reduce()`                                      |
 
 #### Join
 
@@ -97,10 +98,11 @@ This section contains quickstarts around the Kafka Streams API with unit tests u
 
 #### Windowing
 
-| Module                                                                                | Library       | Content                                                        | DSL                           |
-|:--------------------------------------------------------------------------------------|---------------|----------------------------------------------------------------|-------------------------------|
-| [Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | Demonstrate hopping window and grace period on an aggregation  | `windowedBy()`, `advanceBy()` |
-| [Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | Demonstrate tumbling window and grace period on an aggregation | `windowedBy()`                |
+| Module                                                                                | Library       | Content                                              | DSL                           |
+|:--------------------------------------------------------------------------------------|---------------|------------------------------------------------------|-------------------------------|
+| [Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | Group records by hopping window with a grace period  | `windowedBy()`, `advanceBy()` |
+| [Sliding Window](/kafka-streams-quickstarts/kafka-streams-aggregate-sliding-window)   | Kafka Streams | Group records by sliding window with a grace period  | `windowedBy()`                |
+| [Tumbling Window](/kafka-streams-quickstarts/kafka-streams-aggregate-tumbling-window) | Kafka Streams | Group records by tumbling window with a grace period | `windowedBy()`                |
 
 #### Processor
 
@@ -108,5 +110,5 @@ This section contains quickstarts around the Kafka Streams API with unit tests u
 |:------------------------------------------------------------------------------------------|---------------|-------------------------------------------------------------------------|--------------------------------|----------------------------------------------|
 | [Process](/kafka-streams-quickstarts/kafka-streams-process)                               | Kafka Streams | Apply a processor to a stream                                           | `process()`                    | `context()`, `forward()`, `Record#headers()` |
 | [ProcessValues](/kafka-streams-quickstarts/kafka-streams-process-values)                  | Kafka Streams | Apply a fixed key processor to a stream                                 | `processValues()`              | `context()`, `forward()`, `Record#headers()` |
-| [Schedule](/kafka-streams-quickstarts/kafka-streams-schedule)                             | Kafka Streams | Schedule punctuation functions based on wall clock time and stream time | `process()`                    | `schedule()`                                 |
+| [Schedule](/kafka-streams-quickstarts/kafka-streams-schedule)                             | Kafka Streams | Schedule punctuation functions based on wall clock time and stream time | `process()`                    | `schedule()`, `getStateStore()`              |
 | [Schedule Store Cleanup](/kafka-streams-quickstarts/kafka-streams-schedule-store-cleanup) | Kafka Streams | Schedule periodic store cleanup based on stream time                    | `process()`, `addStateStore()` | `schedule()`                                 |

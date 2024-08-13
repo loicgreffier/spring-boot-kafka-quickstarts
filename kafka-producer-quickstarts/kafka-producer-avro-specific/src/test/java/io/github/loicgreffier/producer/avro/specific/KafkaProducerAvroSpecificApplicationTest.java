@@ -24,9 +24,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * This class contains unit tests for the Kafka producer application.
- */
 @ExtendWith(MockitoExtension.class)
 class KafkaProducerAvroSpecificApplicationTest {
     private final Serializer<KafkaPerson> serializer = (topic, kafkaPerson) -> {
@@ -49,8 +46,8 @@ class KafkaProducerAvroSpecificApplicationTest {
     void shouldSendSuccessfully() throws ExecutionException, InterruptedException {
         ProducerRecord<String, KafkaPerson> message = new ProducerRecord<>(PERSON_TOPIC, "1", KafkaPerson.newBuilder()
             .setId(1L)
-            .setFirstName("John")
-            .setLastName("Doe")
+            .setFirstName("Homer")
+            .setLastName("Simpson")
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
             .build());
 
@@ -68,8 +65,8 @@ class KafkaProducerAvroSpecificApplicationTest {
     void shouldSendWithFailure() {
         ProducerRecord<String, KafkaPerson> message = new ProducerRecord<>(PERSON_TOPIC, "1", KafkaPerson.newBuilder()
             .setId(1L)
-            .setFirstName("John")
-            .setLastName("Doe")
+            .setFirstName("Homer")
+            .setLastName("Simpson")
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
             .build());
 

@@ -37,9 +37,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsReduceApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsReduceApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -91,47 +88,46 @@ class KafkaStreamsReduceApplicationTest {
 
     @Test
     void shouldReduceByNationalityAndKeepOldest() {
-        KafkaPerson oldestFr = buildKafkaPerson(
-            "John",
-            "Doe",
+        KafkaPerson oldestUs = buildKafkaPerson(
+            "Homer",
+            "Simpson",
             Instant.parse("1956-08-29T18:35:24Z"),
-            CountryCode.FR);
+            CountryCode.US);
 
-        KafkaPerson youngestFr = buildKafkaPerson(
-            "Michael",
-            "Doe",
+        KafkaPerson youngestUs = buildKafkaPerson(
+            "Bart",
+            "Simpson",
             Instant.parse("1994-11-09T08:08:50Z"),
-            CountryCode.FR);
+            CountryCode.US);
 
-        KafkaPerson youngestGb = buildKafkaPerson(
-            "Jane",
-            "Smith",
+        KafkaPerson youngestBe = buildKafkaPerson(
+            "Milhouse",
+            "Van Houten",
             Instant.parse("1996-02-02T04:58:01Z"),
-            CountryCode.GB);
+            CountryCode.BE);
 
-        KafkaPerson oldestGb = buildKafkaPerson(
-            "Daniel",
-            "Smith",
-            Instant.parse("1986-05-26T04:52:06Z"),
-            CountryCode.GB);
+        KafkaPerson oldestBe = buildKafkaPerson(
+            "Kirk",
+            "Van Houten",
+            Instant.parse("1976-05-26T04:52:06Z"),
+            CountryCode.BE);
 
-        inputTopic.pipeInput("1", oldestFr);
-        inputTopic.pipeInput("2", youngestFr);
-        inputTopic.pipeInput("3", youngestGb);
-        inputTopic.pipeInput("4", oldestGb);
+        inputTopic.pipeInput("1", oldestUs);
+        inputTopic.pipeInput("2", youngestUs);
+        inputTopic.pipeInput("3", youngestBe);
+        inputTopic.pipeInput("4", oldestBe);
 
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair(CountryCode.FR.toString(), oldestFr), results.get(0));
-        assertEquals(KeyValue.pair(CountryCode.FR.toString(), oldestFr), results.get(1));
-        assertEquals(KeyValue.pair(CountryCode.GB.toString(), youngestGb), results.get(2));
-        assertEquals(KeyValue.pair(CountryCode.GB.toString(), oldestGb), results.get(3));
+        assertEquals(KeyValue.pair(CountryCode.US.toString(), oldestUs), results.get(0));
+        assertEquals(KeyValue.pair(CountryCode.US.toString(), oldestUs), results.get(1));
+        assertEquals(KeyValue.pair(CountryCode.BE.toString(), youngestBe), results.get(2));
+        assertEquals(KeyValue.pair(CountryCode.BE.toString(), oldestBe), results.get(3));
 
-        // Check state store
         KeyValueStore<String, KafkaPerson> stateStore = testDriver.getKeyValueStore(PERSON_REDUCE_STATE_STORE);
 
-        assertEquals(oldestFr, stateStore.get(CountryCode.FR.toString()));
-        assertEquals(oldestGb, stateStore.get(CountryCode.GB.toString()));
+        assertEquals(oldestUs, stateStore.get(CountryCode.US.toString()));
+        assertEquals(oldestBe, stateStore.get(CountryCode.BE.toString()));
     }
 
     private KafkaPerson buildKafkaPerson(String firstName,

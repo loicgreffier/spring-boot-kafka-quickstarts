@@ -36,9 +36,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsBranchApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsBranchApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -102,17 +99,17 @@ class KafkaStreamsBranchApplicationTest {
 
     @Test
     void shouldBranchToTopicA() {
-        inputTopic.pipeInput("1", buildKafkaPerson("Alex", "Adams"));
+        inputTopic.pipeInput("1", buildKafkaPerson("Homer", "Simpson"));
 
         List<KeyValue<String, KafkaPerson>> results = outputTopicA.readKeyValuesToList();
 
-        assertEquals("ALEX", results.get(0).value.getFirstName());
-        assertEquals("ADAMS", results.get(0).value.getLastName());
+        assertEquals("HOMER", results.get(0).value.getFirstName());
+        assertEquals("SIMPSON", results.get(0).value.getLastName());
     }
 
     @Test
     void shouldBranchToTopicB() {
-        KafkaPerson person = buildKafkaPerson("Ben", "Brown");
+        KafkaPerson person = buildKafkaPerson("Ned", "Flanders");
         inputTopic.pipeInput("1", person);
 
         List<KeyValue<String, KafkaPerson>> results = outputTopicB.readKeyValuesToList();
@@ -122,7 +119,7 @@ class KafkaStreamsBranchApplicationTest {
 
     @Test
     void shouldBranchToDefaultTopic() {
-        KafkaPerson person = buildKafkaPerson("John", "Doe");
+        KafkaPerson person = buildKafkaPerson("Milhouse", "Van Houten");
         inputTopic.pipeInput("1", person);
 
         List<KeyValue<String, KafkaPerson>> results = outputTopicDefault.readKeyValuesToList();

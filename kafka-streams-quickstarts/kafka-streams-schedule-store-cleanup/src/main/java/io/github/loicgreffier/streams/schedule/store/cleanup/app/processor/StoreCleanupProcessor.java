@@ -22,9 +22,8 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaPers
 
     /**
      * Initialize the processor.
-     * Opens the state store and schedules the punctuation.
-     * The punctuation is scheduled on stream time and forwards the tombstones.
-     * The stream time is used to avoid triggering unnecessary punctuation if no record comes.
+     * Opens the state store and schedules the punctuation. The punctuation is scheduled on stream time and forwards
+     * the tombstones. The stream time is used to avoid triggering unnecessary punctuation if no record comes.
      *
      * @param context the processor context.
      */
@@ -36,8 +35,8 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaPers
     }
 
     /**
-     * For each message processed, puts the message in the state store.
-     * If the message is a tombstone, deletes the corresponding key from the state store.
+     * For each message processed, puts the message in the state store. If the message is a tombstone, deletes the
+     * corresponding key from the state store.
      *
      * @param message the message to process.
      */

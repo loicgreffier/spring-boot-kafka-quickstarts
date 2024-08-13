@@ -16,9 +16,9 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
+import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
-import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 
 /**
  * This class represents a Kafka Streams topology.
@@ -28,10 +28,11 @@ import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
-     * and processes the records with the {@link CountNationalityProcessor} processor.
-     * The processor supplier registers a {@link TimestampedKeyValueStore} state store
-     * when it is built. The result is written to the PERSON_SCHEDULE_TOPIC topic.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic and processes the records with
+     * the {@link CountNationalityProcessor} processor. The processor supplier registers
+     * a {@link KeyValueStore} state store when it is built.
+     * The result is written to the PERSON_SCHEDULE_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
@@ -41,11 +42,10 @@ public class KafkaStreamsTopology {
             .process(new ProcessorSupplier<String, KafkaPerson, String, Long>() {
                 @Override
                 public Set<StoreBuilder<?>> stores() {
-                    StoreBuilder<TimestampedKeyValueStore<String, Long>> storeBuilder = Stores
-                        .timestampedKeyValueStoreBuilder(
-                            Stores.persistentTimestampedKeyValueStore(PERSON_SCHEDULE_STATE_STORE),
-                            Serdes.String(), Serdes.Long()
-                        );
+                    StoreBuilder<KeyValueStore<String, Long>> storeBuilder = Stores
+                        .keyValueStoreBuilder(
+                            Stores.persistentKeyValueStore(PERSON_SCHEDULE_STATE_STORE),
+                            Serdes.String(), Serdes.Long());
                     return Collections.singleton(storeBuilder);
                 }
 

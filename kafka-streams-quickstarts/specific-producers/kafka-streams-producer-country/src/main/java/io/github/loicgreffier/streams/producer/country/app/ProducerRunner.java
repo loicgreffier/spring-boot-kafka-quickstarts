@@ -104,6 +104,20 @@ public class ProducerRunner {
             .setOfficialLanguage("English")
             .build();
 
-        return List.of(france, germany, spain, italy, unitedKingdom);
+        KafkaCountry unitedStates = KafkaCountry.newBuilder()
+            .setCode(CountryCode.US)
+            .setName("United States")
+            .setCapital("Washington")
+            .setOfficialLanguage("English")
+            .build();
+
+        KafkaCountry belgium = KafkaCountry.newBuilder()
+            .setCode(CountryCode.BE)
+            .setName("Belgium")
+            .setCapital("Brussels")
+            .setOfficialLanguage("French")
+            .build();
+
+        return List.of(france, germany, spain, italy, unitedKingdom, unitedStates, belgium);
     }
 }

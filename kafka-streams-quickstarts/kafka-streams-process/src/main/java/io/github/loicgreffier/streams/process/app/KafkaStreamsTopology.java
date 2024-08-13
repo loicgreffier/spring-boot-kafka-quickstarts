@@ -18,8 +18,9 @@ import org.apache.kafka.streams.StreamsBuilder;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
-     * and processes the records with the {@link PersonMetadataProcessor} processor.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic and processes the records with
+     * the {@link PersonMetadataProcessor} processor.
      * The result is written to the PERSON_PROCESS_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.

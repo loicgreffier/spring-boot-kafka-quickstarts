@@ -40,9 +40,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsCogroupApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsCogroupApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -98,106 +95,110 @@ class KafkaStreamsCogroupApplicationTest {
 
     @Test
     void shouldAggregateFirstNamesByLastNameStreamOne() {
-        inputTopicOne.pipeInput(new TestRecord<>("1", buildKafkaPerson("John", "Doe"),
-            Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopicOne.pipeInput(new TestRecord<>("2", buildKafkaPerson("Michael", "Doe"),
-            Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopicOne.pipeInput(new TestRecord<>("3", buildKafkaPerson("Jane", "Smith"),
-            Instant.parse("2000-01-01T01:00:00Z")));
+        inputTopicOne.pipeInput(new TestRecord<>(
+            "1", 
+            buildKafkaPerson("Homer"), 
+            Instant.parse("2000-01-01T01:00:00Z")
+        ));
+        inputTopicOne.pipeInput(new TestRecord<>(
+            "2", 
+            buildKafkaPerson("Marge"), 
+            Instant.parse("2000-01-01T01:00:00Z")
+        ));
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Doe", results.get(0).key);
-        assertIterableEquals(List.of("John"), results.get(0).value.getFirstNameByLastName().get("Doe"));
+        assertEquals("Simpson", results.get(0).key);
+        assertIterableEquals(List.of("Homer"), results.get(0).value.getFirstNameByLastName().get("Simpson"));
 
-        assertEquals("Doe", results.get(1).key);
-        assertIterableEquals(List.of("John", "Michael"), results.get(1).value.getFirstNameByLastName().get("Doe"));
+        assertEquals("Simpson", results.get(1).key);
+        assertIterableEquals(List.of("Homer", "Marge"), results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
-        assertEquals("Smith", results.get(2).key);
-        assertIterableEquals(List.of("Jane"), results.get(2).value.getFirstNameByLastName().get("Smith"));
-
-        // Check state store
         KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver
             .getKeyValueStore(PERSON_COGROUP_AGGREGATE_STATE_STORE);
 
-        assertIterableEquals(List.of("John", "Michael"), stateStore.get("Doe").getFirstNameByLastName().get("Doe"));
-        assertIterableEquals(List.of("Jane"), stateStore.get("Smith").getFirstNameByLastName().get("Smith"));
+        assertIterableEquals(
+            List.of("Homer", "Marge"), 
+            stateStore.get("Simpson").getFirstNameByLastName().get("Simpson")
+        );
     }
 
     @Test
     void shouldAggregateFirstNamesByLastNameStreamTwo() {
-        inputTopicTwo.pipeInput(new TestRecord<>("1", buildKafkaPerson("John", "Doe"),
-            Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopicTwo.pipeInput(new TestRecord<>("2", buildKafkaPerson("Michael", "Doe"),
-            Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopicTwo.pipeInput(new TestRecord<>("3", buildKafkaPerson("Jane", "Smith"),
-            Instant.parse("2000-01-01T01:00:00Z")));
+        inputTopicTwo.pipeInput(new TestRecord<>(
+            "1", 
+            buildKafkaPerson("Homer"),
+            Instant.parse("2000-01-01T01:00:00Z")
+        ));
+        inputTopicTwo.pipeInput(new TestRecord<>(
+            "2", 
+            buildKafkaPerson("Marge"),
+            Instant.parse("2000-01-01T01:00:00Z")
+        ));
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Doe", results.get(0).key);
-        assertIterableEquals(List.of("John"), results.get(0).value.getFirstNameByLastName().get("Doe"));
+        assertEquals("Simpson", results.get(0).key);
+        assertIterableEquals(List.of("Homer"), results.get(0).value.getFirstNameByLastName().get("Simpson"));
 
-        assertEquals("Doe", results.get(1).key);
-        assertIterableEquals(List.of("John", "Michael"), results.get(1).value.getFirstNameByLastName().get("Doe"));
+        assertEquals("Simpson", results.get(1).key);
+        assertIterableEquals(List.of("Homer", "Marge"), results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
-        assertEquals("Smith", results.get(2).key);
-        assertIterableEquals(List.of("Jane"), results.get(2).value.getFirstNameByLastName().get("Smith"));
-
-        // Check state store
         KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver
             .getKeyValueStore(PERSON_COGROUP_AGGREGATE_STATE_STORE);
 
-        assertIterableEquals(List.of("John", "Michael"), stateStore.get("Doe").getFirstNameByLastName().get("Doe"));
-        assertIterableEquals(List.of("Jane"), stateStore.get("Smith").getFirstNameByLastName().get("Smith"));
+        assertIterableEquals(
+            List.of("Homer", "Marge"), 
+            stateStore.get("Simpson").getFirstNameByLastName().get("Simpson")
+        );
     }
 
     @Test
     void shouldAggregateFirstNamesByLastNameBothCogroupedStreams() {
-        inputTopicOne.pipeInput(new TestRecord<>("1", buildKafkaPerson("John", "Doe"),
-            Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopicOne.pipeInput(new TestRecord<>("2", buildKafkaPerson("Michael", "Doe"),
-            Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopicOne.pipeInput(new TestRecord<>("3", buildKafkaPerson("Jane", "Smith"),
-            Instant.parse("2000-01-01T01:00:00Z")));
-
-        inputTopicTwo.pipeInput(new TestRecord<>("4", buildKafkaPerson("Daimhin", "Doe"),
-            Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopicTwo.pipeInput(new TestRecord<>("5", buildKafkaPerson("Daniel", "Smith"),
-            Instant.parse("2000-01-01T01:00:00Z")));
+        inputTopicOne.pipeInput(new TestRecord<>(
+            "1", 
+            buildKafkaPerson("Homer"),
+            Instant.parse("2000-01-01T01:00:00Z")
+        ));
+        inputTopicOne.pipeInput(new TestRecord<>(
+            "2", 
+            buildKafkaPerson("Marge"),
+            Instant.parse("2000-01-01T01:00:00Z")
+        ));
+        inputTopicTwo.pipeInput(new TestRecord<>(
+            "3", 
+            buildKafkaPerson("Bart"),
+            Instant.parse("2000-01-01T01:00:00Z")
+        ));
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Doe", results.get(0).key);
-        assertIterableEquals(List.of("John"), results.get(0).value.getFirstNameByLastName().get("Doe"));
+        assertEquals("Simpson", results.get(0).key);
+        assertIterableEquals(List.of("Homer"), results.get(0).value.getFirstNameByLastName().get("Simpson"));
 
-        assertEquals("Doe", results.get(1).key);
-        assertIterableEquals(List.of("John", "Michael"), results.get(1).value.getFirstNameByLastName().get("Doe"));
+        assertEquals("Simpson", results.get(1).key);
+        assertIterableEquals(List.of("Homer", "Marge"), results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
-        assertEquals("Smith", results.get(2).key);
-        assertIterableEquals(List.of("Jane"), results.get(2).value.getFirstNameByLastName().get("Smith"));
+        assertEquals("Simpson", results.get(2).key);
+        assertIterableEquals(
+            List.of("Homer", "Marge", "Bart"),
+            results.get(2).value.getFirstNameByLastName().get("Simpson")
+        );
 
-        assertEquals("Doe", results.get(3).key);
-        assertIterableEquals(List.of("John", "Michael", "Daimhin"),
-            results.get(3).value.getFirstNameByLastName().get("Doe"));
-
-        assertEquals("Smith", results.get(4).key);
-        assertIterableEquals(List.of("Jane", "Daniel"), results.get(4).value.getFirstNameByLastName().get("Smith"));
-
-        // Check state store
         KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver
             .getKeyValueStore(PERSON_COGROUP_AGGREGATE_STATE_STORE);
 
-        assertIterableEquals(List.of("John", "Michael", "Daimhin"),
-            stateStore.get("Doe").getFirstNameByLastName().get("Doe"));
-        assertIterableEquals(List.of("Jane", "Daniel"), stateStore.get("Smith").getFirstNameByLastName().get("Smith"));
+        assertIterableEquals(
+            List.of("Homer", "Marge", "Bart"),
+            stateStore.get("Simpson").getFirstNameByLastName().get("Simpson")
+        );
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName, String lastName) {
+    private KafkaPerson buildKafkaPerson(String firstName) {
         return KafkaPerson.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
-            .setLastName(lastName)
+            .setLastName("Simpson")
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
             .build();
     }

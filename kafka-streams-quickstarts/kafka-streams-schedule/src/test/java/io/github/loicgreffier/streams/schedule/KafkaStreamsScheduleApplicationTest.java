@@ -10,7 +10,6 @@ import static org.apache.kafka.streams.StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CON
 import static org.apache.kafka.streams.StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
@@ -36,15 +35,11 @@ import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.state.KeyValueStore;
-import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.apache.kafka.streams.test.TestRecord;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsScheduleApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsScheduleApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -96,61 +91,75 @@ class KafkaStreamsScheduleApplicationTest {
 
     @Test
     void shouldCountPersonByNationality() {
-        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaPerson("Marie", "Dupont", CountryCode.FR),
-                Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaPerson("Jean", "Dupont", CountryCode.FR),
-                Instant.parse("2000-01-01T01:01:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("3", buildKafkaPerson("John", "Doe", CountryCode.GB),
-                Instant.parse("2000-01-01T01:01:30Z")));
-        inputTopic.pipeInput(new TestRecord<>("4", buildKafkaPerson("Giovanni", "Russo", CountryCode.IT),
-                Instant.parse("2000-01-01T01:02:00Z")));
+        inputTopic.pipeInput(new TestRecord<>(
+            "1", 
+            buildKafkaPerson("Homer", "Simpson", CountryCode.US),
+            Instant.parse("2000-01-01T01:00:00Z"))
+        );
+
+        inputTopic.pipeInput(new TestRecord<>(
+            "2", 
+            buildKafkaPerson("Marge", "Simpson", CountryCode.US),
+            Instant.parse("2000-01-01T01:01:00Z"))
+        );
+
+        inputTopic.pipeInput(new TestRecord<>(
+            "3", 
+            buildKafkaPerson("Milhouse", "Van Houten", CountryCode.BE),
+            Instant.parse("2000-01-01T01:01:30Z"))
+        );
+
+        inputTopic.pipeInput(new TestRecord<>(
+            "4",
+            buildKafkaPerson("Luigi", "Risotto", CountryCode.IT),
+            Instant.parse("2000-01-01T01:02:00Z"))
+        );
 
         testDriver.advanceWallClockTime(Duration.ofMinutes(2));
 
-        inputTopic.pipeInput(new TestRecord<>("5", buildKafkaPerson("Philippe", "Dupont", CountryCode.FR),
-                Instant.parse("2000-01-01T01:04:00Z")));
+        inputTopic.pipeInput(new TestRecord<>(
+            "5",
+            buildKafkaPerson("Bart", "Simpson", CountryCode.US),
+            Instant.parse("2000-01-01T01:04:00Z"))
+        );
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
         // 1st stream time punctuate
-        assertEquals("FR", results.get(0).key);
+        assertEquals("US", results.get(0).key);
         assertEquals(1, results.get(0).value);
 
         // 2nd stream time punctuate
-        assertEquals("FR", results.get(1).key);
+        assertEquals("US", results.get(1).key);
         assertEquals(2, results.get(1).value);
 
         // 3rd stream time punctuate
-        assertEquals("FR", results.get(2).key);
-        assertEquals(2, results.get(2).value);
+        assertEquals("BE", results.get(2).key);
+        assertEquals(1, results.get(2).value);
 
-        assertEquals("GB", results.get(3).key);
+        assertEquals("IT", results.get(3).key);
         assertEquals(1, results.get(3).value);
 
-        assertEquals("IT", results.get(4).key);
-        assertEquals(1, results.get(4).value);
+        assertEquals("US", results.get(4).key);
+        assertEquals(2, results.get(4).value);
 
         // 1st wall clock time punctuate now
 
         // 4th stream time punctuate
-        assertEquals("FR", results.get(5).key);
-        assertEquals(1, results.get(5).value);
+        assertEquals("BE", results.get(5).key);
+        assertEquals(0, results.get(5).value);
 
-        assertEquals("GB", results.get(6).key);
+        assertEquals("IT", results.get(6).key);
         assertEquals(0, results.get(6).value);
 
-        assertEquals("IT", results.get(7).key);
-        assertEquals(0, results.get(7).value);
+        assertEquals("US", results.get(7).key);
+        assertEquals(1, results.get(7).value);
 
-        KeyValueStore<String, ValueAndTimestamp<Long>> stateStore = testDriver
-            .getTimestampedKeyValueStore(PERSON_SCHEDULE_STATE_STORE);
+        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(PERSON_SCHEDULE_STATE_STORE);
 
-        assertEquals(1, stateStore.get("FR").value());
-        assertTrue(stateStore.get("FR").timestamp() > 0);
-        assertEquals(0, stateStore.get("GB").value());
-        assertTrue(stateStore.get("GB").timestamp() > 0);
-        assertEquals(0, stateStore.get("IT").value());
-        assertTrue(stateStore.get("IT").timestamp() > 0);
+        assertEquals(1, stateStore.get("US"));
+        assertEquals(0, stateStore.get("BE"));
+        assertEquals(0, stateStore.get("IT"));
     }
 
     private KafkaPerson buildKafkaPerson(String firstName, String lastName, CountryCode nationality) {

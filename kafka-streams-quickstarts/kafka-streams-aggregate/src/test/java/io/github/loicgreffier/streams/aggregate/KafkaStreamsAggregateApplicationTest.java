@@ -38,9 +38,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsAggregateApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsAggregateApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -94,38 +91,37 @@ class KafkaStreamsAggregateApplicationTest {
 
     @Test
     void shouldAggregate() {
-        inputTopic.pipeInput("1", buildKafkaPerson("John", "Doe"));
-        inputTopic.pipeInput("2", buildKafkaPerson("Jane", "Smith"));
-        inputTopic.pipeInput("3", buildKafkaPerson("Michael", "Doe"));
-        inputTopic.pipeInput("4", buildKafkaPerson("Daniel", "Smith"));
+        inputTopic.pipeInput("1", buildKafkaPerson("Homer"));
+        inputTopic.pipeInput("2", buildKafkaPerson("Marge"));
+        inputTopic.pipeInput("3", buildKafkaPerson("Bart"));
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Doe", results.get(0).key);
-        assertIterableEquals(List.of("John"), results.get(0).value.getFirstNameByLastName().get("Doe"));
+        assertEquals("Simpson", results.get(0).key);
+        assertIterableEquals(List.of("Homer"), results.get(0).value.getFirstNameByLastName().get("Simpson"));
 
-        assertEquals("Smith", results.get(1).key);
-        assertIterableEquals(List.of("Jane"), results.get(1).value.getFirstNameByLastName().get("Smith"));
+        assertEquals("Simpson", results.get(1).key);
+        assertIterableEquals(List.of("Homer", "Marge"), results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
-        assertEquals("Doe", results.get(2).key);
-        assertIterableEquals(List.of("John", "Michael"), results.get(2).value.getFirstNameByLastName().get("Doe"));
+        assertEquals("Simpson", results.get(2).key);
+        assertIterableEquals(
+            List.of("Homer", "Marge", "Bart"),
+            results.get(2).value.getFirstNameByLastName().get("Simpson")
+        );
 
-        assertEquals("Smith", results.get(3).key);
-        assertIterableEquals(List.of("Jane", "Daniel"), results.get(3).value.getFirstNameByLastName().get("Smith"));
+        KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver.getKeyValueStore(PERSON_AGGREGATE_STATE_STORE);
 
-        // Check state store
-        KeyValueStore<String, KafkaPersonGroup> stateStore =
-            testDriver.getKeyValueStore(PERSON_AGGREGATE_STATE_STORE);
-
-        assertEquals(List.of("John", "Michael"), stateStore.get("Doe").getFirstNameByLastName().get("Doe"));
-        assertEquals(List.of("Jane", "Daniel"), stateStore.get("Smith").getFirstNameByLastName().get("Smith"));
+        assertIterableEquals(
+            List.of("Homer", "Marge", "Bart"),
+            stateStore.get("Simpson").getFirstNameByLastName().get("Simpson")
+        );
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName, String lastName) {
+    private KafkaPerson buildKafkaPerson(String firstName) {
         return KafkaPerson.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
-            .setLastName(lastName)
+            .setLastName("Simpson")
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
             .build();
     }

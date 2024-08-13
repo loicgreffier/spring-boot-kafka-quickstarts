@@ -1,0 +1,17 @@
+{
+  "namespace": "io.github.loicgreffier.avro",
+  "type": "record",
+  "name": "KafkaPersonGroup",
+  "fields": [
+    {
+      "name": "firstNameByLastName",
+      "type": {
+        "type": "map",
+        "values": {
+          "type": "array",
+          "items" : "string"
+        }
+      }
+    }
+  ]
+}

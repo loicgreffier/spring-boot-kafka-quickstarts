@@ -44,9 +44,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsJoinStreamStreamApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsJoinStreamStreamApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -118,8 +115,8 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
 
     @Test
     void shouldRekey() {
-        KafkaPerson leftPerson = buildKafkaPerson("John", "Doe");
-        KafkaPerson rightPerson = buildKafkaPerson("Michael", "Doe");
+        KafkaPerson leftPerson = buildKafkaPerson("Homer");
+        KafkaPerson rightPerson = buildKafkaPerson("Marge");
 
         leftInputTopic.pipeInput("1", leftPerson);
         rightInputTopic.pipeInput("2", rightPerson);
@@ -127,67 +124,62 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         List<KeyValue<String, KafkaPerson>> topicOneResults = rekeyLeftOutputTopic.readKeyValuesToList();
         List<KeyValue<String, KafkaPerson>> topicTwoResults = rekeyRightOutputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("Doe", leftPerson), topicOneResults.get(0));
-        assertEquals(KeyValue.pair("Doe", rightPerson), topicTwoResults.get(0));
+        assertEquals(KeyValue.pair("Simpson", leftPerson), topicOneResults.get(0));
+        assertEquals(KeyValue.pair("Simpson", rightPerson), topicTwoResults.get(0));
     }
 
     @Test
     void shouldJoinWhenTimeWindowIsRespected() {
-        KafkaPerson leftPersonDoe = buildKafkaPerson("John", "Doe");
-        leftInputTopic.pipeInput(new TestRecord<>("1", leftPersonDoe, Instant.parse("2000-01-01T01:00:00Z")));
+        KafkaPerson homer = buildKafkaPerson("Homer");
+        leftInputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        KafkaPerson leftPersonSmith = buildKafkaPerson("Jane", "Smith");
-        leftInputTopic.pipeInput(new TestRecord<>("2", leftPersonSmith, Instant.parse("2000-01-01T01:01:00Z")));
+        KafkaPerson marge = buildKafkaPerson("Marge");
+        rightInputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:02:00Z")));
 
-        KafkaPerson rightPersonDoe = buildKafkaPerson("Michael", "Doe");
-        rightInputTopic.pipeInput(new TestRecord<>("3", rightPersonDoe, Instant.parse("2000-01-01T01:01:30Z")));
-
-        KafkaPerson rightPersonSmith = buildKafkaPerson("Daniel", "Smith");
-        rightInputTopic.pipeInput(new TestRecord<>("4", rightPersonSmith, Instant.parse("2000-01-01T01:02:00Z")));
+        KafkaPerson bart = buildKafkaPerson("Bart");
+        leftInputTopic.pipeInput(new TestRecord<>("3", bart, Instant.parse("2000-01-01T01:03:00Z")));
 
         List<KeyValue<String, KafkaJoinPersons>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertEquals("Doe", results.get(0).key);
-        assertEquals(leftPersonDoe, results.get(0).value.getPersonOne());
-        assertEquals(rightPersonDoe, results.get(0).value.getPersonTwo());
+        assertEquals("Simpson", results.get(0).key);
+        assertEquals(homer, results.get(0).value.getPersonOne());
+        assertEquals(marge, results.get(0).value.getPersonTwo());
 
-        assertEquals("Smith", results.get(1).key);
-        assertEquals(leftPersonSmith, results.get(1).value.getPersonOne());
-        assertEquals(rightPersonSmith, results.get(1).value.getPersonTwo());
+        assertEquals("Simpson", results.get(1).key);
+        assertEquals(bart, results.get(1).value.getPersonOne());
+        assertEquals(marge, results.get(1).value.getPersonTwo());
 
-        // Check state store
         WindowStore<String, KafkaPerson> leftStateStore = testDriver
             .getWindowStore(PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
-        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> leftKeyValueDoe00To10 = iterator.next();
-            assertEquals("Doe", leftKeyValueDoe00To10.key.key());
-            assertEquals("2000-01-01T01:00:00Z", leftKeyValueDoe00To10.key.window().startTime().toString());
-            assertEquals("2000-01-01T01:10:00Z", leftKeyValueDoe00To10.key.window().endTime().toString());
-            assertEquals(leftPersonDoe, leftKeyValueDoe00To10.value);
 
-            KeyValue<Windowed<String>, KafkaPerson> leftKeyValueSmith01To11 = iterator.next();
-            assertEquals("Smith", leftKeyValueSmith01To11.key.key());
-            assertEquals("2000-01-01T01:01:00Z", leftKeyValueSmith01To11.key.window().startTime().toString());
-            assertEquals("2000-01-01T01:11:00Z", leftKeyValueSmith01To11.key.window().endTime().toString());
-            assertEquals(leftPersonSmith, leftKeyValueSmith01To11.value);
+        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
+            // As join windows are looking backward and forward in time,
+            // records are kept in the store for "before" + "after" duration.
+
+            KeyValue<Windowed<String>, KafkaPerson> leftKeyValue00To10 = iterator.next();
+            assertEquals("Simpson", leftKeyValue00To10.key.key());
+            assertEquals("2000-01-01T01:00:00Z", leftKeyValue00To10.key.window().startTime().toString());
+            assertEquals("2000-01-01T01:10:00Z", leftKeyValue00To10.key.window().endTime().toString());
+            assertEquals(homer, leftKeyValue00To10.value);
+
+            KeyValue<Windowed<String>, KafkaPerson> leftKeyValue03To13 = iterator.next();
+            assertEquals("Simpson", leftKeyValue03To13.key.key());
+            assertEquals("2000-01-01T01:03:00Z", leftKeyValue03To13.key.window().startTime().toString());
+            assertEquals("2000-01-01T01:13:00Z", leftKeyValue03To13.key.window().endTime().toString());
+            assertEquals(bart, leftKeyValue03To13.value);
 
             assertFalse(iterator.hasNext());
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver
             .getWindowStore(PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-other-join-store");
-        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> rightKeyValueDoe01m30To11m30 = iterator.next();
-            assertEquals("Doe", rightKeyValueDoe01m30To11m30.key.key());
-            assertEquals("2000-01-01T01:01:30Z", rightKeyValueDoe01m30To11m30.key.window().startTime().toString());
-            assertEquals("2000-01-01T01:11:30Z", rightKeyValueDoe01m30To11m30.key.window().endTime().toString());
-            assertEquals(rightPersonDoe, rightKeyValueDoe01m30To11m30.value);
 
-            KeyValue<Windowed<String>, KafkaPerson> rightKeyValueSmith02To12 = iterator.next();
-            assertEquals("Smith", rightKeyValueSmith02To12.key.key());
-            assertEquals("2000-01-01T01:02:00Z", rightKeyValueSmith02To12.key.window().startTime().toString());
-            assertEquals("2000-01-01T01:12:00Z", rightKeyValueSmith02To12.key.window().endTime().toString());
-            assertEquals(rightPersonSmith, rightKeyValueSmith02To12.value);
+        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
+            KeyValue<Windowed<String>, KafkaPerson> rightKeyValue02To12 = iterator.next();
+            assertEquals("Simpson", rightKeyValue02To12.key.key());
+            assertEquals("2000-01-01T01:02:00Z", rightKeyValue02To12.key.window().startTime().toString());
+            assertEquals("2000-01-01T01:12:00Z", rightKeyValue02To12.key.window().endTime().toString());
+            assertEquals(marge, rightKeyValue02To12.value);
 
             assertFalse(iterator.hasNext());
         }
@@ -195,40 +187,48 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
 
     @Test
     void shouldNotJoinWhenTimeWindowIsNotRespected() {
-        KafkaPerson leftPerson = buildKafkaPerson("John", "Doe");
-        leftInputTopic.pipeInput(new TestRecord<>("1", leftPerson, Instant.parse("2000-01-01T01:00:00Z")));
+        KafkaPerson homer = buildKafkaPerson("Homer");
+        leftInputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        // Upper bound of sliding windows is inclusive, so the timestamp of the second record
-        // needs to be set to 01:05:01 (+1 second after the end of the first record window)
-        // to not join with the first record
-        KafkaPerson rightPerson = buildKafkaPerson("Michael", "Doe");
-        rightInputTopic.pipeInput(new TestRecord<>("2", rightPerson, Instant.parse("2000-01-01T01:05:01Z")));
+        KafkaPerson marge = buildKafkaPerson("Marge");
+        rightInputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:05:01Z")));
+
+        KafkaPerson bart = buildKafkaPerson("Bart");
+        leftInputTopic.pipeInput(new TestRecord<>("3", bart, Instant.parse("2000-01-01T01:10:02Z")));
 
         List<KeyValue<String, KafkaJoinPersons>> results = joinOutputTopic.readKeyValuesToList();
 
+        // No records joined because Marge arrived too late for Homer and Bart arrived too late for Marge.
         assertTrue(results.isEmpty());
 
-        // Check state store
         WindowStore<String, KafkaPerson> leftStateStore = testDriver
             .getWindowStore(PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> leftKeyValue = iterator.next();
-            assertEquals("Doe", leftKeyValue.key.key());
-            assertEquals("2000-01-01T01:00:00Z", leftKeyValue.key.window().startTime().toString());
-            assertEquals("2000-01-01T01:10:00Z", leftKeyValue.key.window().endTime().toString());
-            assertEquals(leftPerson, leftKeyValue.value);
+            KeyValue<Windowed<String>, KafkaPerson> leftKeyValue00To10 = iterator.next();
+            assertEquals("Simpson", leftKeyValue00To10.key.key());
+            assertEquals("2000-01-01T01:00:00Z", leftKeyValue00To10.key.window().startTime().toString());
+            assertEquals("2000-01-01T01:10:00Z", leftKeyValue00To10.key.window().endTime().toString());
+            assertEquals(homer, leftKeyValue00To10.value);
+
+            KeyValue<Windowed<String>, KafkaPerson> leftKeyValue10To20 = iterator.next();
+            assertEquals("Simpson", leftKeyValue10To20.key.key());
+            assertEquals("2000-01-01T01:10:02Z", leftKeyValue10To20.key.window().startTime().toString());
+            assertEquals("2000-01-01T01:20:02Z", leftKeyValue10To20.key.window().endTime().toString());
+            assertEquals(bart, leftKeyValue10To20.value);
 
             assertFalse(iterator.hasNext());
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver
             .getWindowStore(PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-other-join-store");
+
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> rightKeyValue = iterator.next();
-            assertEquals("Doe", rightKeyValue.key.key());
+            assertEquals("Simpson", rightKeyValue.key.key());
             assertEquals("2000-01-01T01:05:01Z", rightKeyValue.key.window().startTime().toString());
             assertEquals("2000-01-01T01:15:01Z", rightKeyValue.key.window().endTime().toString());
-            assertEquals(rightPerson, rightKeyValue.value);
+            assertEquals(marge, rightKeyValue.value);
 
             assertFalse(iterator.hasNext());
         }
@@ -236,63 +236,64 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
 
     @Test
     void shouldHonorGracePeriod() {
-        KafkaPerson leftPersonDoe = buildKafkaPerson("John", "Doe");
-        leftInputTopic.pipeInput(new TestRecord<>("1", leftPersonDoe, Instant.parse("2000-01-01T01:00:00Z")));
+        KafkaPerson homer = buildKafkaPerson("Homer");
+        leftInputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        KafkaPerson leftPersonSmith = buildKafkaPerson("Jane", "Smith");
-        leftInputTopic.pipeInput(new TestRecord<>("3", leftPersonSmith, Instant.parse("2000-01-01T01:10:30Z")));
+        KafkaPerson marge = buildKafkaPerson("Marge");
+        leftInputTopic.pipeInput(new TestRecord<>("3", marge, Instant.parse("2000-01-01T01:10:30Z")));
 
-        // At this point, the stream time is 01:10:30, so the first record expired in the
-        // left state store (its window is 01:00:00->01:10:00).
-        // However, the following delayed record will be joined with the first record because
-        // the grace period is 1 minute.
+        // At this point, the stream time is 01:10:30. It exceeds by 30 seconds
+        // the upper bound of the Homer's window [01:00:00.001Z->01:10:00Z] in the store.
+        // However, the following delayed record "Bart" will be joined with the first record
+        // thanks to the grace period of 1 minute.
 
-        KafkaPerson rightPersonDoe = buildKafkaPerson("Daniel", "Doe");
-        rightInputTopic.pipeInput(new TestRecord<>("2", rightPersonDoe, Instant.parse("2000-01-01T01:05:00Z")));
+        KafkaPerson bart = buildKafkaPerson("Bart");
+        rightInputTopic.pipeInput(new TestRecord<>("2", bart, Instant.parse("2000-01-01T01:05:00Z")));
 
         List<KeyValue<String, KafkaJoinPersons>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertEquals("Doe", results.get(0).key);
-        assertEquals(leftPersonDoe, results.get(0).value.getPersonOne());
-        assertEquals(rightPersonDoe, results.get(0).value.getPersonTwo());
+        assertEquals("Simpson", results.get(0).key);
+        assertEquals(homer, results.get(0).value.getPersonOne());
+        assertEquals(bart, results.get(0).value.getPersonTwo());
 
-        // Check state store
         WindowStore<String, KafkaPerson> leftStateStore = testDriver
             .getWindowStore(PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
-        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> leftKeyValueDoe00To10 = iterator.next();
-            assertEquals("Doe", leftKeyValueDoe00To10.key.key());
-            assertEquals("2000-01-01T01:00:00Z", leftKeyValueDoe00To10.key.window().startTime().toString());
-            assertEquals("2000-01-01T01:10:00Z", leftKeyValueDoe00To10.key.window().endTime().toString());
-            assertEquals(leftPersonDoe, leftKeyValueDoe00To10.value);
 
-            KeyValue<Windowed<String>, KafkaPerson> leftKeyValueSmith10m30To20m30 = iterator.next();
-            assertEquals("Smith", leftKeyValueSmith10m30To20m30.key.key());
-            assertEquals("2000-01-01T01:10:30Z", leftKeyValueSmith10m30To20m30.key.window().startTime().toString());
-            assertEquals("2000-01-01T01:20:30Z", leftKeyValueSmith10m30To20m30.key.window().endTime().toString());
-            assertEquals(leftPersonSmith, leftKeyValueSmith10m30To20m30.value);
+        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
+            KeyValue<Windowed<String>, KafkaPerson> leftKeyValue00To10 = iterator.next();
+            assertEquals("Simpson", leftKeyValue00To10.key.key());
+            assertEquals("2000-01-01T01:00:00Z", leftKeyValue00To10.key.window().startTime().toString());
+            assertEquals("2000-01-01T01:10:00Z", leftKeyValue00To10.key.window().endTime().toString());
+            assertEquals(homer, leftKeyValue00To10.value);
+
+            KeyValue<Windowed<String>, KafkaPerson> leftKeyValue10m30To20m30 = iterator.next();
+            assertEquals("Simpson", leftKeyValue10m30To20m30.key.key());
+            assertEquals("2000-01-01T01:10:30Z", leftKeyValue10m30To20m30.key.window().startTime().toString());
+            assertEquals("2000-01-01T01:20:30Z", leftKeyValue10m30To20m30.key.window().endTime().toString());
+            assertEquals(marge, leftKeyValue10m30To20m30.value);
 
             assertFalse(iterator.hasNext());
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver
             .getWindowStore(PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-other-join-store");
+
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> rightKeyValue = iterator.next();
-            assertEquals("Doe", rightKeyValue.key.key());
+            assertEquals("Simpson", rightKeyValue.key.key());
             assertEquals("2000-01-01T01:05:00Z", rightKeyValue.key.window().startTime().toString());
             assertEquals("2000-01-01T01:15:00Z", rightKeyValue.key.window().endTime().toString());
-            assertEquals(rightPersonDoe, rightKeyValue.value);
+            assertEquals(bart, rightKeyValue.value);
 
             assertFalse(iterator.hasNext());
         }
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName, String lastName) {
+    private KafkaPerson buildKafkaPerson(String firstName) {
         return KafkaPerson.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
-            .setLastName(lastName)
+            .setLastName("Simpson")
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
             .build();
     }

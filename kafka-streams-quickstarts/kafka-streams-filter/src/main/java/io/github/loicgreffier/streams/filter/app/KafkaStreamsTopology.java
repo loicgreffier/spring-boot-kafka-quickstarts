@@ -17,9 +17,10 @@ import org.apache.kafka.streams.StreamsBuilder;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * PERSON_TOPIC topic, filters by last name and first name starting with "A".
-     * Then, the result is written to the PERSON_FILTER_TOPIC topic.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic, filters by last name starting with "S"
+     * and first name starting with "H".
+     * The result is written to the PERSON_FILTER_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
@@ -27,8 +28,8 @@ public class KafkaStreamsTopology {
         streamsBuilder
             .<String, KafkaPerson>stream(PERSON_TOPIC)
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .filter((key, person) -> person.getLastName().startsWith("A"))
-            .filterNot((key, person) -> !person.getFirstName().startsWith("A"))
+            .filter((key, person) -> person.getLastName().startsWith("S"))
+            .filterNot((key, person) -> !person.getFirstName().startsWith("H"))
             .to(PERSON_FILTER_TOPIC);
     }
 }

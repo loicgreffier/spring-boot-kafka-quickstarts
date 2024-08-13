@@ -18,8 +18,9 @@ import org.apache.kafka.streams.StreamsBuilder;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic,
-     * maps the first name and the last name to upper case and changes the key to the last name.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic, maps the first name and the last name to upper case and changes
+     * the key to the last name.
      * The result is written to the PERSON_MAP_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.

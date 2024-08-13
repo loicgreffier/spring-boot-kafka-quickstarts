@@ -20,9 +20,10 @@ import org.apache.kafka.streams.kstream.Produced;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic,
-     * maps the value to a list of strings containing the first name and the last name.
-     * Write the result to the PERSON_FLATMAP_VALUES_TOPIC topic.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic, maps the value to a list of strings containing the first name
+     * and the last name.
+     * The result is written to the PERSON_FLATMAP_VALUES_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

@@ -34,9 +34,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsScheduleStoreCleanupApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsScheduleStoreCleanupApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -84,35 +81,35 @@ class KafkaStreamsScheduleStoreCleanupApplicationTest {
 
     @Test
     void shouldFillAndCleanupStore() {
-        KafkaPerson firstPerson = buildKafkaPerson("John", "Doe");
-        inputTopic.pipeInput(new TestRecord<>("1", firstPerson, Instant.parse("2000-01-01T01:00:00Z")));
+        KafkaPerson homer = buildKafkaPerson("Homer", "Simpson");
+        inputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        KafkaPerson secondPerson = buildKafkaPerson("Michael", "Doe");
-        inputTopic.pipeInput(new TestRecord<>("2", secondPerson, Instant.parse("2000-01-01T01:00:20Z")));
+        KafkaPerson marge = buildKafkaPerson("Marge", "Simpson");
+        inputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:00:20Z")));
 
-        KafkaPerson thirdPerson = buildKafkaPerson("Jane", "Smith");
-        inputTopic.pipeInput(new TestRecord<>("3", thirdPerson, Instant.parse("2000-01-01T01:00:40Z")));
+        KafkaPerson milhouse = buildKafkaPerson("Milhouse", "Van Houten");
+        inputTopic.pipeInput(new TestRecord<>("3", milhouse, Instant.parse("2000-01-01T01:00:40Z")));
 
         KeyValueStore<String, KafkaPerson> stateStore = testDriver
             .getKeyValueStore(PERSON_SCHEDULE_STORE_CLEANUP_STATE_STORE);
-
-        // 1st stream time punctuate triggered after first record is pushed.
-        // That is why the first record is not in the store anymore.
+        
+        // The 1st stream time punctuate is triggered after the 1st record is pushed, 
+        // so the 1st record is not in the store anymore.
         assertNull(stateStore.get("1"));
-        assertEquals(secondPerson, stateStore.get("2"));
-        assertEquals(thirdPerson, stateStore.get("3"));
+        assertEquals(marge, stateStore.get("2"));
+        assertEquals(milhouse, stateStore.get("3"));
 
-        KafkaPerson fourthPerson = buildKafkaPerson("Emily", "Doe");
-        inputTopic.pipeInput(new TestRecord<>("4", fourthPerson, Instant.parse("2000-01-01T01:02:00Z")));
+        KafkaPerson bart = buildKafkaPerson("Bart", "Simpson");
+        inputTopic.pipeInput(new TestRecord<>("4", bart, Instant.parse("2000-01-01T01:02:00Z")));
 
-        KafkaPerson fifthPerson = buildKafkaPerson("Daniel", "Doe");
-        inputTopic.pipeInput(new TestRecord<>("5", fifthPerson, Instant.parse("2000-01-01T01:02:30Z")));
+        KafkaPerson lisa = buildKafkaPerson("Lisa", "Simpson");
+        inputTopic.pipeInput(new TestRecord<>("5", lisa, Instant.parse("2000-01-01T01:02:30Z")));
 
         // 2nd stream time punctuate
         assertNull(stateStore.get("2"));
         assertNull(stateStore.get("3"));
         assertNull(stateStore.get("4"));
-        assertEquals(fifthPerson, stateStore.get("5"));
+        assertEquals(lisa, stateStore.get("5"));
     }
 
     private KafkaPerson buildKafkaPerson(String firstName, String lastName) {

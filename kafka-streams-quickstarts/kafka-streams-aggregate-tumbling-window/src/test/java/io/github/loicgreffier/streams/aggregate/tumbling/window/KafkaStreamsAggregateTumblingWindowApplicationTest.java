@@ -42,9 +42,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsAggregateTumblingWindowApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsAggregateTumblingWindowApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -98,46 +95,39 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
 
     @Test
     void shouldAggregateWhenTimeWindowIsRespected() {
-        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaPerson("John", "Doe"),
-            Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaPerson("Jane", "Smith"),
-            Instant.parse("2000-01-01T01:01:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("3", buildKafkaPerson("Michael", "Doe"),
-            Instant.parse("2000-01-01T01:02:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("4", buildKafkaPerson("Daniel", "Smith"),
-            Instant.parse("2000-01-01T01:04:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaPerson("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaPerson("Marge"), Instant.parse("2000-01-01T01:02:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("3", buildKafkaPerson("Bart"), Instant.parse("2000-01-01T01:04:00Z")));
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Doe@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
-        assertIterableEquals(List.of("John"), results.get(0).value.getFirstNameByLastName().get("Doe"));
+        // Homer arrives
+        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
+        assertIterableEquals(List.of("Homer"), results.get(0).value.getFirstNameByLastName().get("Simpson"));
 
-        assertEquals("Smith@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(1).key);
-        assertIterableEquals(List.of("Jane"), results.get(1).value.getFirstNameByLastName().get("Smith"));
+        // Marge arrives
+        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(1).key);
+        assertIterableEquals(List.of("Homer", "Marge"), results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
-        assertEquals("Doe@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(2).key);
-        assertIterableEquals(List.of("John", "Michael"), results.get(2).value.getFirstNameByLastName().get("Doe"));
+        // Bart arrives
+        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(2).key);
+        assertIterableEquals(
+            List.of("Homer", "Marge", "Bart"),
+            results.get(2).value.getFirstNameByLastName().get("Simpson")
+        );
 
-        assertEquals("Smith@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(3).key);
-        assertIterableEquals(List.of("Jane", "Daniel"), results.get(3).value.getFirstNameByLastName().get("Smith"));
-
-        // Check state store
         WindowStore<String, KafkaPersonGroup> stateStore =
             testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE);
-        try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValueDoe00To05 = iterator.next();
-            assertEquals("Doe", keyValueDoe00To05.key.key());
-            assertEquals("2000-01-01T01:00:00Z", keyValueDoe00To05.key.window().startTime().toString());
-            assertEquals("2000-01-01T01:05:00Z", keyValueDoe00To05.key.window().endTime().toString());
-            assertIterableEquals(List.of("John", "Michael"),
-                keyValueDoe00To05.value.getFirstNameByLastName().get("Doe"));
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValueSmith00To05 = iterator.next();
-            assertEquals("Smith", keyValueSmith00To05.key.key());
-            assertEquals("2000-01-01T01:00:00Z", keyValueSmith00To05.key.window().startTime().toString());
-            assertEquals("2000-01-01T01:05:00Z", keyValueSmith00To05.key.window().endTime().toString());
-            assertIterableEquals(List.of("Jane", "Daniel"),
-                keyValueSmith00To05.value.getFirstNameByLastName().get("Smith"));
+        try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
+            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue00To05 = iterator.next();
+            assertEquals("Simpson", keyValue00To05.key.key());
+            assertEquals("2000-01-01T01:00:00Z", keyValue00To05.key.window().startTime().toString());
+            assertEquals("2000-01-01T01:05:00Z", keyValue00To05.key.window().endTime().toString());
+            assertIterableEquals(
+                List.of("Homer", "Marge", "Bart"),
+                keyValue00To05.value.getFirstNameByLastName().get("Simpson")
+            );
 
             assertFalse(iterator.hasNext());
         }
@@ -145,104 +135,98 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
 
     @Test
     void shouldNotAggregateWhenTimeWindowIsNotRespected() {
-        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaPerson("John", "Doe"),
-            Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaPerson("Michael", "Doe"),
-            Instant.parse("2000-01-01T01:05:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaPerson("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaPerson("Marge"), Instant.parse("2000-01-01T01:05:00Z")));
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
 
         // The second record is not aggregated here because it is out of the time window
         // as the upper bound of tumbling window is exclusive.
-        // Its timestamp (01:05:00) is not included in the window [01:00:00->01:05:00)
+        // Its timestamp (01:05:00) is not included in the window [01:00:00->01:05:00).
 
-        assertEquals("Doe@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
-        assertIterableEquals(List.of("John"), results.get(0).value.getFirstNameByLastName().get("Doe"));
+        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
+        assertIterableEquals(List.of("Homer"), results.get(0).value.getFirstNameByLastName().get("Simpson"));
 
-        assertEquals("Doe@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z", results.get(1).key);
-        assertIterableEquals(List.of("Michael"), results.get(1).value.getFirstNameByLastName().get("Doe"));
+        assertEquals("Simpson@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z", results.get(1).key);
+        assertIterableEquals(List.of("Marge"), results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
-        // Check state store
         WindowStore<String, KafkaPersonGroup> stateStore =
             testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE);
+
         try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
             KeyValue<Windowed<String>, KafkaPersonGroup> keyValue00To05 = iterator.next();
-            assertEquals("Doe", keyValue00To05.key.key());
+            assertEquals("Simpson", keyValue00To05.key.key());
             assertEquals("2000-01-01T01:00:00Z", keyValue00To05.key.window().startTime().toString());
             assertEquals("2000-01-01T01:05:00Z", keyValue00To05.key.window().endTime().toString());
-            assertIterableEquals(List.of("John"), keyValue00To05.value.getFirstNameByLastName().get("Doe"));
+            assertIterableEquals(List.of("Homer"), keyValue00To05.value.getFirstNameByLastName().get("Simpson"));
 
             KeyValue<Windowed<String>, KafkaPersonGroup> keyValue05To10 = iterator.next();
-            assertEquals("Doe", keyValue05To10.key.key());
+            assertEquals("Simpson", keyValue05To10.key.key());
             assertEquals("2000-01-01T01:05:00Z", keyValue05To10.key.window().startTime().toString());
             assertEquals("2000-01-01T01:10:00Z", keyValue05To10.key.window().endTime().toString());
-            assertIterableEquals(List.of("Michael"), keyValue05To10.value.getFirstNameByLastName().get("Doe"));
+            assertIterableEquals(List.of("Marge"), keyValue05To10.value.getFirstNameByLastName().get("Simpson"));
 
             assertFalse(iterator.hasNext());
         }
     }
 
-    /**
-     * This test case demonstrates how the grace period works.
-     * Grace period defines how long to wait for out-of-order records.
-     * Windows with grace period will continue to accept late records
-     * until stream time >= window end time + grace period.
-     */
     @Test
     void shouldHonorGracePeriod() {
-        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaPerson("John", "Doe"),
-            Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("3", buildKafkaPerson("Michael", "Doe"),
-            Instant.parse("2000-01-01T01:05:30Z")));
+        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaPerson("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("3", buildKafkaPerson("Marge"), Instant.parse("2000-01-01T01:05:30Z")));
 
         // At this point, the stream time is 01:05:30. It exceeds by 30 seconds
-        // the upper bound of the window [01:00:00Z->01:05:00Z) where John is included.
-        // However, the following delayed record "Gio" will be aggregated into the window
+        // the upper bound of the window [01:00:00Z->01:05:00Z) where Homer is included.
+        // However, the following delayed record "Bart" will be aggregated into the window
         // because the grace period is 1 minute.
 
-        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaPerson("Gio", "Doe"),
-            Instant.parse("2000-01-01T01:03:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaPerson("Bart"), Instant.parse("2000-01-01T01:03:00Z")));
 
         List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Doe@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
-        assertIterableEquals(List.of("John"), results.get(0).value.getFirstNameByLastName().get("Doe"));
+        // Homer arrives
+        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
+        assertIterableEquals(List.of("Homer"), results.get(0).value.getFirstNameByLastName().get("Simpson"));
 
-        assertEquals("Doe@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z", results.get(1).key);
-        assertIterableEquals(List.of("Michael"), results.get(1).value.getFirstNameByLastName().get("Doe"));
+        // Marge arrives
+        assertEquals("Simpson@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z", results.get(1).key);
+        assertIterableEquals(List.of("Marge"), results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
-        // Even if the stream time is 01:05:30 and the window [01:00:00Z->01:05:00Z) is supposed to be closed,
-        // Gio whose timestamp is 01:03:00 is included in the window.
-        // Stream time < window end time + grace period is true, so the record is aggregated.
+        // Bart arrives
+        // Even if the stream time is 01:05:30, the window [01:00:00Z->01:05:00Z) is
+        // not yet closed because of the grace period of 1 minute.
+        // Bart whose timestamp is 01:03:00 is included in the window.
+        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(2).key);
+        assertIterableEquals(List.of("Homer", "Bart"), results.get(2).value.getFirstNameByLastName().get("Simpson"));
 
-        assertEquals("Doe@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(2).key);
-        assertIterableEquals(List.of("John", "Gio"), results.get(2).value.getFirstNameByLastName().get("Doe"));
-
-        // Check state store
         WindowStore<String, KafkaPersonGroup> stateStore =
             testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE);
+
         try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
             KeyValue<Windowed<String>, KafkaPersonGroup> keyValue00To05 = iterator.next();
-            assertEquals("Doe", keyValue00To05.key.key());
+            assertEquals("Simpson", keyValue00To05.key.key());
             assertEquals("2000-01-01T01:00:00Z", keyValue00To05.key.window().startTime().toString());
             assertEquals("2000-01-01T01:05:00Z", keyValue00To05.key.window().endTime().toString());
-            assertIterableEquals(List.of("John", "Gio"), keyValue00To05.value.getFirstNameByLastName().get("Doe"));
+            assertIterableEquals(
+                List.of("Homer", "Bart"),
+                keyValue00To05.value.getFirstNameByLastName().get("Simpson")
+            );
 
             KeyValue<Windowed<String>, KafkaPersonGroup> keyValue05To10 = iterator.next();
-            assertEquals("Doe", keyValue05To10.key.key());
+            assertEquals("Simpson", keyValue05To10.key.key());
             assertEquals("2000-01-01T01:05:00Z", keyValue05To10.key.window().startTime().toString());
             assertEquals("2000-01-01T01:10:00Z", keyValue05To10.key.window().endTime().toString());
-            assertIterableEquals(List.of("Michael"), keyValue05To10.value.getFirstNameByLastName().get("Doe"));
+            assertIterableEquals(List.of("Marge"), keyValue05To10.value.getFirstNameByLastName().get("Simpson"));
 
             assertFalse(iterator.hasNext());
         }
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName, String lastName) {
+    private KafkaPerson buildKafkaPerson(String firstName) {
         return KafkaPerson.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
-            .setLastName(lastName)
+            .setLastName("Simpson")
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
             .build();
     }

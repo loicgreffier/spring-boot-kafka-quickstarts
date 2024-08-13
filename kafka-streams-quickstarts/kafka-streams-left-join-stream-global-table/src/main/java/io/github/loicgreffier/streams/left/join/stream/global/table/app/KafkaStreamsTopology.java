@@ -23,11 +23,14 @@ import org.apache.kafka.streams.kstream.Materialized;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC
-     * topic and the COUNTRY_TOPIC topic as a global table. The stream is joined to
-     * the global table by nationality with a left join which means a person can exist
-     * without a country (a value of null is returned for the country if there is no match).
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic and the COUNTRY_TOPIC topic as a global table.
+     * The stream is joined to the global table by nationality with a left join.
      * The result is written to the PERSON_COUNTRY_LEFT_JOIN_STREAM_GLOBAL_TABLE_TOPIC topic.
+     * <p>
+     * A left join emits an output for each record in the primary stream. If there is no matching record in the
+     * secondary stream, a null value is returned.
+     * </p>
      *
      * @param streamsBuilder the streams builder.
      */

@@ -23,10 +23,13 @@ import org.apache.kafka.streams.kstream.Materialized;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
-     * and the COUNTRY_TOPIC topic as a global table. The stream is joined to the global table
-     * by nationality with an inner join. The result is written to the
-     * PERSON_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC topic.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic and the COUNTRY_TOPIC topic as a global table.
+     * The stream is joined to the global table by nationality with an inner join.
+     * The result is written to the PERSON_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC topic.
+     * <p>
+     * An inner join emits an output when both streams have records with the same key.
+     * </p>
      *
      * @param streamsBuilder the streams builder.
      */

@@ -16,9 +16,9 @@ import org.apache.kafka.streams.kstream.Repartitioned;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
-     * and repartitions the stream with 3 partitions. Then, the result is written to the
-     * PERSON_TOPIC repartition topic.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic and repartitions the stream with 3 partitions.
+     * The result is written to the PERSON_TOPIC repartition topic.
      *
      * @param streamsBuilder the streams builder.
      */

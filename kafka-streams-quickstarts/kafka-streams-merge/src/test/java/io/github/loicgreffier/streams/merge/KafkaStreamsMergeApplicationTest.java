@@ -36,9 +36,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsMergeApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsMergeApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -95,8 +92,8 @@ class KafkaStreamsMergeApplicationTest {
 
     @Test
     void shouldMergeBothStreams() {
-        KafkaPerson firstPerson = buildKafkaPerson("John", "Doe");
-        KafkaPerson secondPerson = buildKafkaPerson("Jane", "Smith");
+        KafkaPerson firstPerson = buildKafkaPerson("Homer");
+        KafkaPerson secondPerson = buildKafkaPerson("Marge");
 
         inputTopicOne.pipeInput("1", firstPerson);
         inputTopicTwo.pipeInput("2", secondPerson);
@@ -107,11 +104,11 @@ class KafkaStreamsMergeApplicationTest {
         assertEquals(KeyValue.pair("2", secondPerson), results.get(1));
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName, String lastName) {
+    private KafkaPerson buildKafkaPerson(String firstName) {
         return KafkaPerson.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
-            .setLastName(lastName)
+            .setLastName("Simpson")
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
             .setNationality(CountryCode.FR)
             .build();

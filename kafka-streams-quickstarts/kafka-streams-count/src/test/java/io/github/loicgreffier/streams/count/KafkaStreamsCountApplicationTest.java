@@ -38,9 +38,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsCountApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsCountApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -92,24 +89,22 @@ class KafkaStreamsCountApplicationTest {
 
     @Test
     void shouldCountByNationality() {
-        inputTopic.pipeInput("1", buildKafkaPerson("John", "Doe", CountryCode.FR));
-        inputTopic.pipeInput("2", buildKafkaPerson("Jane", "Smith", CountryCode.CH));
-        inputTopic.pipeInput("3", buildKafkaPerson("Michael", "Doe", CountryCode.FR));
-        inputTopic.pipeInput("4", buildKafkaPerson("Daniel", "Smith", CountryCode.ES));
+        inputTopic.pipeInput("1", buildKafkaPerson("Homer", "Simpson", CountryCode.US));
+        inputTopic.pipeInput("2", buildKafkaPerson("Milhouse", "Van Houten", CountryCode.BE));
+        inputTopic.pipeInput("3", buildKafkaPerson("Marge", "Simpson", CountryCode.US));
+        inputTopic.pipeInput("4", buildKafkaPerson("Kirk", "Van Houten", CountryCode.BE));
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair(CountryCode.FR.toString(), 1L), results.get(0));
-        assertEquals(KeyValue.pair(CountryCode.CH.toString(), 1L), results.get(1));
-        assertEquals(KeyValue.pair(CountryCode.FR.toString(), 2L), results.get(2));
-        assertEquals(KeyValue.pair(CountryCode.ES.toString(), 1L), results.get(3));
+        assertEquals(KeyValue.pair(CountryCode.US.toString(), 1L), results.get(0));
+        assertEquals(KeyValue.pair(CountryCode.BE.toString(), 1L), results.get(1));
+        assertEquals(KeyValue.pair(CountryCode.US.toString(), 2L), results.get(2));
+        assertEquals(KeyValue.pair(CountryCode.BE.toString(), 2L), results.get(3));
 
-        // Check state store
         KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(PERSON_COUNT_STATE_STORE);
 
-        assertEquals(2, stateStore.get(CountryCode.FR.toString()));
-        assertEquals(1, stateStore.get(CountryCode.CH.toString()));
-        assertEquals(1, stateStore.get(CountryCode.ES.toString()));
+        assertEquals(2, stateStore.get(CountryCode.US.toString()));
+        assertEquals(2, stateStore.get(CountryCode.BE.toString()));
     }
 
     private KafkaPerson buildKafkaPerson(String firstName, String lastName, CountryCode nationality) {

@@ -23,9 +23,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * This class contains unit tests for the Kafka consumer application.
- */
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerHeadersApplicationTest {
     @Spy
@@ -46,9 +43,9 @@ class KafkaConsumerHeadersApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "John Doe");
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
         message.headers().add("id", "1".getBytes(StandardCharsets.UTF_8));
-        message.headers().add("message", "John Doe".getBytes(StandardCharsets.UTF_8));
+        message.headers().add("message", "Message 1".getBytes(StandardCharsets.UTF_8));
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -62,8 +59,8 @@ class KafkaConsumerHeadersApplicationTest {
 
     @Test
     void shouldFailOnPoisonPill() {
-        ConsumerRecord<String, String> message1 = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "John Doe");
-        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(STRING_TOPIC, 0, 2, "2", "Jane Smith");
+        ConsumerRecord<String, String> message1 = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
+        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(STRING_TOPIC, 0, 2, "2", "Message 2");
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message1));
         mockConsumer.schedulePollTask(() -> {

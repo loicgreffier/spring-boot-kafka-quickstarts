@@ -25,9 +25,9 @@ import org.apache.kafka.streams.state.KeyValueStore;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the
-     * PERSON_TOPIC topic, groups by nationality and counts the number of persons.
-     * Then, the result is written to the PERSON_COUNT_TOPIC topic.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic, groups by nationality and counts the number of persons.
+     * The result is written to the PERSON_COUNT_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

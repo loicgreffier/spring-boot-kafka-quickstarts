@@ -18,9 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * This class contains unit tests for the Kafka producer application.
- */
 @ExtendWith(MockitoExtension.class)
 class KafkaProducerHeadersApplicationTest {
     @Spy
@@ -35,7 +32,7 @@ class KafkaProducerHeadersApplicationTest {
 
     @Test
     void shouldSendSuccessfully() throws ExecutionException, InterruptedException {
-        ProducerRecord<String, String> message = new ProducerRecord<>(STRING_TOPIC, "1", "John Doe");
+        ProducerRecord<String, String> message = new ProducerRecord<>(STRING_TOPIC, "1", "Message 1");
         Future<RecordMetadata> record = producerRunner.send(message);
         mockProducer.completeNext();
 
@@ -48,7 +45,7 @@ class KafkaProducerHeadersApplicationTest {
 
     @Test
     void shouldSendWithFailure() {
-        ProducerRecord<String, String> message = new ProducerRecord<>(STRING_TOPIC, "1", "John Doe");
+        ProducerRecord<String, String> message = new ProducerRecord<>(STRING_TOPIC, "1", "Message 2");
         Future<RecordMetadata> record = producerRunner.send(message);
         RuntimeException exception = new RuntimeException("Error sending message");
         mockProducer.errorNext(exception);

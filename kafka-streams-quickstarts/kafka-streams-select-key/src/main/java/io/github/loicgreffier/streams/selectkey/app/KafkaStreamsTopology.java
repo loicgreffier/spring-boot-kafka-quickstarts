@@ -17,9 +17,9 @@ import org.apache.kafka.streams.StreamsBuilder;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
-     * and changes the key to the last name. The result is written to the
-     * PERSON_SELECT_KEY_TOPIC topic.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic and changes the key to the last name.
+     * The result is written to the PERSON_SELECT_KEY_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */

@@ -13,6 +13,7 @@
     <modules>
         <module>kafka-streams-aggregate</module>
         <module>kafka-streams-aggregate-hopping-window</module>
+        <module>kafka-streams-aggregate-sliding-window</module>
         <module>kafka-streams-aggregate-tumbling-window</module>
         <module>kafka-streams-average</module>
         <module>kafka-streams-branch</module>

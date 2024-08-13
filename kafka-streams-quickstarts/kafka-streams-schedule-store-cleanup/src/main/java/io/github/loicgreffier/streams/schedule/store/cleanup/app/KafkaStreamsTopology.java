@@ -23,9 +23,9 @@ import org.apache.kafka.streams.state.Stores;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
-     * and processes the records with the {@link StoreCleanupProcessor} processor.
-     * The state store is built before the processor is registered.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic and processes the records with
+     * the {@link StoreCleanupProcessor} processor. The state store is built before the processor is registered.
      * The result is written to the PERSON_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.

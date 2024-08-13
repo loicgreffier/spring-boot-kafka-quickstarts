@@ -24,9 +24,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * This class contains unit tests for the Kafka consumer application.
- */
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerAvroSpecificApplicationTest {
     @Spy
@@ -50,8 +47,8 @@ class KafkaConsumerAvroSpecificApplicationTest {
         ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1",
             KafkaPerson.newBuilder()
                 .setId(1L)
-                .setFirstName("John")
-                .setLastName("Doe")
+                .setFirstName("Homer")
+                .setLastName("Simpson")
                 .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
                 .build());
 
@@ -69,8 +66,8 @@ class KafkaConsumerAvroSpecificApplicationTest {
         ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1",
             KafkaPerson.newBuilder()
                 .setId(1L)
-                .setFirstName("John")
-                .setLastName("Doe")
+                .setFirstName("Homer")
+                .setLastName("Simpson")
                 .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
                 .build());
 

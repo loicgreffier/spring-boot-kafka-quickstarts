@@ -25,11 +25,23 @@ import org.apache.kafka.streams.kstream.StreamJoined;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
-     * and the PERSON_TOPIC_TWO topic. The stream is joined to the other stream
-     * by last name with an inner join.
-     * The join window is 5 minutes and the grace period is 1 minute for late arriving events.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic and the PERSON_TOPIC_TWO topic.
+     * The stream is joined to the other stream by last name with an inner join and 5-minute symmetric join windows
+     * with 1-minute grace period.
      * The result is written to the PERSON_JOIN_STREAM_STREAM_TOPIC topic.
+     * <p>
+     * An inner join emits an output when both streams have records with the same key.
+     * </p>
+     * <p>
+     * {@link JoinWindows} are aligned to the records timestamp.
+     * They are created each time a record is processed and are bounded such as [timestamp - before, timestamp + after].
+     * An output is produced if a record is found in the secondary stream that has a timestamp within the window of a
+     * record in the primary stream such as:
+     * <pre>
+     * {@code stream1.ts - before <= stream2.ts AND stream2.ts <= stream1.ts + after}
+     * </pre>
+     * </p>
      *
      * @param streamsBuilder the streams builder.
      */

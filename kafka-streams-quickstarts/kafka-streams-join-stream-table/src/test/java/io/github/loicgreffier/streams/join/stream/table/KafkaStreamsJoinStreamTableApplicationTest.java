@@ -40,9 +40,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsJoinStreamTableApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsJoinStreamTableApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -115,20 +112,20 @@ class KafkaStreamsJoinStreamTableApplicationTest {
 
         List<KeyValue<String, KafkaPerson>> results = rekeyPersonOutputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("FR", person), results.get(0));
+        assertEquals(KeyValue.pair("US", person), results.get(0));
     }
 
     @Test
     void shouldJoinPersonToCountry() {
         KafkaCountry country = buildKafkaCountry();
-        countryInputTopic.pipeInput("FR", country);
+        countryInputTopic.pipeInput("US", country);
 
         KafkaPerson person = buildKafkaPerson();
         personInputTopic.pipeInput("1", person);
 
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertEquals("FR", results.get(0).key);
+        assertEquals("US", results.get(0).key);
         assertEquals(person, results.get(0).value.getPerson());
         assertEquals(country, results.get(0).value.getCountry());
     }
@@ -144,19 +141,19 @@ class KafkaStreamsJoinStreamTableApplicationTest {
     private KafkaPerson buildKafkaPerson() {
         return KafkaPerson.newBuilder()
             .setId(1L)
-            .setFirstName("John")
-            .setLastName("Doe")
+            .setFirstName("Homer")
+            .setLastName("Simpson")
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .setNationality(CountryCode.FR)
+            .setNationality(CountryCode.US)
             .build();
     }
 
     private KafkaCountry buildKafkaCountry() {
         return KafkaCountry.newBuilder()
-            .setCode(CountryCode.FR)
-            .setName("France")
-            .setCapital("Paris")
-            .setOfficialLanguage("French")
+            .setCode(CountryCode.US)
+            .setName("United States")
+            .setCapital("Washington")
+            .setOfficialLanguage("English")
             .build();
     }
 }

@@ -41,9 +41,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsAverageApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsAverageApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -97,9 +94,9 @@ class KafkaStreamsAverageApplicationTest {
     void shouldComputeAverageAgeByNationality() {
         LocalDate currentDate = LocalDate.now();
 
-        KafkaPerson yearsOld25 = buildKafkaPerson("John",
+        KafkaPerson yearsOld25 = buildKafkaPerson("Homer",
             currentDate.minusYears(25).atStartOfDay().toInstant(ZoneOffset.UTC));
-        KafkaPerson yearsOld75 = buildKafkaPerson("Michael",
+        KafkaPerson yearsOld75 = buildKafkaPerson("Marge",
             currentDate.minusYears(75).atStartOfDay().toInstant(ZoneOffset.UTC));
 
         inputTopic.pipeInput("1", yearsOld25);
@@ -107,22 +104,21 @@ class KafkaStreamsAverageApplicationTest {
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("FR", 25L), results.get(0));
-        assertEquals(KeyValue.pair("FR", 50L), results.get(1));
+        assertEquals(KeyValue.pair("US", 25L), results.get(0));
+        assertEquals(KeyValue.pair("US", 50L), results.get(1));
 
-        // Check state store
         KeyValueStore<String, KafkaAverageAge> stateStore = testDriver.getKeyValueStore(PERSON_AVERAGE_STATE_STORE);
 
-        assertEquals(2L, stateStore.get("FR").getCount());
-        assertEquals(100L, stateStore.get("FR").getAgeSum());
+        assertEquals(2L, stateStore.get("US").getCount());
+        assertEquals(100L, stateStore.get("US").getAgeSum());
     }
 
     private KafkaPerson buildKafkaPerson(String firstName, Instant birthDate) {
         return KafkaPerson.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
-            .setLastName("Doe")
-            .setNationality(CountryCode.FR)
+            .setLastName("Simpson")
+            .setNationality(CountryCode.US)
             .setBirthDate(birthDate)
             .build();
     }

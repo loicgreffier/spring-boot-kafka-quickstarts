@@ -29,9 +29,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 
-/**
- * This class contains unit tests for the Kafka producer application.
- */
 @ExtendWith(MockitoExtension.class)
 class KafkaProducerAvroGenericApplicationTest {
     private final Serializer<GenericRecord> serializer = (topic, genericRecord) -> {
@@ -57,8 +54,8 @@ class KafkaProducerAvroGenericApplicationTest {
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "John");
-        genericRecord.put("lastName", "Doe");
+        genericRecord.put("firstName", "Homer");
+        genericRecord.put("lastName", "Simpson");
         genericRecord.put("birthDate", System.currentTimeMillis());
 
         ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(PERSON_TOPIC, "1", genericRecord);
@@ -80,8 +77,8 @@ class KafkaProducerAvroGenericApplicationTest {
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "John");
-        genericRecord.put("lastName", "Doe");
+        genericRecord.put("firstName", "Homer");
+        genericRecord.put("lastName", "Simpson");
         genericRecord.put("birthDate", System.currentTimeMillis());
 
         ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(PERSON_TOPIC, "1", genericRecord);
@@ -103,8 +100,8 @@ class KafkaProducerAvroGenericApplicationTest {
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", "aStringThatShouldBeALong");
-        genericRecord.put("firstName", "John");
-        genericRecord.put("lastName", "Doe");
+        genericRecord.put("firstName", "Homer");
+        genericRecord.put("lastName", "Simpson");
         genericRecord.put("birthDate", System.currentTimeMillis());
 
         ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(PERSON_TOPIC, "1", genericRecord);

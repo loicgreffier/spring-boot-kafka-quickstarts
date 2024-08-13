@@ -24,8 +24,8 @@ import org.apache.kafka.streams.kstream.Materialized;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic,
-     * selects the key as the last name of the person, groups by key
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic, selects the key as the last name of the person, groups by key
      * and aggregates the first names by last name.
      * The result is written to the PERSON_AGGREGATE_TOPIC topic.
      *

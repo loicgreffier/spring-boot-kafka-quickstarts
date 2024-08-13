@@ -10,9 +10,9 @@ The following tasks are performed:
 
 1. Split the records into different topics based on the last name of each `KafkaPerson` record:
 
-- Persons with a last name starting with "A" are sent to a topic named `PERSON_BRANCH_A_TOPIC`. Both the first name and
+- Persons with a last name starting with "S" are sent to a topic named `PERSON_BRANCH_A_TOPIC`. Both the first name and
   last name are converted to uppercase.
-- Persons with a last name starting with "B" are sent to a topic named `PERSON_BRANCH_B_TOPIC`.
+- Persons with a last name starting with "F" are sent to a topic named `PERSON_BRANCH_B_TOPIC`.
 - Other persons (with last names not starting with "A" or "B") are sent to a topic named `PERSON_BRANCH_DEFAULT_TOPIC`.
 
 ![topology.png](topology.png)

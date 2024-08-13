@@ -35,9 +35,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsProcessApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsProcessApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -90,48 +87,32 @@ class KafkaStreamsProcessApplicationTest {
 
     @Test
     void shouldProcess() {
-        KafkaPerson firstPersonDoe = buildKafkaPerson("John", "Doe");
-        KafkaPerson secondPersonDoe = buildKafkaPerson("Michael", "Doe");
-        KafkaPerson firstPersonSmith = buildKafkaPerson("Jane", "Smith");
-        KafkaPerson secondPersonSmith = buildKafkaPerson("Daniel", "Smith");
+        KafkaPerson homer = buildKafkaPerson("Homer");
+        KafkaPerson marge = buildKafkaPerson("Marge");
 
-        inputTopic.pipeInput("1", firstPersonDoe);
-        inputTopic.pipeInput("2", secondPersonDoe);
-        inputTopic.pipeInput("3", firstPersonSmith);
-        inputTopic.pipeInput("4", secondPersonSmith);
+        inputTopic.pipeInput("1", homer);
+        inputTopic.pipeInput("2", marge);
 
         List<KeyValue<String, KafkaPersonMetadata>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Doe", results.get(0).key);
-        assertEquals(firstPersonDoe, results.get(0).value.getPerson());
+        assertEquals("Simpson", results.get(0).key);
+        assertEquals(homer, results.get(0).value.getPerson());
         assertEquals(PERSON_TOPIC, results.get(0).value.getTopic());
         assertEquals(0, results.get(0).value.getPartition());
         assertEquals(0, results.get(0).value.getOffset());
 
-        assertEquals("Doe", results.get(1).key);
-        assertEquals(secondPersonDoe, results.get(1).value.getPerson());
+        assertEquals("Simpson", results.get(1).key);
+        assertEquals(marge, results.get(1).value.getPerson());
         assertEquals(PERSON_TOPIC, results.get(1).value.getTopic());
         assertEquals(0, results.get(1).value.getPartition());
         assertEquals(1, results.get(1).value.getOffset());
-
-        assertEquals("Smith", results.get(2).key);
-        assertEquals(firstPersonSmith, results.get(2).value.getPerson());
-        assertEquals(PERSON_TOPIC, results.get(2).value.getTopic());
-        assertEquals(0, results.get(2).value.getPartition());
-        assertEquals(2, results.get(2).value.getOffset());
-
-        assertEquals("Smith", results.get(3).key);
-        assertEquals(secondPersonSmith, results.get(3).value.getPerson());
-        assertEquals(PERSON_TOPIC, results.get(3).value.getTopic());
-        assertEquals(0, results.get(3).value.getPartition());
-        assertEquals(3, results.get(3).value.getOffset());
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName, String lastName) {
+    private KafkaPerson buildKafkaPerson(String firstName) {
         return KafkaPerson.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
-            .setLastName(lastName)
+            .setLastName("Simpson")
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
             .build();
     }

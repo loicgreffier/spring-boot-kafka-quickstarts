@@ -30,9 +30,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 
-/**
- * This class contains unit tests for the Kafka consumer application.
- */
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerAvroGenericApplicationTest {
     @Spy
@@ -58,8 +55,8 @@ class KafkaConsumerAvroGenericApplicationTest {
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "John");
-        genericRecord.put("lastName", "Doe");
+        genericRecord.put("firstName", "Homer");
+        genericRecord.put("lastName", "Simpson");
         genericRecord.put("birthDate", Timestamp.from(Instant.parse("2000-01-01T01:00:00Z")).getTime());
 
         ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", genericRecord);
@@ -80,8 +77,8 @@ class KafkaConsumerAvroGenericApplicationTest {
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "John");
-        genericRecord.put("lastName", "Doe");
+        genericRecord.put("firstName", "Homer");
+        genericRecord.put("lastName", "Simpson");
         genericRecord.put("birthDate", Timestamp.from(Instant.parse("2000-01-01T01:00:00Z")).getTime());
 
         ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1", genericRecord);

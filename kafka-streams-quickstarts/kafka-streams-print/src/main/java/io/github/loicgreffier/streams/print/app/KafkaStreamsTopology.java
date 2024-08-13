@@ -18,8 +18,9 @@ import org.apache.kafka.streams.kstream.Printed;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
-     * and prints the result to the file specified by the {@code filePath} parameter.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic and prints the result to the file specified by
+     * the {@code filePath} parameter.
      * The topology also reads from the PERSON_TOPIC_TWO topic and prints the result to the console.
      *
      * @param streamsBuilder the streams builder.

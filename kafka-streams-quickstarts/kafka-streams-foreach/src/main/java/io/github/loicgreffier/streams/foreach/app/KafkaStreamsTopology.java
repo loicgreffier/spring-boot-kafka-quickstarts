@@ -15,8 +15,8 @@ import org.apache.kafka.streams.StreamsBuilder;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic.
-     * For each record, it logs the key and the value.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic. For each record, it logs the key and the value.
      *
      * @param streamsBuilder the streams builder.
      */

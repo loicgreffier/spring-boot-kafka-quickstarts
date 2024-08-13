@@ -17,9 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * This class contains unit tests for the Kafka producer application.
- */
 @ExtendWith(MockitoExtension.class)
 class KafkaProducerTransactionApplicationTest {
     @Spy
@@ -36,8 +33,8 @@ class KafkaProducerTransactionApplicationTest {
     void shouldAbortTransaction() {
         mockProducer.initTransactions();
 
-        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, "3", "John Doe");
-        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "4", "Jane Smith");
+        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, "3", "Message 1");
+        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "4", "Message 2");
         producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
         assertTrue(mockProducer.history().isEmpty());
@@ -51,15 +48,15 @@ class KafkaProducerTransactionApplicationTest {
     void shouldCommitTransaction() {
         mockProducer.initTransactions();
 
-        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, "1", "John Doe");
-        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "2", "Jane Smith");
+        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, "1", "Message 1");
+        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "2", "Message 2");
         producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
         assertEquals(2, mockProducer.history().size());
         assertEquals(FIRST_STRING_TOPIC, mockProducer.history().get(0).topic());
-        assertEquals("John Doe", mockProducer.history().get(0).value());
+        assertEquals("Message 1", mockProducer.history().get(0).value());
         assertEquals(SECOND_STRING_TOPIC, mockProducer.history().get(1).topic());
-        assertEquals("Jane Smith", mockProducer.history().get(1).value());
+        assertEquals("Message 2", mockProducer.history().get(1).value());
         assertTrue(mockProducer.transactionInitialized());
         assertTrue(mockProducer.transactionCommitted());
         assertFalse(mockProducer.transactionAborted());

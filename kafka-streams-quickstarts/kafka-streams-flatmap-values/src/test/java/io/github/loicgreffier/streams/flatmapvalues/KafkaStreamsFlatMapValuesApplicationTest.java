@@ -34,9 +34,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsFlatMapValuesApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsFlatMapValuesApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -92,15 +89,15 @@ class KafkaStreamsFlatMapValuesApplicationTest {
 
         List<KeyValue<String, String>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", "John"), results.get(0));
-        assertEquals(KeyValue.pair("1", "Doe"), results.get(1));
+        assertEquals(KeyValue.pair("1", "Homer"), results.get(0));
+        assertEquals(KeyValue.pair("1", "Simpson"), results.get(1));
     }
 
     private KafkaPerson buildKafkaPerson() {
         return KafkaPerson.newBuilder()
             .setId(1L)
-            .setFirstName("John")
-            .setLastName("Doe")
+            .setFirstName("Homer")
+            .setLastName("Simpson")
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
             .build();
     }

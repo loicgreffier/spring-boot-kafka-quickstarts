@@ -23,11 +23,12 @@ import org.apache.kafka.streams.kstream.Named;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic.
+     * Builds the Kafka Streams topology.
+     * The topology reads from the PERSON_TOPIC topic.
      * Then, the stream is split into two branches:
      * <ul>
-     *     <li>the first branch is filtered by the last name starting with "A".</li>
-     *     <li>the second branch is filtered by the last name starting with "B".</li>
+     *     <li>the first branch is filtered by the last name starting with "S".</li>
+     *     <li>the second branch is filtered by the last name starting with "F".</li>
      *     <li>the default branch is used for all other last names.</li>
      * </ul>
      * The result is written to the PERSON_BRANCH_A_TOPIC topic, PERSON_BRANCH_B_TOPIC topic and
@@ -40,9 +41,9 @@ public class KafkaStreamsTopology {
             .<String, KafkaPerson>stream(PERSON_TOPIC)
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .split(Named.as("BRANCH_"))
-            .branch((key, value) -> value.getLastName().startsWith("A"),
+            .branch((key, value) -> value.getLastName().startsWith("S"),
                 Branched.withFunction(KafkaStreamsTopology::toUppercase, "A"))
-            .branch((key, value) -> value.getLastName().startsWith("B"), Branched.as("B"))
+            .branch((key, value) -> value.getLastName().startsWith("F"), Branched.as("B"))
             .defaultBranch(Branched.withConsumer(stream -> stream.to(PERSON_BRANCH_DEFAULT_TOPIC)));
 
         branches.get("BRANCH_A")

@@ -35,9 +35,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-/**
- * This class contains unit tests for the {@link KafkaStreamsTopology} class.
- */
 class KafkaStreamsFilterApplicationTest {
     private static final String CLASS_NAME = KafkaStreamsFilterApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
@@ -89,7 +86,7 @@ class KafkaStreamsFilterApplicationTest {
 
     @Test
     void shouldFilterBadLastName() {
-        inputTopic.pipeInput("1", buildKafkaPerson("Jane", "Smith"));
+        inputTopic.pipeInput("1", buildKafkaPerson("Ned", "Flanders"));
 
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
@@ -98,7 +95,7 @@ class KafkaStreamsFilterApplicationTest {
 
     @Test
     void shouldFilterBadFirstName() {
-        inputTopic.pipeInput("1", buildKafkaPerson("Diego", "Adams"));
+        inputTopic.pipeInput("1", buildKafkaPerson("Marge", "Simpson"));
 
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
@@ -107,7 +104,7 @@ class KafkaStreamsFilterApplicationTest {
 
     @Test
     void shouldNotFilter() {
-        KafkaPerson person = buildKafkaPerson("Alex", "Adams");
+        KafkaPerson person = buildKafkaPerson("Homer", "Simpson");
         inputTopic.pipeInput("1", person);
 
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();

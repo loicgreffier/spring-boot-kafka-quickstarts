@@ -27,9 +27,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * This class contains unit tests for the Kafka consumer application.
- */
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerRetryApplicationTest {
     @Spy
@@ -56,7 +53,7 @@ class KafkaConsumerRetryApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "John Doe");
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -70,9 +67,9 @@ class KafkaConsumerRetryApplicationTest {
 
     @Test
     void shouldRewindOffsetOnExternalSystemError() throws Exception {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "John Doe");
-        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(STRING_TOPIC, 0, 1, "2", "Jane Smith");
-        ConsumerRecord<String, String> message3 = new ConsumerRecord<>(STRING_TOPIC, 0, 2, "3", "Robert Williams");
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
+        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(STRING_TOPIC, 0, 1, "2", "Message 2");
+        ConsumerRecord<String, String> message3 = new ConsumerRecord<>(STRING_TOPIC, 0, 2, "3", "Message 3");
 
         // First poll to rewind, second poll to resume
         for (int i = 0; i < 2; i++) {
@@ -101,7 +98,7 @@ class KafkaConsumerRetryApplicationTest {
 
     @Test
     void shouldRewindToEarliestOnExternalSystemError() throws Exception {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "John Doe");
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
 
         for (int i = 0; i < 2; i++) {
             mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -121,7 +118,7 @@ class KafkaConsumerRetryApplicationTest {
 
     @Test
     void shouldRewindToLatestOnExternalSystemError() throws Exception {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "John Doe");
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 2");
 
         for (int i = 0; i < 2; i++) {
             mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
