@@ -1,6 +1,8 @@
 # Spring Boot and Kafka quickstarts
 
 [![GitHub Build](https://img.shields.io/github/actions/workflow/status/loicgreffier/spring-boot-kafka-quickstarts/continuous_integration.yml?branch=main&logo=github&style=for-the-badge)](https://github.com/loicgreffier/spring-boot-kafka-quickstarts/actions/workflows/continuous_integration.yml)
+[![Kafka Version](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fraw.githubusercontent.com%2Floicgreffier%2Fspring-boot-kafka-quickstarts%2Fmain%2Fpom.xml&query=%2F*%5Blocal-name()%3D'project'%5D%2F*%5Blocal-name()%3D'properties'%5D%2F*%5Blocal-name()%3D'kafka.version'%5D%2Ftext()&style=for-the-badge&logo=apachekafka&label=version)](https://github.com/loicgreffier/spring-boot-kafka-quickstarts/blob/main/pom.xml)
+[![Spring Boot Version](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fraw.githubusercontent.com%2Floicgreffier%2Fspring-boot-kafka-quickstarts%2Fmain%2Fpom.xml&query=%2F*%5Blocal-name()%3D'project'%5D%2F*%5Blocal-name()%3D'parent'%5D%2F*%5Blocal-name()%3D'version'%5D%2Ftext()&style=for-the-badge&logo=spring-boot&label=version)](https://github.com/loicgreffier/spring-boot-kafka-quickstarts/blob/main/pom.xml)
 [![GitHub Stars](https://img.shields.io/github/stars/loicgreffier/spring-boot-kafka-quickstarts?logo=github&style=for-the-badge)](https://github.com/loicgreffier/spring-boot-kafka-quickstarts)
 [![GitHub Watch](https://img.shields.io/github/watchers/loicgreffier/spring-boot-kafka-quickstarts?logo=github&style=for-the-badge)](https://github.com/loicgreffier/spring-boot-kafka-quickstarts)
 [![Docker Pulls](https://img.shields.io/docker/pulls/loicgreffier/spring-boot-kafka-quickstarts?label=Pulls&logo=docker&style=for-the-badge)](https://hub.docker.com/r/loicgreffier/spring-boot-kafka-quickstarts/tags)
@@ -112,3 +114,9 @@ This section contains quickstarts around the Kafka Streams API with unit tests u
 | [ProcessValues](/kafka-streams-quickstarts/kafka-streams-process-values)                  | Kafka Streams | Apply a fixed key processor to a stream                                 | `processValues()`              | `context()`, `forward()`, `Record#headers()` |
 | [Schedule](/kafka-streams-quickstarts/kafka-streams-schedule)                             | Kafka Streams | Schedule punctuation functions based on wall clock time and stream time | `process()`                    | `schedule()`, `getStateStore()`              |
 | [Schedule Store Cleanup](/kafka-streams-quickstarts/kafka-streams-schedule-store-cleanup) | Kafka Streams | Schedule periodic store cleanup based on stream time                    | `process()`, `addStateStore()` | `schedule()`                                 |
+
+#### Handler
+
+| Module                                                                                                          | Library       | Content                                                                      | Config                                      |
+|:----------------------------------------------------------------------------------------------------------------|---------------|------------------------------------------------------------------------------|---------------------------------------------|
+| [Deserialization Exception Handler](/kafka-streams-quickstarts/kafka-streams-deserialization-exception-handler) | Kafka Streams | Handle deserialization exceptions and forward records to a dead letter queue | `default.deserialization.exception.handler` |

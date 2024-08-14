@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.StreamsBuilder;
 
 /**
- * This class represents a Kafka Streams topology.
+ * Kafka Streams topology.
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

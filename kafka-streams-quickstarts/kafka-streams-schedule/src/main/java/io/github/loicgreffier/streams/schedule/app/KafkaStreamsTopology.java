@@ -21,7 +21,7 @@ import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
 
 /**
- * This class represents a Kafka Streams topology.
+ * Kafka Streams topology.
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

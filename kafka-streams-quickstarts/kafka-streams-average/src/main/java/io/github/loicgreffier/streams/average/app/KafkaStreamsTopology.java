@@ -18,7 +18,7 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 
 /**
- * This class represents a Kafka Streams topology.
+ * Kafka Streams topology.
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

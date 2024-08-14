@@ -11,7 +11,7 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 
 /**
- * This class represents a Kafka Streams topology.
+ * Kafka Streams topology.
  */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
