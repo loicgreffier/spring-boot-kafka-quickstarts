@@ -3,7 +3,7 @@
 This module demonstrates the following:
 
 - The usage of the Kafka Streams DSL, including `leftJoin()` between KStream and GlobalKTable and `peek()`.
-- Unit testing using the Topology Test Driver.
+- Unit testing using Topology Test Driver.
 
 In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`, and records of
 type `<String, KafkaCountry>` are streamed from a topic named `COUNTRY_TOPIC`.

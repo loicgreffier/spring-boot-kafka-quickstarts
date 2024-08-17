@@ -99,7 +99,7 @@ class KafkaStreamsRepartitionApplicationTest {
             .setFirstName("Homer")
             .setLastName("Simpson")
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .setNationality(CountryCode.FR)
+            .setNationality(CountryCode.US)
             .build();
     }
 }

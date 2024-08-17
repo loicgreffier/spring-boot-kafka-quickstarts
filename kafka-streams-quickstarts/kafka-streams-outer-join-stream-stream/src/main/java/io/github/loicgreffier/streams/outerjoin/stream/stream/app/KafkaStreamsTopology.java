@@ -1,5 +1,8 @@
 package io.github.loicgreffier.streams.outerjoin.stream.stream.app;
 
+import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic.PERSON_OUTER_JOIN_STREAM_STREAM_REKEY_TOPIC;
+import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic.PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC;
+
 import io.github.loicgreffier.avro.KafkaJoinPersons;
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.streams.outerjoin.stream.stream.constant.StateStore;
@@ -74,8 +77,8 @@ public class KafkaStreamsTopology {
                 JoinWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)),
                 StreamJoined.<String, KafkaPerson, KafkaPerson>as(
                         StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STATE_STORE)
-                    .withName(Topic.PERSON_OUTER_JOIN_STREAM_STREAM_REKEY_TOPIC)
+                    .withName(PERSON_OUTER_JOIN_STREAM_STREAM_REKEY_TOPIC)
             )
-            .to(Topic.PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC);
+            .to(PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC);
     }
 }

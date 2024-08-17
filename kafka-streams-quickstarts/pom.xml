@@ -20,7 +20,8 @@
         <module>kafka-streams-branch</module>
         <module>kafka-streams-cogroup</module>
         <module>kafka-streams-count</module>
-        <module>kafka-streams-deserialization-exception-handler</module>
+        <module>kafka-streams-exception-handler-deserialization</module>
+        <module>kafka-streams-exception-handler-production</module>
         <module>kafka-streams-filter</module>
         <module>kafka-streams-flatmap</module>
         <module>kafka-streams-flatmap-values</module>

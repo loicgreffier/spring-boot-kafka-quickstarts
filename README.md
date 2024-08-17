@@ -117,6 +117,7 @@ This section contains quickstarts around the Kafka Streams API with unit tests u
 
 #### Handler
 
-| Module                                                                                                          | Library       | Content                                                                      | Config                                      |
-|:----------------------------------------------------------------------------------------------------------------|---------------|------------------------------------------------------------------------------|---------------------------------------------|
-| [Deserialization Exception Handler](/kafka-streams-quickstarts/kafka-streams-deserialization-exception-handler) | Kafka Streams | Handle deserialization exceptions and forward records to a dead letter queue | `default.deserialization.exception.handler` |
+| Module                                                                                                          | Library       | Content                                        | Config                                      |
+|:----------------------------------------------------------------------------------------------------------------|---------------|------------------------------------------------|---------------------------------------------|
+| [Deserialization Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-deserialization) | Kafka Streams | Handle deserialization exceptions              | `default.deserialization.exception.handler` |
+| [Production Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-production)           | Kafka Streams | Handle production and serialization exceptions | `default.production.exception.handler`      |

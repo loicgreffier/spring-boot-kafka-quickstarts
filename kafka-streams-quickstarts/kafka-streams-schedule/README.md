@@ -5,7 +5,7 @@ This module demonstrates the following:
 - The usage of the Processor API, including `process()` and `.schedule()`.
 - The processor context and the scheduling of tasks based on wall block time and stream time.
 - The creation of a timestamped key-value store.
-- Unit testing using the Topology Test Driver.
+- Unit testing using Topology Test Driver.
 
 In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`.
 The following tasks are performed:

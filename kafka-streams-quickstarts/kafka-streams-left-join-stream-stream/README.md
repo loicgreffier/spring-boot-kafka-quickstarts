@@ -4,7 +4,7 @@ This module demonstrates the following:
 
 - The usage of the Kafka Streams DSL, including `leftJoin()` between KStream and KStream, `selectKey()`, `peek()`.
 - The usage of sliding time windows.
-- Unit testing using the Topology Test Driver.
+- Unit testing using Topology Test Driver.
 
 In this module, records of type `<String, KafkaPerson>` are streamed from two topics named `PERSON_TOPIC`
 and `PERSON_TOPIC_TWO`.

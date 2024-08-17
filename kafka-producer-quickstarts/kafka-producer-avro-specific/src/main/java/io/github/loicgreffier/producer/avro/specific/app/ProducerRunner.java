@@ -71,7 +71,9 @@ public class ProducerRunner {
             } else {
                 log.info("Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
                     recordMetadata.topic(),
-                    recordMetadata.partition(), recordMetadata.offset(), message.key(),
+                    recordMetadata.partition(),
+                    recordMetadata.offset(),
+                    message.key(),
                     message.value());
             }
         }));

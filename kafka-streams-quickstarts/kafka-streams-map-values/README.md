@@ -3,13 +3,13 @@
 This module demonstrates the following:
 
 - The usage of the Kafka Streams DSL, including `mapValues()` and `peek()`.
-- Unit testing using the Topology Test Driver.
+- Unit testing using Topology Test Driver.
 
 In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`.
 The following tasks are performed:
 
 1. Map the attributes of the `KafkaPerson` value into uppercase.
-2. Write the result to a new topic named `PERSON_MAP_VALUES_TOPIC`.
+2. Write the resulting records to a new topic named `PERSON_MAP_VALUES_TOPIC`.
 
 ![topology.png](topology.png)
 
