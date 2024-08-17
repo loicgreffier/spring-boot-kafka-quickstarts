@@ -149,6 +149,7 @@ class KafkaStreamsProductionExceptionHandlerApplicationTest {
 
     /**
      * Mock Serde that throws an exception when serializing.
+     *
      * @param <T> the type of the record.
      */
     public static class SerdeMock<T extends org.apache.avro.specific.SpecificRecord> implements Serde<T> {

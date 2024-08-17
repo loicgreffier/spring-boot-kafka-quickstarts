@@ -26,8 +26,8 @@ public class KafkaStreamsTopology {
      *     <li>Populates the email field changing the record type from KafkaPerson to KafkaPersonWithEmail.
      *     As the email field is not nullable, it breaks the schema backward compatibility and triggers a serialization
      *     exception when registering the schema in the Schema Registry automatically.</li>
-     *     <li>Populates the biography field with a large text that exceeds the maximum record size allowed by Kafka (1MiB).
-     *     It triggers a production exception due to the record being too large.</li>
+     *     <li>Populates the biography field with a large text that exceeds the maximum record size allowed by
+     *     Kafka (1MiB). It triggers a production exception due to the record being too large.</li>
      *     </li>
      * </ul>
      * The population of the email field and the biography field is not triggered for all records to avoid generating
