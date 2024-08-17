@@ -3,7 +3,7 @@
 This module demonstrates the following:
 
 - The usage of the Kafka Streams configuration `default.deserialization.exception.handler` to handle deserialization exceptions.
-- The implementation of a custom deserialization exception handler that logs the exceptions and continues processing the stream.
+- The implementation of a custom deserialization exception handler.
 - Unit testing using Topology Test Driver.
 
 In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`.
@@ -12,7 +12,8 @@ The following tasks are performed:
 1. Log the received records.
 2. Write the records as they are to a new topic named `PERSON_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC`.
 
-The custom deserialization exception handler is invoked when the configured serdes fail to deserialize the input records.
+The custom deserialization exception handler is invoked when the configured serdes fail to deserialize the records.
+It logs the exceptions and continues processing.
 
 ![topology.png](topology.png)
 

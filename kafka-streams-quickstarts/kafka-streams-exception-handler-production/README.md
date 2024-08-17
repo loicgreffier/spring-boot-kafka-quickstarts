@@ -3,7 +3,7 @@
 This module demonstrates the following:
 
 - The usage of the Kafka Streams configuration `default.production.exception.handler` to handle production and serialization exceptions.
-- The implementation of a custom production exception handler that logs the exceptions and either continues processing or fails the pipeline based on the exception type.
+- The implementation of a custom production exception handler.
 - Unit testing using Topology Test Driver.
 
 In this module, records of type `<String, KafkaPerson>` are streamed from a topic named `PERSON_TOPIC`.
@@ -17,6 +17,7 @@ The following tasks are performed:
 3. Write the resulting records to a new topic named `PERSON_PRODUCTION_EXCEPTION_HANDLER_TOPIC`.
 
 The custom production exception handler is invoked when records fail to be sent to Kafka or when the configured serdes fail to serialize the records.
+It logs the exceptions and either continues processing or fails the pipeline based on the exception type.
 
 ![topology.png](topology.png)
 
