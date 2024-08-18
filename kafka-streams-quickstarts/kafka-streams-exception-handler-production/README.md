@@ -49,4 +49,4 @@ This command will start the following services in Docker:
 - 1 Schema registry
 - 1 Control Center
 - 1 producer Person
-- 1 Kafka Streams Production Exception Handler
+- 1 Kafka Streams Exception Handler Production

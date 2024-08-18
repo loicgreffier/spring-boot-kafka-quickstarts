@@ -88,10 +88,10 @@ services:
           }
         }
 
-  kafka-streams-production-exception-handler:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-production-exception-handler-1.0.0
-    hostname: kafka-streams-production-exception-handler
-    container_name: kafka-streams-production-exception-handler
+  kafka-streams-exception-handler-production:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-exception-handler-production-1.0.0
+    hostname: kafka-streams-exception-handler-production
+    container_name: kafka-streams-exception-handler-production
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:

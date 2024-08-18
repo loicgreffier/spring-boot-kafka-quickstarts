@@ -88,10 +88,10 @@ services:
           }
         }
 
-  kafka-streams-deserialization-exception-handler:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-deserialization-exception-handler-1.0.0
-    hostname: kafka-streams-deserialization-exception-handler
-    container_name: kafka-streams-deserialization-exception-handler
+  kafka-streams-exception-handler-deserialization:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-exception-handler-deserialization-1.0.0
+    hostname: kafka-streams-exception-handler-deserialization
+    container_name: kafka-streams-exception-handler-deserialization
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
