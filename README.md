@@ -27,7 +27,7 @@ This section contains quickstarts around the Producer API with unit tests using 
 |---------------------------------------------------------------------------|---------------|---------------------------------------------------------|
 | [Avro Generic](/kafka-producer-quickstarts/kafka-producer-avro-generic)   | Kafka Clients | Produce generic Avro records                            |
 | [Avro Specific](/kafka-producer-quickstarts/kafka-producer-avro-specific) | Kafka Clients | Produce specific Avro records                           |
-| [Headers](/kafka-producer-quickstarts/kafka-producer-headers)             | Kafka Clients | Producer records with headers                           |
+| [Headers](/kafka-producer-quickstarts/kafka-producer-headers)             | Kafka Clients | Produce records with headers                           |
 | [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | Produce String records                                  |
 | [Transaction](/kafka-producer-quickstarts/kafka-producer-transaction)     | Kafka Clients | Produce to multiple topics while guaranteeing atomicity |
 
