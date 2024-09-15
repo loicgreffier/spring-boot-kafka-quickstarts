@@ -65,7 +65,7 @@ public class ProducerRunner {
      * @return A future of the record metadata.
      */
     public Future<RecordMetadata> send(ProducerRecord<String, String> message) {
-        return producer.send(message, ((recordMetadata, e) -> {
+        return producer.send(message, (recordMetadata, e) -> {
             if (e != null) {
                 log.error(e.getMessage());
             } else {
@@ -76,6 +76,6 @@ public class ProducerRunner {
                     message.key(),
                     message.value());
             }
-        }));
+        });
     }
 }

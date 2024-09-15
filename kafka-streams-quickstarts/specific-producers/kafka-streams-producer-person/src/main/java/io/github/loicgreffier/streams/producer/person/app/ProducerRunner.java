@@ -71,7 +71,7 @@ public class ProducerRunner {
      * @param message The message to send.
      */
     public void send(ProducerRecord<String, KafkaPerson> message) {
-        producer.send(message, ((recordMetadata, e) -> {
+        producer.send(message, (recordMetadata, e) -> {
             if (e != null) {
                 log.error(e.getMessage());
             } else {
@@ -82,7 +82,7 @@ public class ProducerRunner {
                     message.key(),
                     message.value());
             }
-        }));
+        });
     }
 
     /**
