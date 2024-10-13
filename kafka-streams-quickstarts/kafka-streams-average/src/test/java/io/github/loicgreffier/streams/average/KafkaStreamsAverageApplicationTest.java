@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.average;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.average.constant.StateStore.PERSON_AVERAGE_STATE_STORE;
+import static io.github.loicgreffier.streams.average.constant.StateStore.PERSON_AVERAGE_STORE;
 import static io.github.loicgreffier.streams.average.constant.Topic.PERSON_AVERAGE_TOPIC;
 import static io.github.loicgreffier.streams.average.constant.Topic.PERSON_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -107,7 +107,7 @@ class KafkaStreamsAverageApplicationTest {
         assertEquals(KeyValue.pair("US", 25L), results.get(0));
         assertEquals(KeyValue.pair("US", 50L), results.get(1));
 
-        KeyValueStore<String, KafkaAverageAge> stateStore = testDriver.getKeyValueStore(PERSON_AVERAGE_STATE_STORE);
+        KeyValueStore<String, KafkaAverageAge> stateStore = testDriver.getKeyValueStore(PERSON_AVERAGE_STORE);
 
         assertEquals(2L, stateStore.get("US").getCount());
         assertEquals(100L, stateStore.get("US").getAgeSum());

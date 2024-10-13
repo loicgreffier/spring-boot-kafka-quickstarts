@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.aggregate;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.aggregate.constant.StateStore.PERSON_AGGREGATE_STATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.constant.StateStore.PERSON_AGGREGATE_STORE;
 import static io.github.loicgreffier.streams.aggregate.constant.Topic.PERSON_AGGREGATE_TOPIC;
 import static io.github.loicgreffier.streams.aggregate.constant.Topic.PERSON_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -109,7 +109,7 @@ class KafkaStreamsAggregateApplicationTest {
             results.get(2).value.getFirstNameByLastName().get("Simpson")
         );
 
-        KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver.getKeyValueStore(PERSON_AGGREGATE_STATE_STORE);
+        KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver.getKeyValueStore(PERSON_AGGREGATE_STORE);
 
         assertIterableEquals(
             List.of("Homer", "Marge", "Bart"),

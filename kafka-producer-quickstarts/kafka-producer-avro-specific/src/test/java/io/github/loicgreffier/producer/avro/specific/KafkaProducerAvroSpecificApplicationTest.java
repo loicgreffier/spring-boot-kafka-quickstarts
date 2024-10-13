@@ -51,12 +51,12 @@ class KafkaProducerAvroSpecificApplicationTest {
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
             .build());
 
-        Future<RecordMetadata> record = producerRunner.send(message);
+        Future<RecordMetadata> recordMetadata = producerRunner.send(message);
         mockProducer.completeNext();
 
-        assertTrue(record.get().hasOffset());
-        assertEquals(0, record.get().offset());
-        assertEquals(0, record.get().partition());
+        assertTrue(recordMetadata.get().hasOffset());
+        assertEquals(0, recordMetadata.get().offset());
+        assertEquals(0, recordMetadata.get().partition());
         assertEquals(1, mockProducer.history().size());
         assertEquals(message, mockProducer.history().get(0));
     }
@@ -70,11 +70,11 @@ class KafkaProducerAvroSpecificApplicationTest {
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
             .build());
 
-        Future<RecordMetadata> record = producerRunner.send(message);
+        Future<RecordMetadata> recordMetadata = producerRunner.send(message);
         RuntimeException exception = new RuntimeException("Error sending message");
         mockProducer.errorNext(exception);
 
-        ExecutionException executionException = assertThrows(ExecutionException.class, record::get);
+        ExecutionException executionException = assertThrows(ExecutionException.class, recordMetadata::get);
         assertEquals(executionException.getCause(), exception);
         assertEquals(1, mockProducer.history().size());
         assertEquals(message, mockProducer.history().get(0));

@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.reduce.app;
 
-import static io.github.loicgreffier.streams.reduce.constant.StateStore.PERSON_REDUCE_STATE_STORE;
+import static io.github.loicgreffier.streams.reduce.constant.StateStore.PERSON_REDUCE_STORE;
 import static io.github.loicgreffier.streams.reduce.constant.Topic.GROUP_PERSON_BY_NATIONALITY_TOPIC;
 import static io.github.loicgreffier.streams.reduce.constant.Topic.PERSON_REDUCE_TOPIC;
 import static io.github.loicgreffier.streams.reduce.constant.Topic.PERSON_TOPIC;
@@ -35,7 +35,7 @@ public class KafkaStreamsTopology {
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .groupBy((key, person) -> person.getNationality().toString(),
                 Grouped.as(GROUP_PERSON_BY_NATIONALITY_TOPIC))
-            .reduce(new MaxAgeReducer(), Materialized.as(PERSON_REDUCE_STATE_STORE))
+            .reduce(new MaxAgeReducer(), Materialized.as(PERSON_REDUCE_STORE))
             .toStream()
             .to(PERSON_REDUCE_TOPIC);
     }

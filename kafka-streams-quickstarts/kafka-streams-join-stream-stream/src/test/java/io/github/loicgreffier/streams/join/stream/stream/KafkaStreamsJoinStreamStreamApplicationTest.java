@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.join.stream.stream;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.join.stream.stream.constant.StateStore.PERSON_JOIN_STREAM_STREAM_STATE_STORE;
+import static io.github.loicgreffier.streams.join.stream.stream.constant.StateStore.PERSON_JOIN_STREAM_STREAM_STORE;
 import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.PERSON_JOIN_STREAM_STREAM_REKEY_TOPIC;
 import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.PERSON_JOIN_STREAM_STREAM_TOPIC;
 import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.PERSON_TOPIC;
@@ -150,7 +150,7 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         assertEquals(marge, results.get(1).value.getPersonTwo());
 
         WindowStore<String, KafkaPerson> leftStateStore = testDriver
-            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             // As join windows are looking backward and forward in time,
@@ -172,7 +172,7 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver
-            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-other-join-store");
+            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STORE + "-other-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> rightKeyValue02To12 = iterator.next();
@@ -202,7 +202,7 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         assertTrue(results.isEmpty());
 
         WindowStore<String, KafkaPerson> leftStateStore = testDriver
-            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> leftKeyValue00To10 = iterator.next();
@@ -221,7 +221,7 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver
-            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-other-join-store");
+            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STORE + "-other-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> rightKeyValue = iterator.next();
@@ -257,7 +257,7 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         assertEquals(bart, results.get(0).value.getPersonTwo());
 
         WindowStore<String, KafkaPerson> leftStateStore = testDriver
-            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> leftKeyValue00To10 = iterator.next();
@@ -276,7 +276,7 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver
-            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STATE_STORE + "-other-join-store");
+            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STORE + "-other-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> rightKeyValue = iterator.next();

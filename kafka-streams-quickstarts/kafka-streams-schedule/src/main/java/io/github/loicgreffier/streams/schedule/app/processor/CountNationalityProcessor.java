@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.schedule.app.processor;
 
-import static io.github.loicgreffier.streams.schedule.constant.StateStore.PERSON_SCHEDULE_STATE_STORE;
+import static io.github.loicgreffier.streams.schedule.constant.StateStore.PERSON_SCHEDULE_STORE;
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import java.text.SimpleDateFormat;
@@ -16,7 +16,7 @@ import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 /**
- * This class represents a processor the messages by nationality.
+ * This class represents a processor that counts the number of persons by nationality.
  */
 @Slf4j
 public class CountNationalityProcessor extends ContextualProcessor<String, KafkaPerson, String, Long> {
@@ -33,7 +33,7 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
     @Override
     public void init(ProcessorContext<String, Long> context) {
         super.init(context);
-        countNationalityStore = context.getStateStore(PERSON_SCHEDULE_STATE_STORE);
+        countNationalityStore = context.getStateStore(PERSON_SCHEDULE_STORE);
         context.schedule(Duration.ofMinutes(2), PunctuationType.WALL_CLOCK_TIME, this::resetCounters);
         context.schedule(Duration.ofMinutes(1), PunctuationType.STREAM_TIME, this::forwardCounters);
     }

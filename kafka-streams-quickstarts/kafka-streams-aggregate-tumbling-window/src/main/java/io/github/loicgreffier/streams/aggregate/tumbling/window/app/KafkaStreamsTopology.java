@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.aggregate.tumbling.window.app;
 
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.StateStore.PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.StateStore.PERSON_AGGREGATE_TUMBLING_WINDOW_STORE;
 import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.GROUP_PERSON_BY_LAST_NAME_TOPIC;
 import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC;
 import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.PERSON_TOPIC;
@@ -50,7 +50,7 @@ public class KafkaStreamsTopology {
             .aggregate(() ->
                 new KafkaPersonGroup(new HashMap<>()),
                 new FirstNameByLastNameAggregator(),
-                Materialized.as(PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE))
+                Materialized.as(PERSON_AGGREGATE_TUMBLING_WINDOW_STORE))
             .toStream()
             .selectKey((key, groupedPersons) ->
                 key.key() + "@" + key.window().startTime() + "->" + key.window().endTime())

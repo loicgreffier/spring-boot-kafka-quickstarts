@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.schedule.app;
 
-import static io.github.loicgreffier.streams.schedule.constant.StateStore.PERSON_SCHEDULE_STATE_STORE;
+import static io.github.loicgreffier.streams.schedule.constant.StateStore.PERSON_SCHEDULE_STORE;
 import static io.github.loicgreffier.streams.schedule.constant.Topic.PERSON_SCHEDULE_TOPIC;
 import static io.github.loicgreffier.streams.schedule.constant.Topic.PERSON_TOPIC;
 
@@ -44,8 +44,10 @@ public class KafkaStreamsTopology {
                 public Set<StoreBuilder<?>> stores() {
                     StoreBuilder<KeyValueStore<String, Long>> storeBuilder = Stores
                         .keyValueStoreBuilder(
-                            Stores.persistentKeyValueStore(PERSON_SCHEDULE_STATE_STORE),
-                            Serdes.String(), Serdes.Long());
+                            Stores.persistentKeyValueStore(PERSON_SCHEDULE_STORE),
+                            Serdes.String(), Serdes.Long()
+                        );
+
                     return Collections.singleton(storeBuilder);
                 }
 

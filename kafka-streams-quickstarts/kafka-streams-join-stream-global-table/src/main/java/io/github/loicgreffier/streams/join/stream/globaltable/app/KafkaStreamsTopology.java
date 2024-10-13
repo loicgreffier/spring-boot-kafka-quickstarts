@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.join.stream.globaltable.app;
 
-import static io.github.loicgreffier.streams.join.stream.globaltable.constant.StateStore.COUNTRY_STATE_STORE;
+import static io.github.loicgreffier.streams.join.stream.globaltable.constant.StateStore.COUNTRY_STORE;
 import static io.github.loicgreffier.streams.join.stream.globaltable.constant.Topic.COUNTRY_TOPIC;
 import static io.github.loicgreffier.streams.join.stream.globaltable.constant.Topic.PERSON_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC;
 import static io.github.loicgreffier.streams.join.stream.globaltable.constant.Topic.PERSON_TOPIC;
@@ -35,7 +35,7 @@ public class KafkaStreamsTopology {
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         GlobalKTable<String, KafkaCountry> countryGlobalTable = streamsBuilder
-            .globalTable(COUNTRY_TOPIC, Materialized.as(COUNTRY_STATE_STORE));
+            .globalTable(COUNTRY_TOPIC, Materialized.as(COUNTRY_STORE));
 
         streamsBuilder
             .<String, KafkaPerson>stream(PERSON_TOPIC)

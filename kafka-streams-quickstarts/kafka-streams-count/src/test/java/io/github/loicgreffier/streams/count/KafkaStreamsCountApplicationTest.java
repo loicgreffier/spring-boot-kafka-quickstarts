@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.count;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.count.constant.StateStore.PERSON_COUNT_STATE_STORE;
+import static io.github.loicgreffier.streams.count.constant.StateStore.PERSON_COUNT_STORE;
 import static io.github.loicgreffier.streams.count.constant.Topic.PERSON_COUNT_TOPIC;
 import static io.github.loicgreffier.streams.count.constant.Topic.PERSON_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -101,7 +101,7 @@ class KafkaStreamsCountApplicationTest {
         assertEquals(KeyValue.pair(CountryCode.US.toString(), 2L), results.get(2));
         assertEquals(KeyValue.pair(CountryCode.BE.toString(), 2L), results.get(3));
 
-        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(PERSON_COUNT_STATE_STORE);
+        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(PERSON_COUNT_STORE);
 
         assertEquals(2, stateStore.get(CountryCode.US.toString()));
         assertEquals(2, stateStore.get(CountryCode.BE.toString()));

@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.cogroup;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.cogroup.constant.StateStore.PERSON_COGROUP_AGGREGATE_STATE_STORE;
+import static io.github.loicgreffier.streams.cogroup.constant.StateStore.PERSON_COGROUP_AGGREGATE_STORE;
 import static io.github.loicgreffier.streams.cogroup.constant.Topic.PERSON_COGROUP_TOPIC;
 import static io.github.loicgreffier.streams.cogroup.constant.Topic.PERSON_TOPIC;
 import static io.github.loicgreffier.streams.cogroup.constant.Topic.PERSON_TOPIC_TWO;
@@ -115,7 +115,7 @@ class KafkaStreamsCogroupApplicationTest {
         assertIterableEquals(List.of("Homer", "Marge"), results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
         KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver
-            .getKeyValueStore(PERSON_COGROUP_AGGREGATE_STATE_STORE);
+            .getKeyValueStore(PERSON_COGROUP_AGGREGATE_STORE);
 
         assertIterableEquals(
             List.of("Homer", "Marge"), 
@@ -145,7 +145,7 @@ class KafkaStreamsCogroupApplicationTest {
         assertIterableEquals(List.of("Homer", "Marge"), results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
         KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver
-            .getKeyValueStore(PERSON_COGROUP_AGGREGATE_STATE_STORE);
+            .getKeyValueStore(PERSON_COGROUP_AGGREGATE_STORE);
 
         assertIterableEquals(
             List.of("Homer", "Marge"), 
@@ -186,7 +186,7 @@ class KafkaStreamsCogroupApplicationTest {
         );
 
         KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver
-            .getKeyValueStore(PERSON_COGROUP_AGGREGATE_STATE_STORE);
+            .getKeyValueStore(PERSON_COGROUP_AGGREGATE_STORE);
 
         assertIterableEquals(
             List.of("Homer", "Marge", "Bart"),

@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.aggregate.app;
 
-import static io.github.loicgreffier.streams.aggregate.constant.StateStore.PERSON_AGGREGATE_STATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.constant.StateStore.PERSON_AGGREGATE_STORE;
 import static io.github.loicgreffier.streams.aggregate.constant.Topic.GROUP_PERSON_BY_LAST_NAME_TOPIC;
 import static io.github.loicgreffier.streams.aggregate.constant.Topic.PERSON_AGGREGATE_TOPIC;
 import static io.github.loicgreffier.streams.aggregate.constant.Topic.PERSON_TOPIC;
@@ -40,7 +40,7 @@ public class KafkaStreamsTopology {
             .aggregate(() ->
                 new KafkaPersonGroup(new HashMap<>()),
                 new FirstNameByLastNameAggregator(),
-                Materialized.as(PERSON_AGGREGATE_STATE_STORE)
+                Materialized.as(PERSON_AGGREGATE_STORE)
             )
             .toStream()
             .to(PERSON_AGGREGATE_TOPIC);

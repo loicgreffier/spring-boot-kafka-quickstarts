@@ -27,7 +27,7 @@ This section contains quickstarts around the Producer API with unit tests using 
 |---------------------------------------------------------------------------|---------------|---------------------------------------------------------|
 | [Avro Generic](/kafka-producer-quickstarts/kafka-producer-avro-generic)   | Kafka Clients | Produce generic Avro records                            |
 | [Avro Specific](/kafka-producer-quickstarts/kafka-producer-avro-specific) | Kafka Clients | Produce specific Avro records                           |
-| [Headers](/kafka-producer-quickstarts/kafka-producer-headers)             | Kafka Clients | Produce records with headers                           |
+| [Headers](/kafka-producer-quickstarts/kafka-producer-headers)             | Kafka Clients | Produce records with headers                            |
 | [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | Produce String records                                  |
 | [Transaction](/kafka-producer-quickstarts/kafka-producer-transaction)     | Kafka Clients | Produce to multiple topics while guaranteeing atomicity |
 
@@ -108,12 +108,19 @@ This section contains quickstarts around the Kafka Streams API with unit tests u
 
 #### Processor
 
-| Module                                                                                    | Library       | Content                                                                 | DSL                            | Processor API                                |
-|:------------------------------------------------------------------------------------------|---------------|-------------------------------------------------------------------------|--------------------------------|----------------------------------------------|
-| [Process](/kafka-streams-quickstarts/kafka-streams-process)                               | Kafka Streams | Apply a processor to a stream                                           | `process()`                    | `context()`, `forward()`, `Record#headers()` |
-| [ProcessValues](/kafka-streams-quickstarts/kafka-streams-process-values)                  | Kafka Streams | Apply a fixed key processor to a stream                                 | `processValues()`              | `context()`, `forward()`, `Record#headers()` |
-| [Schedule](/kafka-streams-quickstarts/kafka-streams-schedule)                             | Kafka Streams | Schedule punctuation functions based on wall clock time and stream time | `process()`                    | `schedule()`, `getStateStore()`              |
-| [Schedule Store Cleanup](/kafka-streams-quickstarts/kafka-streams-schedule-store-cleanup) | Kafka Streams | Schedule periodic store cleanup based on stream time                    | `process()`, `addStateStore()` | `schedule()`                                 |
+| Module                                                                           | Library       | Content                                                                 | DSL               | Processor API                                |
+|:---------------------------------------------------------------------------------|---------------|-------------------------------------------------------------------------|-------------------|----------------------------------------------|
+| [Process](/kafka-streams-quickstarts/kafka-streams-process)                      | Kafka Streams | Apply a processor to a stream                                           | `process()`       | `context()`, `forward()`, `Record#headers()` |
+| [ProcessValues](/kafka-streams-quickstarts/kafka-streams-process-values)         | Kafka Streams | Apply a fixed key processor to a stream                                 | `processValues()` | `context()`, `forward()`, `Record#headers()` |
+| [Schedule](/kafka-streams-quickstarts/kafka-streams-schedule)                    | Kafka Streams | Schedule punctuation functions based on wall clock time and stream time | `process()`       | `schedule()`, `getStateStore()`              |
+
+#### Stores
+
+| Module                                                                                              | Library       | Content                                                        | DSL                            | Processor API                   |
+|:----------------------------------------------------------------------------------------------------|---------------|----------------------------------------------------------------|--------------------------------|---------------------------------|
+| [Store Cleanup](/kafka-streams-quickstarts/kafka-streams-store-cleanup)                             | Kafka Streams | Schedule periodic store cleanup based on stream time           | `process()`                    | `schedule()`, `getStateStore()` |
+| [Key-Value Store](/kafka-streams-quickstarts/kafka-streams-store-key-value)                         | Kafka Streams | Insert and retrieve records from a key-value store             | `process()`, `addStateStore()` | `getStateStore()`               |
+| [Timestamped Key-Value Store](/kafka-streams-quickstarts/kafka-streams-store-timestamped-key-value) | Kafka Streams | Insert and retrieve records from a timestamped key-value store | `process()`, `addStateStore()` | `getStateStore()`               |
 
 #### Handler
 
@@ -121,3 +128,10 @@ This section contains quickstarts around the Kafka Streams API with unit tests u
 |:----------------------------------------------------------------------------------------------------------------|---------------|------------------------------------------------|---------------------------------------------|
 | [Deserialization Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-deserialization) | Kafka Streams | Handle deserialization exceptions              | `default.deserialization.exception.handler` |
 | [Production Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-production)           | Kafka Streams | Handle production and serialization exceptions | `default.production.exception.handler`      |
+
+## Credits
+
+[Confluent - Crossing the Streams](https://www.confluent.io/blog/crossing-streams-joins-apache-kafka)
+[Bill Bejeck - Windowing time semantics](https://www.linkedin.com/pulse/mastering-stream-processing-windowing-time-semantics-bill-bejeck-fp50e)
+[Apache Kafka - Sliding Windows](https://kafka.apache.org/30/javadoc/org/apache/kafka/streams/kstream/SlidingWindows.html)
+[Jeanlouisboudart - Retriable Consumer](https://github.com/jeanlouisboudart/retriable-consumer)

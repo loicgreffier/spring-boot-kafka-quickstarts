@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.aggregate.tumbling.window;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.StateStore.PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.StateStore.PERSON_AGGREGATE_TUMBLING_WINDOW_STORE;
 import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC;
 import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.PERSON_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -117,7 +117,7 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         );
 
         WindowStore<String, KafkaPersonGroup> stateStore =
-            testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE);
+            testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STORE);
 
         try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
             KeyValue<Windowed<String>, KafkaPersonGroup> keyValue00To05 = iterator.next();
@@ -151,7 +151,7 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         assertIterableEquals(List.of("Marge"), results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
         WindowStore<String, KafkaPersonGroup> stateStore =
-            testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE);
+            testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STORE);
 
         try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
             KeyValue<Windowed<String>, KafkaPersonGroup> keyValue00To05 = iterator.next();
@@ -200,7 +200,7 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         assertIterableEquals(List.of("Homer", "Bart"), results.get(2).value.getFirstNameByLastName().get("Simpson"));
 
         WindowStore<String, KafkaPersonGroup> stateStore =
-            testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STATE_STORE);
+            testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STORE);
 
         try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
             KeyValue<Windowed<String>, KafkaPersonGroup> keyValue00To05 = iterator.next();

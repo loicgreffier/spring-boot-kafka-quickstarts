@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.count.app;
 
-import static io.github.loicgreffier.streams.count.constant.StateStore.PERSON_COUNT_STATE_STORE;
+import static io.github.loicgreffier.streams.count.constant.StateStore.PERSON_COUNT_STORE;
 import static io.github.loicgreffier.streams.count.constant.Topic.GROUP_PERSON_BY_NATIONALITY_TOPIC;
 import static io.github.loicgreffier.streams.count.constant.Topic.PERSON_COUNT_TOPIC;
 import static io.github.loicgreffier.streams.count.constant.Topic.PERSON_TOPIC;
@@ -36,7 +36,7 @@ public class KafkaStreamsTopology {
             .<String, KafkaPerson>stream(PERSON_TOPIC)
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .groupBy((key, person) -> person.getNationality().toString(), Grouped.as(GROUP_PERSON_BY_NATIONALITY_TOPIC))
-            .count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as(PERSON_COUNT_STATE_STORE)
+            .count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as(PERSON_COUNT_STORE)
                 .withValueSerde(Serdes.Long()))
             .toStream()
             .to(PERSON_COUNT_TOPIC, Produced.valueSerde(Serdes.Long()));

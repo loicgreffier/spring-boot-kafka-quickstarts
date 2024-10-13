@@ -153,7 +153,7 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
 
         WindowStore<String, KafkaPerson> leftStateStore = testDriver
             .getWindowStore(
-                StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STATE_STORE + "-outer-this-join-store");
+                StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             // As join windows are looking backward and forward in time,
@@ -176,7 +176,7 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver
             .getWindowStore(
-                StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
+                StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> rightKeyValue02To12 = iterator.next();
@@ -216,7 +216,7 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
 
         WindowStore<String, KafkaPerson> leftStateStore = testDriver
             .getWindowStore(
-                StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STATE_STORE + "-outer-this-join-store");
+                StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> leftKeyValue00To10 = iterator.next();
@@ -230,7 +230,7 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver
             .getWindowStore(
-                StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
+                StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> rightKeyValue = iterator.next();
@@ -275,7 +275,7 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
 
         WindowStore<String, KafkaPerson> leftStateStore = testDriver
             .getWindowStore(
-                StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STATE_STORE + "-outer-this-join-store");
+                StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> leftKeyValue00To10 = iterator.next();
@@ -295,7 +295,7 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver
             .getWindowStore(
-                StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
+                StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> rightKeyValue = iterator.next();

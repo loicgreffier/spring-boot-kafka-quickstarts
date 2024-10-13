@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.average.app;
 
-import static io.github.loicgreffier.streams.average.constant.StateStore.PERSON_AVERAGE_STATE_STORE;
+import static io.github.loicgreffier.streams.average.constant.StateStore.PERSON_AVERAGE_STORE;
 import static io.github.loicgreffier.streams.average.constant.Topic.GROUP_PERSON_BY_NATIONALITY_TOPIC;
 import static io.github.loicgreffier.streams.average.constant.Topic.PERSON_AVERAGE_TOPIC;
 import static io.github.loicgreffier.streams.average.constant.Topic.PERSON_TOPIC;
@@ -41,7 +41,7 @@ public class KafkaStreamsTopology {
             .aggregate(() ->
                 new KafkaAverageAge(0L, 0L),
                 new AgeAggregator(),
-                Materialized.as(PERSON_AVERAGE_STATE_STORE))
+                Materialized.as(PERSON_AVERAGE_STORE))
             .mapValues(value -> value.getAgeSum() / value.getCount())
             .toStream()
             .to(PERSON_AVERAGE_TOPIC, Produced.valueSerde(Serdes.Long()));

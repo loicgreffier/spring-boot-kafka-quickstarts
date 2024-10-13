@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.leftjoin.stream.stream;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE;
+import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STORE;
 import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.PERSON_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC;
 import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.PERSON_LEFT_JOIN_STREAM_STREAM_TOPIC;
 import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.PERSON_TOPIC;
@@ -150,7 +150,7 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
         assertEquals(marge, results.get(1).value.getPersonTwo());
 
         WindowStore<String, KafkaPerson> leftStateStore = testDriver
-            .getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+            .getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             // As join windows are looking backward and forward in time,
@@ -172,7 +172,7 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver
-            .getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
+            .getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> rightKeyValue02To12 = iterator.next();
@@ -207,7 +207,7 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
         // Output for Bart has not been emitted yet because the join window is still open.
 
         WindowStore<String, KafkaPerson> leftStateStore = testDriver
-            .getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+            .getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> leftKeyValue00To10 = iterator.next();
@@ -220,7 +220,7 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver
-            .getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
+            .getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> rightKeyValue = iterator.next();
@@ -264,7 +264,7 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
         assertEquals(bart, results.get(1).value.getPersonTwo());
 
         WindowStore<String, KafkaPerson> leftStateStore = testDriver
-            .getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-this-join-store");
+            .getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> leftKeyValue00To10 = iterator.next();
@@ -283,7 +283,7 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
         }
 
         WindowStore<String, KafkaPerson> rightStateStore = testDriver
-            .getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STATE_STORE + "-outer-other-join-store");
+            .getWindowStore(PERSON_LEFT_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
         try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
             KeyValue<Windowed<String>, KafkaPerson> rightKeyValue = iterator.next();

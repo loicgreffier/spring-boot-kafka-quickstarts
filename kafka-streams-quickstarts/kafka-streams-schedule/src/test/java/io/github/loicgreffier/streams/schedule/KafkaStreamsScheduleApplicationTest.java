@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.schedule;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.schedule.constant.StateStore.PERSON_SCHEDULE_STATE_STORE;
+import static io.github.loicgreffier.streams.schedule.constant.StateStore.PERSON_SCHEDULE_STORE;
 import static io.github.loicgreffier.streams.schedule.constant.Topic.PERSON_SCHEDULE_TOPIC;
 import static io.github.loicgreffier.streams.schedule.constant.Topic.PERSON_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -155,7 +155,7 @@ class KafkaStreamsScheduleApplicationTest {
         assertEquals("US", results.get(7).key);
         assertEquals(1, results.get(7).value);
 
-        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(PERSON_SCHEDULE_STATE_STORE);
+        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(PERSON_SCHEDULE_STORE);
 
         assertEquals(1, stateStore.get("US"));
         assertEquals(0, stateStore.get("BE"));

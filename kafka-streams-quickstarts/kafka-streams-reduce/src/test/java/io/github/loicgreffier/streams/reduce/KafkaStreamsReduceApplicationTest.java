@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.reduce;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.reduce.constant.StateStore.PERSON_REDUCE_STATE_STORE;
+import static io.github.loicgreffier.streams.reduce.constant.StateStore.PERSON_REDUCE_STORE;
 import static io.github.loicgreffier.streams.reduce.constant.Topic.PERSON_REDUCE_TOPIC;
 import static io.github.loicgreffier.streams.reduce.constant.Topic.PERSON_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -124,7 +124,7 @@ class KafkaStreamsReduceApplicationTest {
         assertEquals(KeyValue.pair(CountryCode.BE.toString(), youngestBe), results.get(2));
         assertEquals(KeyValue.pair(CountryCode.BE.toString(), oldestBe), results.get(3));
 
-        KeyValueStore<String, KafkaPerson> stateStore = testDriver.getKeyValueStore(PERSON_REDUCE_STATE_STORE);
+        KeyValueStore<String, KafkaPerson> stateStore = testDriver.getKeyValueStore(PERSON_REDUCE_STORE);
 
         assertEquals(oldestUs, stateStore.get(CountryCode.US.toString()));
         assertEquals(oldestBe, stateStore.get(CountryCode.BE.toString()));

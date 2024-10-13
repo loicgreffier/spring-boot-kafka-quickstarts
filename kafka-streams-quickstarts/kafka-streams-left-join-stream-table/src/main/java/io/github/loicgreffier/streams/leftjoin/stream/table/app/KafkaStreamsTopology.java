@@ -38,7 +38,7 @@ public class KafkaStreamsTopology {
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         KTable<String, KafkaCountry> countryTable = streamsBuilder
-            .table(COUNTRY_TOPIC, Materialized.as(StateStore.COUNTRY_STATE_STORE));
+            .table(COUNTRY_TOPIC, Materialized.as(StateStore.COUNTRY_STORE));
 
         streamsBuilder
             .<String, KafkaPerson>stream(PERSON_TOPIC)

@@ -1,6 +1,6 @@
 package io.github.loicgreffier.streams.cogroup.app;
 
-import static io.github.loicgreffier.streams.cogroup.constant.StateStore.PERSON_COGROUP_AGGREGATE_STATE_STORE;
+import static io.github.loicgreffier.streams.cogroup.constant.StateStore.PERSON_COGROUP_AGGREGATE_STORE;
 import static io.github.loicgreffier.streams.cogroup.constant.Topic.GROUP_PERSON_BY_LAST_NAME_TOPIC;
 import static io.github.loicgreffier.streams.cogroup.constant.Topic.GROUP_PERSON_BY_LAST_NAME_TOPIC_TWO;
 import static io.github.loicgreffier.streams.cogroup.constant.Topic.PERSON_COGROUP_TOPIC;
@@ -52,7 +52,7 @@ public class KafkaStreamsTopology {
             .cogroup(aggregator)
             .cogroup(groupedStreamTwo, aggregator)
             .aggregate(() -> new KafkaPersonGroup(new HashMap<>()),
-                Materialized.as(PERSON_COGROUP_AGGREGATE_STATE_STORE))
+                Materialized.as(PERSON_COGROUP_AGGREGATE_STORE))
             .toStream()
             .to(PERSON_COGROUP_TOPIC);
     }

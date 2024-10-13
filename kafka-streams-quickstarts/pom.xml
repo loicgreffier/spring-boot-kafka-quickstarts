@@ -42,8 +42,10 @@
         <module>kafka-streams-reduce</module>
         <module>kafka-streams-repartition</module>
         <module>kafka-streams-schedule</module>
-        <module>kafka-streams-schedule-store-cleanup</module>
         <module>kafka-streams-select-key</module>
+        <module>kafka-streams-store-cleanup</module>
+        <module>kafka-streams-store-key-value</module>
+        <module>kafka-streams-store-timestamped-key-value</module>
         <module>specific-producers</module>
     </modules>
 

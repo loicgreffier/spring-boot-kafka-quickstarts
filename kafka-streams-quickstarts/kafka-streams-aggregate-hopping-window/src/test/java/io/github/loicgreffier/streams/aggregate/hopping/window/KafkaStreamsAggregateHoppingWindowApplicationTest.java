@@ -1,7 +1,7 @@
 package io.github.loicgreffier.streams.aggregate.hopping.window;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.StateStore.PERSON_AGGREGATE_HOPPING_WINDOW_STATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.StateStore.PERSON_AGGREGATE_HOPPING_WINDOW_STORE;
 import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.Topic.PERSON_AGGREGATE_HOPPING_WINDOW_TOPIC;
 import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.Topic.PERSON_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -132,7 +132,7 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
         assertIterableEquals(List.of("Bart"), results.get(8).value.getFirstNameByLastName().get("Simpson"));
 
         WindowStore<String, KafkaPersonGroup> stateStore = testDriver
-            .getWindowStore(PERSON_AGGREGATE_HOPPING_WINDOW_STATE_STORE);
+            .getWindowStore(PERSON_AGGREGATE_HOPPING_WINDOW_STORE);
 
         try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
             KeyValue<Windowed<String>, KafkaPersonGroup> keyValue56To01 = iterator.next();
@@ -205,7 +205,7 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
         assertIterableEquals(List.of("Marge"), results.get(4).value.getFirstNameByLastName().get("Simpson"));
 
         WindowStore<String, KafkaPersonGroup> stateStore = testDriver
-            .getWindowStore(PERSON_AGGREGATE_HOPPING_WINDOW_STATE_STORE);
+            .getWindowStore(PERSON_AGGREGATE_HOPPING_WINDOW_STORE);
 
         try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
             KeyValue<Windowed<String>, KafkaPersonGroup> keyValue56To01 = iterator.next();
@@ -284,7 +284,7 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
         assertIterableEquals(List.of("Marge", "Bart"), results.get(6).value.getFirstNameByLastName().get("Simpson"));
 
         WindowStore<String, KafkaPersonGroup> stateStore =
-            testDriver.getWindowStore(PERSON_AGGREGATE_HOPPING_WINDOW_STATE_STORE);
+            testDriver.getWindowStore(PERSON_AGGREGATE_HOPPING_WINDOW_STORE);
 
         try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
             KeyValue<Windowed<String>, KafkaPersonGroup> keyValue56To01 = iterator.next();
