@@ -43,7 +43,7 @@ public class PutInStoreProcessor extends ContextualProcessor<String, KafkaPerson
      */
     @Override
     public void process(Record<String, KafkaPerson> message) {
-        log.info("Received key = {}, value = {}", message.key(), message.value());
+        log.info("Put key = {}, value = {} in store {}", message.key(), message.value(), storeName);
         timestampedKeyValueStore.put(message.key(), ValueAndTimestamp.make(message.value(), message.timestamp()));
     }
 }
