@@ -32,6 +32,7 @@ public class KafkaStreamsTopology {
      * and aggregates the first names by last name in 5-minute tumbling windows with 1-minute grace period.
      * A new key is generated with the window start and end time.
      * The result is written to the PERSON_AGGREGATE_SLIDING_WINDOW_TOPIC topic.
+     *
      * <p>
      * {@link org.apache.kafka.streams.kstream.SlidingWindows} are aligned to the records timestamp.
      * They are created each time a record is processed and when a record becomes older than the window size.

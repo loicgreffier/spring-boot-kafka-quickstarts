@@ -31,6 +31,7 @@ public class KafkaStreamsTopology {
      * and aggregates the first names by last name in 5 minutes tumbling windows with 1-minute grace period.
      * A new key is generated with the window start and end time.
      * The result is written to the PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC topic.
+     *
      * <p>
      * Tumbling windows are aligned to the epoch. The first window starts at 1970-01-01T00:00:00Z.
      * Then, every 5 minutes, a new window of 5 minutes is created as long as the stream time advances.

@@ -29,11 +29,13 @@ public class KafkaStreamsTopology {
      * The stream is joined to the other stream by last name with an outer and 5-minute symmetric join windows
      * with 1-minute grace period.
      * The result is written to the PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC topic.
+     *
      * <p>
      * An outer join emits an output for each record in both streams. If there is no matching record in the
      * other stream, a null value is returned at the end of the join window + grace period.
      * A new record to process is required to make the stream time advance and emit the null result.
      * </p>
+     *
      * <p>
      * {@link JoinWindows} are aligned to the records timestamp.
      * They are created each time a record is processed and are bounded such as [timestamp - before, timestamp + after].

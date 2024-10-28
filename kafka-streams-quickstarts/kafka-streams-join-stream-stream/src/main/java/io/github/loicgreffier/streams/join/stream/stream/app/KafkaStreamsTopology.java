@@ -30,9 +30,11 @@ public class KafkaStreamsTopology {
      * The stream is joined to the other stream by last name with an inner join and 5-minute symmetric join windows
      * with 1-minute grace period.
      * The result is written to the PERSON_JOIN_STREAM_STREAM_TOPIC topic.
+     *
      * <p>
      * An inner join emits an output when both streams have records with the same key.
      * </p>
+     *
      * <p>
      * {@link JoinWindows} are aligned to the records timestamp.
      * They are created each time a record is processed and are bounded such as [timestamp - before, timestamp + after].

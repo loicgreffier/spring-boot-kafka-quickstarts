@@ -29,6 +29,7 @@ public class KafkaStreamsTopology {
      * The topology reads from the PERSON_TOPIC topic and the COUNTRY_TOPIC topic as a table.
      * The stream is joined to the table by nationality with an inner join.
      * The result is written to the PERSON_COUNTRY_JOIN_STREAM_TABLE_TOPIC topic.
+     *
      * <p>
      * An inner join emits an output when both streams have records with the same key.
      * </p>
