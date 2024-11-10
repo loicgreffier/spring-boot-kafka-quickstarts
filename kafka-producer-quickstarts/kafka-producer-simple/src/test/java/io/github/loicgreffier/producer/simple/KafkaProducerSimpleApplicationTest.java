@@ -40,7 +40,7 @@ class KafkaProducerSimpleApplicationTest {
         assertEquals(0, recordMetadata.get().offset());
         assertEquals(0, recordMetadata.get().partition());
         assertEquals(1, mockProducer.history().size());
-        assertEquals(message, mockProducer.history().get(0));
+        assertEquals(message, mockProducer.history().getFirst());
     }
 
     @Test
@@ -53,6 +53,6 @@ class KafkaProducerSimpleApplicationTest {
         ExecutionException executionException = assertThrows(ExecutionException.class, recordMetadata::get);
         assertEquals(executionException.getCause(), exception);
         assertEquals(1, mockProducer.history().size());
-        assertEquals(message, mockProducer.history().get(0));
+        assertEquals(message, mockProducer.history().getFirst());
     }
 }
