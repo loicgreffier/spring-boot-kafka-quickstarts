@@ -21,8 +21,6 @@ to simplify the development of applications.
 
 ### Producers
 
-This section contains quickstarts around the Producer API with unit tests using the MockProducer API.
-
 | Module                                                                    | Library       | Content                                                 |
 |---------------------------------------------------------------------------|---------------|---------------------------------------------------------|
 | [Avro Generic](/kafka-producer-quickstarts/kafka-producer-avro-generic)   | Kafka Clients | Produce generic Avro records                            |
@@ -32,8 +30,6 @@ This section contains quickstarts around the Producer API with unit tests using 
 | [Transaction](/kafka-producer-quickstarts/kafka-producer-transaction)     | Kafka Clients | Produce to multiple topics while guaranteeing atomicity |
 
 ### Consumers
-
-This section contains quickstarts around the Consumer API with unit tests using the MockConsumer API.
 
 | Module                                                                                    | Library       | Content                                                        |
 |:------------------------------------------------------------------------------------------|---------------|----------------------------------------------------------------|
@@ -46,8 +42,6 @@ This section contains quickstarts around the Consumer API with unit tests using 
 | [Transaction](/kafka-consumer-quickstarts/kafka-consumer-transaction)                     | Kafka Clients | Consume records from committed transactions                    |
 
 ### Kafka Streams
-
-This section contains quickstarts around the Kafka Streams API with unit tests using the TopologyTestDriver API.
 
 #### Source
 
