@@ -4,16 +4,14 @@ import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHE
 import static io.github.loicgreffier.streams.repartition.constant.Topic.PERSON_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
-import static org.apache.kafka.streams.StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG;
-import static org.apache.kafka.streams.StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.streams.repartition.app.KafkaStreamsTopology;
+import io.github.loicgreffier.streams.repartition.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -21,8 +19,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
@@ -50,9 +46,11 @@ class KafkaStreamsRepartitionApplicationTest {
         properties.setProperty(APPLICATION_ID_CONFIG, "streams-repartition-test");
         properties.setProperty(BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         properties.setProperty(STATE_DIR_CONFIG, STATE_DIR);
-        properties.setProperty(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class.getName());
-        properties.setProperty(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
         properties.setProperty(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
+
+        // Create SerDes
+        Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
+        SerdesUtils.setSerdesConfig(config);
 
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
@@ -63,16 +61,15 @@ class KafkaStreamsRepartitionApplicationTest {
             Instant.parse("2000-01-01T01:00:00Z")
         );
 
-        // Create Serde for input and output topics
-        Serde<KafkaPerson> personSerde = new SpecificAvroSerde<>();
-        Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
-        personSerde.configure(config, false);
-
-        inputTopic = testDriver.createInputTopic(PERSON_TOPIC, new StringSerializer(), personSerde.serializer());
+        inputTopic = testDriver.createInputTopic(
+            PERSON_TOPIC,
+            new StringSerializer(),
+            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+        );
         outputTopic = testDriver.createOutputTopic(
             "streams-repartition-test-" + PERSON_TOPIC + "-repartition",
             new StringDeserializer(),
-            personSerde.deserializer()
+            SerdesUtils.<KafkaPerson>getValueSerdes().deserializer()
         );
     }
 
@@ -90,7 +87,7 @@ class KafkaStreamsRepartitionApplicationTest {
 
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", person), results.get(0));
+        assertEquals(KeyValue.pair("1", person), results.getFirst());
     }
 
     private KafkaPerson buildKafkaPerson() {

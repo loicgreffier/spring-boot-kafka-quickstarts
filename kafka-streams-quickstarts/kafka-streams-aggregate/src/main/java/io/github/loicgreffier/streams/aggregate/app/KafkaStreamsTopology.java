@@ -8,13 +8,19 @@ import static io.github.loicgreffier.streams.aggregate.constant.Topic.PERSON_TOP
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.avro.KafkaPersonGroup;
 import io.github.loicgreffier.streams.aggregate.app.aggregator.FirstNameByLastNameAggregator;
+import io.github.loicgreffier.streams.aggregate.serdes.SerdesUtils;
 import java.util.HashMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Grouped;
 import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.state.KeyValueStore;
 
 /**
  * Kafka Streams topology.
@@ -33,16 +39,19 @@ public class KafkaStreamsTopology {
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC)
+            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .selectKey((key, person) -> person.getLastName())
-            .groupByKey(Grouped.as(GROUP_PERSON_BY_LAST_NAME_TOPIC))
-            .aggregate(() ->
-                new KafkaPersonGroup(new HashMap<>()),
+            .groupByKey(Grouped.with(GROUP_PERSON_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+            .aggregate(
+                () -> new KafkaPersonGroup(new HashMap<>()),
                 new FirstNameByLastNameAggregator(),
-                Materialized.as(PERSON_AGGREGATE_STORE)
+                Materialized
+                    .<String, KafkaPersonGroup, KeyValueStore<Bytes, byte[]>>as(PERSON_AGGREGATE_STORE)
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(SerdesUtils.getValueSerdes())
             )
             .toStream()
-            .to(PERSON_AGGREGATE_TOPIC);
+            .to(PERSON_AGGREGATE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

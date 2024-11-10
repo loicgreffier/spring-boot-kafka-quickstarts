@@ -3,10 +3,13 @@ package io.github.loicgreffier.streams.foreach.app;
 import static io.github.loicgreffier.streams.foreach.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.streams.foreach.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
 
 /**
  * Kafka Streams topology.
@@ -23,7 +26,7 @@ public class KafkaStreamsTopology {
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC)
+            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .foreach((key, person) -> log.info("Received key = {}, value = {}", key, person));
     }
 }

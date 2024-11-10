@@ -2,6 +2,7 @@ package io.github.loicgreffier.streams.print.app;
 
 import io.github.loicgreffier.streams.print.property.ApplicationProperties;
 import io.github.loicgreffier.streams.print.property.KafkaStreamsProperties;
+import io.github.loicgreffier.streams.print.serdes.SerdesUtils;
 import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,6 +43,8 @@ public class KafkaStreamsRunner {
      */
     @EventListener(ApplicationReadyEvent.class)
     public void run() throws IOException {
+        SerdesUtils.setSerdesConfig(kafkaStreamsProperties.getProperties());
+
         Path filePath = Paths.get(applicationProperties.getFilePath()
             .substring(0, applicationProperties.getFilePath().lastIndexOf("/")));
         if (!Files.exists(filePath)) {

@@ -4,11 +4,15 @@ import static io.github.loicgreffier.streams.map.constant.Topic.PERSON_MAP_TOPIC
 import static io.github.loicgreffier.streams.map.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.streams.map.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.Produced;
 
 /**
  * Kafka Streams topology.
@@ -27,13 +31,13 @@ public class KafkaStreamsTopology {
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC)
+            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .map((key, person) -> {
                 person.setFirstName(person.getFirstName().toUpperCase());
                 person.setLastName(person.getLastName().toUpperCase());
                 return KeyValue.pair(person.getLastName(), person);
             })
-            .to(PERSON_MAP_TOPIC);
+            .to(PERSON_MAP_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

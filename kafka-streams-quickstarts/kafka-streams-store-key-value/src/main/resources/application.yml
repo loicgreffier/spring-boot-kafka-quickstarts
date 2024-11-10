@@ -2,8 +2,6 @@ kafka:
   properties:
     bootstrap.servers: localhost:9092
     schema.registry.url: http://localhost:8081
-    default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-    default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
     application.id: streams-schedule-store-key-value
     client.id: streams-schedule-store-key-value
     state.dir: /tmp/kafka-streams-quickstarts

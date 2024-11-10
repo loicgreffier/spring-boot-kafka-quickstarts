@@ -44,6 +44,6 @@ class FirstNameByLastNameAggregatorTest {
 
         assertTrue(group.getFirstNameByLastName().containsKey("Van Houten"));
         assertEquals(1, group.getFirstNameByLastName().get("Van Houten").size());
-        assertEquals("Milhouse", group.getFirstNameByLastName().get("Van Houten").get(0));
+        assertEquals("Milhouse", group.getFirstNameByLastName().get("Van Houten").getFirst());
     }
 }

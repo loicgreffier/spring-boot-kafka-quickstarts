@@ -6,19 +6,17 @@ import static io.github.loicgreffier.streams.leftjoin.stream.globaltable.constan
 import static io.github.loicgreffier.streams.leftjoin.stream.globaltable.constant.Topic.PERSON_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
-import static org.apache.kafka.streams.StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG;
-import static org.apache.kafka.streams.StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaCountry;
 import io.github.loicgreffier.avro.KafkaJoinPersonCountry;
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.streams.leftjoin.stream.globaltable.app.KafkaStreamsTopology;
+import io.github.loicgreffier.streams.leftjoin.stream.globaltable.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -26,8 +24,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
@@ -56,9 +52,11 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
         properties.setProperty(APPLICATION_ID_CONFIG, "streams-left-join-stream-global-table-test");
         properties.setProperty(BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         properties.setProperty(STATE_DIR_CONFIG, STATE_DIR);
-        properties.setProperty(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class.getName());
-        properties.setProperty(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
         properties.setProperty(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
+
+        // Create SerDes
+        Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
+        SerdesUtils.setSerdesConfig(config);
 
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
@@ -69,25 +67,20 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
             Instant.parse("2000-01-01T01:00:00Z")
         );
 
-        // Create Serde for input and output topics
-        Serde<KafkaPerson> personSerde = new SpecificAvroSerde<>();
-        Serde<KafkaCountry> countrySerde = new SpecificAvroSerde<>();
-        Serde<KafkaJoinPersonCountry> joinPersonCountrySerde = new SpecificAvroSerde<>();
-        Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
-        personSerde.configure(config, false);
-        countrySerde.configure(config, false);
-        joinPersonCountrySerde.configure(config, false);
-
-        personInputTopic = testDriver.createInputTopic(PERSON_TOPIC, new StringSerializer(), personSerde.serializer());
+        personInputTopic = testDriver.createInputTopic(
+            PERSON_TOPIC,
+            new StringSerializer(),
+            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+        );
         countryInputTopic = testDriver.createInputTopic(
             COUNTRY_TOPIC,
             new StringSerializer(),
-            countrySerde.serializer()
+            SerdesUtils.<KafkaCountry>getValueSerdes().serializer()
         );
         joinOutputTopic = testDriver.createOutputTopic(
             PERSON_COUNTRY_LEFT_JOIN_STREAM_GLOBAL_TABLE_TOPIC,
             new StringDeserializer(),
-            joinPersonCountrySerde.deserializer()
+            SerdesUtils.<KafkaJoinPersonCountry>getValueSerdes().deserializer()
         );
     }
 
@@ -108,9 +101,9 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
 
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertEquals("1", results.get(0).key);
-        assertEquals(person, results.get(0).value.getPerson());
-        assertEquals(country, results.get(0).value.getCountry());
+        assertEquals("1", results.getFirst().key);
+        assertEquals(person, results.getFirst().value.getPerson());
+        assertEquals(country, results.getFirst().value.getCountry());
     }
 
     @Test
@@ -120,9 +113,9 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
 
         List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertEquals("1", results.get(0).key);
-        assertEquals(person, results.get(0).value.getPerson());
-        assertNull(results.get(0).value.getCountry());
+        assertEquals("1", results.getFirst().key);
+        assertEquals(person, results.getFirst().value.getPerson());
+        assertNull(results.getFirst().value.getCountry());
     }
 
     private KafkaPerson buildKafkaPerson() {

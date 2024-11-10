@@ -1,5 +1,6 @@
 package io.github.loicgreffier.streams.exception.handler.production;
 
+import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.AUTO_REGISTER_SCHEMAS;
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.PERSON_PRODUCTION_EXCEPTION_HANDLER_TOPIC;
 import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.PERSON_TOPIC;
@@ -7,9 +8,7 @@ import static org.apache.kafka.common.utils.Utils.mkEntry;
 import static org.apache.kafka.common.utils.Utils.mkMap;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
-import static org.apache.kafka.streams.StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.DEFAULT_PRODUCTION_EXCEPTION_HANDLER_CLASS_CONFIG;
-import static org.apache.kafka.streams.StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,6 +21,7 @@ import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.streams.exception.handler.production.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.exception.handler.production.error.CustomProductionExceptionHandler;
+import io.github.loicgreffier.streams.exception.handler.production.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -33,7 +33,6 @@ import java.util.Properties;
 import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -62,12 +61,16 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
         properties.setProperty(APPLICATION_ID_CONFIG, "streams-production-exception-handler-test");
         properties.setProperty(BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         properties.setProperty(STATE_DIR_CONFIG, STATE_DIR);
-        properties.setProperty(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class.getName());
-        properties.setProperty(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SerdeMock.class.getName());
         properties.setProperty(DEFAULT_PRODUCTION_EXCEPTION_HANDLER_CLASS_CONFIG,
             CustomProductionExceptionHandler.class.getName());
         properties.setProperty(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
 
+        // Create SerDes that throws an exception when the application tries to serialize
+        Map<String, String> serializationExceptionConfig = Map.of(
+            SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL,
+            AUTO_REGISTER_SCHEMAS, "false"
+        );
+        SerdesUtils.setSerdesConfig(serializationExceptionConfig);
 
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
@@ -78,16 +81,23 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
             Instant.parse("2000-01-01T01:00:00Z")
         );
 
-        // Create Serde for input and output topics
-        Serde<KafkaPerson> personSerde = new SpecificAvroSerde<>();
-        Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
-        personSerde.configure(config, false);
+        // Create SerDes for input and output topics only
+        Map<String, String> config = Map.of(
+            SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL
+        );
 
-        inputTopic = testDriver.createInputTopic(PERSON_TOPIC, new StringSerializer(), personSerde.serializer());
+        SpecificAvroSerde<KafkaPerson> serDes = new SpecificAvroSerde<>();
+        serDes.configure(config, false);
+
+        inputTopic = testDriver.createInputTopic(
+            PERSON_TOPIC,
+            new StringSerializer(),
+            serDes.serializer()
+        );
         outputTopic = testDriver.createOutputTopic(
             PERSON_PRODUCTION_EXCEPTION_HANDLER_TOPIC,
             new StringDeserializer(),
-            personSerde.deserializer()
+            serDes.deserializer()
         );
     }
 
@@ -100,7 +110,7 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
 
     @Test
     void shouldHandleSerializationExceptionsAndContinueProcessing() {
-        inputTopic.pipeInput("1", buildKafkaPerson());
+        inputTopic.pipeInput("10", buildKafkaPerson());
 
         List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
 
@@ -115,7 +125,7 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
 
     private KafkaPerson buildKafkaPerson() {
         return KafkaPerson.newBuilder()
-            .setId(1L)
+            .setId(10L)
             .setFirstName("Homer")
             .setLastName("Simpson")
             .setNationality(CountryCode.US)

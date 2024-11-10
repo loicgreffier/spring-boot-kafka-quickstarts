@@ -6,18 +6,16 @@ import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.
 import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.PERSON_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
-import static org.apache.kafka.streams.StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG;
-import static org.apache.kafka.streams.StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.avro.KafkaPersonGroup;
 import io.github.loicgreffier.streams.aggregate.tumbling.window.app.KafkaStreamsTopology;
+import io.github.loicgreffier.streams.aggregate.tumbling.window.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,8 +23,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
@@ -58,9 +54,11 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         properties.setProperty(APPLICATION_ID_CONFIG, "streams-aggregate-tumbling-window-test");
         properties.setProperty(BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         properties.setProperty(STATE_DIR_CONFIG, STATE_DIR);
-        properties.setProperty(DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class.getName());
-        properties.setProperty(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.getName());
         properties.setProperty(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
+
+        // Create SerDes
+        Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
+        SerdesUtils.setSerdesConfig(config);
 
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
@@ -71,18 +69,15 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
             Instant.parse("2000-01-01T01:00:00Z")
         );
 
-        // Create Serde for input and output topics
-        Serde<KafkaPerson> personSerde = new SpecificAvroSerde<>();
-        Serde<KafkaPersonGroup> personGroupSerde = new SpecificAvroSerde<>();
-        Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
-        personSerde.configure(config, false);
-        personGroupSerde.configure(config, false);
-
-        inputTopic = testDriver.createInputTopic(PERSON_TOPIC, new StringSerializer(), personSerde.serializer());
+        inputTopic = testDriver.createInputTopic(
+            PERSON_TOPIC,
+            new StringSerializer(),
+            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+        );
         outputTopic = testDriver.createOutputTopic(
             PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC,
             new StringDeserializer(),
-            personGroupSerde.deserializer()
+            SerdesUtils.<KafkaPersonGroup>getValueSerdes().deserializer()
         );
     }
 

@@ -1,6 +1,7 @@
 package io.github.loicgreffier.streams.leftjoin.stream.table.app;
 
 import io.github.loicgreffier.streams.leftjoin.stream.table.property.KafkaStreamsProperties;
+import io.github.loicgreffier.streams.leftjoin.stream.table.serdes.SerdesUtils;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
@@ -34,6 +35,8 @@ public class KafkaStreamsRunner {
      */
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
+        SerdesUtils.setSerdesConfig(properties.getProperties());
+
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
         Topology topology = streamsBuilder.build();

@@ -21,7 +21,7 @@ public class SerdesUtils {
      * @param <T> the type of the value.
      * @return the SpecificAvroSerde.
      */
-    public static <T extends SpecificRecord> SpecificAvroSerde<T> specificAvroValueSerdes() {
+    public static <T extends SpecificRecord> SpecificAvroSerde<T> getValueSerdes() {
         SpecificAvroSerde<T> serdes = new SpecificAvroSerde<>();
         serdes.configure(serdesConfig, false);
         return serdes;

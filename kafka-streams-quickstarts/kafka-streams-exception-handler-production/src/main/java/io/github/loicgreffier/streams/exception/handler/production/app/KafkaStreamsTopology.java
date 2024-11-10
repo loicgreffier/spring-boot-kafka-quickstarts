@@ -5,10 +5,14 @@ import static io.github.loicgreffier.streams.exception.handler.production.consta
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.avro.KafkaPersonWithEmail;
+import io.github.loicgreffier.streams.exception.handler.production.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.Produced;
 
 /**
  * Kafka Streams topology.
@@ -43,7 +47,7 @@ public class KafkaStreamsTopology {
         }
 
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC)
+            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .mapValues(person -> {
                 if (person.getId() % 15 == 10) {
@@ -64,6 +68,7 @@ public class KafkaStreamsTopology {
 
                 return person;
             })
-            .to(PERSON_PRODUCTION_EXCEPTION_HANDLER_TOPIC);
+            .to(PERSON_PRODUCTION_EXCEPTION_HANDLER_TOPIC,
+                Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

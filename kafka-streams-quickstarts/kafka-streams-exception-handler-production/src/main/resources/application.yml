@@ -2,8 +2,6 @@ kafka:
   properties:
     bootstrap.servers: localhost:9092
     schema.registry.url: http://localhost:8081
-    default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-    default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
     application.id: streams-production-exception-handler
     client.id: streams-production-exception-handler
     state.dir: /tmp/kafka-streams-quickstarts
@@ -13,4 +11,4 @@ kafka:
     replication.factor: 1 # Consider setting to 3 in production
     min.insync.replicas: 1 # Consider setting to 2 (replication.factor - 1) in production
     num.stream.threads: 1
-    default.production.exception.handler: io.github.loicgreffier.streams.production.exception.handler.error.CustomProductionExceptionHandler
+    default.production.exception.handler: io.github.loicgreffier.streams.exception.handler.production.error.CustomProductionExceptionHandler

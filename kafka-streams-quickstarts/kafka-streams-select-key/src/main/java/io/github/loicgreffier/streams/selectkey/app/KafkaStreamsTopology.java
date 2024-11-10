@@ -4,10 +4,14 @@ import static io.github.loicgreffier.streams.selectkey.constant.Topic.PERSON_SEL
 import static io.github.loicgreffier.streams.selectkey.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.streams.selectkey.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.Produced;
 
 /**
  * Kafka Streams topology.
@@ -25,9 +29,9 @@ public class KafkaStreamsTopology {
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC)
+            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .selectKey((key, person) -> person.getLastName())
-            .to(PERSON_SELECT_KEY_TOPIC);
+            .to(PERSON_SELECT_KEY_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

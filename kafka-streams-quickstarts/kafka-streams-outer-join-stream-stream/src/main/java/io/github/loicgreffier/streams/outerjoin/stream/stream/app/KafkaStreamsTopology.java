@@ -1,19 +1,24 @@
 package io.github.loicgreffier.streams.outerjoin.stream.stream.app;
 
+import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STORE;
 import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic.PERSON_OUTER_JOIN_STREAM_STREAM_REKEY_TOPIC;
 import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic.PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC;
+import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic.PERSON_TOPIC_TWO;
 
 import io.github.loicgreffier.avro.KafkaJoinPersons;
 import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.streams.outerjoin.stream.stream.constant.StateStore;
-import io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic;
+import io.github.loicgreffier.streams.outerjoin.stream.stream.serdes.SerdesUtils;
 import java.time.Duration;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.JoinWindows;
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.StreamJoined;
 
 /**
@@ -50,12 +55,12 @@ public class KafkaStreamsTopology {
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         KStream<String, KafkaPerson> streamTwo = streamsBuilder
-            .<String, KafkaPerson>stream(Topic.PERSON_TOPIC_TWO)
+            .<String, KafkaPerson>stream(PERSON_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .selectKey((key, person) -> person.getLastName());
 
         streamsBuilder
-            .<String, KafkaPerson>stream(Topic.PERSON_TOPIC)
+            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .selectKey((key, person) -> person.getLastName())
             .outerJoin(streamTwo,
@@ -77,10 +82,14 @@ public class KafkaStreamsTopology {
                         .build();
                 },
                 JoinWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)),
-                StreamJoined.<String, KafkaPerson, KafkaPerson>as(
-                        StateStore.PERSON_OUTER_JOIN_STREAM_STREAM_STORE)
+                StreamJoined
+                    .<String, KafkaPerson, KafkaPerson>with(
+                        Serdes.String(),
+                        SerdesUtils.getValueSerdes(),
+                        SerdesUtils.getValueSerdes()
+                    )
                     .withName(PERSON_OUTER_JOIN_STREAM_STREAM_REKEY_TOPIC)
-            )
-            .to(PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC);
+                    .withStoreName(PERSON_OUTER_JOIN_STREAM_STREAM_STORE))
+            .to(PERSON_OUTER_JOIN_STREAM_STREAM_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

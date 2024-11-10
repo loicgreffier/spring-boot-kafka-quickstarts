@@ -6,14 +6,18 @@ import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_BRANCH
 import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.streams.branch.serdes.SerdesUtils;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Branched;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Named;
+import org.apache.kafka.streams.kstream.Produced;
 
 /**
  * Kafka Streams topology.
@@ -38,19 +42,20 @@ public class KafkaStreamsTopology {
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         Map<String, KStream<String, KafkaPerson>> branches = streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC)
+            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .split(Named.as("BRANCH_"))
             .branch((key, value) -> value.getLastName().startsWith("S"),
                 Branched.withFunction(KafkaStreamsTopology::toUppercase, "A"))
             .branch((key, value) -> value.getLastName().startsWith("F"), Branched.as("B"))
-            .defaultBranch(Branched.withConsumer(stream -> stream.to(PERSON_BRANCH_DEFAULT_TOPIC)));
+            .defaultBranch(Branched.withConsumer(stream -> stream
+                .to(PERSON_BRANCH_DEFAULT_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()))));
 
         branches.get("BRANCH_A")
-            .to(PERSON_BRANCH_A_TOPIC);
+            .to(PERSON_BRANCH_A_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
 
         branches.get("BRANCH_B")
-            .to(PERSON_BRANCH_B_TOPIC);
+            .to(PERSON_BRANCH_B_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /**

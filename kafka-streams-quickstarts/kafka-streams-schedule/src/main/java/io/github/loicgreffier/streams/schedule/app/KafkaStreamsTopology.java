@@ -6,6 +6,7 @@ import static io.github.loicgreffier.streams.schedule.constant.Topic.PERSON_TOPI
 
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.streams.schedule.app.processor.CountNationalityProcessor;
+import io.github.loicgreffier.streams.schedule.serdes.SerdesUtils;
 import java.util.Collections;
 import java.util.Set;
 import lombok.AccessLevel;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
@@ -38,7 +40,7 @@ public class KafkaStreamsTopology {
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC)
+            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .process(new ProcessorSupplier<String, KafkaPerson, String, Long>() {
                 @Override
                 public Set<StoreBuilder<?>> stores() {
@@ -56,6 +58,6 @@ public class KafkaStreamsTopology {
                     return new CountNationalityProcessor();
                 }
             })
-            .to(PERSON_SCHEDULE_TOPIC, Produced.valueSerde(Serdes.Long()));
+            .to(PERSON_SCHEDULE_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
     }
 }

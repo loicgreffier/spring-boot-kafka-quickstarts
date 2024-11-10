@@ -8,12 +8,18 @@ import io.github.loicgreffier.avro.KafkaCountry;
 import io.github.loicgreffier.avro.KafkaJoinPersonCountry;
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.streams.leftjoin.stream.globaltable.constant.StateStore;
+import io.github.loicgreffier.streams.leftjoin.stream.globaltable.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.state.KeyValueStore;
 
 /**
  * Kafka Streams topology.
@@ -37,10 +43,14 @@ public class KafkaStreamsTopology {
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         GlobalKTable<String, KafkaCountry> countryGlobalTable = streamsBuilder
-            .globalTable(COUNTRY_TOPIC, Materialized.as(StateStore.COUNTRY_STORE));
+            .globalTable(COUNTRY_TOPIC, Materialized
+                .<String, KafkaCountry, KeyValueStore<Bytes, byte[]>>as(StateStore.COUNTRY_STORE)
+                .withKeySerde(Serdes.String())
+                .withValueSerde(SerdesUtils.getValueSerdes())
+            );
 
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC)
+            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .leftJoin(countryGlobalTable,
                 (key, person) -> person.getNationality().toString(),
@@ -59,6 +69,7 @@ public class KafkaStreamsTopology {
                         .setCountry(country)
                         .build();
                 })
-            .to(PERSON_COUNTRY_LEFT_JOIN_STREAM_GLOBAL_TABLE_TOPIC);
+            .to(PERSON_COUNTRY_LEFT_JOIN_STREAM_GLOBAL_TABLE_TOPIC,
+                Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

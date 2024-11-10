@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorSupplier;
 import org.apache.kafka.streams.state.KeyValueStore;
@@ -43,23 +44,23 @@ public class KafkaStreamsTopology {
         final StoreBuilder<TimestampedKeyValueStore<String, KafkaPerson>> keyValueStoreBuilder = Stores
             .timestampedKeyValueStoreBuilder(
                 Stores.persistentTimestampedKeyValueStore(PERSON_TIMESTAMPED_KEY_VALUE_STORE),
-                Serdes.String(), SerdesUtils.specificAvroValueSerdes()
+                Serdes.String(), SerdesUtils.getValueSerdes()
             );
 
         streamsBuilder
             .addStateStore(keyValueStoreBuilder)
-            .<String, KafkaPerson>stream(PERSON_TOPIC)
+            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .process(() -> new PutInStoreProcessor(keyValueStoreBuilder.name()), keyValueStoreBuilder.name());
 
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC)
+            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .process(new ProcessorSupplier<String, KafkaPerson, String, KafkaPerson>() {
                 @Override
                 public Set<StoreBuilder<?>> stores() {
                     StoreBuilder<TimestampedKeyValueStore<String, KafkaPerson>> storeBuilder = Stores
                         .timestampedKeyValueStoreBuilder(
                             Stores.persistentTimestampedKeyValueStore(PERSON_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE),
-                            Serdes.String(), SerdesUtils.specificAvroValueSerdes()
+                            Serdes.String(), SerdesUtils.getValueSerdes()
                         );
 
                     return Collections.singleton(storeBuilder);

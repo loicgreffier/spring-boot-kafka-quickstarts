@@ -8,14 +8,18 @@ import static io.github.loicgreffier.streams.average.constant.Topic.PERSON_TOPIC
 import io.github.loicgreffier.avro.KafkaAverageAge;
 import io.github.loicgreffier.avro.KafkaPerson;
 import io.github.loicgreffier.streams.average.app.aggregator.AgeAggregator;
+import io.github.loicgreffier.streams.average.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Grouped;
 import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.state.KeyValueStore;
 
 /**
  * Kafka Streams topology.
@@ -34,16 +38,20 @@ public class KafkaStreamsTopology {
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC)
+            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .groupBy((key, person) -> person.getNationality().toString(),
-                Grouped.as(GROUP_PERSON_BY_NATIONALITY_TOPIC))
-            .aggregate(() ->
-                new KafkaAverageAge(0L, 0L),
+                Grouped.with(GROUP_PERSON_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+            .aggregate(
+                () -> new KafkaAverageAge(0L, 0L),
                 new AgeAggregator(),
-                Materialized.as(PERSON_AVERAGE_STORE))
+                Materialized
+                    .<String, KafkaAverageAge, KeyValueStore<Bytes, byte[]>>as(PERSON_AVERAGE_STORE)
+                    .withKeySerde(Serdes.String())
+                    .withValueSerde(SerdesUtils.getValueSerdes())
+            )
             .mapValues(value -> value.getAgeSum() / value.getCount())
             .toStream()
-            .to(PERSON_AVERAGE_TOPIC, Produced.valueSerde(Serdes.Long()));
+            .to(PERSON_AVERAGE_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
     }
 }

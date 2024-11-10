@@ -4,10 +4,13 @@ import static io.github.loicgreffier.streams.print.constant.Topic.PERSON_TOPIC;
 import static io.github.loicgreffier.streams.print.constant.Topic.PERSON_TOPIC_TWO;
 
 import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.streams.print.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Printed;
 
 /**
@@ -28,14 +31,14 @@ public class KafkaStreamsTopology {
      */
     public static void topology(StreamsBuilder streamsBuilder, String filePath) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC)
+            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
             .print(Printed.<String, KafkaPerson>toFile(filePath)
                 .withKeyValueMapper(KafkaStreamsTopology::toOutput)
                 .withLabel(PERSON_TOPIC));
 
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC_TWO)
+            .<String, KafkaPerson>stream(PERSON_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .print(Printed.<String, KafkaPerson>toSysOut()
                 .withKeyValueMapper(KafkaStreamsTopology::toOutput)
                 .withLabel(PERSON_TOPIC_TWO));
