@@ -4,6 +4,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.RecordTooLargeException;
+import org.apache.kafka.streams.errors.ErrorHandlerContext;
 import org.apache.kafka.streams.errors.ProductionExceptionHandler;
 
 /**
@@ -13,24 +14,39 @@ import org.apache.kafka.streams.errors.ProductionExceptionHandler;
 public class CustomProductionExceptionHandler implements ProductionExceptionHandler {
 
     @Override
-    public ProductionExceptionHandlerResponse handle(ProducerRecord<byte[], byte[]> record, Exception exception) {
+    public ProductionExceptionHandlerResponse handle(ErrorHandlerContext context,
+                                                     ProducerRecord<byte[], byte[]> record,
+                                                     Exception exception) {
         if (exception instanceof RecordTooLargeException) {
-            log.warn("Record too large exception caught during production: topic = {}, partition = {}",
-                record.topic(), record.partition(), exception);
+            log.warn("Record too large exception caught during production: topic = {}, partition = {}, offset = {}",
+                context.topic(),
+                context.partition(),
+                context.offset(),
+                exception);
 
             return ProductionExceptionHandlerResponse.CONTINUE;
         }
 
-        log.warn("Exception caught during production: topic = {}, partition = {}",
-            record.topic(), record.partition(), exception);
+        log.warn("Exception caught during production: topic = {}, partition = {}, offset = {}",
+            context.topic(),
+            context.partition(),
+            context.offset(),
+            exception);
 
         return ProductionExceptionHandlerResponse.FAIL;
     }
 
     @Override
-    public ProductionExceptionHandlerResponse handleSerializationException(ProducerRecord record, Exception exception) {
-        log.warn("Exception caught during serialization: topic = {}, partition = {}",
-            record.topic(), record.partition(), exception);
+    public ProductionExceptionHandlerResponse handleSerializationException(ErrorHandlerContext context,
+                                                                           ProducerRecord record,
+                                                                           Exception exception,
+                                                                           SerializationExceptionOrigin origin) {
+        log.warn("Exception caught during serialization: topic = {}, partition = {}, offset = {}, origin = {}",
+            context.topic(),
+            context.partition(),
+            context.offset(),
+            origin,
+            exception);
 
         return ProductionExceptionHandlerResponse.CONTINUE;
     }

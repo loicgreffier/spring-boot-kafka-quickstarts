@@ -61,8 +61,18 @@ class KafkaConsumerSimpleApplicationTest {
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message1));
         mockConsumer.schedulePollTask(() -> {
-            throw new RecordDeserializationException(topicPartition, 1, "Error deserializing",
-                new Exception());
+            throw new RecordDeserializationException(
+                RecordDeserializationException.DeserializationExceptionOrigin.VALUE,
+                topicPartition,
+                1,
+                0,
+                null,
+                null,
+                null,
+                null,
+                "Error deserializing",
+                new Exception()
+            );
         });
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message2));
 
