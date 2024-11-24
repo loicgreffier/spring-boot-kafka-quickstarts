@@ -21,6 +21,7 @@
         <module>kafka-streams-cogroup</module>
         <module>kafka-streams-count</module>
         <module>kafka-streams-exception-handler-deserialization</module>
+        <module>kafka-streams-exception-handler-processing</module>
         <module>kafka-streams-exception-handler-production</module>
         <module>kafka-streams-filter</module>
         <module>kafka-streams-flatmap</module>

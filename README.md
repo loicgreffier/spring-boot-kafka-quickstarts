@@ -121,6 +121,7 @@ to simplify the development of applications.
 | Module                                                                                                          | Library       | Content                                        | Config                                      |
 |:----------------------------------------------------------------------------------------------------------------|---------------|------------------------------------------------|---------------------------------------------|
 | [Deserialization Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-deserialization) | Kafka Streams | Handle deserialization exceptions              | `default.deserialization.exception.handler` |
+| [Processing Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-processing)           | Kafka Streams | Handle processing exceptions                   | `processing.exception.handler`              |
 | [Production Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-production)           | Kafka Streams | Handle production and serialization exceptions | `default.production.exception.handler`      |
 
 ## Credits
