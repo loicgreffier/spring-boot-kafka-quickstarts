@@ -29,8 +29,8 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
             return ProductionExceptionHandlerResponse.CONTINUE;
         }
 
-        log.warn("Exception caught during production: " +
-                "processorNodeId = {}, topic = {}, partition = {}, offset = {}",
+        log.warn("Exception caught during production: "
+                + "processorNodeId = {}, topic = {}, partition = {}, offset = {}",
             context.processorNodeId(),
             context.topic(),
             context.partition(),
