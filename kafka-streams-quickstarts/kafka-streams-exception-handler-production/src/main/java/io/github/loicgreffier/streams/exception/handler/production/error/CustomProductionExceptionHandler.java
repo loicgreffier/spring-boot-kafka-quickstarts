@@ -18,7 +18,9 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
                                                      ProducerRecord<byte[], byte[]> record,
                                                      Exception exception) {
         if (exception instanceof RecordTooLargeException) {
-            log.warn("Record too large exception caught during production: topic = {}, partition = {}, offset = {}",
+            log.warn("Record too large exception caught during production: "
+                    + "processorNodeId = {}, topic = {}, partition = {}, offset = {}",
+                context.processorNodeId(),
                 context.topic(),
                 context.partition(),
                 context.offset(),
@@ -27,7 +29,9 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
             return ProductionExceptionHandlerResponse.CONTINUE;
         }
 
-        log.warn("Exception caught during production: topic = {}, partition = {}, offset = {}",
+        log.warn("Exception caught during production: " +
+                "processorNodeId = {}, topic = {}, partition = {}, offset = {}",
+            context.processorNodeId(),
             context.topic(),
             context.partition(),
             context.offset(),

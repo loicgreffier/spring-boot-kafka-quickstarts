@@ -12,12 +12,15 @@ import org.apache.kafka.streams.processor.api.Record;
 @Slf4j
 public class CustomProcessingExceptionHandler implements ProcessingExceptionHandler {
     @Override
-    public ProcessingHandlerResponse handle(ErrorHandlerContext errorHandlerContext,
+    public ProcessingHandlerResponse handle(ErrorHandlerContext context,
                                             Record<?, ?> record,
                                             Exception exception) {
-        log.warn("Exception caught during processing: key = {}, value = {}",
-            record != null ? record.key() :  null,
-            record != null ? record.value() : null,
+        log.warn("Exception caught during processing: "
+                + "processorNodeId = {}, topic = {}, partition = {}, offset = {}",
+            context.processorNodeId(),
+            context.topic(),
+            context.partition(),
+            context.offset(),
             exception
         );
 
