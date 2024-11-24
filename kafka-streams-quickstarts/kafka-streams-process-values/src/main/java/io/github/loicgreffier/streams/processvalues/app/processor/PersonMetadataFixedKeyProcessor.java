@@ -20,21 +20,21 @@ public class PersonMetadataFixedKeyProcessor
      * Process the message by adding metadata to the message.
      * The message is then forwarded.
      *
-     * @param fixedKeyRecord the message to process.
+     * @param message the message to process.
      */
     @Override
-    public void process(FixedKeyRecord<String, KafkaPerson> fixedKeyRecord) {
-        log.info("Received key = {}, value = {}", fixedKeyRecord.key(), fixedKeyRecord.value());
+    public void process(FixedKeyRecord<String, KafkaPerson> message) {
+        log.info("Received key = {}, value = {}", message.key(), message.value());
 
         Optional<RecordMetadata> recordMetadata = context().recordMetadata();
         KafkaPersonMetadata newValue = KafkaPersonMetadata.newBuilder()
-            .setPerson(fixedKeyRecord.value())
+            .setPerson(message.value())
             .setTopic(recordMetadata.map(RecordMetadata::topic).orElse(null))
             .setPartition(recordMetadata.map(RecordMetadata::partition).orElse(null))
             .setOffset(recordMetadata.map(RecordMetadata::offset).orElse(null))
             .build();
 
-        fixedKeyRecord.headers().add("headerKey", "headerValue".getBytes(StandardCharsets.UTF_8));
-        context().forward(fixedKeyRecord.withValue(newValue));
+        message.headers().add("headerKey", "headerValue".getBytes(StandardCharsets.UTF_8));
+        context().forward(message.withValue(newValue));
     }
 }
