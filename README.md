@@ -1,3 +1,8 @@
+<div align="center">
+
+<img src=".readme/kafka.png" alt="Apache Kafka" style="padding: 0 20px"/>
+<img src=".readme/spring-boot.png" alt="Spring Boot" style="padding: 0 20px"/>
+
 # Spring Boot and Kafka quickstarts
 
 [![GitHub Build](https://img.shields.io/github/actions/workflow/status/loicgreffier/spring-boot-kafka-quickstarts/push_main.yml?branch=main&logo=github&style=for-the-badge)](https://github.com/loicgreffier/spring-boot-kafka-quickstarts/actions/workflows/push_main.yml)
@@ -8,8 +13,9 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/loicgreffier/spring-boot-kafka-quickstarts?label=Pulls&logo=docker&style=for-the-badge)](https://hub.docker.com/r/loicgreffier/spring-boot-kafka-quickstarts/tags)
 [![Docker Stars](https://img.shields.io/docker/stars/loicgreffier/spring-boot-kafka-quickstarts?label=Stars&logo=docker&style=for-the-badge)](https://hub.docker.com/r/loicgreffier/spring-boot-kafka-quickstarts)
 
-This repository contains a set of code samples around Kafka Clients and Kafka Streams leveraging Spring Boot
-to simplify the development of applications.
+Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to simplify the development of applications.
+
+</div>
 
 ## Requirements
 
