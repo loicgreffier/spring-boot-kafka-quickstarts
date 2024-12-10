@@ -13,7 +13,7 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/loicgreffier/spring-boot-kafka-quickstarts?label=Pulls&logo=docker&style=for-the-badge)](https://hub.docker.com/r/loicgreffier/spring-boot-kafka-quickstarts/tags)
 [![Docker Stars](https://img.shields.io/docker/stars/loicgreffier/spring-boot-kafka-quickstarts?label=Stars&logo=docker&style=for-the-badge)](https://hub.docker.com/r/loicgreffier/spring-boot-kafka-quickstarts)
 
-[Producer](#producers) • [Consumer](#consumers) • [Stream](#kafka-streams)
+[Producer](#producers) • [Consumer](#consumers) • [Streams](#kafka-streams)
 
 Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to simplify the development of applications.
 
