@@ -1,9 +1,9 @@
-package io.github.loicgreffier.streams.store.keyvalue;
+package io.github.loicgreffier.streams.store.keyvalue.timestamped;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.PERSON_KEY_VALUE_STORE;
-import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.PERSON_KEY_VALUE_SUPPLIER_STORE;
-import static io.github.loicgreffier.streams.store.keyvalue.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.store.keyvalue.timestamped.constant.StateStore.PERSON_TIMESTAMPED_KEY_VALUE_STORE;
+import static io.github.loicgreffier.streams.store.keyvalue.timestamped.constant.StateStore.PERSON_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE;
+import static io.github.loicgreffier.streams.store.keyvalue.timestamped.constant.Topic.PERSON_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -12,8 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.streams.store.keyvalue.app.KafkaStreamsTopology;
-import io.github.loicgreffier.streams.store.keyvalue.serdes.SerdesUtils;
+import io.github.loicgreffier.streams.store.keyvalue.timestamped.app.KafkaStreamsTopology;
+import io.github.loicgreffier.streams.store.keyvalue.timestamped.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,14 +25,15 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.apache.kafka.streams.test.TestRecord;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class KafkaStreamsStoreKeyValueApplicationTest {
-    private static final String CLASS_NAME = KafkaStreamsStoreKeyValueApplicationTest.class.getName();
+class KafkaStreamsStoreKeyValueTimestampedApplicationTest {
+    private static final String CLASS_NAME = KafkaStreamsStoreKeyValueTimestampedApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
@@ -42,7 +43,7 @@ class KafkaStreamsStoreKeyValueApplicationTest {
     void setUp() {
         // Dummy properties required for test driver
         Properties properties = new Properties();
-        properties.setProperty(APPLICATION_ID_CONFIG, "streams-schedule-store-key-value-test");
+        properties.setProperty(APPLICATION_ID_CONFIG, "streams-schedule-store-key-value-timestamped-test");
         properties.setProperty(BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         properties.setProperty(STATE_DIR_CONFIG, STATE_DIR);
         properties.setProperty(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
@@ -75,7 +76,7 @@ class KafkaStreamsStoreKeyValueApplicationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {PERSON_KEY_VALUE_STORE, PERSON_KEY_VALUE_SUPPLIER_STORE})
+    @ValueSource(strings = {PERSON_TIMESTAMPED_KEY_VALUE_STORE, PERSON_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE})
     void shouldPutAndGetFromKeyValueStores(String storeName) {
         KafkaPerson homer = buildKafkaPerson("Homer");
         inputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
@@ -83,11 +84,19 @@ class KafkaStreamsStoreKeyValueApplicationTest {
         KafkaPerson marge = buildKafkaPerson("Marge");
         inputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:00:30Z")));
 
-        KeyValueStore<String, KafkaPerson> keyValueStore = testDriver
-            .getKeyValueStore(storeName);
+        KeyValueStore<String, ValueAndTimestamp<KafkaPerson>> timestampedKeyValueStore = testDriver
+            .getTimestampedKeyValueStore(storeName);
 
-        assertEquals(homer, keyValueStore.get("1"));
-        assertEquals(marge, keyValueStore.get("2"));
+        assertEquals(homer, timestampedKeyValueStore.get("1").value());
+        assertEquals(
+            "2000-01-01T01:00:00Z",
+            Instant.ofEpochMilli(timestampedKeyValueStore.get("1").timestamp()).toString()
+        );
+        assertEquals(marge, timestampedKeyValueStore.get("2").value());
+        assertEquals(
+            "2000-01-01T01:00:30Z",
+            Instant.ofEpochMilli(timestampedKeyValueStore.get("2").timestamp()).toString()
+        );
     }
 
     private KafkaPerson buildKafkaPerson(String firstName) {

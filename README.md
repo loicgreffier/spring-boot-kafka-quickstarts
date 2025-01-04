@@ -122,7 +122,9 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 |:----------------------------------------------------------------------------------------------------|---------------|----------------------------------------------------------------|--------------------------------|---------------------------------|
 | [Store Cleanup](/kafka-streams-quickstarts/kafka-streams-store-cleanup)                             | Kafka Streams | Schedule periodic store cleanup based on stream time           | `process()`                    | `schedule()`, `getStateStore()` |
 | [Key-Value Store](/kafka-streams-quickstarts/kafka-streams-store-key-value)                         | Kafka Streams | Insert and retrieve records from a key-value store             | `process()`, `addStateStore()` | `getStateStore()`               |
-| [Timestamped Key-Value Store](/kafka-streams-quickstarts/kafka-streams-store-timestamped-key-value) | Kafka Streams | Insert and retrieve records from a timestamped key-value store | `process()`, `addStateStore()` | `getStateStore()`               |
+| [Timestamped Key-Value Store](/kafka-streams-quickstarts/kafka-streams-store-key-value-timestamped) | Kafka Streams | Insert and retrieve records from a timestamped key-value store | `process()`, `addStateStore()` | `getStateStore()`               |
+| [Window Store](/kafka-streams-quickstarts/kafka-streams-store-window)                               | Kafka Streams | Insert and retrieve records from a window store                | `process()`, `addStateStore()` | `getStateStore()`               |
+| [Timestamped Window Store](/kafka-streams-quickstarts/kafka-streams-store-window-timestamped)       | Kafka Streams | Insert and retrieve records from a timestamped window store    | `process()`, `addStateStore()` | `getStateStore()`               |
 
 #### Handler
 
