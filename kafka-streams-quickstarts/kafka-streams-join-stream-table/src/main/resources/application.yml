@@ -1,13 +1,13 @@
 kafka:
   properties:
-    bootstrap.servers: localhost:9092
-    schema.registry.url: http://localhost:8081
-    application.id: streams-join-stream-table
-    client.id: streams-join-stream-table
-    state.dir: /tmp/kafka-streams-quickstarts
-    acks: all
-    auto.offset.reset: earliest
+    acks: 'all'
+    application.id: 'streams-join-stream-table'
+    auto.offset.reset: 'earliest'
     avro.remove.java.properties: true
-    replication.factor: 1 # Consider setting to 3 in production
-    min.insync.replicas: 1 # Consider setting to 2 (replication.factor - 1) in production
+    bootstrap.servers: 'localhost:9092'
+    client.id: 'streams-join-stream-table'
+    min.insync.replicas: 1
     num.stream.threads: 1
+    replication.factor: 1
+    schema.registry.url: 'http://localhost:8081'
+    state.dir: '/tmp/kafka-streams-quickstarts'

@@ -1,15 +1,15 @@
 kafka:
   properties:
-    bootstrap.servers: localhost:9092
-    key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    group.id: consumer-simple
-    client.id: consumer-simple
+    auto.offset.reset: 'earliest'
+    bootstrap.servers: 'localhost:9092'
+    client.id: 'consumer-simple'
     enable.auto.commit: false
-    auto.offset.reset: earliest
+    fetch.max.wait.ms: 500
+    fetch.min.bytes: 1
+    group.id: 'consumer-simple'
+    heartbeat.interval.ms: 3000
+    key.deserializer: 'org.apache.kafka.common.serialization.StringDeserializer'
     max.poll.interval.ms: 300000
     max.poll.records: 500
-    heartbeat.interval.ms: 3000
     session.timeout.ms: 45000
-    fetch.min.bytes: 1
-    fetch.max.wait.ms: 500
+    value.deserializer: 'org.apache.kafka.common.serialization.StringDeserializer'

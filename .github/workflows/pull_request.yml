@@ -1,9 +1,9 @@
-name: Pull request
+name: Pull Request
 
 on:
   pull_request:
     branches:
-      - "main"
+      - 'main'
 
 jobs:
   build:
@@ -21,16 +21,16 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Check Style
+      - name: Check style
         run: mvn checkstyle:check
 
-      - name: Build with Maven
+      - name: Build
         run: mvn -B compile
 
-      - name: Test with Maven
+      - name: Test
         run: mvn -B test
 
-      - name: Publish Test Report
+      - name: Publish test report
         if: always()
         uses: mikepenz/action-junit-report@v5
         with:

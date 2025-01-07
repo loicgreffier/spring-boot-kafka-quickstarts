@@ -1,9 +1,9 @@
-name: Continuous integration
+name: Push Main
 
 on:
   push:
     branches:
-      - "main"
+      - 'main'
 
 jobs:
   build:
@@ -21,22 +21,22 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Check Style
+      - name: Check style
         run: mvn checkstyle:check
 
-      - name: Build with Maven
+      - name: Build
         run: mvn -B compile
 
-      - name: Test with Maven
+      - name: Test
         run: mvn -B test
 
-      - name: Publish Test Report
+      - name: Publish test report
         if: always()
         uses: mikepenz/action-junit-report@v5
         with:
           report_paths: '**/target/surefire-reports/TEST-*.xml'
 
-      - name: Build and Publish Docker
+      - name: Docker
         run: mvn -B -DskipTests package jib:build -Djib.to.auth.username=$DOCKER_USER -Djib.to.auth.password=$DOCKER_TOKEN
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
