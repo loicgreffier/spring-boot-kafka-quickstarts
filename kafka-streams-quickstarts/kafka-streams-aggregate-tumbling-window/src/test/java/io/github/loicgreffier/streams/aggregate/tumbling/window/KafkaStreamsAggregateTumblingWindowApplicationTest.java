@@ -20,9 +20,9 @@
 package io.github.loicgreffier.streams.aggregate.tumbling.window;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.StateStore.PERSON_AGGREGATE_TUMBLING_WINDOW_STORE;
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.StateStore.USER_AGGREGATE_TUMBLING_WINDOW_STORE;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.USER_AGGREGATE_TUMBLING_WINDOW_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -31,8 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.avro.KafkaPersonGroup;
+import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.KafkaUserGroup;
 import io.github.loicgreffier.streams.aggregate.tumbling.window.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.aggregate.tumbling.window.serdes.SerdesUtils;
 import java.io.IOException;
@@ -63,8 +63,8 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
-    private TestOutputTopic<String, KafkaPersonGroup> outputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestOutputTopic<String, KafkaUserGroup> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -89,14 +89,14 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC,
+            USER_AGGREGATE_TUMBLING_WINDOW_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaPersonGroup>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUserGroup>getValueSerdes().deserializer()
         );
     }
 
@@ -109,11 +109,11 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
 
     @Test
     void shouldAggregateWhenTimeWindowIsRespected() {
-        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaPerson("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaPerson("Marge"), Instant.parse("2000-01-01T01:02:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("3", buildKafkaPerson("Bart"), Instant.parse("2000-01-01T01:04:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaUser("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaUser("Marge"), Instant.parse("2000-01-01T01:02:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("3", buildKafkaUser("Bart"), Instant.parse("2000-01-01T01:04:00Z")));
 
-        List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUserGroup>> results = outputTopic.readKeyValuesToList();
 
         // Homer arrives
         assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
@@ -130,11 +130,11 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
             results.get(2).value.getFirstNameByLastName().get("Simpson")
         );
 
-        WindowStore<String, KafkaPersonGroup> stateStore =
-            testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STORE);
+        WindowStore<String, KafkaUserGroup> stateStore =
+            testDriver.getWindowStore(USER_AGGREGATE_TUMBLING_WINDOW_STORE);
 
-        try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue00To05 = iterator.next();
+        try (KeyValueIterator<Windowed<String>, KafkaUserGroup> iterator = stateStore.all()) {
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue00To05 = iterator.next();
             assertEquals("Simpson", keyValue00To05.key.key());
             assertEquals("2000-01-01T01:00:00Z", keyValue00To05.key.window().startTime().toString());
             assertEquals("2000-01-01T01:05:00Z", keyValue00To05.key.window().endTime().toString());
@@ -149,10 +149,10 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
 
     @Test
     void shouldNotAggregateWhenTimeWindowIsNotRespected() {
-        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaPerson("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaPerson("Marge"), Instant.parse("2000-01-01T01:05:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaUser("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaUser("Marge"), Instant.parse("2000-01-01T01:05:00Z")));
 
-        List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUserGroup>> results = outputTopic.readKeyValuesToList();
 
         // The second record is not aggregated here because it is out of the time window
         // as the upper bound of tumbling window is exclusive.
@@ -164,17 +164,17 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         assertEquals("Simpson@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z", results.get(1).key);
         assertIterableEquals(List.of("Marge"), results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
-        WindowStore<String, KafkaPersonGroup> stateStore =
-            testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STORE);
+        WindowStore<String, KafkaUserGroup> stateStore =
+            testDriver.getWindowStore(USER_AGGREGATE_TUMBLING_WINDOW_STORE);
 
-        try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue00To05 = iterator.next();
+        try (KeyValueIterator<Windowed<String>, KafkaUserGroup> iterator = stateStore.all()) {
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue00To05 = iterator.next();
             assertEquals("Simpson", keyValue00To05.key.key());
             assertEquals("2000-01-01T01:00:00Z", keyValue00To05.key.window().startTime().toString());
             assertEquals("2000-01-01T01:05:00Z", keyValue00To05.key.window().endTime().toString());
             assertIterableEquals(List.of("Homer"), keyValue00To05.value.getFirstNameByLastName().get("Simpson"));
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue05To10 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue05To10 = iterator.next();
             assertEquals("Simpson", keyValue05To10.key.key());
             assertEquals("2000-01-01T01:05:00Z", keyValue05To10.key.window().startTime().toString());
             assertEquals("2000-01-01T01:10:00Z", keyValue05To10.key.window().endTime().toString());
@@ -186,17 +186,17 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
 
     @Test
     void shouldHonorGracePeriod() {
-        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaPerson("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("3", buildKafkaPerson("Marge"), Instant.parse("2000-01-01T01:05:30Z")));
+        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaUser("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("3", buildKafkaUser("Marge"), Instant.parse("2000-01-01T01:05:30Z")));
 
         // At this point, the stream time is 01:05:30. It exceeds by 30 seconds
         // the upper bound of the window [01:00:00Z->01:05:00Z) where Homer is included.
         // However, the following delayed record "Bart" will be aggregated into the window
         // because the grace period is 1 minute.
 
-        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaPerson("Bart"), Instant.parse("2000-01-01T01:03:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaUser("Bart"), Instant.parse("2000-01-01T01:03:00Z")));
 
-        List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUserGroup>> results = outputTopic.readKeyValuesToList();
 
         // Homer arrives
         assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
@@ -213,11 +213,11 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(2).key);
         assertIterableEquals(List.of("Homer", "Bart"), results.get(2).value.getFirstNameByLastName().get("Simpson"));
 
-        WindowStore<String, KafkaPersonGroup> stateStore =
-            testDriver.getWindowStore(PERSON_AGGREGATE_TUMBLING_WINDOW_STORE);
+        WindowStore<String, KafkaUserGroup> stateStore =
+            testDriver.getWindowStore(USER_AGGREGATE_TUMBLING_WINDOW_STORE);
 
-        try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue00To05 = iterator.next();
+        try (KeyValueIterator<Windowed<String>, KafkaUserGroup> iterator = stateStore.all()) {
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue00To05 = iterator.next();
             assertEquals("Simpson", keyValue00To05.key.key());
             assertEquals("2000-01-01T01:00:00Z", keyValue00To05.key.window().startTime().toString());
             assertEquals("2000-01-01T01:05:00Z", keyValue00To05.key.window().endTime().toString());
@@ -226,7 +226,7 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
                 keyValue00To05.value.getFirstNameByLastName().get("Simpson")
             );
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue05To10 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue05To10 = iterator.next();
             assertEquals("Simpson", keyValue05To10.key.key());
             assertEquals("2000-01-01T01:05:00Z", keyValue05To10.key.window().startTime().toString());
             assertEquals("2000-01-01T01:10:00Z", keyValue05To10.key.window().endTime().toString());
@@ -236,8 +236,8 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         }
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName("Simpson")

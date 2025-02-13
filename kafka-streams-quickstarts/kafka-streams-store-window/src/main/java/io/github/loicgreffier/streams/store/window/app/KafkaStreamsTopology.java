@@ -19,11 +19,11 @@
 
 package io.github.loicgreffier.streams.store.window.app;
 
-import static io.github.loicgreffier.streams.store.window.constant.StateStore.PERSON_WINDOW_STORE;
-import static io.github.loicgreffier.streams.store.window.constant.StateStore.PERSON_WINDOW_SUPPLIER_STORE;
-import static io.github.loicgreffier.streams.store.window.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.store.window.constant.StateStore.USER_WINDOW_STORE;
+import static io.github.loicgreffier.streams.store.window.constant.StateStore.USER_WINDOW_SUPPLIER_STORE;
+import static io.github.loicgreffier.streams.store.window.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.store.window.app.processor.PutInStoreProcessor;
 import io.github.loicgreffier.streams.store.window.serdes.SerdesUtils;
 import java.time.Duration;
@@ -50,7 +50,7 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic and processes the records with
+     * The topology reads from the USER_TOPIC topic and processes the records with
      * the {@link PutInStoreProcessor} processor that puts the records in a {@link WindowStore} state store.
      * It demonstrates the two strategies to use a state store in a processor:
      * - Using the {@link StreamsBuilder#addStateStore(StoreBuilder)} and specifying the store names
@@ -60,10 +60,10 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        final StoreBuilder<WindowStore<String, KafkaPerson>> storeBuilder = Stores
+        final StoreBuilder<WindowStore<String, KafkaUser>> storeBuilder = Stores
             .windowStoreBuilder(
                 Stores.persistentWindowStore(
-                    PERSON_WINDOW_STORE,
+                    USER_WINDOW_STORE,
                     Duration.ofMinutes(10),
                     Duration.ofMinutes(5),
                     false
@@ -73,18 +73,18 @@ public class KafkaStreamsTopology {
 
         streamsBuilder
             .addStateStore(storeBuilder)
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .process(() -> new PutInStoreProcessor(storeBuilder.name()), storeBuilder.name());
 
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .process(new ProcessorSupplier<String, KafkaPerson, String, KafkaPerson>() {
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .process(new ProcessorSupplier<String, KafkaUser, String, KafkaUser>() {
                 @Override
                 public Set<StoreBuilder<?>> stores() {
-                    StoreBuilder<WindowStore<String, KafkaPerson>> supplierStoreBuilder = Stores
+                    StoreBuilder<WindowStore<String, KafkaUser>> supplierStoreBuilder = Stores
                         .windowStoreBuilder(
                             Stores.persistentWindowStore(
-                                PERSON_WINDOW_SUPPLIER_STORE,
+                                USER_WINDOW_SUPPLIER_STORE,
                                 Duration.ofMinutes(10),
                                 Duration.ofMinutes(5),
                                 false
@@ -96,8 +96,8 @@ public class KafkaStreamsTopology {
                 }
 
                 @Override
-                public Processor<String, KafkaPerson, String, KafkaPerson> get() {
-                    return new PutInStoreProcessor(PERSON_WINDOW_SUPPLIER_STORE);
+                public Processor<String, KafkaUser, String, KafkaUser> get() {
+                    return new PutInStoreProcessor(USER_WINDOW_SUPPLIER_STORE);
                 }
             });
     }

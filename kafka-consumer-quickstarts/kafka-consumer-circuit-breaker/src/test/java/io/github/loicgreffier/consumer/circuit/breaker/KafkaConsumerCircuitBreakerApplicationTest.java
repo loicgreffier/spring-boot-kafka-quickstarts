@@ -19,13 +19,13 @@
 
 package io.github.loicgreffier.consumer.circuit.breaker;
 
-import static io.github.loicgreffier.consumer.circuit.breaker.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.consumer.circuit.breaker.constant.Topic.USER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.consumer.circuit.breaker.app.ConsumerRunner;
 import java.time.Instant;
 import java.util.Collections;
@@ -45,7 +45,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerCircuitBreakerApplicationTest {
     @Spy
-    private MockConsumer<String, KafkaPerson> mockConsumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
+    private MockConsumer<String, KafkaUser> mockConsumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
 
     @InjectMocks
     private ConsumerRunner consumerRunner;
@@ -54,7 +54,7 @@ class KafkaConsumerCircuitBreakerApplicationTest {
 
     @BeforeEach
     void setUp() {
-        topicPartition = new TopicPartition(PERSON_TOPIC, 0);
+        topicPartition = new TopicPartition(USER_TOPIC, 0);
         mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(Collections.singletonList(topicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(topicPartition, 0L));
         mockConsumer.updateEndOffsets(Map.of(topicPartition, 0L));
@@ -62,8 +62,8 @@ class KafkaConsumerCircuitBreakerApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1",
-            KafkaPerson.newBuilder()
+        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1",
+            KafkaUser.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")
                 .setLastName("Simpson")
@@ -81,16 +81,16 @@ class KafkaConsumerCircuitBreakerApplicationTest {
 
     @Test
     void shouldBreakCircuitOnPoisonPill() {
-        ConsumerRecord<String, KafkaPerson> message = new ConsumerRecord<>(PERSON_TOPIC, 0, 0, "1",
-            KafkaPerson.newBuilder()
+        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1",
+            KafkaUser.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")
                 .setLastName("Simpson")
                 .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
                 .build());
 
-        ConsumerRecord<String, KafkaPerson> message2 = new ConsumerRecord<>(PERSON_TOPIC, 0, 2, "2",
-            KafkaPerson.newBuilder()
+        ConsumerRecord<String, KafkaUser> message2 = new ConsumerRecord<>(USER_TOPIC, 0, 2, "2",
+            KafkaUser.newBuilder()
                 .setId(2L)
                 .setFirstName("Homer")
                 .setLastName("Simpson")

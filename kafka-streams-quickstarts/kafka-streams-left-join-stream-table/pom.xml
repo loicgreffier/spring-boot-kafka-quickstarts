@@ -19,7 +19,7 @@
                 <configuration>
                     <imports>
                         <import>${project.basedir}/src/main/avro/country.avsc</import>
-                        <import>${project.basedir}/src/main/avro/person.avsc</import>
+                        <import>${project.basedir}/src/main/avro/user.avsc</import>
                     </imports>
                 </configuration>
             </plugin>

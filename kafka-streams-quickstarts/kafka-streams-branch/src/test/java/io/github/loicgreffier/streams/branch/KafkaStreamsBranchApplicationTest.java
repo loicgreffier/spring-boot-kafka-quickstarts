@@ -20,17 +20,17 @@
 package io.github.loicgreffier.streams.branch;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_BRANCH_A_TOPIC;
-import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_BRANCH_B_TOPIC;
-import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_BRANCH_DEFAULT_TOPIC;
-import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_A_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_B_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_DEFAULT_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.branch.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.branch.serdes.SerdesUtils;
 import java.io.IOException;
@@ -57,10 +57,10 @@ class KafkaStreamsBranchApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
-    private TestOutputTopic<String, KafkaPerson> outputTopicA;
-    private TestOutputTopic<String, KafkaPerson> outputTopicB;
-    private TestOutputTopic<String, KafkaPerson> outputTopicDefault;
+    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestOutputTopic<String, KafkaUser> outputTopicA;
+    private TestOutputTopic<String, KafkaUser> outputTopicB;
+    private TestOutputTopic<String, KafkaUser> outputTopicDefault;
 
     @BeforeEach
     void setUp() {
@@ -85,24 +85,24 @@ class KafkaStreamsBranchApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopicA = testDriver.createOutputTopic(
-            PERSON_BRANCH_A_TOPIC,
+            USER_BRANCH_A_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
         );
         outputTopicB = testDriver.createOutputTopic(
-            PERSON_BRANCH_B_TOPIC,
+            USER_BRANCH_B_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
         );
         outputTopicDefault = testDriver.createOutputTopic(
-            PERSON_BRANCH_DEFAULT_TOPIC,
+            USER_BRANCH_DEFAULT_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
         );
     }
 
@@ -115,9 +115,9 @@ class KafkaStreamsBranchApplicationTest {
 
     @Test
     void shouldBranchToTopicA() {
-        inputTopic.pipeInput("1", buildKafkaPerson("Homer", "Simpson"));
+        inputTopic.pipeInput("1", buildKafkaUser("Homer", "Simpson"));
 
-        List<KeyValue<String, KafkaPerson>> results = outputTopicA.readKeyValuesToList();
+        List<KeyValue<String, KafkaUser>> results = outputTopicA.readKeyValuesToList();
 
         assertEquals("HOMER", results.getFirst().value.getFirstName());
         assertEquals("SIMPSON", results.getFirst().value.getLastName());
@@ -125,26 +125,26 @@ class KafkaStreamsBranchApplicationTest {
 
     @Test
     void shouldBranchToTopicB() {
-        KafkaPerson person = buildKafkaPerson("Ned", "Flanders");
-        inputTopic.pipeInput("1", person);
+        KafkaUser user = buildKafkaUser("Ned", "Flanders");
+        inputTopic.pipeInput("1", user);
 
-        List<KeyValue<String, KafkaPerson>> results = outputTopicB.readKeyValuesToList();
+        List<KeyValue<String, KafkaUser>> results = outputTopicB.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", person), results.getFirst());
+        assertEquals(KeyValue.pair("1", user), results.getFirst());
     }
 
     @Test
     void shouldBranchToDefaultTopic() {
-        KafkaPerson person = buildKafkaPerson("Milhouse", "Van Houten");
-        inputTopic.pipeInput("1", person);
+        KafkaUser user = buildKafkaUser("Milhouse", "Van Houten");
+        inputTopic.pipeInput("1", user);
 
-        List<KeyValue<String, KafkaPerson>> results = outputTopicDefault.readKeyValuesToList();
+        List<KeyValue<String, KafkaUser>> results = outputTopicDefault.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", person), results.getFirst());
+        assertEquals(KeyValue.pair("1", user), results.getFirst());
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName, String lastName) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName, String lastName) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName(lastName)

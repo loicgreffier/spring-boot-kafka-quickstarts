@@ -19,7 +19,7 @@
 
 package io.github.loicgreffier.producer.avro.specific.config;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.producer.avro.specific.property.ProducerProperties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -40,7 +40,7 @@ public class ProducerConfig {
      * @return A Kafka producer instance.
      */
     @Bean
-    public Producer<String, KafkaPerson> kafkaProducer(ProducerProperties properties) {
+    public Producer<String, KafkaUser> kafkaProducer(ProducerProperties properties) {
         return new KafkaProducer<>(properties.asProperties());
     }
 }

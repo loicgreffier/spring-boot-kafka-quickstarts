@@ -20,16 +20,16 @@
 package io.github.loicgreffier.streams.processvalues;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.processvalues.constant.Topic.PERSON_PROCESS_VALUES_TOPIC;
-import static io.github.loicgreffier.streams.processvalues.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.processvalues.constant.Topic.USER_PROCESS_VALUES_TOPIC;
+import static io.github.loicgreffier.streams.processvalues.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.avro.KafkaPersonMetadata;
+import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.KafkaUserMetadata;
 import io.github.loicgreffier.streams.processvalues.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.processvalues.serdes.SerdesUtils;
 import java.io.IOException;
@@ -56,8 +56,8 @@ class KafkaStreamsProcessValuesApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
-    private TestOutputTopic<String, KafkaPersonMetadata> outputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestOutputTopic<String, KafkaUserMetadata> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -82,14 +82,14 @@ class KafkaStreamsProcessValuesApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_PROCESS_VALUES_TOPIC,
+            USER_PROCESS_VALUES_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaPersonMetadata>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUserMetadata>getValueSerdes().deserializer()
         );
     }
 
@@ -102,27 +102,27 @@ class KafkaStreamsProcessValuesApplicationTest {
 
     @Test
     void shouldProcessValues() {
-        KafkaPerson homer = buildKafkaPerson("Homer");
-        KafkaPerson marge = buildKafkaPerson("Marge");
+        KafkaUser homer = buildKafkaUser("Homer");
+        KafkaUser marge = buildKafkaUser("Marge");
 
         inputTopic.pipeInput("1", homer);
         inputTopic.pipeInput("2", marge);
 
-        List<KeyValue<String, KafkaPersonMetadata>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUserMetadata>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(homer, results.getFirst().value.getPerson());
-        assertEquals(PERSON_TOPIC, results.getFirst().value.getTopic());
+        assertEquals(homer, results.getFirst().value.getUser());
+        assertEquals(USER_TOPIC, results.getFirst().value.getTopic());
         assertEquals(0, results.getFirst().value.getPartition());
         assertEquals(0, results.getFirst().value.getOffset());
 
-        assertEquals(marge, results.get(1).value.getPerson());
-        assertEquals(PERSON_TOPIC, results.get(1).value.getTopic());
+        assertEquals(marge, results.get(1).value.getUser());
+        assertEquals(USER_TOPIC, results.get(1).value.getTopic());
         assertEquals(0, results.get(1).value.getPartition());
         assertEquals(1, results.get(1).value.getOffset());
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName("Simpson")

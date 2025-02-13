@@ -20,11 +20,11 @@
 package io.github.loicgreffier.streams.join.stream.stream;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.join.stream.stream.constant.StateStore.PERSON_JOIN_STREAM_STREAM_STORE;
-import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.PERSON_JOIN_STREAM_STREAM_REKEY_TOPIC;
-import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.PERSON_JOIN_STREAM_STREAM_TOPIC;
-import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.PERSON_TOPIC;
-import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.PERSON_TOPIC_TWO;
+import static io.github.loicgreffier.streams.join.stream.stream.constant.StateStore.USER_JOIN_STREAM_STREAM_STORE;
+import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.USER_JOIN_STREAM_STREAM_REKEY_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.USER_JOIN_STREAM_STREAM_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.USER_TOPIC_TWO;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -33,8 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaJoinPersons;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaJoinUsers;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.join.stream.stream.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.join.stream.stream.serdes.SerdesUtils;
 import java.io.IOException;
@@ -65,11 +65,11 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> leftInputTopic;
-    private TestInputTopic<String, KafkaPerson> rightInputTopic;
-    private TestOutputTopic<String, KafkaPerson> rekeyLeftOutputTopic;
-    private TestOutputTopic<String, KafkaPerson> rekeyRightOutputTopic;
-    private TestOutputTopic<String, KafkaJoinPersons> joinOutputTopic;
+    private TestInputTopic<String, KafkaUser> leftInputTopic;
+    private TestInputTopic<String, KafkaUser> rightInputTopic;
+    private TestOutputTopic<String, KafkaUser> rekeyLeftOutputTopic;
+    private TestOutputTopic<String, KafkaUser> rekeyRightOutputTopic;
+    private TestOutputTopic<String, KafkaJoinUsers> joinOutputTopic;
 
     @BeforeEach
     void setUp() {
@@ -94,29 +94,29 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         );
 
         leftInputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         rightInputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC_TWO,
+            USER_TOPIC_TWO,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         rekeyLeftOutputTopic = testDriver.createOutputTopic(
-            "streams-join-stream-stream-test-" + PERSON_JOIN_STREAM_STREAM_REKEY_TOPIC + "-left-repartition",
+            "streams-join-stream-stream-test-" + USER_JOIN_STREAM_STREAM_REKEY_TOPIC + "-left-repartition",
             new StringDeserializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
         );
         rekeyRightOutputTopic = testDriver.createOutputTopic(
-            "streams-join-stream-stream-test-" + PERSON_JOIN_STREAM_STREAM_REKEY_TOPIC + "-right-repartition",
+            "streams-join-stream-stream-test-" + USER_JOIN_STREAM_STREAM_REKEY_TOPIC + "-right-repartition",
             new StringDeserializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
         );
         joinOutputTopic = testDriver.createOutputTopic(
-            PERSON_JOIN_STREAM_STREAM_TOPIC,
+            USER_JOIN_STREAM_STREAM_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaJoinPersons>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaJoinUsers>getValueSerdes().deserializer()
         );
     }
 
@@ -129,54 +129,54 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
 
     @Test
     void shouldRekey() {
-        KafkaPerson leftPerson = buildKafkaPerson("Homer");
-        KafkaPerson rightPerson = buildKafkaPerson("Marge");
+        KafkaUser leftUser = buildKafkaUser("Homer");
+        KafkaUser rightUser = buildKafkaUser("Marge");
 
-        leftInputTopic.pipeInput("1", leftPerson);
-        rightInputTopic.pipeInput("2", rightPerson);
+        leftInputTopic.pipeInput("1", leftUser);
+        rightInputTopic.pipeInput("2", rightUser);
 
-        List<KeyValue<String, KafkaPerson>> topicOneResults = rekeyLeftOutputTopic.readKeyValuesToList();
-        List<KeyValue<String, KafkaPerson>> topicTwoResults = rekeyRightOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUser>> topicOneResults = rekeyLeftOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUser>> topicTwoResults = rekeyRightOutputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("Simpson", leftPerson), topicOneResults.getFirst());
-        assertEquals(KeyValue.pair("Simpson", rightPerson), topicTwoResults.getFirst());
+        assertEquals(KeyValue.pair("Simpson", leftUser), topicOneResults.getFirst());
+        assertEquals(KeyValue.pair("Simpson", rightUser), topicTwoResults.getFirst());
     }
 
     @Test
     void shouldJoinWhenTimeWindowIsRespected() {
-        KafkaPerson homer = buildKafkaPerson("Homer");
+        KafkaUser homer = buildKafkaUser("Homer");
         leftInputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        KafkaPerson marge = buildKafkaPerson("Marge");
+        KafkaUser marge = buildKafkaUser("Marge");
         rightInputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:02:00Z")));
 
-        KafkaPerson bart = buildKafkaPerson("Bart");
+        KafkaUser bart = buildKafkaUser("Bart");
         leftInputTopic.pipeInput(new TestRecord<>("3", bart, Instant.parse("2000-01-01T01:03:00Z")));
 
-        List<KeyValue<String, KafkaJoinPersons>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaJoinUsers>> results = joinOutputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.getFirst().key);
-        assertEquals(homer, results.get(0).value.getPersonOne());
-        assertEquals(marge, results.get(0).value.getPersonTwo());
+        assertEquals(homer, results.get(0).value.getUserOne());
+        assertEquals(marge, results.get(0).value.getUserTwo());
 
         assertEquals("Simpson", results.get(1).key);
-        assertEquals(bart, results.get(1).value.getPersonOne());
-        assertEquals(marge, results.get(1).value.getPersonTwo());
+        assertEquals(bart, results.get(1).value.getUserOne());
+        assertEquals(marge, results.get(1).value.getUserTwo());
 
-        WindowStore<String, KafkaPerson> leftStateStore = testDriver
-            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STORE + "-this-join-store");
+        WindowStore<String, KafkaUser> leftStateStore = testDriver
+            .getWindowStore(USER_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
-        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
+        try (KeyValueIterator<Windowed<String>, KafkaUser> iterator = leftStateStore.all()) {
             // As join windows are looking backward and forward in time,
             // records are kept in the store for "before" + "after" duration.
 
-            KeyValue<Windowed<String>, KafkaPerson> leftKeyValue00To10 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUser> leftKeyValue00To10 = iterator.next();
             assertEquals("Simpson", leftKeyValue00To10.key.key());
             assertEquals("2000-01-01T01:00:00Z", leftKeyValue00To10.key.window().startTime().toString());
             assertEquals("2000-01-01T01:10:00Z", leftKeyValue00To10.key.window().endTime().toString());
             assertEquals(homer, leftKeyValue00To10.value);
 
-            KeyValue<Windowed<String>, KafkaPerson> leftKeyValue03To13 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUser> leftKeyValue03To13 = iterator.next();
             assertEquals("Simpson", leftKeyValue03To13.key.key());
             assertEquals("2000-01-01T01:03:00Z", leftKeyValue03To13.key.window().startTime().toString());
             assertEquals("2000-01-01T01:13:00Z", leftKeyValue03To13.key.window().endTime().toString());
@@ -185,11 +185,11 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, KafkaPerson> rightStateStore = testDriver
-            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STORE + "-other-join-store");
+        WindowStore<String, KafkaUser> rightStateStore = testDriver
+            .getWindowStore(USER_JOIN_STREAM_STREAM_STORE + "-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> rightKeyValue02To12 = iterator.next();
+        try (KeyValueIterator<Windowed<String>, KafkaUser> iterator = rightStateStore.all()) {
+            KeyValue<Windowed<String>, KafkaUser> rightKeyValue02To12 = iterator.next();
             assertEquals("Simpson", rightKeyValue02To12.key.key());
             assertEquals("2000-01-01T01:02:00Z", rightKeyValue02To12.key.window().startTime().toString());
             assertEquals("2000-01-01T01:12:00Z", rightKeyValue02To12.key.window().endTime().toString());
@@ -201,31 +201,31 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
 
     @Test
     void shouldNotJoinWhenTimeWindowIsNotRespected() {
-        KafkaPerson homer = buildKafkaPerson("Homer");
+        KafkaUser homer = buildKafkaUser("Homer");
         leftInputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        KafkaPerson marge = buildKafkaPerson("Marge");
+        KafkaUser marge = buildKafkaUser("Marge");
         rightInputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:05:01Z")));
 
-        KafkaPerson bart = buildKafkaPerson("Bart");
+        KafkaUser bart = buildKafkaUser("Bart");
         leftInputTopic.pipeInput(new TestRecord<>("3", bart, Instant.parse("2000-01-01T01:10:02Z")));
 
-        List<KeyValue<String, KafkaJoinPersons>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaJoinUsers>> results = joinOutputTopic.readKeyValuesToList();
 
         // No records joined because Marge arrived too late for Homer and Bart arrived too late for Marge.
         assertTrue(results.isEmpty());
 
-        WindowStore<String, KafkaPerson> leftStateStore = testDriver
-            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STORE + "-this-join-store");
+        WindowStore<String, KafkaUser> leftStateStore = testDriver
+            .getWindowStore(USER_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
-        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> leftKeyValue00To10 = iterator.next();
+        try (KeyValueIterator<Windowed<String>, KafkaUser> iterator = leftStateStore.all()) {
+            KeyValue<Windowed<String>, KafkaUser> leftKeyValue00To10 = iterator.next();
             assertEquals("Simpson", leftKeyValue00To10.key.key());
             assertEquals("2000-01-01T01:00:00Z", leftKeyValue00To10.key.window().startTime().toString());
             assertEquals("2000-01-01T01:10:00Z", leftKeyValue00To10.key.window().endTime().toString());
             assertEquals(homer, leftKeyValue00To10.value);
 
-            KeyValue<Windowed<String>, KafkaPerson> leftKeyValue10To20 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUser> leftKeyValue10To20 = iterator.next();
             assertEquals("Simpson", leftKeyValue10To20.key.key());
             assertEquals("2000-01-01T01:10:02Z", leftKeyValue10To20.key.window().startTime().toString());
             assertEquals("2000-01-01T01:20:02Z", leftKeyValue10To20.key.window().endTime().toString());
@@ -234,11 +234,11 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, KafkaPerson> rightStateStore = testDriver
-            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STORE + "-other-join-store");
+        WindowStore<String, KafkaUser> rightStateStore = testDriver
+            .getWindowStore(USER_JOIN_STREAM_STREAM_STORE + "-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> rightKeyValue = iterator.next();
+        try (KeyValueIterator<Windowed<String>, KafkaUser> iterator = rightStateStore.all()) {
+            KeyValue<Windowed<String>, KafkaUser> rightKeyValue = iterator.next();
             assertEquals("Simpson", rightKeyValue.key.key());
             assertEquals("2000-01-01T01:05:01Z", rightKeyValue.key.window().startTime().toString());
             assertEquals("2000-01-01T01:15:01Z", rightKeyValue.key.window().endTime().toString());
@@ -250,10 +250,10 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
 
     @Test
     void shouldHonorGracePeriod() {
-        KafkaPerson homer = buildKafkaPerson("Homer");
+        KafkaUser homer = buildKafkaUser("Homer");
         leftInputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        KafkaPerson marge = buildKafkaPerson("Marge");
+        KafkaUser marge = buildKafkaUser("Marge");
         leftInputTopic.pipeInput(new TestRecord<>("3", marge, Instant.parse("2000-01-01T01:10:30Z")));
 
         // At this point, the stream time is 01:10:30. It exceeds by 30 seconds
@@ -261,26 +261,26 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         // However, the following delayed record "Bart" will be joined with the first record
         // thanks to the grace period of 1 minute.
 
-        KafkaPerson bart = buildKafkaPerson("Bart");
+        KafkaUser bart = buildKafkaUser("Bart");
         rightInputTopic.pipeInput(new TestRecord<>("2", bart, Instant.parse("2000-01-01T01:05:00Z")));
 
-        List<KeyValue<String, KafkaJoinPersons>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaJoinUsers>> results = joinOutputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.getFirst().key);
-        assertEquals(homer, results.getFirst().value.getPersonOne());
-        assertEquals(bart, results.getFirst().value.getPersonTwo());
+        assertEquals(homer, results.getFirst().value.getUserOne());
+        assertEquals(bart, results.getFirst().value.getUserTwo());
 
-        WindowStore<String, KafkaPerson> leftStateStore = testDriver
-            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STORE + "-this-join-store");
+        WindowStore<String, KafkaUser> leftStateStore = testDriver
+            .getWindowStore(USER_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
-        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = leftStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> leftKeyValue00To10 = iterator.next();
+        try (KeyValueIterator<Windowed<String>, KafkaUser> iterator = leftStateStore.all()) {
+            KeyValue<Windowed<String>, KafkaUser> leftKeyValue00To10 = iterator.next();
             assertEquals("Simpson", leftKeyValue00To10.key.key());
             assertEquals("2000-01-01T01:00:00Z", leftKeyValue00To10.key.window().startTime().toString());
             assertEquals("2000-01-01T01:10:00Z", leftKeyValue00To10.key.window().endTime().toString());
             assertEquals(homer, leftKeyValue00To10.value);
 
-            KeyValue<Windowed<String>, KafkaPerson> leftKeyValue10m30To20m30 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUser> leftKeyValue10m30To20m30 = iterator.next();
             assertEquals("Simpson", leftKeyValue10m30To20m30.key.key());
             assertEquals("2000-01-01T01:10:30Z", leftKeyValue10m30To20m30.key.window().startTime().toString());
             assertEquals("2000-01-01T01:20:30Z", leftKeyValue10m30To20m30.key.window().endTime().toString());
@@ -289,11 +289,11 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, KafkaPerson> rightStateStore = testDriver
-            .getWindowStore(PERSON_JOIN_STREAM_STREAM_STORE + "-other-join-store");
+        WindowStore<String, KafkaUser> rightStateStore = testDriver
+            .getWindowStore(USER_JOIN_STREAM_STREAM_STORE + "-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, KafkaPerson> iterator = rightStateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPerson> rightKeyValue = iterator.next();
+        try (KeyValueIterator<Windowed<String>, KafkaUser> iterator = rightStateStore.all()) {
+            KeyValue<Windowed<String>, KafkaUser> rightKeyValue = iterator.next();
             assertEquals("Simpson", rightKeyValue.key.key());
             assertEquals("2000-01-01T01:05:00Z", rightKeyValue.key.window().startTime().toString());
             assertEquals("2000-01-01T01:15:00Z", rightKeyValue.key.window().endTime().toString());
@@ -303,8 +303,8 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         }
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName("Simpson")

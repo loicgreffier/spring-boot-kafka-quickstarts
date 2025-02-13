@@ -19,10 +19,10 @@
 
 package io.github.loicgreffier.streams.flatmapvalues.app;
 
-import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.PERSON_FLATMAP_VALUES_TOPIC;
-import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.USER_FLATMAP_VALUES_TOPIC;
+import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.flatmapvalues.serdes.SerdesUtils;
 import java.util.Arrays;
 import lombok.AccessLevel;
@@ -42,17 +42,17 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic, maps the value to a list of strings containing the first name
+     * The topology reads from the USER_TOPIC topic, maps the value to a list of strings containing the first name
      * and the last name.
-     * The result is written to the PERSON_FLATMAP_VALUES_TOPIC topic.
+     * The result is written to the USER_FLATMAP_VALUES_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .flatMapValues(person -> Arrays.asList(person.getFirstName(), person.getLastName()))
-            .to(PERSON_FLATMAP_VALUES_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+            .flatMapValues(user -> Arrays.asList(user.getFirstName(), user.getLastName()))
+            .to(USER_FLATMAP_VALUES_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
     }
 }

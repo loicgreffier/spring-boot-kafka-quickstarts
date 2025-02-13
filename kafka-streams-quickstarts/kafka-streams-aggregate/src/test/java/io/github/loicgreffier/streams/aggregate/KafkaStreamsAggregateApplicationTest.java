@@ -20,9 +20,9 @@
 package io.github.loicgreffier.streams.aggregate;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.aggregate.constant.StateStore.PERSON_AGGREGATE_STORE;
-import static io.github.loicgreffier.streams.aggregate.constant.Topic.PERSON_AGGREGATE_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.constant.StateStore.USER_AGGREGATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.constant.Topic.USER_AGGREGATE_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -30,8 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.avro.KafkaPersonGroup;
+import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.KafkaUserGroup;
 import io.github.loicgreffier.streams.aggregate.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.aggregate.serdes.SerdesUtils;
 import java.io.IOException;
@@ -59,8 +59,8 @@ class KafkaStreamsAggregateApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
-    private TestOutputTopic<String, KafkaPersonGroup> outputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestOutputTopic<String, KafkaUserGroup> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -85,14 +85,14 @@ class KafkaStreamsAggregateApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_AGGREGATE_TOPIC,
+            USER_AGGREGATE_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaPersonGroup>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUserGroup>getValueSerdes().deserializer()
         );
     }
 
@@ -105,11 +105,11 @@ class KafkaStreamsAggregateApplicationTest {
 
     @Test
     void shouldAggregate() {
-        inputTopic.pipeInput("1", buildKafkaPerson("Homer"));
-        inputTopic.pipeInput("2", buildKafkaPerson("Marge"));
-        inputTopic.pipeInput("3", buildKafkaPerson("Bart"));
+        inputTopic.pipeInput("1", buildKafkaUser("Homer"));
+        inputTopic.pipeInput("2", buildKafkaUser("Marge"));
+        inputTopic.pipeInput("3", buildKafkaUser("Bart"));
 
-        List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUserGroup>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.get(0).key);
         assertIterableEquals(List.of("Homer"), results.get(0).value.getFirstNameByLastName().get("Simpson"));
@@ -123,7 +123,7 @@ class KafkaStreamsAggregateApplicationTest {
             results.get(2).value.getFirstNameByLastName().get("Simpson")
         );
 
-        KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver.getKeyValueStore(PERSON_AGGREGATE_STORE);
+        KeyValueStore<String, KafkaUserGroup> stateStore = testDriver.getKeyValueStore(USER_AGGREGATE_STORE);
 
         assertIterableEquals(
             List.of("Homer", "Marge", "Bart"),
@@ -131,8 +131,8 @@ class KafkaStreamsAggregateApplicationTest {
         );
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName("Simpson")

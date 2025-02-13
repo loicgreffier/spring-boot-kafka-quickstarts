@@ -19,11 +19,11 @@
 
 package io.github.loicgreffier.streams.exception.handler.production.app;
 
-import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.PERSON_PRODUCTION_EXCEPTION_HANDLER_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.avro.KafkaPersonWithEmail;
+import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.KafkaUserWithEmail;
 import io.github.loicgreffier.streams.exception.handler.production.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -44,9 +44,9 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic and either:
+     * The topology reads from the USER_TOPIC topic and either:
      * <ul>
-     *     <li>Populates the email field changing the record type from KafkaPerson to KafkaPersonWithEmail.
+     *     <li>Populates the email field changing the record type from KafkaUser to KafkaUserWithEmail.
      *     As the email field is not nullable, it breaks the schema backward compatibility and triggers a serialization
      *     exception when registering the schema in the Schema Registry automatically.</li>
      *     <li>Populates the biography field with a large text that exceeds the maximum record size allowed by
@@ -55,7 +55,7 @@ public class KafkaStreamsTopology {
      * </ul>
      * The population of the email field and the biography field is not triggered for all records to avoid generating
      * too many exceptions.
-     * The result is written to the PERSON_PRODUCTION_EXCEPTION_HANDLER_TOPIC topic.
+     * The result is written to the USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
@@ -66,28 +66,28 @@ public class KafkaStreamsTopology {
         }
 
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .mapValues(person -> {
-                if (person.getId() % 15 == 10) {
-                    return KafkaPersonWithEmail.newBuilder()
-                        .setId(person.getId())
-                        .setFirstName(person.getFirstName())
-                        .setLastName(person.getLastName())
-                        .setEmail(person.getFirstName() + "." + person.getLastName() + "@mail.com")
-                        .setNationality(person.getNationality())
-                        .setBirthDate(person.getBirthDate())
-                        .setBiography(person.getBiography())
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+            .mapValues(user -> {
+                if (user.getId() % 15 == 10) {
+                    return KafkaUserWithEmail.newBuilder()
+                        .setId(user.getId())
+                        .setFirstName(user.getFirstName())
+                        .setLastName(user.getLastName())
+                        .setEmail(user.getFirstName() + "." + user.getLastName() + "@mail.com")
+                        .setNationality(user.getNationality())
+                        .setBirthDate(user.getBirthDate())
+                        .setBiography(user.getBiography())
                         .build();
                 }
 
-                if (person.getId() % 15 == 1) {
-                    person.setBiography(stringBuilder.toString());
+                if (user.getId() % 15 == 1) {
+                    user.setBiography(stringBuilder.toString());
                 }
 
-                return person;
+                return user;
             })
-            .to(PERSON_PRODUCTION_EXCEPTION_HANDLER_TOPIC,
+            .to(USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC,
                 Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

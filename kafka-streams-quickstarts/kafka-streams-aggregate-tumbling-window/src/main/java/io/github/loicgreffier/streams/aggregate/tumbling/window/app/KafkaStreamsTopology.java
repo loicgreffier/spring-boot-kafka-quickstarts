@@ -19,13 +19,13 @@
 
 package io.github.loicgreffier.streams.aggregate.tumbling.window.app;
 
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.StateStore.PERSON_AGGREGATE_TUMBLING_WINDOW_STORE;
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.GROUP_PERSON_BY_LAST_NAME_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.StateStore.USER_AGGREGATE_TUMBLING_WINDOW_STORE;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.GROUP_USER_BY_LAST_NAME_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.USER_AGGREGATE_TUMBLING_WINDOW_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.avro.KafkaPersonGroup;
+import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.KafkaUserGroup;
 import io.github.loicgreffier.streams.aggregate.tumbling.window.app.aggregator.FirstNameByLastNameAggregator;
 import io.github.loicgreffier.streams.aggregate.tumbling.window.serdes.SerdesUtils;
 import java.time.Duration;
@@ -52,10 +52,10 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic, selects the key as the last name of the person, groups by key
+     * The topology reads from the USER_TOPIC topic, selects the key as the last name of the user, groups by key
      * and aggregates the first names by last name in 5 minutes tumbling windows with 1-minute grace period.
      * A new key is generated with the window start and end time.
-     * The result is written to the PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC topic.
+     * The result is written to the USER_AGGREGATE_TUMBLING_WINDOW_TOPIC topic.
      *
      * <p>
      * Tumbling windows are aligned to the epoch. The first window starts at 1970-01-01T00:00:00Z.
@@ -67,22 +67,22 @@ public class KafkaStreamsTopology {
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .selectKey((key, person) -> person.getLastName())
-            .groupByKey(Grouped.with(GROUP_PERSON_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+            .selectKey((key, user) -> user.getLastName())
+            .groupByKey(Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
             .windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)))
             .aggregate(() ->
-                    new KafkaPersonGroup(new HashMap<>()),
+                    new KafkaUserGroup(new HashMap<>()),
                 new FirstNameByLastNameAggregator(),
                 Materialized
-                    .<String, KafkaPersonGroup, WindowStore<Bytes, byte[]>>as(PERSON_AGGREGATE_TUMBLING_WINDOW_STORE)
+                    .<String, KafkaUserGroup, WindowStore<Bytes, byte[]>>as(USER_AGGREGATE_TUMBLING_WINDOW_STORE)
                     .withKeySerde(Serdes.String())
                     .withValueSerde(SerdesUtils.getValueSerdes())
             )
             .toStream()
-            .selectKey((key, groupedPersons) ->
+            .selectKey((key, groupedUsers) ->
                 key.key() + "@" + key.window().startTime() + "->" + key.window().endTime())
-            .to(PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+            .to(USER_AGGREGATE_TUMBLING_WINDOW_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

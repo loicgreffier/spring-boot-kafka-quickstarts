@@ -20,9 +20,9 @@
 package io.github.loicgreffier.streams.aggregate.hopping.window;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.StateStore.PERSON_AGGREGATE_HOPPING_WINDOW_STORE;
-import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.Topic.PERSON_AGGREGATE_HOPPING_WINDOW_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.StateStore.USER_AGGREGATE_HOPPING_WINDOW_STORE;
+import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.Topic.USER_AGGREGATE_HOPPING_WINDOW_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -31,8 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.avro.KafkaPersonGroup;
+import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.KafkaUserGroup;
 import io.github.loicgreffier.streams.aggregate.hopping.window.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.aggregate.hopping.window.serdes.SerdesUtils;
 import java.io.IOException;
@@ -63,8 +63,8 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
-    private TestOutputTopic<String, KafkaPersonGroup> outputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestOutputTopic<String, KafkaUserGroup> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -89,14 +89,14 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_AGGREGATE_HOPPING_WINDOW_TOPIC,
+            USER_AGGREGATE_HOPPING_WINDOW_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaPersonGroup>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUserGroup>getValueSerdes().deserializer()
         );
     }
 
@@ -109,11 +109,11 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
 
     @Test
     void shouldAggregateWhenTimeWindowIsRespected() {
-        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaPerson("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaPerson("Marge"), Instant.parse("2000-01-01T01:02:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("3", buildKafkaPerson("Bart"), Instant.parse("2000-01-01T01:04:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaUser("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaUser("Marge"), Instant.parse("2000-01-01T01:02:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("3", buildKafkaUser("Bart"), Instant.parse("2000-01-01T01:04:00Z")));
 
-        List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUserGroup>> results = outputTopic.readKeyValuesToList();
 
         // Homer arrives
         assertEquals("Simpson@2000-01-01T00:56:00Z->2000-01-01T01:01:00Z", results.get(0).key);
@@ -148,17 +148,17 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
         assertEquals("Simpson@2000-01-01T01:04:00Z->2000-01-01T01:09:00Z", results.get(8).key);
         assertIterableEquals(List.of("Bart"), results.get(8).value.getFirstNameByLastName().get("Simpson"));
 
-        WindowStore<String, KafkaPersonGroup> stateStore = testDriver
-            .getWindowStore(PERSON_AGGREGATE_HOPPING_WINDOW_STORE);
+        WindowStore<String, KafkaUserGroup> stateStore = testDriver
+            .getWindowStore(USER_AGGREGATE_HOPPING_WINDOW_STORE);
 
-        try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue56To01 = iterator.next();
+        try (KeyValueIterator<Windowed<String>, KafkaUserGroup> iterator = stateStore.all()) {
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue56To01 = iterator.next();
             assertEquals("Simpson", keyValue56To01.key.key());
             assertEquals("2000-01-01T00:56:00Z", keyValue56To01.key.window().startTime().toString());
             assertEquals("2000-01-01T01:01:00Z", keyValue56To01.key.window().endTime().toString());
             assertIterableEquals(List.of("Homer"), keyValue56To01.value.getFirstNameByLastName().get("Simpson"));
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue58To03 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue58To03 = iterator.next();
             assertEquals("Simpson", keyValue58To03.key.key());
             assertEquals("2000-01-01T00:58:00Z", keyValue58To03.key.window().startTime().toString());
             assertEquals("2000-01-01T01:03:00Z", keyValue58To03.key.window().endTime().toString());
@@ -167,7 +167,7 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
                 keyValue58To03.value.getFirstNameByLastName().get("Simpson")
             );
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue00To05 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue00To05 = iterator.next();
             assertEquals("Simpson", keyValue00To05.key.key());
             assertEquals("2000-01-01T01:00:00Z", keyValue00To05.key.window().startTime().toString());
             assertEquals("2000-01-01T01:05:00Z", keyValue00To05.key.window().endTime().toString());
@@ -176,7 +176,7 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
                 keyValue00To05.value.getFirstNameByLastName().get("Simpson")
             );
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue02To07 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue02To07 = iterator.next();
             assertEquals("Simpson", keyValue02To07.key.key());
             assertEquals("2000-01-01T01:02:00Z", keyValue02To07.key.window().startTime().toString());
             assertEquals("2000-01-01T01:07:00Z", keyValue02To07.key.window().endTime().toString());
@@ -185,7 +185,7 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
                 keyValue02To07.value.getFirstNameByLastName().get("Simpson")
             );
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue04To09 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue04To09 = iterator.next();
             assertEquals("Simpson", keyValue04To09.key.key());
             assertEquals("2000-01-01T01:04:00Z", keyValue04To09.key.window().startTime().toString());
             assertEquals("2000-01-01T01:09:00Z", keyValue04To09.key.window().endTime().toString());
@@ -197,10 +197,10 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
 
     @Test
     void shouldNotAggregateWhenTimeWindowIsNotRespected() {
-        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaPerson("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaPerson("Marge"), Instant.parse("2000-01-01T01:05:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaUser("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaUser("Marge"), Instant.parse("2000-01-01T01:05:00Z")));
 
-        List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUserGroup>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson@2000-01-01T00:56:00Z->2000-01-01T01:01:00Z", results.get(0).key);
         assertIterableEquals(List.of("Homer"), results.get(0).value.getFirstNameByLastName().get("Simpson"));
@@ -221,35 +221,35 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
         assertEquals("Simpson@2000-01-01T01:04:00Z->2000-01-01T01:09:00Z", results.get(4).key);
         assertIterableEquals(List.of("Marge"), results.get(4).value.getFirstNameByLastName().get("Simpson"));
 
-        WindowStore<String, KafkaPersonGroup> stateStore = testDriver
-            .getWindowStore(PERSON_AGGREGATE_HOPPING_WINDOW_STORE);
+        WindowStore<String, KafkaUserGroup> stateStore = testDriver
+            .getWindowStore(USER_AGGREGATE_HOPPING_WINDOW_STORE);
 
-        try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue56To01 = iterator.next();
+        try (KeyValueIterator<Windowed<String>, KafkaUserGroup> iterator = stateStore.all()) {
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue56To01 = iterator.next();
             assertEquals("Simpson", keyValue56To01.key.key());
             assertEquals("2000-01-01T00:56:00Z", keyValue56To01.key.window().startTime().toString());
             assertEquals("2000-01-01T01:01:00Z", keyValue56To01.key.window().endTime().toString());
             assertIterableEquals(List.of("Homer"), keyValue56To01.value.getFirstNameByLastName().get("Simpson"));
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue58To03 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue58To03 = iterator.next();
             assertEquals("Simpson", keyValue58To03.key.key());
             assertEquals("2000-01-01T00:58:00Z", keyValue58To03.key.window().startTime().toString());
             assertEquals("2000-01-01T01:03:00Z", keyValue58To03.key.window().endTime().toString());
             assertIterableEquals(List.of("Homer"), keyValue58To03.value.getFirstNameByLastName().get("Simpson"));
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue00To05 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue00To05 = iterator.next();
             assertEquals("Simpson", keyValue00To05.key.key());
             assertEquals("2000-01-01T01:00:00Z", keyValue00To05.key.window().startTime().toString());
             assertEquals("2000-01-01T01:05:00Z", keyValue00To05.key.window().endTime().toString());
             assertIterableEquals(List.of("Homer"), keyValue00To05.value.getFirstNameByLastName().get("Simpson"));
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue02To07 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue02To07 = iterator.next();
             assertEquals("Simpson", keyValue02To07.key.key());
             assertEquals("2000-01-01T01:02:00Z", keyValue02To07.key.window().startTime().toString());
             assertEquals("2000-01-01T01:07:00Z", keyValue02To07.key.window().endTime().toString());
             assertIterableEquals(List.of("Marge"), keyValue02To07.value.getFirstNameByLastName().get("Simpson"));
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue04To09 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue04To09 = iterator.next();
             assertEquals("Simpson", keyValue04To09.key.key());
             assertEquals("2000-01-01T01:04:00Z", keyValue04To09.key.window().startTime().toString());
             assertEquals("2000-01-01T01:09:00Z", keyValue04To09.key.window().endTime().toString());
@@ -261,17 +261,17 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
 
     @Test
     void shouldHonorGracePeriod() {
-        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaPerson("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
-        inputTopic.pipeInput(new TestRecord<>("3", buildKafkaPerson("Marge"), Instant.parse("2000-01-01T01:05:30Z")));
+        inputTopic.pipeInput(new TestRecord<>("1", buildKafkaUser("Homer"), Instant.parse("2000-01-01T01:00:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("3", buildKafkaUser("Marge"), Instant.parse("2000-01-01T01:05:30Z")));
 
         // At this point, the stream time is 01:05:30. It exceeds by 30 seconds
         // the upper bound of the window [01:00:00Z->01:05:00Z) where Homer is included.
         // However, the following delayed record "Bart" will be aggregated into the window
         // because the grace period is 1 minute.
 
-        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaPerson("Bart"), Instant.parse("2000-01-01T01:03:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("2", buildKafkaUser("Bart"), Instant.parse("2000-01-01T01:03:00Z")));
 
-        List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUserGroup>> results = outputTopic.readKeyValuesToList();
 
         // Homer arrives
         assertEquals("Simpson@2000-01-01T00:56:00Z->2000-01-01T01:01:00Z", results.get(0).key);
@@ -300,17 +300,17 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
         assertEquals("Simpson@2000-01-01T01:02:00Z->2000-01-01T01:07:00Z", results.get(6).key);
         assertIterableEquals(List.of("Marge", "Bart"), results.get(6).value.getFirstNameByLastName().get("Simpson"));
 
-        WindowStore<String, KafkaPersonGroup> stateStore =
-            testDriver.getWindowStore(PERSON_AGGREGATE_HOPPING_WINDOW_STORE);
+        WindowStore<String, KafkaUserGroup> stateStore =
+            testDriver.getWindowStore(USER_AGGREGATE_HOPPING_WINDOW_STORE);
 
-        try (KeyValueIterator<Windowed<String>, KafkaPersonGroup> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue56To01 = iterator.next();
+        try (KeyValueIterator<Windowed<String>, KafkaUserGroup> iterator = stateStore.all()) {
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue56To01 = iterator.next();
             assertEquals("Simpson", keyValue56To01.key.key());
             assertEquals("2000-01-01T00:56:00Z", keyValue56To01.key.window().startTime().toString());
             assertEquals("2000-01-01T01:01:00Z", keyValue56To01.key.window().endTime().toString());
             assertIterableEquals(List.of("Homer"), keyValue56To01.value.getFirstNameByLastName().get("Simpson"));
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue58To03 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue58To03 = iterator.next();
             assertEquals("Simpson", keyValue58To03.key.key());
             assertEquals("2000-01-01T00:58:00Z", keyValue58To03.key.window().startTime().toString());
             assertEquals("2000-01-01T01:03:00Z", keyValue58To03.key.window().endTime().toString());
@@ -319,7 +319,7 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
                 keyValue58To03.value.getFirstNameByLastName().get("Simpson")
             );
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue00To05 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue00To05 = iterator.next();
             assertEquals("Simpson", keyValue00To05.key.key());
             assertEquals("2000-01-01T01:00:00Z", keyValue00To05.key.window().startTime().toString());
             assertEquals("2000-01-01T01:05:00Z", keyValue00To05.key.window().endTime().toString());
@@ -328,7 +328,7 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
                 keyValue00To05.value.getFirstNameByLastName().get("Simpson")
             );
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue02To07 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue02To07 = iterator.next();
             assertEquals("Simpson", keyValue02To07.key.key());
             assertEquals("2000-01-01T01:02:00Z", keyValue02To07.key.window().startTime().toString());
             assertEquals("2000-01-01T01:07:00Z", keyValue02To07.key.window().endTime().toString());
@@ -337,7 +337,7 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
                 keyValue02To07.value.getFirstNameByLastName().get("Simpson")
             );
 
-            KeyValue<Windowed<String>, KafkaPersonGroup> keyValue04To09 = iterator.next();
+            KeyValue<Windowed<String>, KafkaUserGroup> keyValue04To09 = iterator.next();
             assertEquals("Simpson", keyValue04To09.key.key());
             assertEquals("2000-01-01T01:04:00Z", keyValue04To09.key.window().startTime().toString());
             assertEquals("2000-01-01T01:09:00Z", keyValue04To09.key.window().endTime().toString());
@@ -347,8 +347,8 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
         }
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName("Simpson")

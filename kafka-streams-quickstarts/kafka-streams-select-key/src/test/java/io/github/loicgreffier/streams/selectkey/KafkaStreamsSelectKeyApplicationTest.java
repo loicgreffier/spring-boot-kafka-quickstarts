@@ -20,8 +20,8 @@
 package io.github.loicgreffier.streams.selectkey;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.selectkey.constant.Topic.PERSON_SELECT_KEY_TOPIC;
-import static io.github.loicgreffier.streams.selectkey.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.selectkey.constant.Topic.USER_SELECT_KEY_TOPIC;
+import static io.github.loicgreffier.streams.selectkey.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.selectkey.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.selectkey.serdes.SerdesUtils;
 import java.io.IOException;
@@ -56,8 +56,8 @@ class KafkaStreamsSelectKeyApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
-    private TestOutputTopic<String, KafkaPerson> outputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestOutputTopic<String, KafkaUser> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -82,14 +82,14 @@ class KafkaStreamsSelectKeyApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_SELECT_KEY_TOPIC,
+            USER_SELECT_KEY_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
         );
     }
 
@@ -102,15 +102,15 @@ class KafkaStreamsSelectKeyApplicationTest {
 
     @Test
     void shouldSelectLastNameAsNewKey() {
-        KafkaPerson person = buildKafkaPerson();
-        inputTopic.pipeInput("1", person);
-        List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+        KafkaUser user = buildKafkaUser();
+        inputTopic.pipeInput("1", user);
+        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("Simpson", person), results.getFirst());
+        assertEquals(KeyValue.pair("Simpson", user), results.getFirst());
     }
 
-    private KafkaPerson buildKafkaPerson() {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser() {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName("Homer")
             .setLastName("Simpson")

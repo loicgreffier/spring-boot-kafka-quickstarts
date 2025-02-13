@@ -6,7 +6,7 @@ This module demonstrates the following:
 - The usage of Apache Avro and specific records.
 - The usage of unit tests with a Mock consumer.
 
-This module consumes records of type `<String, KafkaPerson>` from a topic named `PERSON_TOPIC`.
+This module consumes records of type `<String, KafkaUser>` from a topic named `USER_TOPIC`.
 
 ## Requirements
 
@@ -21,7 +21,7 @@ To compile and run this demo, you will need the following:
 To run the application manually, please follow the steps below:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaPerson>` to a topic named `PERSON_TOPIC`. You can use the [producer Avro Specific](../../kafka-producer-quickstarts/kafka-producer-avro-specific) to do this.
+- Produce records of type `<String, KafkaUser>` to a topic named `USER_TOPIC`. You can use the [producer Avro Specific](../../kafka-producer-quickstarts/kafka-producer-avro-specific) to do this.
 - Start the consumer.
 
 To run the application in Docker, please use the following command:

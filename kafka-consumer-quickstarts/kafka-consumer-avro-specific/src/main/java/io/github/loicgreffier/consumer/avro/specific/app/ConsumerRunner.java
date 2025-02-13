@@ -19,9 +19,9 @@
 
 package io.github.loicgreffier.consumer.avro.specific.app;
 
-import static io.github.loicgreffier.consumer.avro.specific.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.consumer.avro.specific.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import java.time.Duration;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
@@ -44,27 +44,27 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConsumerRunner {
     @Autowired
-    private Consumer<String, KafkaPerson> consumer;
+    private Consumer<String, KafkaUser> consumer;
 
     /**
      * Asynchronously starts the Kafka consumer when the application is ready.
      * The asynchronous annotation is used to run the consumer in a separate thread and
      * not block the main thread.
-     * The Kafka consumer processes specific Avro records from the PERSON_TOPIC topic.
+     * The Kafka consumer processes specific Avro records from the USER_TOPIC topic.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         try {
-            log.info("Subscribing to {} topic", PERSON_TOPIC);
+            log.info("Subscribing to {} topic", USER_TOPIC);
 
-            consumer.subscribe(Collections.singleton(PERSON_TOPIC), new CustomConsumerRebalanceListener());
+            consumer.subscribe(Collections.singleton(USER_TOPIC), new CustomConsumerRebalanceListener());
 
             while (true) {
-                ConsumerRecords<String, KafkaPerson> messages = consumer.poll(Duration.ofMillis(1000));
+                ConsumerRecords<String, KafkaUser> messages = consumer.poll(Duration.ofMillis(1000));
                 log.info("Pulled {} records", messages.count());
 
-                for (ConsumerRecord<String, KafkaPerson> message : messages) {
+                for (ConsumerRecord<String, KafkaUser> message : messages) {
                     log.info("Received offset = {}, partition = {}, key = {}, value = {}",
                         message.offset(), message.partition(), message.key(), message.value());
                 }

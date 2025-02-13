@@ -27,8 +27,8 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
-    public static final String PERSON_TOPIC = "PERSON_TOPIC";
-    public static final String GROUP_PERSON_BY_LAST_NAME_TOPIC = "GROUP_PERSON_BY_LAST_NAME_TOPIC";
-    public static final String PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC =
-        "PERSON_AGGREGATE_TUMBLING_WINDOW_TOPIC";
+    public static final String USER_TOPIC = "USER_TOPIC";
+    public static final String GROUP_USER_BY_LAST_NAME_TOPIC = "GROUP_USER_BY_LAST_NAME_TOPIC";
+    public static final String USER_AGGREGATE_TUMBLING_WINDOW_TOPIC =
+        "USER_AGGREGATE_TUMBLING_WINDOW_TOPIC";
 }

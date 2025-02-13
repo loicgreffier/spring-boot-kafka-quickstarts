@@ -20,8 +20,8 @@
 package io.github.loicgreffier.streams.mapvalues;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.mapvalues.constant.Topic.PERSON_MAP_VALUES_TOPIC;
-import static io.github.loicgreffier.streams.mapvalues.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.mapvalues.constant.Topic.USER_MAP_VALUES_TOPIC;
+import static io.github.loicgreffier.streams.mapvalues.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.mapvalues.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.mapvalues.serdes.SerdesUtils;
 import java.io.IOException;
@@ -56,8 +56,8 @@ class KafkaStreamsMapValuesApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
-    private TestOutputTopic<String, KafkaPerson> outputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestOutputTopic<String, KafkaUser> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -82,14 +82,14 @@ class KafkaStreamsMapValuesApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_MAP_VALUES_TOPIC,
+            USER_MAP_VALUES_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
         );
     }
 
@@ -102,16 +102,16 @@ class KafkaStreamsMapValuesApplicationTest {
 
     @Test
     void shouldUpperCase() {
-        inputTopic.pipeInput("1", buildKafkaPerson());
-        List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+        inputTopic.pipeInput("1", buildKafkaUser());
+        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("1", results.getFirst().key);
         assertEquals("HOMER", results.getFirst().value.getFirstName());
         assertEquals("SIMPSON", results.getFirst().value.getLastName());
     }
 
-    private KafkaPerson buildKafkaPerson() {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser() {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName("Homer")
             .setLastName("Simpson")

@@ -19,11 +19,11 @@
 
 package io.github.loicgreffier.streams.process.app;
 
-import static io.github.loicgreffier.streams.process.constant.Topic.PERSON_PROCESS_TOPIC;
-import static io.github.loicgreffier.streams.process.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.process.constant.Topic.USER_PROCESS_TOPIC;
+import static io.github.loicgreffier.streams.process.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.streams.process.app.processor.PersonMetadataProcessor;
+import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.streams.process.app.processor.UserMetadataProcessor;
 import io.github.loicgreffier.streams.process.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -42,16 +42,16 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic and processes the records with
-     * the {@link PersonMetadataProcessor} processor.
-     * The result is written to the PERSON_PROCESS_TOPIC topic.
+     * The topology reads from the USER_TOPIC topic and processes the records with
+     * the {@link UserMetadataProcessor} processor.
+     * The result is written to the USER_PROCESS_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .process(PersonMetadataProcessor::new)
-            .to(PERSON_PROCESS_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .process(UserMetadataProcessor::new)
+            .to(USER_PROCESS_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

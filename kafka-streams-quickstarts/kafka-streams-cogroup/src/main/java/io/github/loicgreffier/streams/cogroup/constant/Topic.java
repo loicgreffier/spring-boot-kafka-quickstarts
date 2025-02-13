@@ -27,10 +27,10 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
-    public static final String PERSON_TOPIC = "PERSON_TOPIC";
-    public static final String PERSON_TOPIC_TWO = "PERSON_TOPIC_TWO";
-    public static final String PERSON_COGROUP_TOPIC = "PERSON_COGROUP_TOPIC";
-    public static final String GROUP_PERSON_BY_LAST_NAME_TOPIC = "GROUP_PERSON_BY_LAST_NAME_TOPIC";
-    public static final String GROUP_PERSON_BY_LAST_NAME_TOPIC_TWO =
-        "GROUP_PERSON_BY_LAST_NAME_TOPIC_TWO";
+    public static final String USER_TOPIC = "USER_TOPIC";
+    public static final String USER_TOPIC_TWO = "USER_TOPIC_TWO";
+    public static final String USER_COGROUP_TOPIC = "USER_COGROUP_TOPIC";
+    public static final String GROUP_USER_BY_LAST_NAME_TOPIC = "GROUP_USER_BY_LAST_NAME_TOPIC";
+    public static final String GROUP_USER_BY_LAST_NAME_TOPIC_TWO =
+        "GROUP_USER_BY_LAST_NAME_TOPIC_TWO";
 }

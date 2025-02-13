@@ -19,14 +19,14 @@
 
 package io.github.loicgreffier.streams.leftjoin.stream.stream.app;
 
-import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.StateStore.PERSON_LEFT_JOIN_STREAM_STREAM_STORE;
-import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.PERSON_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC;
-import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.PERSON_LEFT_JOIN_STREAM_STREAM_TOPIC;
-import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.PERSON_TOPIC;
-import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.PERSON_TOPIC_TWO;
+import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.StateStore.USER_LEFT_JOIN_STREAM_STREAM_STORE;
+import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.USER_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.USER_LEFT_JOIN_STREAM_STREAM_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.USER_TOPIC_TWO;
 
-import io.github.loicgreffier.avro.KafkaJoinPersons;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaJoinUsers;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.leftjoin.stream.stream.serdes.SerdesUtils;
 import java.time.Duration;
 import lombok.AccessLevel;
@@ -49,10 +49,10 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic and the PERSON_TOPIC_TWO topic.
+     * The topology reads from the USER_TOPIC topic and the USER_TOPIC_TWO topic.
      * The stream is joined to the other stream by last name with a left join and 5-minute symmetric join windows
      * with 1-minute grace period.
-     * The result is written to the PERSON_LEFT_JOIN_STREAM_STREAM_TOPIC topic.
+     * The result is written to the USER_LEFT_JOIN_STREAM_STREAM_TOPIC topic.
      *
      * <p>
      * A left join emits an output for each record in the primary stream. If there is no matching record in the
@@ -73,39 +73,39 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        KStream<String, KafkaPerson> streamTwo = streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .selectKey((key, person) -> person.getLastName());
+        KStream<String, KafkaUser> streamTwo = streamsBuilder
+            .<String, KafkaUser>stream(USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+            .selectKey((key, user) -> user.getLastName());
 
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .selectKey((key, person) -> person.getLastName())
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+            .selectKey((key, user) -> user.getLastName())
             .leftJoin(streamTwo,
-                (key, personLeft, personRight) -> {
-                    if (personRight != null) {
-                        log.info("Joined {} and {} by last name {}", personLeft.getFirstName(),
-                            personRight.getFirstName(), key);
+                (key, userLeft, userRight) -> {
+                    if (userRight != null) {
+                        log.info("Joined {} and {} by last name {}", userLeft.getFirstName(),
+                            userRight.getFirstName(), key);
                     } else {
-                        log.info("No matching person for {} {} {}", personLeft.getId(),
-                            personLeft.getFirstName(), personLeft.getLastName());
+                        log.info("No matching user for {} {} {}", userLeft.getId(),
+                            userLeft.getFirstName(), userLeft.getLastName());
                     }
 
-                    return KafkaJoinPersons.newBuilder()
-                        .setPersonOne(personLeft)
-                        .setPersonTwo(personRight)
+                    return KafkaJoinUsers.newBuilder()
+                        .setUserOne(userLeft)
+                        .setUserTwo(userRight)
                         .build();
                 },
                 JoinWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)),
                 StreamJoined
-                    .<String, KafkaPerson, KafkaPerson>with(
+                    .<String, KafkaUser, KafkaUser>with(
                         Serdes.String(),
                         SerdesUtils.getValueSerdes(),
                         SerdesUtils.getValueSerdes()
                     )
-                    .withName(PERSON_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC)
-                    .withStoreName(PERSON_LEFT_JOIN_STREAM_STREAM_STORE))
-            .to(PERSON_LEFT_JOIN_STREAM_STREAM_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+                    .withName(USER_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC)
+                    .withStoreName(USER_LEFT_JOIN_STREAM_STREAM_STORE))
+            .to(USER_LEFT_JOIN_STREAM_STREAM_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

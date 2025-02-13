@@ -19,10 +19,10 @@
 
 package io.github.loicgreffier.streams.exception.handler.processing.app;
 
-import static io.github.loicgreffier.streams.exception.handler.processing.constant.Topic.PERSON_PROCESSING_EXCEPTION_HANDLER_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.processing.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.processing.constant.Topic.USER_PROCESSING_EXCEPTION_HANDLER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.processing.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.exception.handler.processing.app.processor.ErrorProcessor;
 import io.github.loicgreffier.streams.exception.handler.processing.serdes.SerdesUtils;
 import lombok.AccessLevel;
@@ -42,26 +42,26 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic.
+     * The topology reads from the USER_TOPIC topic.
      * It throws an exception while mapping the value if the birthdate is negative and while processing the value if
      * the first name or the last name is null. Additionally, it schedules a punctuation that periodically throws a
      * processing exception.
-     * The result is written to the PERSON_PROCESSING_EXCEPTION_HANDLER_TOPIC topic.
+     * The result is written to the USER_PROCESSING_EXCEPTION_HANDLER_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .mapValues(person -> {
-                if (person.getBirthDate().toEpochMilli() < 0) {
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+            .mapValues(user -> {
+                if (user.getBirthDate().toEpochMilli() < 0) {
                     throw new IllegalArgumentException("Age must be positive");
                 }
-                return person;
+                return user;
             })
             .processValues(ErrorProcessor::new)
-            .to(PERSON_PROCESSING_EXCEPTION_HANDLER_TOPIC,
+            .to(USER_PROCESSING_EXCEPTION_HANDLER_TOPIC,
                 Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

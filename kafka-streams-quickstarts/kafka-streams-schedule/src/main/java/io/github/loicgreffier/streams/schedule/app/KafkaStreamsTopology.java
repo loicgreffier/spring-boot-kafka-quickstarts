@@ -19,11 +19,11 @@
 
 package io.github.loicgreffier.streams.schedule.app;
 
-import static io.github.loicgreffier.streams.schedule.constant.StateStore.PERSON_SCHEDULE_STORE;
-import static io.github.loicgreffier.streams.schedule.constant.Topic.PERSON_SCHEDULE_TOPIC;
-import static io.github.loicgreffier.streams.schedule.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.schedule.constant.StateStore.USER_SCHEDULE_STORE;
+import static io.github.loicgreffier.streams.schedule.constant.Topic.USER_SCHEDULE_TOPIC;
+import static io.github.loicgreffier.streams.schedule.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.schedule.app.processor.CountNationalityProcessor;
 import io.github.loicgreffier.streams.schedule.serdes.SerdesUtils;
 import java.util.Collections;
@@ -50,22 +50,22 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic and processes the records with
+     * The topology reads from the USER_TOPIC topic and processes the records with
      * the {@link CountNationalityProcessor} processor. The processor supplier registers
      * a {@link KeyValueStore} state store when it is built.
-     * The result is written to the PERSON_SCHEDULE_TOPIC topic.
+     * The result is written to the USER_SCHEDULE_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .process(new ProcessorSupplier<String, KafkaPerson, String, Long>() {
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .process(new ProcessorSupplier<String, KafkaUser, String, Long>() {
                 @Override
                 public Set<StoreBuilder<?>> stores() {
                     StoreBuilder<KeyValueStore<String, Long>> storeBuilder = Stores
                         .keyValueStoreBuilder(
-                            Stores.persistentKeyValueStore(PERSON_SCHEDULE_STORE),
+                            Stores.persistentKeyValueStore(USER_SCHEDULE_STORE),
                             Serdes.String(), Serdes.Long()
                         );
 
@@ -73,10 +73,10 @@ public class KafkaStreamsTopology {
                 }
 
                 @Override
-                public Processor<String, KafkaPerson, String, Long> get() {
+                public Processor<String, KafkaUser, String, Long> get() {
                     return new CountNationalityProcessor();
                 }
             })
-            .to(PERSON_SCHEDULE_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
+            .to(USER_SCHEDULE_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
     }
 }

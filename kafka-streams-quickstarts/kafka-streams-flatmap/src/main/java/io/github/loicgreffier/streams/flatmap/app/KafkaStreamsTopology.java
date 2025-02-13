@@ -19,10 +19,10 @@
 
 package io.github.loicgreffier.streams.flatmap.app;
 
-import static io.github.loicgreffier.streams.flatmap.constant.Topic.PERSON_FLATMAP_TOPIC;
-import static io.github.loicgreffier.streams.flatmap.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.flatmap.constant.Topic.USER_FLATMAP_TOPIC;
+import static io.github.loicgreffier.streams.flatmap.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.flatmap.serdes.SerdesUtils;
 import java.util.Arrays;
 import lombok.AccessLevel;
@@ -44,19 +44,19 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic, maps the value to a list of key-value pairs containing
+     * The topology reads from the USER_TOPIC topic, maps the value to a list of key-value pairs containing
      * the first name and the last name as key and value respectively and upper case the key.
-     * The result is written to the PERSON_FLATMAP_TOPIC topic.
+     * The result is written to the USER_FLATMAP_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .flatMap((key, person) -> Arrays.asList(
-                KeyValue.pair(person.getFirstName().toUpperCase(), person.getFirstName()),
-                KeyValue.pair(person.getLastName().toUpperCase(), person.getLastName())))
-            .to(PERSON_FLATMAP_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+            .flatMap((key, user) -> Arrays.asList(
+                KeyValue.pair(user.getFirstName().toUpperCase(), user.getFirstName()),
+                KeyValue.pair(user.getLastName().toUpperCase(), user.getLastName())))
+            .to(USER_FLATMAP_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
     }
 }

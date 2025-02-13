@@ -65,10 +65,10 @@ services:
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
 
-  kafka-streams-producer-person:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-producer-person-1.0.0
-    hostname: kafka-streams-producer-person
-    container_name: kafka-streams-producer-person
+  kafka-streams-producer-user:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-producer-user-1.0.0
+    hostname: kafka-streams-producer-user
+    container_name: kafka-streams-producer-user
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
@@ -95,7 +95,7 @@ services:
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
-      - kafka-streams-producer-person
+      - kafka-streams-producer-user
     ports:
       - "8084:8080"
     restart: unless-stopped

@@ -27,5 +27,5 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class StateStore {
-    public static final String PERSON_COGROUP_AGGREGATE_STORE = "PERSON_COGROUP_AGGREGATE_STORE";
+    public static final String USER_COGROUP_AGGREGATE_STORE = "USER_COGROUP_AGGREGATE_STORE";
 }

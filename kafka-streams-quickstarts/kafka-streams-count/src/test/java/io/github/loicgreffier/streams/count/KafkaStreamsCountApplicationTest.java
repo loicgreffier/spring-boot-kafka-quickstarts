@@ -20,9 +20,9 @@
 package io.github.loicgreffier.streams.count;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.count.constant.StateStore.PERSON_COUNT_STORE;
-import static io.github.loicgreffier.streams.count.constant.Topic.PERSON_COUNT_TOPIC;
-import static io.github.loicgreffier.streams.count.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.count.constant.StateStore.USER_COUNT_STORE;
+import static io.github.loicgreffier.streams.count.constant.Topic.USER_COUNT_TOPIC;
+import static io.github.loicgreffier.streams.count.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.count.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.count.serdes.SerdesUtils;
 import java.io.IOException;
@@ -59,7 +59,7 @@ class KafkaStreamsCountApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
     private TestOutputTopic<String, Long> outputTopic;
 
     @BeforeEach
@@ -85,12 +85,12 @@ class KafkaStreamsCountApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_COUNT_TOPIC,
+            USER_COUNT_TOPIC,
             new StringDeserializer(),
             new LongDeserializer()
         );
@@ -105,10 +105,10 @@ class KafkaStreamsCountApplicationTest {
 
     @Test
     void shouldCountByNationality() {
-        inputTopic.pipeInput("1", buildKafkaPerson("Homer", "Simpson", CountryCode.US));
-        inputTopic.pipeInput("2", buildKafkaPerson("Milhouse", "Van Houten", CountryCode.BE));
-        inputTopic.pipeInput("3", buildKafkaPerson("Marge", "Simpson", CountryCode.US));
-        inputTopic.pipeInput("4", buildKafkaPerson("Kirk", "Van Houten", CountryCode.BE));
+        inputTopic.pipeInput("1", buildKafkaUser("Homer", "Simpson", CountryCode.US));
+        inputTopic.pipeInput("2", buildKafkaUser("Milhouse", "Van Houten", CountryCode.BE));
+        inputTopic.pipeInput("3", buildKafkaUser("Marge", "Simpson", CountryCode.US));
+        inputTopic.pipeInput("4", buildKafkaUser("Kirk", "Van Houten", CountryCode.BE));
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
@@ -117,14 +117,14 @@ class KafkaStreamsCountApplicationTest {
         assertEquals(KeyValue.pair(CountryCode.US.toString(), 2L), results.get(2));
         assertEquals(KeyValue.pair(CountryCode.BE.toString(), 2L), results.get(3));
 
-        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(PERSON_COUNT_STORE);
+        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(USER_COUNT_STORE);
 
         assertEquals(2, stateStore.get(CountryCode.US.toString()));
         assertEquals(2, stateStore.get(CountryCode.BE.toString()));
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName, String lastName, CountryCode nationality) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName, String lastName, CountryCode nationality) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName(lastName)

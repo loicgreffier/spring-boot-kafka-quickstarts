@@ -19,10 +19,10 @@
 
 package io.github.loicgreffier.streams.store.cleanup.app;
 
-import static io.github.loicgreffier.streams.store.cleanup.constant.StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STORE;
-import static io.github.loicgreffier.streams.store.cleanup.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.store.cleanup.constant.StateStore.USER_SCHEDULE_STORE_CLEANUP_STORE;
+import static io.github.loicgreffier.streams.store.cleanup.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.store.cleanup.app.processor.StoreCleanupProcessor;
 import io.github.loicgreffier.streams.store.cleanup.serdes.SerdesUtils;
 import java.util.Collections;
@@ -49,21 +49,21 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic and processes the records with
+     * The topology reads from the USER_TOPIC topic and processes the records with
      * the {@link StoreCleanupProcessor} processor. The state store is built before the processor is registered.
-     * The result is written to the PERSON_TOPIC topic.
+     * The result is written to the USER_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .process(new ProcessorSupplier<String, KafkaPerson, String, KafkaPerson>() {
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .process(new ProcessorSupplier<String, KafkaUser, String, KafkaUser>() {
                 @Override
                 public Set<StoreBuilder<?>> stores() {
-                    StoreBuilder<KeyValueStore<String, KafkaPerson>> storeBuilder = Stores
+                    StoreBuilder<KeyValueStore<String, KafkaUser>> storeBuilder = Stores
                         .keyValueStoreBuilder(
-                            Stores.persistentKeyValueStore(PERSON_SCHEDULE_STORE_CLEANUP_STORE),
+                            Stores.persistentKeyValueStore(USER_SCHEDULE_STORE_CLEANUP_STORE),
                             Serdes.String(), SerdesUtils.getValueSerdes()
                         );
 
@@ -71,10 +71,10 @@ public class KafkaStreamsTopology {
                 }
 
                 @Override
-                public Processor<String, KafkaPerson, String, KafkaPerson> get() {
+                public Processor<String, KafkaUser, String, KafkaUser> get() {
                     return new StoreCleanupProcessor();
                 }
             })
-            .to(PERSON_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+            .to(USER_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

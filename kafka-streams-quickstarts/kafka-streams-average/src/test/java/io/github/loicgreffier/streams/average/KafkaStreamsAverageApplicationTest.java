@@ -20,9 +20,9 @@
 package io.github.loicgreffier.streams.average;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.average.constant.StateStore.PERSON_AVERAGE_STORE;
-import static io.github.loicgreffier.streams.average.constant.Topic.PERSON_AVERAGE_TOPIC;
-import static io.github.loicgreffier.streams.average.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.StateStore.USER_AVERAGE_STORE;
+import static io.github.loicgreffier.streams.average.constant.Topic.USER_AVERAGE_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaAverageAge;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.average.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.average.serdes.SerdesUtils;
 import java.io.IOException;
@@ -62,7 +62,7 @@ class KafkaStreamsAverageApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
     private TestOutputTopic<String, Long> outputTopic;
 
     @BeforeEach
@@ -88,12 +88,12 @@ class KafkaStreamsAverageApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_AVERAGE_TOPIC,
+            USER_AVERAGE_TOPIC,
             new StringDeserializer(),
             new LongDeserializer()
         );
@@ -110,9 +110,9 @@ class KafkaStreamsAverageApplicationTest {
     void shouldComputeAverageAgeByNationality() {
         LocalDate currentDate = LocalDate.now();
 
-        KafkaPerson yearsOld25 = buildKafkaPerson("Homer",
+        KafkaUser yearsOld25 = buildKafkaUser("Homer",
             currentDate.minusYears(25).atStartOfDay().toInstant(ZoneOffset.UTC));
-        KafkaPerson yearsOld75 = buildKafkaPerson("Marge",
+        KafkaUser yearsOld75 = buildKafkaUser("Marge",
             currentDate.minusYears(75).atStartOfDay().toInstant(ZoneOffset.UTC));
 
         inputTopic.pipeInput("1", yearsOld25);
@@ -123,14 +123,14 @@ class KafkaStreamsAverageApplicationTest {
         assertEquals(KeyValue.pair("US", 25L), results.get(0));
         assertEquals(KeyValue.pair("US", 50L), results.get(1));
 
-        KeyValueStore<String, KafkaAverageAge> stateStore = testDriver.getKeyValueStore(PERSON_AVERAGE_STORE);
+        KeyValueStore<String, KafkaAverageAge> stateStore = testDriver.getKeyValueStore(USER_AVERAGE_STORE);
 
         assertEquals(2L, stateStore.get("US").getCount());
         assertEquals(100L, stateStore.get("US").getAgeSum());
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName, Instant birthDate) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName, Instant birthDate) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName("Simpson")

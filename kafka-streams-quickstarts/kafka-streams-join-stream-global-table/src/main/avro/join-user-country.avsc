@@ -1,0 +1,25 @@
+{
+  "namespace": "io.github.loicgreffier.avro",
+  "type": "record",
+  "name": "KafkaJoinUserCountry",
+  "fields": [
+    {
+      "name": "user",
+      "type": [
+        "null",
+        "KafkaUser"
+      ],
+      "default": null,
+      "doc": "User"
+    },
+    {
+      "name": "country",
+      "type": [
+        "null",
+        "KafkaCountry"
+      ],
+      "default": null,
+      "doc": "Country"
+    }
+  ]
+}

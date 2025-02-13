@@ -19,7 +19,7 @@
 
 package io.github.loicgreffier.producer.avro.generic;
 
-import static io.github.loicgreffier.producer.avro.generic.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.producer.avro.generic.constant.Topic.USER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -68,7 +68,7 @@ class KafkaProducerAvroGenericApplicationTest {
 
     @Test
     void shouldSendSuccessfully() throws ExecutionException, InterruptedException, IOException {
-        File schemaFile = new ClassPathResource("person.avsc").getFile();
+        File schemaFile = new ClassPathResource("user.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
         GenericRecord genericRecord = new GenericData.Record(schema);
@@ -77,7 +77,7 @@ class KafkaProducerAvroGenericApplicationTest {
         genericRecord.put("lastName", "Simpson");
         genericRecord.put("birthDate", System.currentTimeMillis());
 
-        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(PERSON_TOPIC, "1", genericRecord);
+        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(USER_TOPIC, "1", genericRecord);
 
         Future<RecordMetadata> recordMetadata = producerRunner.send(message);
         mockProducer.completeNext();
@@ -91,7 +91,7 @@ class KafkaProducerAvroGenericApplicationTest {
 
     @Test
     void shouldSendWithFailure() throws IOException {
-        File schemaFile = new ClassPathResource("person.avsc").getFile();
+        File schemaFile = new ClassPathResource("user.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
         GenericRecord genericRecord = new GenericData.Record(schema);
@@ -100,7 +100,7 @@ class KafkaProducerAvroGenericApplicationTest {
         genericRecord.put("lastName", "Simpson");
         genericRecord.put("birthDate", System.currentTimeMillis());
 
-        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(PERSON_TOPIC, "1", genericRecord);
+        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(USER_TOPIC, "1", genericRecord);
 
         Future<RecordMetadata> recordMetadata = producerRunner.send(message);
         RuntimeException exception = new RuntimeException("Error sending message");
@@ -114,7 +114,7 @@ class KafkaProducerAvroGenericApplicationTest {
 
     @Test
     void shouldNotSerializeGenericRecordWhenWrongFieldType() throws IOException {
-        File schemaFile = new ClassPathResource("person.avsc").getFile();
+        File schemaFile = new ClassPathResource("user.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
         GenericRecord genericRecord = new GenericData.Record(schema);
@@ -123,7 +123,7 @@ class KafkaProducerAvroGenericApplicationTest {
         genericRecord.put("lastName", "Simpson");
         genericRecord.put("birthDate", System.currentTimeMillis());
 
-        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(PERSON_TOPIC, "1", genericRecord);
+        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(USER_TOPIC, "1", genericRecord);
 
         SerializationException serializationException =
             assertThrows(SerializationException.class, () -> producerRunner.send(message));

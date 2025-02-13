@@ -19,14 +19,14 @@
 
 package io.github.loicgreffier.producer.avro.specific;
 
-import static io.github.loicgreffier.producer.avro.specific.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.producer.avro.specific.constant.Topic.USER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.producer.avro.specific.app.ProducerRunner;
 import java.time.Instant;
 import java.util.Map;
@@ -45,14 +45,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class KafkaProducerAvroSpecificApplicationTest {
-    private final Serializer<KafkaPerson> serializer = (topic, kafkaPerson) -> {
+    private final Serializer<KafkaUser> serializer = (topic, kafkaUser) -> {
         KafkaAvroSerializer inner = new KafkaAvroSerializer();
         inner.configure(Map.of(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://"), false);
-        return inner.serialize(topic, kafkaPerson);
+        return inner.serialize(topic, kafkaUser);
     };
 
     @Spy
-    private MockProducer<String, KafkaPerson> mockProducer = new MockProducer<>(
+    private MockProducer<String, KafkaUser> mockProducer = new MockProducer<>(
         false,
         new StringSerializer(),
         serializer
@@ -63,7 +63,7 @@ class KafkaProducerAvroSpecificApplicationTest {
 
     @Test
     void shouldSendSuccessfully() throws ExecutionException, InterruptedException {
-        ProducerRecord<String, KafkaPerson> message = new ProducerRecord<>(PERSON_TOPIC, "1", KafkaPerson.newBuilder()
+        ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(USER_TOPIC, "1", KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName("Homer")
             .setLastName("Simpson")
@@ -82,7 +82,7 @@ class KafkaProducerAvroSpecificApplicationTest {
 
     @Test
     void shouldSendWithFailure() {
-        ProducerRecord<String, KafkaPerson> message = new ProducerRecord<>(PERSON_TOPIC, "1", KafkaPerson.newBuilder()
+        ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(USER_TOPIC, "1", KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName("Homer")
             .setLastName("Simpson")

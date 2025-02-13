@@ -19,13 +19,13 @@
 
 package io.github.loicgreffier.streams.average.app;
 
-import static io.github.loicgreffier.streams.average.constant.StateStore.PERSON_AVERAGE_STORE;
-import static io.github.loicgreffier.streams.average.constant.Topic.GROUP_PERSON_BY_NATIONALITY_TOPIC;
-import static io.github.loicgreffier.streams.average.constant.Topic.PERSON_AVERAGE_TOPIC;
-import static io.github.loicgreffier.streams.average.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.StateStore.USER_AVERAGE_STORE;
+import static io.github.loicgreffier.streams.average.constant.Topic.GROUP_USER_BY_NATIONALITY_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.Topic.USER_AVERAGE_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.Topic.USER_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaAverageAge;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.average.app.aggregator.AgeAggregator;
 import io.github.loicgreffier.streams.average.serdes.SerdesUtils;
 import lombok.AccessLevel;
@@ -49,28 +49,28 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic, groups by nationality and aggregates the age sum and count.
+     * The topology reads from the USER_TOPIC topic, groups by nationality and aggregates the age sum and count.
      * Then, the average age is computed.
-     * The result is written to the PERSON_AVERAGE_TOPIC topic.
+     * The result is written to the USER_AVERAGE_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .groupBy((key, person) -> person.getNationality().toString(),
-                Grouped.with(GROUP_PERSON_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+            .groupBy((key, user) -> user.getNationality().toString(),
+                Grouped.with(GROUP_USER_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
             .aggregate(
                 () -> new KafkaAverageAge(0L, 0L),
                 new AgeAggregator(),
                 Materialized
-                    .<String, KafkaAverageAge, KeyValueStore<Bytes, byte[]>>as(PERSON_AVERAGE_STORE)
+                    .<String, KafkaAverageAge, KeyValueStore<Bytes, byte[]>>as(USER_AVERAGE_STORE)
                     .withKeySerde(Serdes.String())
                     .withValueSerde(SerdesUtils.getValueSerdes())
             )
             .mapValues(value -> value.getAgeSum() / value.getCount())
             .toStream()
-            .to(PERSON_AVERAGE_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
+            .to(USER_AVERAGE_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
     }
 }

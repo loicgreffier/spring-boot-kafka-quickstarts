@@ -19,9 +19,9 @@
 
 package io.github.loicgreffier.streams.repartition.app;
 
-import static io.github.loicgreffier.streams.repartition.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.repartition.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.repartition.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -40,17 +40,17 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic and repartitions the stream with 3 partitions.
-     * The result is written to the PERSON_TOPIC repartition topic.
+     * The topology reads from the USER_TOPIC topic and repartitions the stream with 3 partitions.
+     * The result is written to the USER_TOPIC repartition topic.
      *
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
             .repartition(Repartitioned
-                .<String, KafkaPerson>as(PERSON_TOPIC)
+                .<String, KafkaUser>as(USER_TOPIC)
                 .withKeySerde(Serdes.String())
                 .withValueSerde(SerdesUtils.getValueSerdes())
                 .withNumberOfPartitions(3));

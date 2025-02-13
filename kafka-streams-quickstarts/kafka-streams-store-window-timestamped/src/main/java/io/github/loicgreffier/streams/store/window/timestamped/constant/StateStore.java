@@ -27,6 +27,6 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class StateStore {
-    public static final String PERSON_TIMESTAMPED_WINDOW_STORE = "PERSON_TIMESTAMPED_WINDOW_STORE";
-    public static final String PERSON_TIMESTAMPED_WINDOW_SUPPLIER_STORE = "PERSON_TIMESTAMPED_WINDOW_SUPPLIER_STORE";
+    public static final String USER_TIMESTAMPED_WINDOW_STORE = "USER_TIMESTAMPED_WINDOW_STORE";
+    public static final String USER_TIMESTAMPED_WINDOW_SUPPLIER_STORE = "USER_TIMESTAMPED_WINDOW_SUPPLIER_STORE";
 }

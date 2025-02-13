@@ -10,7 +10,7 @@
         "long"
       ],
       "default": null,
-      "doc": "Person counter"
+      "doc": "User counter"
     },
     {
       "name": "ageSum",

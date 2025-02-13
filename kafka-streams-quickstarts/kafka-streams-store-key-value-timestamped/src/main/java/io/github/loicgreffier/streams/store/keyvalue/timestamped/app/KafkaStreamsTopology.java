@@ -19,11 +19,11 @@
 
 package io.github.loicgreffier.streams.store.keyvalue.timestamped.app;
 
-import static io.github.loicgreffier.streams.store.keyvalue.timestamped.constant.StateStore.PERSON_TIMESTAMPED_KEY_VALUE_STORE;
-import static io.github.loicgreffier.streams.store.keyvalue.timestamped.constant.StateStore.PERSON_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE;
-import static io.github.loicgreffier.streams.store.keyvalue.timestamped.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.store.keyvalue.timestamped.constant.StateStore.USER_TIMESTAMPED_KEY_VALUE_STORE;
+import static io.github.loicgreffier.streams.store.keyvalue.timestamped.constant.StateStore.USER_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE;
+import static io.github.loicgreffier.streams.store.keyvalue.timestamped.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.store.keyvalue.timestamped.app.processor.PutInStoreProcessor;
 import io.github.loicgreffier.streams.store.keyvalue.timestamped.serdes.SerdesUtils;
 import java.util.Collections;
@@ -49,7 +49,7 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic and processes the records with
+     * The topology reads from the USER_TOPIC topic and processes the records with
      * the {@link PutInStoreProcessor} processor that puts the records in a
      * {@link TimestampedKeyValueStore} state store.
      * It demonstrates the two strategies to use a state store in a processor:
@@ -60,25 +60,25 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        final StoreBuilder<TimestampedKeyValueStore<String, KafkaPerson>> storeBuilder = Stores
+        final StoreBuilder<TimestampedKeyValueStore<String, KafkaUser>> storeBuilder = Stores
             .timestampedKeyValueStoreBuilder(
-                Stores.persistentTimestampedKeyValueStore(PERSON_TIMESTAMPED_KEY_VALUE_STORE),
+                Stores.persistentTimestampedKeyValueStore(USER_TIMESTAMPED_KEY_VALUE_STORE),
                 Serdes.String(), SerdesUtils.getValueSerdes()
             );
 
         streamsBuilder
             .addStateStore(storeBuilder)
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .process(() -> new PutInStoreProcessor(storeBuilder.name()), storeBuilder.name());
 
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .process(new ProcessorSupplier<String, KafkaPerson, String, KafkaPerson>() {
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .process(new ProcessorSupplier<String, KafkaUser, String, KafkaUser>() {
                 @Override
                 public Set<StoreBuilder<?>> stores() {
-                    StoreBuilder<TimestampedKeyValueStore<String, KafkaPerson>> supplierStoreBuilder = Stores
+                    StoreBuilder<TimestampedKeyValueStore<String, KafkaUser>> supplierStoreBuilder = Stores
                         .timestampedKeyValueStoreBuilder(
-                            Stores.persistentTimestampedKeyValueStore(PERSON_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE),
+                            Stores.persistentTimestampedKeyValueStore(USER_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE),
                             Serdes.String(), SerdesUtils.getValueSerdes()
                         );
 
@@ -86,8 +86,8 @@ public class KafkaStreamsTopology {
                 }
 
                 @Override
-                public Processor<String, KafkaPerson, String, KafkaPerson> get() {
-                    return new PutInStoreProcessor(PERSON_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE);
+                public Processor<String, KafkaUser, String, KafkaUser> get() {
+                    return new PutInStoreProcessor(USER_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE);
                 }
             });
     }

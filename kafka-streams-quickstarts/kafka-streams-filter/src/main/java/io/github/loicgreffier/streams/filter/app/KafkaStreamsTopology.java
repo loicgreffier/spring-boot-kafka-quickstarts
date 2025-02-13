@@ -19,10 +19,10 @@
 
 package io.github.loicgreffier.streams.filter.app;
 
-import static io.github.loicgreffier.streams.filter.constant.Topic.PERSON_FILTER_TOPIC;
-import static io.github.loicgreffier.streams.filter.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.filter.constant.Topic.USER_FILTER_TOPIC;
+import static io.github.loicgreffier.streams.filter.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.filter.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -41,18 +41,18 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic, filters by last name starting with "S"
+     * The topology reads from the USER_TOPIC topic, filters by last name starting with "S"
      * and first name starting with "H".
-     * The result is written to the PERSON_FILTER_TOPIC topic.
+     * The result is written to the USER_FILTER_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .filter((key, person) -> person.getLastName().startsWith("S"))
-            .filterNot((key, person) -> !person.getFirstName().startsWith("H"))
-            .to(PERSON_FILTER_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+            .filter((key, user) -> user.getLastName().startsWith("S"))
+            .filterNot((key, user) -> !user.getFirstName().startsWith("H"))
+            .to(USER_FILTER_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

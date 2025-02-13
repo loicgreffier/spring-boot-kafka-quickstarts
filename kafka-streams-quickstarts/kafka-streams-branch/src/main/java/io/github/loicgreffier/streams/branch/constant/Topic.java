@@ -27,8 +27,8 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
-    public static final String PERSON_TOPIC = "PERSON_TOPIC";
-    public static final String PERSON_BRANCH_A_TOPIC = "PERSON_BRANCH_A_TOPIC";
-    public static final String PERSON_BRANCH_B_TOPIC = "PERSON_BRANCH_B_TOPIC";
-    public static final String PERSON_BRANCH_DEFAULT_TOPIC = "PERSON_BRANCH_DEFAULT_TOPIC";
+    public static final String USER_TOPIC = "USER_TOPIC";
+    public static final String USER_BRANCH_A_TOPIC = "USER_BRANCH_A_TOPIC";
+    public static final String USER_BRANCH_B_TOPIC = "USER_BRANCH_B_TOPIC";
+    public static final String USER_BRANCH_DEFAULT_TOPIC = "USER_BRANCH_DEFAULT_TOPIC";
 }

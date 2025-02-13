@@ -20,10 +20,10 @@
 package io.github.loicgreffier.streams.cogroup;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.cogroup.constant.StateStore.PERSON_COGROUP_AGGREGATE_STORE;
-import static io.github.loicgreffier.streams.cogroup.constant.Topic.PERSON_COGROUP_TOPIC;
-import static io.github.loicgreffier.streams.cogroup.constant.Topic.PERSON_TOPIC;
-import static io.github.loicgreffier.streams.cogroup.constant.Topic.PERSON_TOPIC_TWO;
+import static io.github.loicgreffier.streams.cogroup.constant.StateStore.USER_COGROUP_AGGREGATE_STORE;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.USER_COGROUP_TOPIC;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.USER_TOPIC_TWO;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -31,8 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.avro.KafkaPersonGroup;
+import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.KafkaUserGroup;
 import io.github.loicgreffier.streams.cogroup.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.cogroup.serdes.SerdesUtils;
 import java.io.IOException;
@@ -61,9 +61,9 @@ class KafkaStreamsCogroupApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopicOne;
-    private TestInputTopic<String, KafkaPerson> inputTopicTwo;
-    private TestOutputTopic<String, KafkaPersonGroup> outputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopicOne;
+    private TestInputTopic<String, KafkaUser> inputTopicTwo;
+    private TestOutputTopic<String, KafkaUserGroup> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -88,19 +88,19 @@ class KafkaStreamsCogroupApplicationTest {
         );
 
         inputTopicOne = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         inputTopicTwo = testDriver.createInputTopic(
-            PERSON_TOPIC_TWO,
+            USER_TOPIC_TWO,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_COGROUP_TOPIC,
+            USER_COGROUP_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaPersonGroup>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUserGroup>getValueSerdes().deserializer()
         );
     }
 
@@ -115,16 +115,16 @@ class KafkaStreamsCogroupApplicationTest {
     void shouldAggregateFirstNamesByLastNameStreamOne() {
         inputTopicOne.pipeInput(new TestRecord<>(
             "1",
-            buildKafkaPerson("Homer"),
+            buildKafkaUser("Homer"),
             Instant.parse("2000-01-01T01:00:00Z")
         ));
         inputTopicOne.pipeInput(new TestRecord<>(
             "2",
-            buildKafkaPerson("Marge"),
+            buildKafkaUser("Marge"),
             Instant.parse("2000-01-01T01:00:00Z")
         ));
 
-        List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUserGroup>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.get(0).key);
         assertIterableEquals(List.of("Homer"), results.get(0).value.getFirstNameByLastName().get("Simpson"));
@@ -132,8 +132,8 @@ class KafkaStreamsCogroupApplicationTest {
         assertEquals("Simpson", results.get(1).key);
         assertIterableEquals(List.of("Homer", "Marge"), results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
-        KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver
-            .getKeyValueStore(PERSON_COGROUP_AGGREGATE_STORE);
+        KeyValueStore<String, KafkaUserGroup> stateStore = testDriver
+            .getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
 
         assertIterableEquals(
             List.of("Homer", "Marge"),
@@ -145,16 +145,16 @@ class KafkaStreamsCogroupApplicationTest {
     void shouldAggregateFirstNamesByLastNameStreamTwo() {
         inputTopicTwo.pipeInput(new TestRecord<>(
             "1",
-            buildKafkaPerson("Homer"),
+            buildKafkaUser("Homer"),
             Instant.parse("2000-01-01T01:00:00Z")
         ));
         inputTopicTwo.pipeInput(new TestRecord<>(
             "2",
-            buildKafkaPerson("Marge"),
+            buildKafkaUser("Marge"),
             Instant.parse("2000-01-01T01:00:00Z")
         ));
 
-        List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUserGroup>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.get(0).key);
         assertIterableEquals(List.of("Homer"), results.get(0).value.getFirstNameByLastName().get("Simpson"));
@@ -162,8 +162,8 @@ class KafkaStreamsCogroupApplicationTest {
         assertEquals("Simpson", results.get(1).key);
         assertIterableEquals(List.of("Homer", "Marge"), results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
-        KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver
-            .getKeyValueStore(PERSON_COGROUP_AGGREGATE_STORE);
+        KeyValueStore<String, KafkaUserGroup> stateStore = testDriver
+            .getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
 
         assertIterableEquals(
             List.of("Homer", "Marge"),
@@ -175,21 +175,21 @@ class KafkaStreamsCogroupApplicationTest {
     void shouldAggregateFirstNamesByLastNameBothCogroupedStreams() {
         inputTopicOne.pipeInput(new TestRecord<>(
             "1",
-            buildKafkaPerson("Homer"),
+            buildKafkaUser("Homer"),
             Instant.parse("2000-01-01T01:00:00Z")
         ));
         inputTopicOne.pipeInput(new TestRecord<>(
             "2",
-            buildKafkaPerson("Marge"),
+            buildKafkaUser("Marge"),
             Instant.parse("2000-01-01T01:00:00Z")
         ));
         inputTopicTwo.pipeInput(new TestRecord<>(
             "3",
-            buildKafkaPerson("Bart"),
+            buildKafkaUser("Bart"),
             Instant.parse("2000-01-01T01:00:00Z")
         ));
 
-        List<KeyValue<String, KafkaPersonGroup>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUserGroup>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.get(0).key);
         assertIterableEquals(List.of("Homer"), results.get(0).value.getFirstNameByLastName().get("Simpson"));
@@ -203,8 +203,8 @@ class KafkaStreamsCogroupApplicationTest {
             results.get(2).value.getFirstNameByLastName().get("Simpson")
         );
 
-        KeyValueStore<String, KafkaPersonGroup> stateStore = testDriver
-            .getKeyValueStore(PERSON_COGROUP_AGGREGATE_STORE);
+        KeyValueStore<String, KafkaUserGroup> stateStore = testDriver
+            .getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
 
         assertIterableEquals(
             List.of("Homer", "Marge", "Bart"),
@@ -212,8 +212,8 @@ class KafkaStreamsCogroupApplicationTest {
         );
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName("Simpson")

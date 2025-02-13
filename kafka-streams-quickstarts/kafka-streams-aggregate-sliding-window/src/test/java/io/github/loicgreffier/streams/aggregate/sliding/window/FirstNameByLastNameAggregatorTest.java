@@ -22,8 +22,8 @@ package io.github.loicgreffier.streams.aggregate.sliding.window;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.github.loicgreffier.avro.KafkaPerson;
-import io.github.loicgreffier.avro.KafkaPersonGroup;
+import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.KafkaUserGroup;
 import io.github.loicgreffier.streams.aggregate.sliding.window.app.aggregator.FirstNameByLastNameAggregator;
 import java.time.Instant;
 import java.util.HashMap;
@@ -33,23 +33,23 @@ class FirstNameByLastNameAggregatorTest {
     @Test
     void shouldAggregateFirstNamesByLastName() {
         FirstNameByLastNameAggregator aggregator = new FirstNameByLastNameAggregator();
-        KafkaPersonGroup group = new KafkaPersonGroup(new HashMap<>());
+        KafkaUserGroup group = new KafkaUserGroup(new HashMap<>());
 
-        aggregator.apply("Simpson", KafkaPerson.newBuilder()
+        aggregator.apply("Simpson", KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName("Homer")
             .setLastName("Simpson")
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
             .build(), group);
 
-        aggregator.apply("Simpson", KafkaPerson.newBuilder()
+        aggregator.apply("Simpson", KafkaUser.newBuilder()
             .setId(2L)
             .setFirstName("Marge")
             .setLastName("Simpson")
             .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
             .build(), group);
 
-        aggregator.apply("Van Houten", KafkaPerson.newBuilder()
+        aggregator.apply("Van Houten", KafkaUser.newBuilder()
             .setId(3L)
             .setFirstName("Milhouse")
             .setLastName("Van Houten")

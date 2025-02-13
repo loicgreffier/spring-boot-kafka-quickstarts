@@ -19,12 +19,12 @@
 
 package io.github.loicgreffier.streams.branch.app;
 
-import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_BRANCH_A_TOPIC;
-import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_BRANCH_B_TOPIC;
-import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_BRANCH_DEFAULT_TOPIC;
-import static io.github.loicgreffier.streams.branch.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_A_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_B_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_DEFAULT_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.branch.serdes.SerdesUtils;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -47,47 +47,47 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic.
+     * The topology reads from the USER_TOPIC topic.
      * Then, the stream is split into two branches:
      * <ul>
      *     <li>the first branch is filtered by the last name starting with "S".</li>
      *     <li>the second branch is filtered by the last name starting with "F".</li>
      *     <li>the default branch is used for all other last names.</li>
      * </ul>
-     * The result is written to the PERSON_BRANCH_A_TOPIC topic, PERSON_BRANCH_B_TOPIC topic and
-     * PERSON_BRANCH_DEFAULT_TOPIC topic.
+     * The result is written to the USER_BRANCH_A_TOPIC topic, USER_BRANCH_B_TOPIC topic and
+     * USER_BRANCH_DEFAULT_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        Map<String, KStream<String, KafkaPerson>> branches = streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
+        Map<String, KStream<String, KafkaUser>> branches = streamsBuilder
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
             .split(Named.as("BRANCH_"))
             .branch((key, value) -> value.getLastName().startsWith("S"),
                 Branched.withFunction(KafkaStreamsTopology::toUppercase, "A"))
             .branch((key, value) -> value.getLastName().startsWith("F"), Branched.as("B"))
             .defaultBranch(Branched.withConsumer(stream -> stream
-                .to(PERSON_BRANCH_DEFAULT_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()))));
+                .to(USER_BRANCH_DEFAULT_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()))));
 
         branches.get("BRANCH_A")
-            .to(PERSON_BRANCH_A_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+            .to(USER_BRANCH_A_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
 
         branches.get("BRANCH_B")
-            .to(PERSON_BRANCH_B_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+            .to(USER_BRANCH_B_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /**
      * Converts the first and last name to uppercase.
      *
-     * @param streamPerson the stream of persons.
-     * @return the stream of persons with uppercase first and last name.
+     * @param streamUser the stream of users.
+     * @return the stream of users with uppercase first and last name.
      */
-    private static KStream<String, KafkaPerson> toUppercase(KStream<String, KafkaPerson> streamPerson) {
-        return streamPerson.mapValues(person -> {
-            person.setFirstName(person.getFirstName().toUpperCase());
-            person.setLastName(person.getLastName().toUpperCase());
-            return person;
+    private static KStream<String, KafkaUser> toUppercase(KStream<String, KafkaUser> streamUser) {
+        return streamUser.mapValues(user -> {
+            user.setFirstName(user.getFirstName().toUpperCase());
+            user.setLastName(user.getLastName().toUpperCase());
+            return user;
         });
     }
 }

@@ -20,8 +20,8 @@
 package io.github.loicgreffier.streams.filter;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.filter.constant.Topic.PERSON_FILTER_TOPIC;
-import static io.github.loicgreffier.streams.filter.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.filter.constant.Topic.USER_FILTER_TOPIC;
+import static io.github.loicgreffier.streams.filter.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.filter.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.filter.serdes.SerdesUtils;
 import java.io.IOException;
@@ -56,8 +56,8 @@ class KafkaStreamsFilterApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
-    private TestOutputTopic<String, KafkaPerson> outputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestOutputTopic<String, KafkaUser> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -82,14 +82,14 @@ class KafkaStreamsFilterApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_FILTER_TOPIC,
+            USER_FILTER_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
         );
     }
 
@@ -102,34 +102,34 @@ class KafkaStreamsFilterApplicationTest {
 
     @Test
     void shouldFilterBadLastName() {
-        inputTopic.pipeInput("1", buildKafkaPerson("Ned", "Flanders"));
+        inputTopic.pipeInput("1", buildKafkaUser("Ned", "Flanders"));
 
-        List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
         assertTrue(results.isEmpty());
     }
 
     @Test
     void shouldFilterBadFirstName() {
-        inputTopic.pipeInput("1", buildKafkaPerson("Marge", "Simpson"));
+        inputTopic.pipeInput("1", buildKafkaUser("Marge", "Simpson"));
 
-        List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
         assertTrue(results.isEmpty());
     }
 
     @Test
     void shouldNotFilter() {
-        KafkaPerson person = buildKafkaPerson("Homer", "Simpson");
-        inputTopic.pipeInput("1", person);
+        KafkaUser user = buildKafkaUser("Homer", "Simpson");
+        inputTopic.pipeInput("1", user);
 
-        List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", person), results.getFirst());
+        assertEquals(KeyValue.pair("1", user), results.getFirst());
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName, String lastName) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName, String lastName) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName(lastName)

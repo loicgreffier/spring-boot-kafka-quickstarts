@@ -6,7 +6,7 @@ This module demonstrates the following:
 - The usage of Apache Avro and generic records.
 - The usage of unit tests with a Mock producer.
 
-This module produces records of type `<String, GenericRecord>` to a topic named `PERSON_TOPIC`.
+This module produces records of type `<String, GenericRecord>` to a topic named `USER_TOPIC`.
 
 ## Requirements
 

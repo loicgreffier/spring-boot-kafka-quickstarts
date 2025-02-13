@@ -27,5 +27,5 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class StateStore {
-    public static final String PERSON_LEFT_JOIN_STREAM_STREAM_STORE = "PERSON_LEFT_JOIN_STREAM_STREAM_STORE";
+    public static final String USER_LEFT_JOIN_STREAM_STREAM_STORE = "USER_LEFT_JOIN_STREAM_STREAM_STORE";
 }

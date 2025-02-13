@@ -19,7 +19,7 @@
 
 package io.github.loicgreffier.streams.store.window.timestamped.app.processor;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
@@ -31,9 +31,9 @@ import org.apache.kafka.streams.state.ValueAndTimestamp;
  * This class represents a processor that puts the messages in a timestamped window store.
  */
 @Slf4j
-public class PutInStoreProcessor extends ContextualProcessor<String, KafkaPerson, String, KafkaPerson> {
+public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUser> {
     private final String storeName;
-    private TimestampedWindowStore<String, KafkaPerson> timestampedWindowStore;
+    private TimestampedWindowStore<String, KafkaUser> timestampedWindowStore;
 
     /**
      * Constructor.
@@ -50,7 +50,7 @@ public class PutInStoreProcessor extends ContextualProcessor<String, KafkaPerson
      * @param context the processor context.
      */
     @Override
-    public void init(ProcessorContext<String, KafkaPerson> context) {
+    public void init(ProcessorContext<String, KafkaUser> context) {
         super.init(context);
         timestampedWindowStore = context.getStateStore(storeName);
     }
@@ -62,7 +62,7 @@ public class PutInStoreProcessor extends ContextualProcessor<String, KafkaPerson
      * @param message the message to process.
      */
     @Override
-    public void process(Record<String, KafkaPerson> message) {
+    public void process(Record<String, KafkaUser> message) {
         log.info("Put key = {}, value = {} in store {}", message.key(), message.value(), storeName);
         timestampedWindowStore.put(
             message.key(),

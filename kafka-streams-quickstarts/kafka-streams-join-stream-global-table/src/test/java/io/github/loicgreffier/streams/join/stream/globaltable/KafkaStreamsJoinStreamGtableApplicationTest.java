@@ -21,8 +21,8 @@ package io.github.loicgreffier.streams.join.stream.globaltable;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static io.github.loicgreffier.streams.join.stream.globaltable.constant.Topic.COUNTRY_TOPIC;
-import static io.github.loicgreffier.streams.join.stream.globaltable.constant.Topic.PERSON_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC;
-import static io.github.loicgreffier.streams.join.stream.globaltable.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.globaltable.constant.Topic.USER_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.globaltable.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -32,8 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaCountry;
-import io.github.loicgreffier.avro.KafkaJoinPersonCountry;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaJoinUserCountry;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.join.stream.globaltable.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.join.stream.globaltable.serdes.SerdesUtils;
 import java.io.IOException;
@@ -60,9 +60,9 @@ class KafkaStreamsJoinStreamGtableApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> personInputTopic;
+    private TestInputTopic<String, KafkaUser> userInputTopic;
     private TestInputTopic<String, KafkaCountry> countryInputTopic;
-    private TestOutputTopic<String, KafkaJoinPersonCountry> joinOutputTopic;
+    private TestOutputTopic<String, KafkaJoinUserCountry> joinOutputTopic;
 
     @BeforeEach
     void setUp() {
@@ -86,10 +86,10 @@ class KafkaStreamsJoinStreamGtableApplicationTest {
             Instant.parse("2000-01-01T01:00:00Z")
         );
 
-        personInputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+        userInputTopic = testDriver.createInputTopic(
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         countryInputTopic = testDriver.createInputTopic(
             COUNTRY_TOPIC,
@@ -97,9 +97,9 @@ class KafkaStreamsJoinStreamGtableApplicationTest {
             SerdesUtils.<KafkaCountry>getValueSerdes().serializer()
         );
         joinOutputTopic = testDriver.createOutputTopic(
-            PERSON_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC,
+            USER_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaJoinPersonCountry>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaJoinUserCountry>getValueSerdes().deserializer()
         );
     }
 
@@ -111,30 +111,30 @@ class KafkaStreamsJoinStreamGtableApplicationTest {
     }
 
     @Test
-    void shouldJoinPersonToCountry() {
+    void shouldJoinUserToCountry() {
         KafkaCountry country = buildKafkaCountry();
         countryInputTopic.pipeInput("US", country);
 
-        KafkaPerson person = buildKafkaPerson();
-        personInputTopic.pipeInput("1", person);
+        KafkaUser user = buildKafkaUser();
+        userInputTopic.pipeInput("1", user);
 
-        List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaJoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
 
         assertEquals("1", results.getFirst().key);
-        assertEquals(person, results.getFirst().value.getPerson());
+        assertEquals(user, results.getFirst().value.getUser());
         assertEquals(country, results.getFirst().value.getCountry());
     }
 
     @Test
     void shouldNotJoinWhenNoCountry() {
-        personInputTopic.pipeInput("1", buildKafkaPerson());
-        List<KeyValue<String, KafkaJoinPersonCountry>> results = joinOutputTopic.readKeyValuesToList();
+        userInputTopic.pipeInput("1", buildKafkaUser());
+        List<KeyValue<String, KafkaJoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
 
         assertTrue(results.isEmpty());
     }
 
-    private KafkaPerson buildKafkaPerson() {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser() {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName("Homer")
             .setLastName("Simpson")

@@ -27,6 +27,6 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
-    public static final String PERSON_TOPIC = "PERSON_TOPIC";
-    public static final String PERSON_SCHEDULE_TOPIC = "PERSON_SCHEDULE_TOPIC";
+    public static final String USER_TOPIC = "USER_TOPIC";
+    public static final String USER_SCHEDULE_TOPIC = "USER_SCHEDULE_TOPIC";
 }

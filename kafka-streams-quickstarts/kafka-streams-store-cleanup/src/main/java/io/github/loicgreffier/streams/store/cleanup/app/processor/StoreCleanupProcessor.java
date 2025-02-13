@@ -19,9 +19,9 @@
 
 package io.github.loicgreffier.streams.store.cleanup.app.processor;
 
-import static io.github.loicgreffier.streams.store.cleanup.constant.StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STORE;
+import static io.github.loicgreffier.streams.store.cleanup.constant.StateStore.USER_SCHEDULE_STORE_CLEANUP_STORE;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KeyValue;
@@ -36,8 +36,8 @@ import org.apache.kafka.streams.state.KeyValueStore;
  * This class represents a processor that fills and cleans a state store.
  */
 @Slf4j
-public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaPerson, String, KafkaPerson> {
-    private KeyValueStore<String, KafkaPerson> personStore;
+public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUser> {
+    private KeyValueStore<String, KafkaUser> userStore;
 
     /**
      * Initialize the processor.
@@ -47,9 +47,9 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaPers
      * @param context the processor context.
      */
     @Override
-    public void init(ProcessorContext<String, KafkaPerson> context) {
+    public void init(ProcessorContext<String, KafkaUser> context) {
         super.init(context);
-        personStore = context.getStateStore(PERSON_SCHEDULE_STORE_CLEANUP_STORE);
+        userStore = context.getStateStore(USER_SCHEDULE_STORE_CLEANUP_STORE);
         context.schedule(Duration.ofMinutes(1), PunctuationType.STREAM_TIME, this::forwardTombstones);
     }
 
@@ -60,15 +60,15 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaPers
      * @param message the message to process.
      */
     @Override
-    public void process(Record<String, KafkaPerson> message) {
+    public void process(Record<String, KafkaUser> message) {
         if (message.value() == null) {
             log.info("Received tombstone for key = {}", message.key());
-            personStore.delete(message.key());
+            userStore.delete(message.key());
             return;
         }
 
         log.info("Received key = {}, value = {}", message.key(), message.value());
-        personStore.put(message.key(), message.value());
+        userStore.put(message.key(), message.value());
     }
 
     /**
@@ -79,11 +79,11 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaPers
      * @param timestamp the timestamp of the punctuation.
      */
     private void forwardTombstones(long timestamp) {
-        log.info("Resetting {} store ", PERSON_SCHEDULE_STORE_CLEANUP_STORE);
+        log.info("Resetting {} store ", USER_SCHEDULE_STORE_CLEANUP_STORE);
 
-        try (KeyValueIterator<String, KafkaPerson> iterator = personStore.all()) {
+        try (KeyValueIterator<String, KafkaUser> iterator = userStore.all()) {
             while (iterator.hasNext()) {
-                KeyValue<String, KafkaPerson> keyValue = iterator.next();
+                KeyValue<String, KafkaUser> keyValue = iterator.next();
                 context().forward(new Record<>(keyValue.key, null, timestamp));
             }
         }

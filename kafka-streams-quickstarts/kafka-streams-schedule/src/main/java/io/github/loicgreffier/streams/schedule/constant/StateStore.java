@@ -27,5 +27,5 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class StateStore {
-    public static final String PERSON_SCHEDULE_STORE = "PERSON_SCHEDULE_STORE";
+    public static final String USER_SCHEDULE_STORE = "USER_SCHEDULE_STORE";
 }

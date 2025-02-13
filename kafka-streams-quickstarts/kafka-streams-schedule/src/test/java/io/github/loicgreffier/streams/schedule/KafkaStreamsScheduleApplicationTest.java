@@ -20,9 +20,9 @@
 package io.github.loicgreffier.streams.schedule;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.schedule.constant.StateStore.PERSON_SCHEDULE_STORE;
-import static io.github.loicgreffier.streams.schedule.constant.Topic.PERSON_SCHEDULE_TOPIC;
-import static io.github.loicgreffier.streams.schedule.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.schedule.constant.StateStore.USER_SCHEDULE_STORE;
+import static io.github.loicgreffier.streams.schedule.constant.Topic.USER_SCHEDULE_TOPIC;
+import static io.github.loicgreffier.streams.schedule.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.schedule.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.schedule.serdes.SerdesUtils;
 import java.io.IOException;
@@ -61,7 +61,7 @@ class KafkaStreamsScheduleApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
     private TestOutputTopic<String, Long> outputTopic;
 
     @BeforeEach
@@ -87,12 +87,12 @@ class KafkaStreamsScheduleApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_SCHEDULE_TOPIC,
+            USER_SCHEDULE_TOPIC,
             new StringDeserializer(),
             new LongDeserializer()
         );
@@ -106,28 +106,28 @@ class KafkaStreamsScheduleApplicationTest {
     }
 
     @Test
-    void shouldCountPersonByNationality() {
+    void shouldCountUserByNationality() {
         inputTopic.pipeInput(new TestRecord<>(
             "1",
-            buildKafkaPerson("Homer", "Simpson", CountryCode.US),
+            buildKafkaUser("Homer", "Simpson", CountryCode.US),
             Instant.parse("2000-01-01T01:00:00Z"))
         );
 
         inputTopic.pipeInput(new TestRecord<>(
             "2",
-            buildKafkaPerson("Marge", "Simpson", CountryCode.US),
+            buildKafkaUser("Marge", "Simpson", CountryCode.US),
             Instant.parse("2000-01-01T01:01:00Z"))
         );
 
         inputTopic.pipeInput(new TestRecord<>(
             "3",
-            buildKafkaPerson("Milhouse", "Van Houten", CountryCode.BE),
+            buildKafkaUser("Milhouse", "Van Houten", CountryCode.BE),
             Instant.parse("2000-01-01T01:01:30Z"))
         );
 
         inputTopic.pipeInput(new TestRecord<>(
             "4",
-            buildKafkaPerson("Luigi", "Risotto", CountryCode.IT),
+            buildKafkaUser("Luigi", "Risotto", CountryCode.IT),
             Instant.parse("2000-01-01T01:02:00Z"))
         );
 
@@ -135,7 +135,7 @@ class KafkaStreamsScheduleApplicationTest {
 
         inputTopic.pipeInput(new TestRecord<>(
             "5",
-            buildKafkaPerson("Bart", "Simpson", CountryCode.US),
+            buildKafkaUser("Bart", "Simpson", CountryCode.US),
             Instant.parse("2000-01-01T01:04:00Z"))
         );
 
@@ -171,15 +171,15 @@ class KafkaStreamsScheduleApplicationTest {
         assertEquals("US", results.get(7).key);
         assertEquals(1, results.get(7).value);
 
-        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(PERSON_SCHEDULE_STORE);
+        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(USER_SCHEDULE_STORE);
 
         assertEquals(1, stateStore.get("US"));
         assertEquals(0, stateStore.get("BE"));
         assertEquals(0, stateStore.get("IT"));
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName, String lastName, CountryCode nationality) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName, String lastName, CountryCode nationality) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName(lastName)

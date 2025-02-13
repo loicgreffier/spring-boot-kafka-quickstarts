@@ -20,8 +20,8 @@
 package io.github.loicgreffier.streams.exception.handler.deserialization;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.PERSON_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.common.utils.Utils.mkEntry;
 import static org.apache.kafka.common.utils.Utils.mkMap;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.exception.handler.deserialization.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.exception.handler.deserialization.error.CustomDeserializationExceptionHandler;
 import io.github.loicgreffier.streams.exception.handler.deserialization.serdes.SerdesUtils;
@@ -61,9 +61,9 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
     private TestInputTopic<String, String> inputTopicForDeserializationException;
-    private TestOutputTopic<String, KafkaPerson> outputTopic;
+    private TestOutputTopic<String, KafkaUser> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -90,19 +90,19 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         inputTopicForDeserializationException = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
             new StringSerializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC,
+            USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC,
             new StringDeserializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
         );
     }
 
@@ -115,20 +115,20 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
 
     @Test
     void shouldHandleDeserializationExceptionsAndContinueProcessing() {
-        KafkaPerson homer = buildKafkaPerson("Homer");
+        KafkaUser homer = buildKafkaUser("Homer");
         inputTopic.pipeInput("1", homer);
 
         inputTopicForDeserializationException.pipeInput("2", "invalid");
 
-        KafkaPerson marge = buildKafkaPerson("Marge");
+        KafkaUser marge = buildKafkaUser("Marge");
         inputTopic.pipeInput("3", marge);
 
         inputTopicForDeserializationException.pipeInput("4", "invalid");
 
-        KafkaPerson bart = buildKafkaPerson("Bart");
+        KafkaUser bart = buildKafkaUser("Bart");
         inputTopic.pipeInput("5", bart);
 
-        List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
         assertEquals(KeyValue.pair("1", homer), results.get(0));
         assertEquals(KeyValue.pair("3", marge), results.get(1));
@@ -141,8 +141,8 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
         assertEquals(0.06666666666666667, testDriver.metrics().get(dropRate).metricValue());
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName("Simpson")

@@ -19,11 +19,11 @@
 
 package io.github.loicgreffier.streams.merge.app;
 
-import static io.github.loicgreffier.streams.merge.constant.Topic.PERSON_MERGE_TOPIC;
-import static io.github.loicgreffier.streams.merge.constant.Topic.PERSON_TOPIC;
-import static io.github.loicgreffier.streams.merge.constant.Topic.PERSON_TOPIC_TWO;
+import static io.github.loicgreffier.streams.merge.constant.Topic.USER_MERGE_TOPIC;
+import static io.github.loicgreffier.streams.merge.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.merge.constant.Topic.USER_TOPIC_TWO;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.merge.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -42,23 +42,23 @@ import org.apache.kafka.streams.kstream.Produced;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the PERSON_TOPIC topic
-     * and the PERSON_TOPIC_TWO topic, then merge the two streams into the
-     * PERSON_MERGE_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic
+     * and the USER_TOPIC_TWO topic, then merge the two streams into the
+     * USER_MERGE_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        KStream<String, KafkaPerson> streamOne = streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person));
+        KStream<String, KafkaUser> streamOne = streamsBuilder
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user));
 
-        KStream<String, KafkaPerson> streamTwo = streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person));
+        KStream<String, KafkaUser> streamTwo = streamsBuilder
+            .<String, KafkaUser>stream(USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user));
 
         streamOne
             .merge(streamTwo)
-            .to(PERSON_MERGE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+            .to(USER_MERGE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

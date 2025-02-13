@@ -21,8 +21,8 @@ package io.github.loicgreffier.streams.exception.handler.processing;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.AUTO_REGISTER_SCHEMAS;
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.exception.handler.processing.constant.Topic.PERSON_PROCESSING_EXCEPTION_HANDLER_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.processing.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.processing.constant.Topic.USER_PROCESSING_EXCEPTION_HANDLER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.processing.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.common.utils.Utils.mkEntry;
 import static org.apache.kafka.common.utils.Utils.mkMap;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -37,7 +37,7 @@ import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.exception.handler.processing.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.exception.handler.processing.error.CustomProcessingExceptionHandler;
 import io.github.loicgreffier.streams.exception.handler.processing.serdes.SerdesUtils;
@@ -71,8 +71,8 @@ class KafkaStreamsExceptionHandlerProcessingApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
-    private TestOutputTopic<String, KafkaPerson> outputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestOutputTopic<String, KafkaUser> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -106,16 +106,16 @@ class KafkaStreamsExceptionHandlerProcessingApplicationTest {
             SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL
         );
 
-        SpecificAvroSerde<KafkaPerson> serDes = new SpecificAvroSerde<>();
+        SpecificAvroSerde<KafkaUser> serDes = new SpecificAvroSerde<>();
         serDes.configure(config, false);
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
             serDes.serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_PROCESSING_EXCEPTION_HANDLER_TOPIC,
+            USER_PROCESSING_EXCEPTION_HANDLER_TOPIC,
             new StringDeserializer(),
             serDes.deserializer()
         );
@@ -130,9 +130,9 @@ class KafkaStreamsExceptionHandlerProcessingApplicationTest {
 
     @Test
     void shouldHandleProcessingExceptionsFromDslOperation() {
-        inputTopic.pipeInput("1", buildKafkaPerson("Homer", Instant.parse("1969-01-01T01:00:00Z")));
+        inputTopic.pipeInput("1", buildKafkaUser("Homer", Instant.parse("1969-01-01T01:00:00Z")));
 
-        List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
         assertTrue(results.isEmpty());
 
@@ -145,9 +145,9 @@ class KafkaStreamsExceptionHandlerProcessingApplicationTest {
 
     @Test
     void shouldHandleProcessingExceptionsFromProcessor() {
-        inputTopic.pipeInput("1", buildKafkaPerson(null, Instant.parse("1980-01-01T01:00:00Z")));
+        inputTopic.pipeInput("1", buildKafkaUser(null, Instant.parse("1980-01-01T01:00:00Z")));
 
-        List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
         assertTrue(results.isEmpty());
 
@@ -169,8 +169,8 @@ class KafkaStreamsExceptionHandlerProcessingApplicationTest {
         assertEquals(0.03333333333333333, testDriver.metrics().get(dropRate).metricValue());
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName, Instant birthDate) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName, Instant birthDate) {
+        return KafkaUser.newBuilder()
             .setId(10L)
             .setFirstName(firstName)
             .setLastName("Simpson")

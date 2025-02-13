@@ -19,10 +19,10 @@
 
 package io.github.loicgreffier.streams.selectkey.app;
 
-import static io.github.loicgreffier.streams.selectkey.constant.Topic.PERSON_SELECT_KEY_TOPIC;
-import static io.github.loicgreffier.streams.selectkey.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.selectkey.constant.Topic.USER_SELECT_KEY_TOPIC;
+import static io.github.loicgreffier.streams.selectkey.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.selectkey.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -41,16 +41,16 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic and changes the key to the last name.
-     * The result is written to the PERSON_SELECT_KEY_TOPIC topic.
+     * The topology reads from the USER_TOPIC topic and changes the key to the last name.
+     * The result is written to the USER_SELECT_KEY_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .selectKey((key, person) -> person.getLastName())
-            .to(PERSON_SELECT_KEY_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+            .selectKey((key, user) -> user.getLastName())
+            .to(USER_SELECT_KEY_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

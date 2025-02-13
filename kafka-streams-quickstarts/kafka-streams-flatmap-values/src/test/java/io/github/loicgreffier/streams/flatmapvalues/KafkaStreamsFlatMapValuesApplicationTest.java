@@ -20,15 +20,15 @@
 package io.github.loicgreffier.streams.flatmapvalues;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.PERSON_FLATMAP_VALUES_TOPIC;
-import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.USER_FLATMAP_VALUES_TOPIC;
+import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.flatmapvalues.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.flatmapvalues.serdes.SerdesUtils;
 import java.io.IOException;
@@ -55,7 +55,7 @@ class KafkaStreamsFlatMapValuesApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
     private TestOutputTopic<String, String> outputTopic;
 
     @BeforeEach
@@ -81,12 +81,12 @@ class KafkaStreamsFlatMapValuesApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_FLATMAP_VALUES_TOPIC,
+            USER_FLATMAP_VALUES_TOPIC,
             new StringDeserializer(),
             new StringDeserializer()
         );
@@ -101,7 +101,7 @@ class KafkaStreamsFlatMapValuesApplicationTest {
 
     @Test
     void shouldFlatMapFirstNameAndLastName() {
-        inputTopic.pipeInput("1", buildKafkaPerson());
+        inputTopic.pipeInput("1", buildKafkaUser());
 
         List<KeyValue<String, String>> results = outputTopic.readKeyValuesToList();
 
@@ -109,8 +109,8 @@ class KafkaStreamsFlatMapValuesApplicationTest {
         assertEquals(KeyValue.pair("1", "Simpson"), results.get(1));
     }
 
-    private KafkaPerson buildKafkaPerson() {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser() {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName("Homer")
             .setLastName("Simpson")

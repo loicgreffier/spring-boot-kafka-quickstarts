@@ -21,8 +21,8 @@ package io.github.loicgreffier.streams.exception.handler.production;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.AUTO_REGISTER_SCHEMAS;
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.PERSON_PRODUCTION_EXCEPTION_HANDLER_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.common.utils.Utils.mkEntry;
 import static org.apache.kafka.common.utils.Utils.mkMap;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -37,7 +37,7 @@ import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.exception.handler.production.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.exception.handler.production.error.CustomProductionExceptionHandler;
 import io.github.loicgreffier.streams.exception.handler.production.serdes.SerdesUtils;
@@ -70,8 +70,8 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
-    private TestOutputTopic<String, KafkaPerson> outputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestOutputTopic<String, KafkaUser> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -105,16 +105,16 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
             SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL
         );
 
-        SpecificAvroSerde<KafkaPerson> serDes = new SpecificAvroSerde<>();
+        SpecificAvroSerde<KafkaUser> serDes = new SpecificAvroSerde<>();
         serDes.configure(config, false);
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
             serDes.serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            PERSON_PRODUCTION_EXCEPTION_HANDLER_TOPIC,
+            USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC,
             new StringDeserializer(),
             serDes.deserializer()
         );
@@ -129,9 +129,9 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
 
     @Test
     void shouldHandleSerializationExceptionsAndContinueProcessing() {
-        inputTopic.pipeInput("10", buildKafkaPerson());
+        inputTopic.pipeInput("10", buildKafkaUser());
 
-        List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
         assertTrue(results.isEmpty());
 
@@ -142,8 +142,8 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
         assertEquals(0.03333333333333333, testDriver.metrics().get(dropRate).metricValue());
     }
 
-    private KafkaPerson buildKafkaPerson() {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser() {
+        return KafkaUser.newBuilder()
             .setId(10L)
             .setFirstName("Homer")
             .setLastName("Simpson")

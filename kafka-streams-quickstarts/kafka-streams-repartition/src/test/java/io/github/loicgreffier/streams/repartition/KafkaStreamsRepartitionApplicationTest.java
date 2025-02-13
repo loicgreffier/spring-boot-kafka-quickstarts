@@ -20,7 +20,7 @@
 package io.github.loicgreffier.streams.repartition;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.repartition.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.repartition.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.repartition.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.repartition.serdes.SerdesUtils;
 import java.io.IOException;
@@ -55,8 +55,8 @@ class KafkaStreamsRepartitionApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
-    private TestOutputTopic<String, KafkaPerson> outputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestOutputTopic<String, KafkaUser> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -81,14 +81,14 @@ class KafkaStreamsRepartitionApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
-            "streams-repartition-test-" + PERSON_TOPIC + "-repartition",
+            "streams-repartition-test-" + USER_TOPIC + "-repartition",
             new StringDeserializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().deserializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
         );
     }
 
@@ -101,16 +101,16 @@ class KafkaStreamsRepartitionApplicationTest {
 
     @Test
     void shouldRepartitionRecordsInNewTopic() {
-        KafkaPerson person = buildKafkaPerson();
-        inputTopic.pipeInput("1", person);
+        KafkaUser user = buildKafkaUser();
+        inputTopic.pipeInput("1", user);
 
-        List<KeyValue<String, KafkaPerson>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", person), results.getFirst());
+        assertEquals(KeyValue.pair("1", user), results.getFirst());
     }
 
-    private KafkaPerson buildKafkaPerson() {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser() {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName("Homer")
             .setLastName("Simpson")

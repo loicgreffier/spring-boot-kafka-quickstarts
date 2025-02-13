@@ -20,8 +20,8 @@
 package io.github.loicgreffier.streams.store.cleanup;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.store.cleanup.constant.StateStore.PERSON_SCHEDULE_STORE_CLEANUP_STORE;
-import static io.github.loicgreffier.streams.store.cleanup.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.store.cleanup.constant.StateStore.USER_SCHEDULE_STORE_CLEANUP_STORE;
+import static io.github.loicgreffier.streams.store.cleanup.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.store.cleanup.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.store.cleanup.serdes.SerdesUtils;
 import java.io.IOException;
@@ -54,7 +54,7 @@ class KafkaStreamsStoreCleanupApplicationTest {
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
 
     @BeforeEach
     void setUp() {
@@ -79,9 +79,9 @@ class KafkaStreamsStoreCleanupApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
     }
 
@@ -94,17 +94,17 @@ class KafkaStreamsStoreCleanupApplicationTest {
 
     @Test
     void shouldFillAndCleanupStore() {
-        KafkaPerson homer = buildKafkaPerson("Homer", "Simpson");
+        KafkaUser homer = buildKafkaUser("Homer", "Simpson");
         inputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        KafkaPerson marge = buildKafkaPerson("Marge", "Simpson");
+        KafkaUser marge = buildKafkaUser("Marge", "Simpson");
         inputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:00:20Z")));
 
-        KafkaPerson milhouse = buildKafkaPerson("Milhouse", "Van Houten");
+        KafkaUser milhouse = buildKafkaUser("Milhouse", "Van Houten");
         inputTopic.pipeInput(new TestRecord<>("3", milhouse, Instant.parse("2000-01-01T01:00:40Z")));
 
-        KeyValueStore<String, KafkaPerson> stateStore = testDriver
-            .getKeyValueStore(PERSON_SCHEDULE_STORE_CLEANUP_STORE);
+        KeyValueStore<String, KafkaUser> stateStore = testDriver
+            .getKeyValueStore(USER_SCHEDULE_STORE_CLEANUP_STORE);
 
         // The 1st stream time punctuate is triggered after the 1st record is pushed, 
         // so the 1st record is not in the store anymore.
@@ -112,10 +112,10 @@ class KafkaStreamsStoreCleanupApplicationTest {
         assertEquals(marge, stateStore.get("2"));
         assertEquals(milhouse, stateStore.get("3"));
 
-        KafkaPerson bart = buildKafkaPerson("Bart", "Simpson");
+        KafkaUser bart = buildKafkaUser("Bart", "Simpson");
         inputTopic.pipeInput(new TestRecord<>("4", bart, Instant.parse("2000-01-01T01:02:00Z")));
 
-        KafkaPerson lisa = buildKafkaPerson("Lisa", "Simpson");
+        KafkaUser lisa = buildKafkaUser("Lisa", "Simpson");
         inputTopic.pipeInput(new TestRecord<>("5", lisa, Instant.parse("2000-01-01T01:02:30Z")));
 
         // 2nd stream time punctuate
@@ -125,8 +125,8 @@ class KafkaStreamsStoreCleanupApplicationTest {
         assertEquals(lisa, stateStore.get("5"));
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName, String lastName) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName, String lastName) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName(lastName)

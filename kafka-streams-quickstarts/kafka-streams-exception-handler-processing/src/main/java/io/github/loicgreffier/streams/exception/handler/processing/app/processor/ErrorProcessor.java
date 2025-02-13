@@ -19,7 +19,7 @@
 
 package io.github.loicgreffier.streams.exception.handler.processing.app.processor;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import java.time.Duration;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.processor.api.ContextualFixedKeyProcessor;
@@ -29,7 +29,7 @@ import org.apache.kafka.streams.processor.api.FixedKeyRecord;
 /**
  * This class represents a processor that throws an exception during processing and punctuation.
  */
-public class ErrorProcessor extends ContextualFixedKeyProcessor<String, KafkaPerson, KafkaPerson> {
+public class ErrorProcessor extends ContextualFixedKeyProcessor<String, KafkaUser, KafkaUser> {
 
     /**
      * Initialize the processor.
@@ -37,7 +37,7 @@ public class ErrorProcessor extends ContextualFixedKeyProcessor<String, KafkaPer
      * @param context the processor context.
      */
     @Override
-    public void init(FixedKeyProcessorContext<String, KafkaPerson> context) {
+    public void init(FixedKeyProcessorContext<String, KafkaUser> context) {
         super.init(context);
         context.schedule(Duration.ofMinutes(1),
             PunctuationType.WALL_CLOCK_TIME,
@@ -53,7 +53,7 @@ public class ErrorProcessor extends ContextualFixedKeyProcessor<String, KafkaPer
      * @param message the record to process
      */
     @Override
-    public void process(FixedKeyRecord<String, KafkaPerson> message) {
+    public void process(FixedKeyRecord<String, KafkaUser> message) {
         if (message.value().getFirstName() == null || message.value().getLastName() == null) {
             throw new IllegalArgumentException("First name and last name must not be null");
         }

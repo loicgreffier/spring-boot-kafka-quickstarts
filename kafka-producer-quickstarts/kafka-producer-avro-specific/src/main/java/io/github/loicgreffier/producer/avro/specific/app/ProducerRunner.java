@@ -21,9 +21,9 @@ package io.github.loicgreffier.producer.avro.specific.app;
 
 import static io.github.loicgreffier.producer.avro.specific.constant.Name.FIRST_NAMES;
 import static io.github.loicgreffier.producer.avro.specific.constant.Name.LAST_NAMES;
-import static io.github.loicgreffier.producer.avro.specific.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.producer.avro.specific.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import java.time.Instant;
 import java.util.Random;
 import java.util.concurrent.Future;
@@ -45,23 +45,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     @Autowired
-    private Producer<String, KafkaPerson> producer;
+    private Producer<String, KafkaUser> producer;
 
     /**
      * Asynchronously starts the Kafka producer when the application is ready.
      * The asynchronous annotation is used to run the producer in a separate thread and
      * not block the main thread.
-     * The Kafka producer produces specific Avro records to the PERSON_TOPIC topic.
+     * The Kafka producer produces specific Avro records to the USER_TOPIC topic.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         int i = 0;
         while (true) {
-            ProducerRecord<String, KafkaPerson> message = new ProducerRecord<>(
-                PERSON_TOPIC,
+            ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(
+                USER_TOPIC,
                 String.valueOf(i),
-                buildKafkaPerson(i)
+                buildKafkaUser(i)
             );
 
             send(message);
@@ -83,7 +83,7 @@ public class ProducerRunner {
      * @param message The message to send.
      * @return A future of the record metadata.
      */
-    public Future<RecordMetadata> send(ProducerRecord<String, KafkaPerson> message) {
+    public Future<RecordMetadata> send(ProducerRecord<String, KafkaUser> message) {
         return producer.send(message, (recordMetadata, e) -> {
             if (e != null) {
                 log.error(e.getMessage());
@@ -104,8 +104,8 @@ public class ProducerRunner {
      * @param id The record id.
      * @return The specific Avro record.
      */
-    private KafkaPerson buildKafkaPerson(int id) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(int id) {
+        return KafkaUser.newBuilder()
             .setId((long) id)
             .setFirstName(FIRST_NAMES[new Random().nextInt(FIRST_NAMES.length)])
             .setLastName(LAST_NAMES[new Random().nextInt(LAST_NAMES.length)])

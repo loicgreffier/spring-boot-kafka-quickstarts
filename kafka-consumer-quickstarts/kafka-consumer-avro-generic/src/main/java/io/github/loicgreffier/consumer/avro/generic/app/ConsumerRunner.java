@@ -19,7 +19,7 @@
 
 package io.github.loicgreffier.consumer.avro.generic.app;
 
-import static io.github.loicgreffier.consumer.avro.generic.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.consumer.avro.generic.constant.Topic.USER_TOPIC;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -50,16 +50,16 @@ public class ConsumerRunner {
      * Asynchronously starts the Kafka consumer when the application is ready.
      * The asynchronous annotation is used to run the consumer in a separate thread and
      * not block the main thread.
-     * The Kafka consumer processes generic Avro records from the PERSON_TOPIC topic,
+     * The Kafka consumer processes generic Avro records from the USER_TOPIC topic,
      * so it does not require to know the schema of the records.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         try {
-            log.info("Subscribing to {} topic", PERSON_TOPIC);
+            log.info("Subscribing to {} topic", USER_TOPIC);
 
-            consumer.subscribe(Collections.singleton(PERSON_TOPIC), new CustomConsumerRebalanceListener());
+            consumer.subscribe(Collections.singleton(USER_TOPIC), new CustomConsumerRebalanceListener());
 
             while (true) {
                 ConsumerRecords<String, GenericRecord> messages = consumer.poll(Duration.ofMillis(1000));

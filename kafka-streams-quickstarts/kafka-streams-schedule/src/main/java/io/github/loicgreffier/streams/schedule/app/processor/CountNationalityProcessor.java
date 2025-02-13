@@ -19,9 +19,9 @@
 
 package io.github.loicgreffier.streams.schedule.app.processor;
 
-import static io.github.loicgreffier.streams.schedule.constant.StateStore.PERSON_SCHEDULE_STORE;
+import static io.github.loicgreffier.streams.schedule.constant.StateStore.USER_SCHEDULE_STORE;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
@@ -35,10 +35,10 @@ import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
 
 /**
- * This class represents a processor that counts the number of persons by nationality.
+ * This class represents a processor that counts the number of users by nationality.
  */
 @Slf4j
-public class CountNationalityProcessor extends ContextualProcessor<String, KafkaPerson, String, Long> {
+public class CountNationalityProcessor extends ContextualProcessor<String, KafkaUser, String, Long> {
     private KeyValueStore<String, Long> countNationalityStore;
 
     /**
@@ -52,7 +52,7 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
     @Override
     public void init(ProcessorContext<String, Long> context) {
         super.init(context);
-        countNationalityStore = context.getStateStore(PERSON_SCHEDULE_STORE);
+        countNationalityStore = context.getStateStore(USER_SCHEDULE_STORE);
         context.schedule(Duration.ofMinutes(2), PunctuationType.WALL_CLOCK_TIME, this::resetCounters);
         context.schedule(Duration.ofMinutes(1), PunctuationType.STREAM_TIME, this::forwardCounters);
     }
@@ -63,7 +63,7 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
      * @param message the message to process.
      */
     @Override
-    public void process(Record<String, KafkaPerson> message) {
+    public void process(Record<String, KafkaUser> message) {
         log.info("Received key = {}, value = {}", message.key(), message.value());
 
         String key = message.value().getNationality().toString();
@@ -100,7 +100,7 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
             while (iterator.hasNext()) {
                 KeyValue<String, Long> keyValue = iterator.next();
                 context().forward(new Record<>(keyValue.key, keyValue.value, timestamp));
-                log.info("{} persons of {} nationality at {}",
+                log.info("{} users of {} nationality at {}",
                     keyValue.value,
                     keyValue.key,
                     new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(timestamp))

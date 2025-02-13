@@ -20,9 +20,9 @@
 package io.github.loicgreffier.streams.store.keyvalue;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.PERSON_KEY_VALUE_STORE;
-import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.PERSON_KEY_VALUE_SUPPLIER_STORE;
-import static io.github.loicgreffier.streams.store.keyvalue.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.USER_KEY_VALUE_STORE;
+import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.USER_KEY_VALUE_SUPPLIER_STORE;
+import static io.github.loicgreffier.streams.store.keyvalue.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.store.keyvalue.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.store.keyvalue.serdes.SerdesUtils;
 import java.io.IOException;
@@ -55,7 +55,7 @@ class KafkaStreamsStoreKeyValueApplicationTest {
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
 
     @BeforeEach
     void setUp() {
@@ -80,9 +80,9 @@ class KafkaStreamsStoreKeyValueApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
     }
 
@@ -94,23 +94,23 @@ class KafkaStreamsStoreKeyValueApplicationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {PERSON_KEY_VALUE_STORE, PERSON_KEY_VALUE_SUPPLIER_STORE})
+    @ValueSource(strings = {USER_KEY_VALUE_STORE, USER_KEY_VALUE_SUPPLIER_STORE})
     void shouldPutAndGetFromKeyValueStores(String storeName) {
-        KafkaPerson homer = buildKafkaPerson("Homer");
+        KafkaUser homer = buildKafkaUser("Homer");
         inputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        KafkaPerson marge = buildKafkaPerson("Marge");
+        KafkaUser marge = buildKafkaUser("Marge");
         inputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:00:30Z")));
 
-        KeyValueStore<String, KafkaPerson> keyValueStore = testDriver
+        KeyValueStore<String, KafkaUser> keyValueStore = testDriver
             .getKeyValueStore(storeName);
 
         assertEquals(homer, keyValueStore.get("1"));
         assertEquals(marge, keyValueStore.get("2"));
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName("Simpson")

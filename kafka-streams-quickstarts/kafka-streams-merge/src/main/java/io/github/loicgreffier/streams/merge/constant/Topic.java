@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
-    public static final String PERSON_TOPIC = "PERSON_TOPIC";
-    public static final String PERSON_TOPIC_TWO = "PERSON_TOPIC_TWO";
-    public static final String PERSON_MERGE_TOPIC = "PERSON_MERGE_TOPIC";
+    public static final String USER_TOPIC = "USER_TOPIC";
+    public static final String USER_TOPIC_TWO = "USER_TOPIC_TWO";
+    public static final String USER_MERGE_TOPIC = "USER_MERGE_TOPIC";
 }

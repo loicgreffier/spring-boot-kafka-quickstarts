@@ -19,7 +19,7 @@
 
 package io.github.loicgreffier.consumer.circuit.breaker.config;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.consumer.circuit.breaker.property.ConsumerProperties;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -41,7 +41,7 @@ public class ConsumerConfig {
      * @return A Kafka consumer instance.
      */
     @Bean(destroyMethod = "wakeup")
-    public Consumer<String, KafkaPerson> kafkaConsumer(ConsumerProperties properties) {
+    public Consumer<String, KafkaUser> kafkaConsumer(ConsumerProperties properties) {
         return new KafkaConsumer<>(properties.asProperties());
     }
 }

@@ -27,6 +27,6 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
-    public static final String PERSON_TOPIC = "PERSON_TOPIC";
-    public static final String PERSON_MAP_TOPIC = "PERSON_MAP_TOPIC";
+    public static final String USER_TOPIC = "USER_TOPIC";
+    public static final String USER_MAP_TOPIC = "USER_MAP_TOPIC";
 }

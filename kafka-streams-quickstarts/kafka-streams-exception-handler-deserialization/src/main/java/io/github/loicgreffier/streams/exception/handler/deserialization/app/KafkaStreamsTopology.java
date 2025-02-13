@@ -19,10 +19,10 @@
 
 package io.github.loicgreffier.streams.exception.handler.deserialization.app;
 
-import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.PERSON_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.exception.handler.deserialization.serdes.SerdesUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -41,16 +41,16 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology.
-     * The topology reads from the PERSON_TOPIC topic and only displays the received key and value.
-     * The result is written to the PERSON_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC topic.
+     * The topology reads from the USER_TOPIC topic and only displays the received key and value.
+     * The result is written to the USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC topic.
      *
      * @param streamsBuilder the streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
-            .<String, KafkaPerson>stream(PERSON_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, person) -> log.info("Received key = {}, value = {}", key, person))
-            .to(PERSON_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC,
+            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+            .to(USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC,
                 Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

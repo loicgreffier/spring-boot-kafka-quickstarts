@@ -14,7 +14,7 @@
     <artifactId>specific-producers</artifactId>
 
     <modules>
-        <module>kafka-streams-producer-person</module>
+        <module>kafka-streams-producer-user</module>
         <module>kafka-streams-producer-country</module>
     </modules>
 </project>

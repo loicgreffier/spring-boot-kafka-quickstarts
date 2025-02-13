@@ -21,7 +21,7 @@ package io.github.loicgreffier.producer.avro.generic.app;
 
 import static io.github.loicgreffier.producer.avro.generic.constant.Name.FIRST_NAMES;
 import static io.github.loicgreffier.producer.avro.generic.constant.Name.LAST_NAMES;
-import static io.github.loicgreffier.producer.avro.generic.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.producer.avro.generic.constant.Topic.USER_TOPIC;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,20 +55,20 @@ public class ProducerRunner {
      * Asynchronously starts the Kafka producer when the application is ready.
      * The asynchronous annotation is used to run the producer in a separate thread and
      * not block the main thread.
-     * The Kafka producer produces generic Avro records to the PERSON_TOPIC topic.
+     * The Kafka producer produces generic Avro records to the USER_TOPIC topic.
      *
      * @throws IOException if the schema file cannot be read
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() throws IOException {
-        File schemaFile = new ClassPathResource("person.avsc").getFile();
+        File schemaFile = new ClassPathResource("user.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
         int i = 0;
         while (true) {
             ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(
-                PERSON_TOPIC,
+                USER_TOPIC,
                 String.valueOf(i),
                 buildGenericRecord(schema, i)
             );

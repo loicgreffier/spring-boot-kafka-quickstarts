@@ -20,9 +20,9 @@
 package io.github.loicgreffier.streams.store.window.timestamped;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.store.window.timestamped.constant.StateStore.PERSON_TIMESTAMPED_WINDOW_STORE;
-import static io.github.loicgreffier.streams.store.window.timestamped.constant.StateStore.PERSON_TIMESTAMPED_WINDOW_SUPPLIER_STORE;
-import static io.github.loicgreffier.streams.store.window.timestamped.constant.Topic.PERSON_TOPIC;
+import static io.github.loicgreffier.streams.store.window.timestamped.constant.StateStore.USER_TIMESTAMPED_WINDOW_STORE;
+import static io.github.loicgreffier.streams.store.window.timestamped.constant.StateStore.USER_TIMESTAMPED_WINDOW_SUPPLIER_STORE;
+import static io.github.loicgreffier.streams.store.window.timestamped.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaPerson;
+import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.store.window.timestamped.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.store.window.timestamped.serdes.SerdesUtils;
 import java.io.IOException;
@@ -59,7 +59,7 @@ class KafkaStreamsStoreWindowTimestampedApplicationTest {
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaPerson> inputTopic;
+    private TestInputTopic<String, KafkaUser> inputTopic;
 
     @BeforeEach
     void setUp() {
@@ -84,9 +84,9 @@ class KafkaStreamsStoreWindowTimestampedApplicationTest {
         );
 
         inputTopic = testDriver.createInputTopic(
-            PERSON_TOPIC,
+            USER_TOPIC,
             new StringSerializer(),
-            SerdesUtils.<KafkaPerson>getValueSerdes().serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
     }
 
@@ -98,19 +98,19 @@ class KafkaStreamsStoreWindowTimestampedApplicationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {PERSON_TIMESTAMPED_WINDOW_STORE, PERSON_TIMESTAMPED_WINDOW_SUPPLIER_STORE})
+    @ValueSource(strings = {USER_TIMESTAMPED_WINDOW_STORE, USER_TIMESTAMPED_WINDOW_SUPPLIER_STORE})
     void shouldPutAndGetFromWindowStores(String storeName) {
-        KafkaPerson homer = buildKafkaPerson("Homer");
+        KafkaUser homer = buildKafkaUser("Homer");
         Instant homerTimestamp = Instant.parse("2000-01-01T01:00:00Z");
         inputTopic.pipeInput(new TestRecord<>("1", homer, homerTimestamp));
         inputTopic.pipeInput(new TestRecord<>("1", homer, homerTimestamp.plusSeconds(10)));
 
-        KafkaPerson marge = buildKafkaPerson("Marge");
+        KafkaUser marge = buildKafkaUser("Marge");
         Instant margeTimestamp = Instant.parse("2000-01-01T01:00:30Z");
         inputTopic.pipeInput(new TestRecord<>("2", marge, margeTimestamp));
         inputTopic.pipeInput(new TestRecord<>("2", marge, margeTimestamp.plusSeconds(10)));
 
-        WindowStore<String, ValueAndTimestamp<KafkaPerson>> windowStore = testDriver
+        WindowStore<String, ValueAndTimestamp<KafkaUser>> windowStore = testDriver
             .getTimestampedWindowStore(storeName);
 
         // Fetch from window store by key and timestamp. The timestamp used to fetch has to be equal to
@@ -131,12 +131,12 @@ class KafkaStreamsStoreWindowTimestampedApplicationTest {
 
         // Fetch from window store by key and time range.
 
-        try (WindowStoreIterator<ValueAndTimestamp<KafkaPerson>> iterator = windowStore.fetch(
+        try (WindowStoreIterator<ValueAndTimestamp<KafkaUser>> iterator = windowStore.fetch(
             "1",
             homerTimestamp.minusSeconds(30).toEpochMilli(),
             homerTimestamp.plusSeconds(30).toEpochMilli()
         )) {
-            ValueAndTimestamp<KafkaPerson> valueAndTimestamp = iterator.next().value;
+            ValueAndTimestamp<KafkaUser> valueAndTimestamp = iterator.next().value;
             assertEquals(homer, valueAndTimestamp.value());
             assertEquals("2000-01-01T01:00:00Z", Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
 
@@ -160,12 +160,12 @@ class KafkaStreamsStoreWindowTimestampedApplicationTest {
         );
         assertNull(windowStore.fetch("2", margeTimestamp.plusSeconds(1).toEpochMilli()));
 
-        try (WindowStoreIterator<ValueAndTimestamp<KafkaPerson>> iterator = windowStore.fetch(
+        try (WindowStoreIterator<ValueAndTimestamp<KafkaUser>> iterator = windowStore.fetch(
             "2",
             margeTimestamp.minusSeconds(30).toEpochMilli(),
             margeTimestamp.plusSeconds(30).toEpochMilli()
         )) {
-            ValueAndTimestamp<KafkaPerson> valueAndTimestamp = iterator.next().value;
+            ValueAndTimestamp<KafkaUser> valueAndTimestamp = iterator.next().value;
             assertEquals(marge, valueAndTimestamp.value());
             assertEquals("2000-01-01T01:00:30Z", Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
 
@@ -177,8 +177,8 @@ class KafkaStreamsStoreWindowTimestampedApplicationTest {
         }
     }
 
-    private KafkaPerson buildKafkaPerson(String firstName) {
-        return KafkaPerson.newBuilder()
+    private KafkaUser buildKafkaUser(String firstName) {
+        return KafkaUser.newBuilder()
             .setId(1L)
             .setFirstName(firstName)
             .setLastName("Simpson")
