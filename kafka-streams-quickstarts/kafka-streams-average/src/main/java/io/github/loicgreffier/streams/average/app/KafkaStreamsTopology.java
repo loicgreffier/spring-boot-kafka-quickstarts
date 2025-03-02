@@ -53,7 +53,7 @@ public class KafkaStreamsTopology {
      * Then, the average age is computed.
      * The result is written to the USER_AVERAGE_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

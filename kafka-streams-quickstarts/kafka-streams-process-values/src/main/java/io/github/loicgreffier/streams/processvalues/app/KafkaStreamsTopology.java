@@ -46,7 +46,7 @@ public class KafkaStreamsTopology {
      * the {@link UserMetadataFixedKeyProcessor} processor.
      * The result is written to the USER_PROCESS_VALUES_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

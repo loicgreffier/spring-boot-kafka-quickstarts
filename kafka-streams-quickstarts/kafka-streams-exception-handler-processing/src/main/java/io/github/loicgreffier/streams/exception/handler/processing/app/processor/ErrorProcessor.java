@@ -34,7 +34,7 @@ public class ErrorProcessor extends ContextualFixedKeyProcessor<String, KafkaUse
     /**
      * Initialize the processor.
      *
-     * @param context the processor context.
+     * @param context The processor context.
      */
     @Override
     public void init(FixedKeyProcessorContext<String, KafkaUser> context) {
@@ -51,7 +51,7 @@ public class ErrorProcessor extends ContextualFixedKeyProcessor<String, KafkaUse
     /**
      * Process the record by throwing an exception if the first name or last name is null.
      *
-     * @param message the record to process
+     * @param message The record to process
      */
     @Override
     public void process(FixedKeyRecord<String, KafkaUser> message) {

@@ -37,8 +37,8 @@ public class SerdesUtils {
     /**
      * Create a SpecificAvroSerde for the value.
      *
-     * @param <T> the type of the value.
-     * @return the SpecificAvroSerde.
+     * @param <T> The type of the value.
+     * @return The SpecificAvroSerde.
      */
     public static <T extends SpecificRecord> SpecificAvroSerde<T> getValueSerdes() {
         SpecificAvroSerde<T> serdes = new SpecificAvroSerde<>();

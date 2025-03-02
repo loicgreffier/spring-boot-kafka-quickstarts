@@ -54,7 +54,7 @@ public class KafkaStreamsTopology {
      * and aggregates the first names by last name.
      * The result is written to the USER_AGGREGATE_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

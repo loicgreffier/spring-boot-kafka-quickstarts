@@ -45,7 +45,7 @@ public class KafkaStreamsTopology {
      * and first name starting with "H".
      * The result is written to the USER_FILTER_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

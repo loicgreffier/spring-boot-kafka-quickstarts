@@ -39,7 +39,7 @@ public class UserMetadataProcessor extends ContextualProcessor<String, KafkaUser
      * Process the message by adding metadata to the message
      * and changing the key. The message is then forwarded.
      *
-     * @param message the message to process.
+     * @param message The message to process.
      */
     @Override
     public void process(Record<String, KafkaUser> message) {

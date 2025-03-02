@@ -48,7 +48,7 @@ public class KafkaStreamsTopology {
      * processing exception.
      * The result is written to the USER_PROCESSING_EXCEPTION_HANDLER_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

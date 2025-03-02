@@ -126,7 +126,7 @@ public class ConsumerRunner {
     /**
      * Checks if the consumer is paused.
      *
-     * @return true if the consumer is paused, false otherwise.
+     * @return True if the consumer is paused, false otherwise.
      */
     private boolean isPaused() {
         return !consumer.paused().isEmpty();

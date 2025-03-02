@@ -46,7 +46,7 @@ public class KafkaStreamsTopology {
      * and the USER_TOPIC_TWO topic, then merge the two streams into the
      * USER_MERGE_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         KStream<String, KafkaUser> streamOne = streamsBuilder

@@ -43,7 +43,7 @@ public class KafkaStreamsTopology {
      * The topology reads from the USER_TOPIC topic and repartitions the stream with 3 partitions.
      * The result is written to the USER_TOPIC repartition topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

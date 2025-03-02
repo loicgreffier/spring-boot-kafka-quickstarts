@@ -57,7 +57,7 @@ public class KafkaStreamsTopology {
      * in the {@link org.apache.kafka.streams.kstream.KStream#process(ProcessorSupplier, String...)} method.
      * - Using the {@link ProcessorSupplier#stores()} method to attach the store to the topology and the processor.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         final StoreBuilder<WindowStore<String, KafkaUser>> storeBuilder = Stores

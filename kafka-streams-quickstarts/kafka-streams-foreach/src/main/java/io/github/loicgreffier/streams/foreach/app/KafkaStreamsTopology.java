@@ -41,7 +41,7 @@ public class KafkaStreamsTopology {
      * Builds the Kafka Streams topology.
      * The topology reads from the USER_TOPIC topic. For each record, it logs the key and the value.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

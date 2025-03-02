@@ -44,7 +44,7 @@ public class KafkaStreamsTopology {
      * The topology reads from the USER_TOPIC topic and changes the key to the last name.
      * The result is written to the USER_SELECT_KEY_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

@@ -57,7 +57,7 @@ public class KafkaStreamsTopology {
      * The result is written to the USER_BRANCH_A_TOPIC topic, USER_BRANCH_B_TOPIC topic and
      * USER_BRANCH_DEFAULT_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         Map<String, KStream<String, KafkaUser>> branches = streamsBuilder
@@ -80,8 +80,8 @@ public class KafkaStreamsTopology {
     /**
      * Converts the first and last name to uppercase.
      *
-     * @param streamUser the stream of users.
-     * @return the stream of users with uppercase first and last name.
+     * @param streamUser The stream of users.
+     * @return The stream of users with uppercase first and last name.
      */
     private static KStream<String, KafkaUser> toUppercase(KStream<String, KafkaUser> streamUser) {
         return streamUser.mapValues(user -> {

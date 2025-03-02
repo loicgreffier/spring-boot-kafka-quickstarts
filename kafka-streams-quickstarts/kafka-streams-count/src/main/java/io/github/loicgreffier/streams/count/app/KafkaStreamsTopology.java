@@ -50,7 +50,7 @@ public class KafkaStreamsTopology {
      * The topology reads from the USER_TOPIC topic, groups by nationality and counts the number of users.
      * The result is written to the USER_COUNT_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

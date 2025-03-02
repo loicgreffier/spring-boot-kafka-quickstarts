@@ -44,7 +44,7 @@ public class KafkaStreamsTopology {
      * The topology reads from the USER_TOPIC topic, maps the first name and the last name to upper case.
      * The result is written to the USER_MAP_VALUES_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

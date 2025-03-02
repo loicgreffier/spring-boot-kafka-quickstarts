@@ -57,7 +57,7 @@ public class KafkaStreamsTopology {
      * too many exceptions.
      * The result is written to the USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         StringBuilder stringBuilder = new StringBuilder();

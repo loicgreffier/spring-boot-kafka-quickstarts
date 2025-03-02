@@ -46,7 +46,7 @@ public class KafkaStreamsTopology {
      * the key to the last name.
      * The result is written to the USER_MAP_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

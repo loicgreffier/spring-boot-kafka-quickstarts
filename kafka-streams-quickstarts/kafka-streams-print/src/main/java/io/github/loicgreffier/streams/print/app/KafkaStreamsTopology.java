@@ -45,8 +45,8 @@ public class KafkaStreamsTopology {
      * the {@code filePath} parameter.
      * The topology also reads from the USER_TOPIC_TWO topic and prints the result to the console.
      *
-     * @param streamsBuilder the streams builder.
-     * @param filePath       the file path.
+     * @param streamsBuilder The streams builder.
+     * @param filePath       The file path.
      */
     public static void topology(StreamsBuilder streamsBuilder, String filePath) {
         streamsBuilder
@@ -66,9 +66,9 @@ public class KafkaStreamsTopology {
     /**
      * Formats the key and value into a string.
      *
-     * @param key         the key.
-     * @param kafkaUser the value.
-     * @return the formatted string.
+     * @param key         The key.
+     * @param kafkaUser The value.
+     * @return The formatted string.
      */
     private static String toOutput(String key, KafkaUser kafkaUser) {
         return String.format("Received key = %s, value = %s", key, kafkaUser);

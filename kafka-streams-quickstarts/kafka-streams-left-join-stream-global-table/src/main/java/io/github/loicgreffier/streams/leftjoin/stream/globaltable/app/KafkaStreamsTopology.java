@@ -58,7 +58,7 @@ public class KafkaStreamsTopology {
      * secondary stream, a null value is returned.
      * </p>
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         GlobalKTable<String, KafkaCountry> countryGlobalTable = streamsBuilder

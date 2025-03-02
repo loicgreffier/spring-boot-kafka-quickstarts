@@ -70,7 +70,7 @@ public class KafkaStreamsTopology {
      * Two records are in the same window if the difference between their timestamps is less than the window size.
      * </p>
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      * @see org.apache.kafka.streams.kstream.internals.KStreamSlidingWindowAggregate
      */
     public static void topology(StreamsBuilder streamsBuilder) {

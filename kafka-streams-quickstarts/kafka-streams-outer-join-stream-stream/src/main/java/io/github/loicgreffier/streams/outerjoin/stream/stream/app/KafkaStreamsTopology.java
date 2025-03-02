@@ -70,7 +70,7 @@ public class KafkaStreamsTopology {
      * </pre>
      * </p>
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         KStream<String, KafkaUser> streamTwo = streamsBuilder

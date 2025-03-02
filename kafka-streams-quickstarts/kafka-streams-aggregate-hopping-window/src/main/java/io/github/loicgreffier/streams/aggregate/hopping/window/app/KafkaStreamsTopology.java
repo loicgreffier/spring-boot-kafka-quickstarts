@@ -63,7 +63,7 @@ public class KafkaStreamsTopology {
      * A record belongs to a hopping window if its timestamp is in the range [windowStart, windowEnd).
      * </p>
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

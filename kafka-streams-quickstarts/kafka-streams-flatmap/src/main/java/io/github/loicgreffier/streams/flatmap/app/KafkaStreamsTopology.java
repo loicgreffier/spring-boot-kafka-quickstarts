@@ -48,7 +48,7 @@ public class KafkaStreamsTopology {
      * the first name and the last name as key and value respectively and upper case the key.
      * The result is written to the USER_FLATMAP_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

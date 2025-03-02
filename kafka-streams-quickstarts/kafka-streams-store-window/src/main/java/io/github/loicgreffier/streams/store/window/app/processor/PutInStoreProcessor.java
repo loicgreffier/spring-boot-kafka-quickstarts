@@ -37,7 +37,7 @@ public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, 
     /**
      * Constructor.
      *
-     * @param storeName the name of the store.
+     * @param storeName The name of the store.
      */
     public PutInStoreProcessor(String storeName) {
         this.storeName = storeName;
@@ -46,7 +46,7 @@ public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, 
     /**
      * Initialize the processor.
      *
-     * @param context the processor context.
+     * @param context The processor context.
      */
     @Override
     public void init(ProcessorContext<String, KafkaUser> context) {
@@ -58,7 +58,7 @@ public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, 
      * Inserts the message in the state store.
      * The window start time is set to the message timestamp.
      *
-     * @param message the message to process.
+     * @param message The message to process.
      */
     @Override
     public void process(Record<String, KafkaUser> message) {

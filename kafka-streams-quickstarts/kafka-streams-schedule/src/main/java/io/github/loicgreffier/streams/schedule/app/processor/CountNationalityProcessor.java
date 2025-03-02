@@ -47,7 +47,7 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
      * resets the counters every 2 minutes. The second punctuation is scheduled on stream time and forwards the counters
      * to the output topic every minute. The stream time avoids triggering unnecessary punctuation if no record comes.
      *
-     * @param context the processor context.
+     * @param context The processor context.
      */
     @Override
     public void init(ProcessorContext<String, Long> context) {
@@ -60,7 +60,7 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
     /**
      * For each message processed, increments the counter of the corresponding nationality in the state store.
      *
-     * @param message the message to process.
+     * @param message The message to process.
      */
     @Override
     public void process(Record<String, KafkaUser> message) {
@@ -77,7 +77,7 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
     /**
      * For each entry in the state store, resets the counter to 0.
      *
-     * @param timestamp the timestamp of the punctuation.
+     * @param timestamp The timestamp of the punctuation.
      */
     private void resetCounters(long timestamp) {
         try (KeyValueIterator<String, Long> iterator = countNationalityStore.all()) {
@@ -93,7 +93,7 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
     /**
      * For each entry in the state store, forwards the counter to the output topic.
      *
-     * @param timestamp the timestamp of the punctuation.
+     * @param timestamp The timestamp of the punctuation.
      */
     private void forwardCounters(long timestamp) {
         try (KeyValueIterator<String, Long> iterator = countNationalityStore.all()) {

@@ -59,7 +59,7 @@ public class KafkaStreamsTopology {
      * An inner join emits an output when both streams have records with the same key.
      * </p>
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         KTable<String, KafkaCountry> countryTable = streamsBuilder

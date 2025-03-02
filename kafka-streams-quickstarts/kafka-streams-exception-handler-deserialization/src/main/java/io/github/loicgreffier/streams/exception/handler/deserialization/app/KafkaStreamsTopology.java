@@ -44,7 +44,7 @@ public class KafkaStreamsTopology {
      * The topology reads from the USER_TOPIC topic and only displays the received key and value.
      * The result is written to the USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder

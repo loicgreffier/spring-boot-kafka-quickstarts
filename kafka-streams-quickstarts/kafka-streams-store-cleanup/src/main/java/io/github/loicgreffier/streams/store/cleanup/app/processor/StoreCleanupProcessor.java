@@ -44,7 +44,7 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaUser
      * Opens the state store and schedules the punctuation. The punctuation is scheduled on stream time and forwards
      * the tombstones. The stream time is used to avoid triggering unnecessary punctuation if no record comes.
      *
-     * @param context the processor context.
+     * @param context The processor context.
      */
     @Override
     public void init(ProcessorContext<String, KafkaUser> context) {
@@ -57,7 +57,7 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaUser
      * For each message processed, puts the message in the state store. If the message is a tombstone, deletes the
      * corresponding key from the state store.
      *
-     * @param message the message to process.
+     * @param message The message to process.
      */
     @Override
     public void process(Record<String, KafkaUser> message) {
@@ -76,7 +76,7 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaUser
      * (which is also the input topic of the processor).
      * When the tombstone is received by the processor, the corresponding key is deleted.
      *
-     * @param timestamp the timestamp of the punctuation.
+     * @param timestamp The timestamp of the punctuation.
      */
     private void forwardTombstones(long timestamp) {
         log.info("Resetting {} store ", USER_SCHEDULE_STORE_CLEANUP_STORE);

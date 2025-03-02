@@ -55,7 +55,7 @@ public class KafkaStreamsTopology {
      * a {@link KeyValueStore} state store when it is built.
      * The result is written to the USER_SCHEDULE_TOPIC topic.
      *
-     * @param streamsBuilder the streams builder.
+     * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder
