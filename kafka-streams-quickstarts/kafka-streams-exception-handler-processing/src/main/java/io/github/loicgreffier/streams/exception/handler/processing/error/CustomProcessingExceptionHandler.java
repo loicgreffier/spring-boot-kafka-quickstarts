@@ -34,8 +34,8 @@ public class CustomProcessingExceptionHandler implements ProcessingExceptionHand
     public ProcessingHandlerResponse handle(ErrorHandlerContext context,
                                             Record<?, ?> record,
                                             Exception exception) {
-        log.warn("Exception caught for "
-                + "processorNodeId = {}, topic = {}, partition = {}, offset = {}, key = {}, value = {}",
+        log.warn(
+            "Exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}, key = {}, value = {}",
             context.processorNodeId(),
             context.topic(),
             context.partition(),
@@ -45,7 +45,7 @@ public class CustomProcessingExceptionHandler implements ProcessingExceptionHand
             exception
         );
 
-        if (exception instanceof RuntimeException) {
+        if (exception instanceof IllegalArgumentException) {
             return ProcessingHandlerResponse.CONTINUE;
         }
 

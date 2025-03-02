@@ -37,8 +37,8 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
                                                      ProducerRecord<byte[], byte[]> record,
                                                      Exception exception) {
         if (exception instanceof RecordTooLargeException) {
-            log.warn("Record too large exception caught for "
-                    + "processorNodeId = {}, topic = {}, partition = {}, offset = {}",
+            log.warn(
+                "Record too large exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
                 context.processorNodeId(),
                 context.topic(),
                 context.partition(),
@@ -49,7 +49,8 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
             return ProductionExceptionHandlerResponse.CONTINUE;
         }
 
-        log.warn("Exception caught during production for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
+        log.warn(
+            "Exception caught during production for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
             context.processorNodeId(),
             context.topic(),
             context.partition(),
@@ -65,8 +66,9 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
                                                                            ProducerRecord record,
                                                                            Exception exception,
                                                                            SerializationExceptionOrigin origin) {
-        log.warn("Exception caught during serialization for "
-                + "topic = {}, partition = {}, offset = {}, origin = {}, key = {}, value = {}",
+        log.warn(
+            "Exception caught during serialization for topic = {}, partition = {},"
+                + " offset = {}, origin = {}, key = {}, value = {}",
             context.topic(),
             context.partition(),
             context.offset(),

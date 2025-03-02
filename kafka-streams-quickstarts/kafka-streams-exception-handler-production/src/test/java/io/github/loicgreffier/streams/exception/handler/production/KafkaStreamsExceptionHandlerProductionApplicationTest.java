@@ -33,8 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.confluent.kafka.serializers.KafkaAvroDeserializer;
-import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaUser;
@@ -45,14 +43,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.kafka.common.MetricName;
-import org.apache.kafka.common.serialization.Deserializer;
-import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
@@ -135,11 +129,8 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
 
         assertTrue(results.isEmpty());
 
-        final MetricName dropTotal = droppedRecordsTotalMetric();
-        final MetricName dropRate = droppedRecordsRateMetric();
-
-        assertEquals(1.0, testDriver.metrics().get(dropTotal).metricValue());
-        assertEquals(0.03333333333333333, testDriver.metrics().get(dropRate).metricValue());
+        assertEquals(1.0, testDriver.metrics().get(droppedRecordsTotalMetric()).metricValue());
+        assertEquals(0.03333333333333333, testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
     private KafkaUser buildKafkaUser() {
@@ -153,59 +144,20 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
     }
 
     private MetricName droppedRecordsTotalMetric() {
-        return new MetricName(
-            "dropped-records-total",
-            "stream-task-metrics",
-            "The total number of dropped records",
-            mkMap(
-                mkEntry("thread-id", Thread.currentThread().getName()),
-                mkEntry("task-id", "0_0")
-            )
-        );
+        return createMetric("dropped-records-total", "The total number of dropped records");
     }
 
     private MetricName droppedRecordsRateMetric() {
+        return createMetric("dropped-records-rate", "The average number of dropped records per second");
+    }
+
+    private MetricName createMetric(String name, String description) {
         return new MetricName(
-            "dropped-records-rate",
-            "stream-task-metrics",
-            "The average number of dropped records per second",
+            name, "stream-task-metrics", description,
             mkMap(
                 mkEntry("thread-id", Thread.currentThread().getName()),
                 mkEntry("task-id", "0_0")
             )
         );
-    }
-
-    /**
-     * Mock Serde that throws an exception when serializing.
-     *
-     * @param <T> the type of the record.
-     */
-    public static class SerdeMock<T extends org.apache.avro.specific.SpecificRecord> implements Serde<T> {
-        private final KafkaAvroDeserializer kafkaAvroDeserializer;
-
-        public SerdeMock() {
-            kafkaAvroDeserializer = new KafkaAvroDeserializer();
-        }
-
-        @Override
-        public Serializer<T> serializer() {
-            return (topic, data) -> {
-                throw new RuntimeException("Error while serializing");
-            };
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public Deserializer<T> deserializer() {
-            return (topic, data) -> (T) kafkaAvroDeserializer.deserialize(topic, data);
-        }
-
-        @Override
-        public void configure(Map<String, ?> configs, boolean isKey) {
-            Map<String, Object> specificAvroEnabledConfig = configs == null ? new HashMap<>() : new HashMap<>(configs);
-            specificAvroEnabledConfig.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, true);
-            kafkaAvroDeserializer.configure(specificAvroEnabledConfig, isKey);
-        }
     }
 }

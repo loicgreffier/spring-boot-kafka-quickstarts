@@ -17,7 +17,7 @@ The following tasks are performed:
 5. Write the records as they are to a new topic named `USER_PROCESSING_EXCEPTION_HANDLER_TOPIC`.
 
 The custom processing exception handler is invoked when any of these exceptions are thrown.
-It logs the exceptions and continues processing for `RuntimeException`, but fails the processing for other exceptions.
+It logs the exceptions and continues processing for `IllegalArgumentException`, but fails the processing for other exceptions.
 
 ![topology.png](topology.png)
 

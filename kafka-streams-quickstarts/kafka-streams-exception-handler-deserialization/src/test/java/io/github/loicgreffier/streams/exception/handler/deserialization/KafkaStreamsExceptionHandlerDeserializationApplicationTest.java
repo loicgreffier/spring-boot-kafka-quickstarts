@@ -134,11 +134,8 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
         assertEquals(KeyValue.pair("3", marge), results.get(1));
         assertEquals(KeyValue.pair("5", bart), results.get(2));
 
-        final MetricName dropTotal = droppedRecordsTotalMetric();
-        final MetricName dropRate = droppedRecordsRateMetric();
-
-        assertEquals(2.0, testDriver.metrics().get(dropTotal).metricValue());
-        assertEquals(0.06666666666666667, testDriver.metrics().get(dropRate).metricValue());
+        assertEquals(2.0, testDriver.metrics().get(droppedRecordsTotalMetric()).metricValue());
+        assertEquals(0.06666666666666667, testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
     private KafkaUser buildKafkaUser(String firstName) {
@@ -152,22 +149,16 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
     }
 
     private MetricName droppedRecordsTotalMetric() {
-        return new MetricName(
-            "dropped-records-total",
-            "stream-task-metrics",
-            "The total number of dropped records",
-            mkMap(
-                mkEntry("thread-id", Thread.currentThread().getName()),
-                mkEntry("task-id", "0_0")
-            )
-        );
+        return createMetric("dropped-records-total", "The total number of dropped records");
     }
 
     private MetricName droppedRecordsRateMetric() {
+        return createMetric("dropped-records-rate", "The average number of dropped records per second");
+    }
+
+    private MetricName createMetric(String name, String description) {
         return new MetricName(
-            "dropped-records-rate",
-            "stream-task-metrics",
-            "The average number of dropped records per second",
+            name, "stream-task-metrics", description,
             mkMap(
                 mkEntry("thread-id", Thread.currentThread().getName()),
                 mkEntry("task-id", "0_0")
