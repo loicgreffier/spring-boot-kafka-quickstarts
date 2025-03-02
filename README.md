@@ -3,7 +3,7 @@
 <img src=".readme/kafka.png" alt="Apache Kafka"/>
 <img src=".readme/spring-boot.png" alt="Spring Boot"/>
 
-# Spring Boot and Kafka quickstarts
+# Spring Boot and Kafka Quickstarts
 
 [![GitHub Build](https://img.shields.io/github/actions/workflow/status/loicgreffier/spring-boot-kafka-quickstarts/push_main.yml?branch=main&logo=github&style=for-the-badge)](https://github.com/loicgreffier/spring-boot-kafka-quickstarts/actions/workflows/push_main.yml)
 [![Kafka Version](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fraw.githubusercontent.com%2Floicgreffier%2Fspring-boot-kafka-quickstarts%2Fmain%2Fpom.xml&query=%2F*%5Blocal-name()%3D'project'%5D%2F*%5Blocal-name()%3D'properties'%5D%2F*%5Blocal-name()%3D'kafka.version'%5D%2Ftext()&style=for-the-badge&logo=apachekafka&label=version)](https://github.com/loicgreffier/spring-boot-kafka-quickstarts/blob/main/pom.xml)
@@ -24,7 +24,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 - Maven
 - Docker
 
-## Quickstarts list
+## Quickstarts
 
 ### Producers
 
