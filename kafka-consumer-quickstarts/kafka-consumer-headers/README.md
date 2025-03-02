@@ -2,9 +2,9 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Clients consumer API.
-- The usage of headers in Kafka records.
-- The usage of unit tests with a Mock consumer.
+- The use of the Kafka Clients consumer API.
+- The use of headers in Kafka records.
+- Unit testing using a Mock consumer.
 
 This module consumes records of type `<String, String>` with headers from a topic named `STRING_TOPIC`.
 

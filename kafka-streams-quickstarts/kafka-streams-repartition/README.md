@@ -2,7 +2,7 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Streams DSL, including `repartition()` and `peek()`.
+- The use of the Kafka Streams DSL, including `repartition()` and `peek()`.
 - Unit testing using Topology Test Driver.
 
 In this module, records of type `<String, KafkaUser>` are streamed from a topic named `USER_TOPIC`.

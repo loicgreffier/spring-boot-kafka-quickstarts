@@ -2,9 +2,9 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Clients consumer API.
-- The usage of Apache Avro
-- The usage of unit tests with a Mock consumer.
+- The use of the Kafka Clients consumer API.
+- The use of Apache Avro
+- Unit testing using a Mock consumer.
 
 This module performs the following tasks:
 

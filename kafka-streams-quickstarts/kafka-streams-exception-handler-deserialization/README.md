@@ -2,7 +2,7 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Streams configuration `default.deserialization.exception.handler` to handle deserialization exceptions.
+- The use of the Kafka Streams configuration `default.deserialization.exception.handler` to handle deserialization exceptions.
 - The implementation of a custom deserialization exception handler.
 - Unit testing using Topology Test Driver.
 

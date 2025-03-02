@@ -3,7 +3,7 @@
 This module demonstrates the following:
 
 - The two strategies for creating Key-Value stores and attaching them to the topology.
-- The usage of the Processor API, including `process()` and `addStateStore()`.
+- The use of the Processor API, including `process()` and `addStateStore()`.
 - Unit testing using Topology Test Driver.
 
 In this module, records of type `<String, KafkaUser>` are streamed from a topic named `USER_TOPIC`.

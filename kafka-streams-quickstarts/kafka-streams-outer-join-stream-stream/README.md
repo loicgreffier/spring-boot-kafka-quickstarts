@@ -2,8 +2,8 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Streams DSL, including `outerJoin()` between KStream and KStream, `selectKey()` and `peek()`.
-- The usage of sliding time windows.
+- The use of the Kafka Streams DSL, including `outerJoin()` between KStream and KStream, `selectKey()` and `peek()`.
+- The use of sliding time windows.
 - Unit testing using Topology Test Driver.
 
 In this module, records of type `<String, KafkaUser>` are streamed from two topics named `USER_TOPIC`

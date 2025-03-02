@@ -2,7 +2,7 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Streams DSL, including `process()`.
+- The use of the Kafka Streams DSL, including `process()`.
 - Accessing and enriching records with metadata using the processor context.
 - Unit testing with the Topology Test Driver.
 

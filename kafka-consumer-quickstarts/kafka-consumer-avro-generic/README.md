@@ -2,9 +2,9 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Clients consumer API.
-- The usage of Apache Avro and generic records.
-- The usage of unit tests with a Mock consumer.
+- The use of the Kafka Clients consumer API.
+- The use of Apache Avro and generic records.
+- Unit testing using a Mock consumer.
 
 This module consumes records of type `<String, GenericRecord>` from a topic named `USER_TOPIC`.
 

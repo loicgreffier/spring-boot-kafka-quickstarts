@@ -2,8 +2,8 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Clients producer API.
-- The usage of unit tests with a Mock producer.
+- The use of the Kafka Clients producer API.
+- Unit testing using a Mock producer.
 
 This module produces records of type `<String, String>` to a topic named `STRING_TOPIC`.
 

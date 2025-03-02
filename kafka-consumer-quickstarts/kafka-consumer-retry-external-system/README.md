@@ -2,8 +2,8 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Clients consumer API.
-- The usage of unit tests with a Mock consumer.
+- The use of the Kafka Clients consumer API.
+- Unit testing using a Mock consumer.
 
 This module performs the following tasks:
 

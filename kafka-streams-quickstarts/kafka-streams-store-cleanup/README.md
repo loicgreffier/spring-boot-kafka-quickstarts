@@ -2,7 +2,7 @@
 
 This module demonstrates the following:
 
-- The usage of the Processor API, including `process()`, `addStateStore()` and `.schedule()`.
+- The use of the Processor API, including `process()`, `addStateStore()` and `.schedule()`.
 - The processor context and the scheduling of tasks based on stream time.
 - The creation and cleanup of a key-value store.
 - Unit testing using Topology Test Driver.

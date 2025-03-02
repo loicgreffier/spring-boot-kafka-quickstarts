@@ -2,9 +2,9 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Clients producer API.
-- The usage of Apache Avro and generic records.
-- The usage of unit tests with a Mock producer.
+- The use of the Kafka Clients producer API.
+- The use of Apache Avro and generic records.
+- Unit testing using a Mock producer.
 
 This module produces records of type `<String, GenericRecord>` to a topic named `USER_TOPIC`.
 

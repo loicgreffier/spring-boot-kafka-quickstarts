@@ -2,7 +2,7 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Streams configuration `default.production.exception.handler` to handle production and serialization exceptions.
+- The use of the Kafka Streams configuration `default.production.exception.handler` to handle production and serialization exceptions.
 - The implementation of a custom production exception handler.
 - Unit testing using Topology Test Driver.
 

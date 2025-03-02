@@ -2,8 +2,8 @@
 
 This module demonstrates the following:
 
-- The usage of the Kafka Streams configuration `processing.exception.handler` to handle processing exceptions that occur in 
-the DSL operations, the processor API, and the punctuations.
+- The use of the Kafka Streams configuration `processing.exception.handler` to handle processing exceptions that occur in 
+DSL operations and the processor API.
 - The implementation of a custom processing exception handler.
 - Unit testing using Topology Test Driver.
 
