@@ -34,16 +34,22 @@ public class CustomProcessingExceptionHandler implements ProcessingExceptionHand
     public ProcessingHandlerResponse handle(ErrorHandlerContext context,
                                             Record<?, ?> record,
                                             Exception exception) {
-        log.warn("Exception caught during processing: "
-                + "processorNodeId = {}, topic = {}, partition = {}, offset = {}",
+        log.warn("Exception caught for "
+                + "processorNodeId = {}, topic = {}, partition = {}, offset = {}, key = {}, value = {}",
             context.processorNodeId(),
             context.topic(),
             context.partition(),
             context.offset(),
+            record != null ? record.key() : null,
+            record != null ? record.value() : null,
             exception
         );
 
-        return ProcessingHandlerResponse.CONTINUE;
+        if (exception instanceof RuntimeException) {
+            return ProcessingHandlerResponse.CONTINUE;
+        }
+
+        return ProcessingHandlerResponse.FAIL;
     }
 
     @Override

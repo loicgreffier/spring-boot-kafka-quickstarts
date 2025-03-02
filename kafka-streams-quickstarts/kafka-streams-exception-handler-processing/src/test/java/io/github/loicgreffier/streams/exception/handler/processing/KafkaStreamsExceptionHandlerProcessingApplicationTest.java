@@ -19,7 +19,6 @@
 
 package io.github.loicgreffier.streams.exception.handler.processing;
 
-import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.AUTO_REGISTER_SCHEMAS;
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static io.github.loicgreffier.streams.exception.handler.processing.constant.Topic.USER_PROCESSING_EXCEPTION_HANDLER_TOPIC;
 import static io.github.loicgreffier.streams.exception.handler.processing.constant.Topic.USER_TOPIC;
@@ -35,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.exception.handler.processing.app.KafkaStreamsTopology;
@@ -85,12 +83,10 @@ class KafkaStreamsExceptionHandlerProcessingApplicationTest {
             CustomProcessingExceptionHandler.class.getName());
         properties.setProperty(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
 
-        // Create SerDes that throws an exception when the application tries to serialize
-        Map<String, String> serializationExceptionConfig = Map.of(
-            SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL,
-            AUTO_REGISTER_SCHEMAS, "false"
-        );
-        SerdesUtils.setSerdesConfig(serializationExceptionConfig);
+
+        // Create SerDes
+        Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
+        SerdesUtils.setSerdesConfig(config);
 
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
@@ -101,23 +97,15 @@ class KafkaStreamsExceptionHandlerProcessingApplicationTest {
             Instant.parse("2000-01-01T01:00:00Z")
         );
 
-        // Create SerDes for input and output topics only
-        Map<String, String> config = Map.of(
-            SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL
-        );
-
-        SpecificAvroSerde<KafkaUser> serDes = new SpecificAvroSerde<>();
-        serDes.configure(config, false);
-
         inputTopic = testDriver.createInputTopic(
             USER_TOPIC,
             new StringSerializer(),
-            serDes.serializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
         );
         outputTopic = testDriver.createOutputTopic(
             USER_PROCESSING_EXCEPTION_HANDLER_TOPIC,
             new StringDeserializer(),
-            serDes.deserializer()
+            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
         );
     }
 
@@ -129,43 +117,20 @@ class KafkaStreamsExceptionHandlerProcessingApplicationTest {
     }
 
     @Test
-    void shouldHandleProcessingExceptionsFromDslOperation() {
-        inputTopic.pipeInput("1", buildKafkaUser("Homer", Instant.parse("1969-01-01T01:00:00Z")));
+    void shouldHandleIllegalArgumentExceptionAndContinueProcessing() {
+        inputTopic.pipeInput("1", buildKafkaUser("Homer", Instant.parse("1949-01-01T01:00:00Z")));
+        inputTopic.pipeInput("2", buildKafkaUser(null, Instant.parse("1980-01-01T01:00:00Z")));
 
-        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
-
-        assertTrue(results.isEmpty());
-
-        final MetricName dropTotal = droppedRecordsTotalMetric();
-        final MetricName dropRate = droppedRecordsRateMetric();
-
-        assertEquals(1.0, testDriver.metrics().get(dropTotal).metricValue());
-        assertEquals(0.03333333333333333, testDriver.metrics().get(dropRate).metricValue());
-    }
-
-    @Test
-    void shouldHandleProcessingExceptionsFromProcessor() {
-        inputTopic.pipeInput("1", buildKafkaUser(null, Instant.parse("1980-01-01T01:00:00Z")));
-
-        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
-
-        assertTrue(results.isEmpty());
-
-        final MetricName dropTotal = droppedRecordsTotalMetric();
-        final MetricName dropRate = droppedRecordsRateMetric();
-
-        assertEquals(1.0, testDriver.metrics().get(dropTotal).metricValue());
-        assertEquals(0.03333333333333333, testDriver.metrics().get(dropRate).metricValue());
-    }
-
-    @Test
-    void shouldHandleProcessingExceptionsFromPunctuation() {
         testDriver.advanceWallClockTime(Duration.ofMinutes(2));
 
+        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
+
+        assertTrue(results.isEmpty());
+
         final MetricName dropTotal = droppedRecordsTotalMetric();
         final MetricName dropRate = droppedRecordsRateMetric();
 
-        assertEquals(1.0, testDriver.metrics().get(dropTotal).metricValue());
+        assertEquals(3.0, testDriver.metrics().get(dropTotal).metricValue());
         assertEquals(0.03333333333333333, testDriver.metrics().get(dropRate).metricValue());
     }
 

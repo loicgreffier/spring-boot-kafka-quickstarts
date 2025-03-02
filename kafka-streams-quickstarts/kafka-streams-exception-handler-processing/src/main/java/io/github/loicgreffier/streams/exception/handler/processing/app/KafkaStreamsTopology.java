@@ -61,7 +61,6 @@ public class KafkaStreamsTopology {
                 return user;
             })
             .processValues(ErrorProcessor::new)
-            .to(USER_PROCESSING_EXCEPTION_HANDLER_TOPIC,
-                Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+            .to(USER_PROCESSING_EXCEPTION_HANDLER_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 }

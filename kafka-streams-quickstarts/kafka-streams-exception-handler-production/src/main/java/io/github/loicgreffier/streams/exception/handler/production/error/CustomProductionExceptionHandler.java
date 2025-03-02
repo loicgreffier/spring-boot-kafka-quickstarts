@@ -37,24 +37,25 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
                                                      ProducerRecord<byte[], byte[]> record,
                                                      Exception exception) {
         if (exception instanceof RecordTooLargeException) {
-            log.warn("Record too large exception caught during production: "
+            log.warn("Record too large exception caught for "
                     + "processorNodeId = {}, topic = {}, partition = {}, offset = {}",
                 context.processorNodeId(),
                 context.topic(),
                 context.partition(),
                 context.offset(),
-                exception);
+                exception
+            );
 
             return ProductionExceptionHandlerResponse.CONTINUE;
         }
 
-        log.warn("Exception caught during production: "
-                + "processorNodeId = {}, topic = {}, partition = {}, offset = {}",
+        log.warn("Exception caught during production for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
             context.processorNodeId(),
             context.topic(),
             context.partition(),
             context.offset(),
-            exception);
+            exception
+        );
 
         return ProductionExceptionHandlerResponse.FAIL;
     }
@@ -64,12 +65,16 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
                                                                            ProducerRecord record,
                                                                            Exception exception,
                                                                            SerializationExceptionOrigin origin) {
-        log.warn("Exception caught during serialization: topic = {}, partition = {}, offset = {}, origin = {}",
+        log.warn("Exception caught during serialization for "
+                + "topic = {}, partition = {}, offset = {}, origin = {}, key = {}, value = {}",
             context.topic(),
             context.partition(),
             context.offset(),
             origin,
-            exception);
+            record.key(),
+            record.value(),
+            exception
+        );
 
         return ProductionExceptionHandlerResponse.CONTINUE;
     }
