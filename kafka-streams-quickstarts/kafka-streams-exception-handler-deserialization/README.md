@@ -31,7 +31,7 @@ To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
 - Produce records of type `<String, KafkaUser>` to a topic named `USER_TOPIC`. You can use the [producer user](../specific-producers/kafka-streams-producer-user) to do this.
-- Start the Kafka Streams.
+- Start the Kafka Streams application.
 - To activate the custom deserialization exception handler, produce a record with a value that cannot be deserialized to the `KafkaUser` type to the `USER_TOPIC` (e.g., a record with a value that is not in Avro format). 
   You can use the Control Center to do this.
 
