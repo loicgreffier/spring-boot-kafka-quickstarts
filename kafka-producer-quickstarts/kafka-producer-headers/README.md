@@ -18,12 +18,12 @@ To compile and run this demo, you will need the following:
 
 ## Running the Application
 
-To run the application manually, please follow the steps below:
+To run the application manually, follow the steps below:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
 - Start the producer.
 
-To run the application in Docker, please use the following command:
+To run the application in Docker, use the following command:
 
 ```console
 docker-compose up -d
