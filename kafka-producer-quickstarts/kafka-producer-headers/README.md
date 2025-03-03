@@ -8,7 +8,7 @@ This module demonstrates the following:
 
 This module produces records of type `<String, String>` with headers to a topic named `STRING_TOPIC`.
 
-## Requirements
+## Prerequisites
 
 To compile and run this demo, you will need the following:
 
@@ -18,7 +18,7 @@ To compile and run this demo, you will need the following:
 
 ## Running the Application
 
-To run the application manually, follow the steps below:
+To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
 - Start the producer.

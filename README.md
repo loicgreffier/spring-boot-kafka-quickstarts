@@ -18,7 +18,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 </div>
 
-## Requirements
+## Prerequisites
 
 - Java 21
 - Maven

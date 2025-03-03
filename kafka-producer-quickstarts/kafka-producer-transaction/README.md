@@ -9,7 +9,7 @@ This module demonstrates the following:
 This module produces transactional records of type `<String, String>` to two topics named `FIRST_STRING_TOPIC`
 and `SECOND_STRING_TOPIC`.
 
-## Requirements
+## Prerequisites
 
 To compile and run this demo, you will need the following:
 
@@ -19,7 +19,7 @@ To compile and run this demo, you will need the following:
 
 ## Running the Application
 
-To run the application manually, follow the steps below:
+To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
 - Start the producer.
@@ -32,6 +32,6 @@ docker-compose up -d
 
 This command will start the following services in Docker:
 
-- 1 Kafka broker KRaft
+- 1 Kafka broker (KRaft mode)
 - 1 Control Center
 - 1 producer Transaction
