@@ -19,18 +19,17 @@
 
 package io.github.loicgreffier.streams.leftjoin.stream.table.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
  * Topic name constants.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
     public static final String COUNTRY_TOPIC = "COUNTRY_TOPIC";
     public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC =
-        "USER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC";
-    public static final String USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC =
-        "USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC";
+    public static final String USER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC = "USER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC";
+    public static final String USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC = "USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC";
+
+    /**
+     * Private constructor.
+     */
+    private Topic() {}
 }

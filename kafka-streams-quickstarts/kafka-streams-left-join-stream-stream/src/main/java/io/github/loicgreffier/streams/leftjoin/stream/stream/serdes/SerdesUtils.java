@@ -21,15 +21,12 @@ package io.github.loicgreffier.streams.leftjoin.stream.stream.serdes;
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.Map;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.avro.specific.SpecificRecord;
 
 /**
  * Utility class for Serdes.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SerdesUtils {
     @Setter
     private static Map<String, String> serdesConfig;
@@ -45,4 +42,9 @@ public class SerdesUtils {
         serdes.configure(serdesConfig, false);
         return serdes;
     }
+
+    /**
+     * Private constructor.
+     */
+    private SerdesUtils() {}
 }

@@ -31,7 +31,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.RecordDeserializationException;
 import org.apache.kafka.common.errors.WakeupException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -44,8 +43,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ConsumerRunner {
-    @Autowired
-    private Consumer<String, KafkaUser> consumer;
+    private final Consumer<String, KafkaUser> consumer;
+
+    /**
+     * Constructor.
+     *
+     * @param consumer The Kafka consumer.
+     */
+    public ConsumerRunner(Consumer<String, KafkaUser> consumer) {
+        this.consumer = consumer;
+    }
 
     /**
      * Asynchronously starts the Kafka consumer when the application is ready.

@@ -28,7 +28,6 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
@@ -40,13 +39,20 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class KafkaStreamsRunner {
-    @Autowired
-    private ConfigurableApplicationContext applicationContext;
-
-    @Autowired
-    private KafkaStreamsProperties properties;
-
+    private final ConfigurableApplicationContext applicationContext;
+    private final KafkaStreamsProperties properties;
     private KafkaStreams kafkaStreams;
+
+    /**
+     * Constructor.
+     *
+     * @param applicationContext The application context
+     * @param properties The Kafka Streams properties
+     */
+    public KafkaStreamsRunner(ConfigurableApplicationContext applicationContext, KafkaStreamsProperties properties) {
+        this.applicationContext = applicationContext;
+        this.properties = properties;
+    }
 
     /**
      * Starts the Kafka Streams when the application is ready.

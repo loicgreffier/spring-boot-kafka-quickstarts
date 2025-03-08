@@ -19,17 +19,17 @@
 
 package io.github.loicgreffier.streams.join.stream.stream.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
  * Topic name constants.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
     public static final String USER_TOPIC = "USER_TOPIC";
     public static final String USER_TOPIC_TWO = "USER_TOPIC_TWO";
-    public static final String USER_JOIN_STREAM_STREAM_REKEY_TOPIC =
-        "USER_JOIN_STREAM_STREAM_REKEY_TOPIC";
+    public static final String USER_JOIN_STREAM_STREAM_REKEY_TOPIC = "USER_JOIN_STREAM_STREAM_REKEY_TOPIC";
     public static final String USER_JOIN_STREAM_STREAM_TOPIC = "USER_JOIN_STREAM_STREAM_TOPIC";
+
+    /**
+     * Private constructor.
+     */
+    private Topic() {}
 }

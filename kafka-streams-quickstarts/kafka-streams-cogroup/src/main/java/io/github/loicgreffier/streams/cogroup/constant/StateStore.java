@@ -19,13 +19,14 @@
 
 package io.github.loicgreffier.streams.cogroup.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
- * This abstract class represents state store name constants.
+ * State store name constants.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class StateStore {
     public static final String USER_COGROUP_AGGREGATE_STORE = "USER_COGROUP_AGGREGATE_STORE";
+
+    /**
+     * Private constructor.
+     */
+    private StateStore() {}
 }

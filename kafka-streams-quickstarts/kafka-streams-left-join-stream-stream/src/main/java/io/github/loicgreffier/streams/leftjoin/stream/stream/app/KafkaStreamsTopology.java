@@ -29,8 +29,6 @@ import io.github.loicgreffier.avro.KafkaJoinUsers;
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.leftjoin.stream.stream.serdes.SerdesUtils;
 import java.time.Duration;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -44,7 +42,6 @@ import org.apache.kafka.streams.kstream.StreamJoined;
  * Kafka Streams topology.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaStreamsTopology {
 
     /**
@@ -108,4 +105,9 @@ public class KafkaStreamsTopology {
                     .withStoreName(USER_LEFT_JOIN_STREAM_STREAM_STORE))
             .to(USER_LEFT_JOIN_STREAM_STREAM_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
+
+    /**
+     * Private constructor.
+     */
+    private KafkaStreamsTopology() {}
 }

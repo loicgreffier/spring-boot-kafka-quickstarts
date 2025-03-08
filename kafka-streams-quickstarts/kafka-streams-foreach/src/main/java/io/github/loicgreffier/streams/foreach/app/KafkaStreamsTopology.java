@@ -23,8 +23,6 @@ import static io.github.loicgreffier.streams.foreach.constant.Topic.USER_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.foreach.serdes.SerdesUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -34,7 +32,6 @@ import org.apache.kafka.streams.kstream.Consumed;
  * Kafka Streams topology.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaStreamsTopology {
 
     /**
@@ -48,4 +45,9 @@ public class KafkaStreamsTopology {
             .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
             .foreach((key, user) -> log.info("Received key = {}, value = {}", key, user));
     }
+
+    /**
+     * Private constructor.
+     */
+    private KafkaStreamsTopology() {}
 }

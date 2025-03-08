@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
@@ -35,10 +34,21 @@ import org.apache.kafka.common.TopicPartition;
  * revocation, assignment, and loss events.
  */
 @Slf4j
-@AllArgsConstructor
 public class CustomConsumerRebalanceListener implements ConsumerRebalanceListener {
     private final Consumer<String, String> consumer;
     private final Map<TopicPartition, OffsetAndMetadata> offsets;
+
+    /**
+     * Constructor.
+     *
+     * @param consumer The Kafka consumer.
+     * @param offsets The map of offsets.
+     */
+    public CustomConsumerRebalanceListener(Consumer<String, String> consumer,
+                                           Map<TopicPartition, OffsetAndMetadata> offsets) {
+        this.consumer = consumer;
+        this.offsets = offsets;
+    }
 
     /**
      * Called when partitions are revoked from the consumer.
@@ -64,8 +74,7 @@ public class CustomConsumerRebalanceListener implements ConsumerRebalanceListene
     public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
         log.info("Partition assigned : {}", partitions);
 
-        Map<TopicPartition, OffsetAndMetadata> offsetsTopicPartitions =
-            consumer.committed(new HashSet<>(partitions));
+        Map<TopicPartition, OffsetAndMetadata> offsetsTopicPartitions = consumer.committed(new HashSet<>(partitions));
         offsets.putAll(offsetsTopicPartitions.entrySet()
             .stream()
             .filter(entry -> entry.getValue() != null)

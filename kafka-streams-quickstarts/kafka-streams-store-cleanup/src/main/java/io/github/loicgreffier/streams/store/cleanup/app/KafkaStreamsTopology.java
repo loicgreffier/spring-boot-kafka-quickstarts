@@ -27,8 +27,6 @@ import io.github.loicgreffier.streams.store.cleanup.app.processor.StoreCleanupPr
 import io.github.loicgreffier.streams.store.cleanup.serdes.SerdesUtils;
 import java.util.Collections;
 import java.util.Set;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -44,7 +42,6 @@ import org.apache.kafka.streams.state.Stores;
  * Kafka Streams topology.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaStreamsTopology {
 
     /**
@@ -77,4 +74,9 @@ public class KafkaStreamsTopology {
             })
             .to(USER_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
+
+    /**
+     * Private constructor.
+     */
+    private KafkaStreamsTopology() {}
 }

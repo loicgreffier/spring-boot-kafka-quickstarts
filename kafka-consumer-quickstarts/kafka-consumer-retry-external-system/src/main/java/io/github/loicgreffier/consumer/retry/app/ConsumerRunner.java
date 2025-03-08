@@ -37,7 +37,6 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -50,16 +49,25 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ConsumerRunner {
-    @Autowired
-    private Consumer<String, String> consumer;
-
-    @Autowired
-    private ExternalService externalService;
-
-    @Autowired
-    private ConsumerProperties properties;
-
     private final Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
+    private final Consumer<String, String> consumer;
+    private final ExternalService externalService;
+    private final ConsumerProperties properties;
+
+    /**
+     * Constructor.
+     *
+     * @param consumer The Kafka consumer.
+     * @param externalService The external service.
+     * @param properties The consumer properties.
+     */
+    public ConsumerRunner(Consumer<String, String> consumer,
+                          ExternalService externalService,
+                          ConsumerProperties properties) {
+        this.consumer = consumer;
+        this.externalService = externalService;
+        this.properties = properties;
+    }
 
     /**
      * Asynchronously starts the Kafka consumer when the application is ready.

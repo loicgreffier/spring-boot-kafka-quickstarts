@@ -28,8 +28,6 @@ import io.github.loicgreffier.avro.KafkaJoinUserCountry;
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.leftjoin.stream.globaltable.constant.StateStore;
 import io.github.loicgreffier.streams.leftjoin.stream.globaltable.serdes.SerdesUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -44,7 +42,6 @@ import org.apache.kafka.streams.state.KeyValueStore;
  * Kafka Streams topology.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaStreamsTopology {
 
     /**
@@ -91,4 +88,9 @@ public class KafkaStreamsTopology {
             .to(USER_COUNTRY_LEFT_JOIN_STREAM_GLOBAL_TABLE_TOPIC,
                 Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
+
+    /**
+     * Private constructor.
+     */
+    private KafkaStreamsTopology() {}
 }

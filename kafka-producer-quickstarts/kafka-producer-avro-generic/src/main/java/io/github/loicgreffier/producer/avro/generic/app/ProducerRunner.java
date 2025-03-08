@@ -35,7 +35,6 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
@@ -48,8 +47,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProducerRunner {
-    @Autowired
-    private Producer<String, GenericRecord> producer;
+    private final Producer<String, GenericRecord> producer;
+
+    /**
+     * Constructor.
+     *
+     * @param producer The Kafka producer
+     */
+    public ProducerRunner(Producer<String, GenericRecord> producer) {
+        this.producer = producer;
+    }
 
     /**
      * Asynchronously starts the Kafka producer when the application is ready.

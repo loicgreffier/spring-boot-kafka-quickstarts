@@ -27,8 +27,6 @@ import static io.github.loicgreffier.streams.reduce.constant.Topic.USER_TOPIC;
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.reduce.app.reducer.MaxAgeReducer;
 import io.github.loicgreffier.streams.reduce.serdes.SerdesUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -43,7 +41,6 @@ import org.apache.kafka.streams.state.KeyValueStore;
  * Kafka Streams topology.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaStreamsTopology {
 
     /**
@@ -70,4 +67,9 @@ public class KafkaStreamsTopology {
             .toStream()
             .to(USER_REDUCE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
+
+    /**
+     * Private constructor.
+     */
+    private KafkaStreamsTopology() {}
 }

@@ -28,8 +28,6 @@ import io.github.loicgreffier.avro.KafkaAverageAge;
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.average.app.aggregator.AgeAggregator;
 import io.github.loicgreffier.streams.average.serdes.SerdesUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -44,7 +42,6 @@ import org.apache.kafka.streams.state.KeyValueStore;
  * Kafka Streams topology.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaStreamsTopology {
 
     /**
@@ -73,4 +70,9 @@ public class KafkaStreamsTopology {
             .toStream()
             .to(USER_AVERAGE_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
     }
+
+    /**
+     * Private constructor.
+     */
+    private KafkaStreamsTopology() {}
 }

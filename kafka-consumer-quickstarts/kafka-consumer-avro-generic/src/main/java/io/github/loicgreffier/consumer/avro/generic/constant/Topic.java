@@ -19,13 +19,14 @@
 
 package io.github.loicgreffier.consumer.avro.generic.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
  * Topic name constants.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
     public static final String USER_TOPIC = "USER_TOPIC";
+
+    /**
+     * Private constructor.
+     */
+    private Topic() {}
 }

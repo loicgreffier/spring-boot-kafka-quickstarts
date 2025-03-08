@@ -19,13 +19,14 @@
 
 package io.github.loicgreffier.streams.count.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
- * This abstract class represents state store name constants.
+ * State store name constants.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class StateStore {
     public static final String USER_COUNT_STORE = "USER_COUNT_STORE";
+
+    /**
+     * Private constructor.
+     */
+    private StateStore() {}
 }

@@ -25,8 +25,6 @@ import static io.github.loicgreffier.streams.exception.handler.processing.consta
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.exception.handler.processing.app.processor.ErrorProcessor;
 import io.github.loicgreffier.streams.exception.handler.processing.serdes.SerdesUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -37,7 +35,6 @@ import org.apache.kafka.streams.kstream.Produced;
  * Kafka Streams topology.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaStreamsTopology {
 
     /**
@@ -63,4 +60,9 @@ public class KafkaStreamsTopology {
             .processValues(ErrorProcessor::new)
             .to(USER_PROCESSING_EXCEPTION_HANDLER_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
+
+    /**
+     * Private constructor.
+     */
+    private KafkaStreamsTopology() {}
 }

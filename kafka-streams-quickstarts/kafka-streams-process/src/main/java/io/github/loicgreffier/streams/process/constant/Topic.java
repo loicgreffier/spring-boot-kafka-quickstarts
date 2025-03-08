@@ -19,14 +19,15 @@
 
 package io.github.loicgreffier.streams.process.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
  * Topic name constants.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
     public static final String USER_TOPIC = "USER_TOPIC";
     public static final String USER_PROCESS_TOPIC = "USER_PROCESS_TOPIC";
+
+    /**
+     * Private constructor.
+     */
+    private Topic() {}
 }

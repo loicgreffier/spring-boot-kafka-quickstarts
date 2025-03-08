@@ -25,8 +25,6 @@ import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.USER_T
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.flatmapvalues.serdes.SerdesUtils;
 import java.util.Arrays;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -37,7 +35,6 @@ import org.apache.kafka.streams.kstream.Produced;
  * Kafka Streams topology.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaStreamsTopology {
 
     /**
@@ -55,4 +52,9 @@ public class KafkaStreamsTopology {
             .flatMapValues(user -> Arrays.asList(user.getFirstName(), user.getLastName()))
             .to(USER_FLATMAP_VALUES_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
     }
+
+    /**
+     * Private constructor.
+     */
+    private KafkaStreamsTopology() {}
 }

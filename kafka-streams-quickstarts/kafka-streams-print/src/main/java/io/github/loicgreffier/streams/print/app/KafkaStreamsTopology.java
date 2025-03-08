@@ -24,8 +24,6 @@ import static io.github.loicgreffier.streams.print.constant.Topic.USER_TOPIC_TWO
 
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.print.serdes.SerdesUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -36,7 +34,6 @@ import org.apache.kafka.streams.kstream.Printed;
  * Kafka Streams topology.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaStreamsTopology {
 
     /**
@@ -73,4 +70,9 @@ public class KafkaStreamsTopology {
     private static String toOutput(String key, KafkaUser kafkaUser) {
         return String.format("Received key = %s, value = %s", key, kafkaUser);
     }
+
+    /**
+     * Private constructor.
+     */
+    private KafkaStreamsTopology() {}
 }

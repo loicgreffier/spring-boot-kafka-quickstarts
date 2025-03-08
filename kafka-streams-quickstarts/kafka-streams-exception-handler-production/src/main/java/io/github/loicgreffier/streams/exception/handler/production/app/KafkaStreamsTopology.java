@@ -25,8 +25,6 @@ import static io.github.loicgreffier.streams.exception.handler.production.consta
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.avro.KafkaUserWithEmail;
 import io.github.loicgreffier.streams.exception.handler.production.serdes.SerdesUtils;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -37,7 +35,6 @@ import org.apache.kafka.streams.kstream.Produced;
  * Kafka Streams topology.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaStreamsTopology {
     private static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ";
     private static final int ONE_MEBIBYTE = 1048576;
@@ -90,4 +87,9 @@ public class KafkaStreamsTopology {
             .to(USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC,
                 Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
+
+    /**
+     * Private constructor.
+     */
+    private KafkaStreamsTopology() {}
 }

@@ -19,15 +19,16 @@
 
 package io.github.loicgreffier.streams.aggregate.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
  * Topic name constants.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
     public static final String USER_TOPIC = "USER_TOPIC";
     public static final String USER_AGGREGATE_TOPIC = "USER_AGGREGATE_TOPIC";
     public static final String GROUP_USER_BY_LAST_NAME_TOPIC = "GROUP_USER_BY_LAST_NAME_TOPIC";
+
+    /**
+     * Private constructor.
+     */
+    private Topic() {}
 }

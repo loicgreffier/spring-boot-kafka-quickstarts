@@ -19,15 +19,15 @@
 
 package io.github.loicgreffier.streams.store.keyvalue.timestamped.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
- * This abstract class represents state store name constants.
+ * State store name constants.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class StateStore {
     public static final String USER_TIMESTAMPED_KEY_VALUE_STORE = "USER_TIMESTAMPED_KEY_VALUE_STORE";
-    public static final String USER_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE =
-        "USER_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE";
+    public static final String USER_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE = "USER_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE";
+
+    /**
+     * Private constructor.
+     */
+    private StateStore() {}
 }

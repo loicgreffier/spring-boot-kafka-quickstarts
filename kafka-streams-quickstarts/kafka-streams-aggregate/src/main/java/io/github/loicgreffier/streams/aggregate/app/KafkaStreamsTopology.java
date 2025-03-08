@@ -29,8 +29,6 @@ import io.github.loicgreffier.avro.KafkaUserGroup;
 import io.github.loicgreffier.streams.aggregate.app.aggregator.FirstNameByLastNameAggregator;
 import io.github.loicgreffier.streams.aggregate.serdes.SerdesUtils;
 import java.util.HashMap;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -45,7 +43,6 @@ import org.apache.kafka.streams.state.KeyValueStore;
  * Kafka Streams topology.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaStreamsTopology {
 
     /**
@@ -73,4 +70,9 @@ public class KafkaStreamsTopology {
             .toStream()
             .to(USER_AGGREGATE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
+
+    /**
+     * Private constructor.
+     */
+    private KafkaStreamsTopology() { }
 }

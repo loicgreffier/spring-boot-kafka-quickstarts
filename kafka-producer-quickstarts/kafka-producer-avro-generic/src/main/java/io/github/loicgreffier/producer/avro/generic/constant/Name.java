@@ -19,13 +19,9 @@
 
 package io.github.loicgreffier.producer.avro.generic.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
  * This abstract class represents name constants for Kafka records.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Name {
     public static final String[] FIRST_NAMES =
         new String[] {"Liam", "Noah", "Ethan", "Oliver", "Aiden", "Caden", "Elijah", "Logan",
@@ -43,4 +39,9 @@ public abstract class Name {
             "Doe", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores", "Green",
             "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter",
             "Roberts"};
+
+    /**
+     * Private constructor.
+     */
+    private Name() { }
 }

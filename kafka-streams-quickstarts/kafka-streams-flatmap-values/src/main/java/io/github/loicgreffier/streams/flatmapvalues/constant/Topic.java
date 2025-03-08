@@ -19,14 +19,15 @@
 
 package io.github.loicgreffier.streams.flatmapvalues.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
  * Topic name constants.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
     public static final String USER_TOPIC = "USER_TOPIC";
     public static final String USER_FLATMAP_VALUES_TOPIC = "USER_FLATMAP_VALUES_TOPIC";
+
+    /**
+     * Private constructor.
+     */
+    private Topic() {}
 }

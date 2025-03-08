@@ -19,15 +19,16 @@
 
 package io.github.loicgreffier.streams.merge.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 /**
  * Topic name constants.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Topic {
     public static final String USER_TOPIC = "USER_TOPIC";
     public static final String USER_TOPIC_TWO = "USER_TOPIC_TWO";
     public static final String USER_MERGE_TOPIC = "USER_MERGE_TOPIC";
+
+    /**
+     * Private constructor.
+     */
+    private Topic() {}
 }

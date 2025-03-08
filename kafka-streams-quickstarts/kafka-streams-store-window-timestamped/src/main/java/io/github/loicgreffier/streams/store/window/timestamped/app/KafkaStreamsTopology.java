@@ -29,8 +29,6 @@ import io.github.loicgreffier.streams.store.window.timestamped.serdes.SerdesUtil
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Set;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -45,7 +43,6 @@ import org.apache.kafka.streams.state.TimestampedWindowStore;
  * Kafka Streams topology.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KafkaStreamsTopology {
 
     /**
@@ -101,4 +98,9 @@ public class KafkaStreamsTopology {
                 }
             });
     }
+
+    /**
+     * Private constructor.
+     */
+    private KafkaStreamsTopology() {}
 }
