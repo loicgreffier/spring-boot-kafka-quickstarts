@@ -22,8 +22,8 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Check style
-        run: mvn checkstyle:check
+      - name: Lint
+        run: mvn spotless:check
 
       - name: Build
         run: mvn -B compile
