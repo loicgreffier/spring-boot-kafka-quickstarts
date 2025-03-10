@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.reduce.app;
 
 import static io.github.loicgreffier.streams.reduce.constant.StateStore.USER_REDUCE_STORE;
@@ -37,39 +36,32 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.state.KeyValueStore;
 
-/**
- * Kafka Streams topology.
- */
+/** Kafka Streams topology. */
 @Slf4j
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology.
-     * The topology reads from the USER_TOPIC topic, groups by nationality and reduces the stream to the user with
-     * the max age.
-     * The result is written to the USER_REDUCE_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, groups by nationality and
+     * reduces the stream to the user with the max age. The result is written to the USER_REDUCE_TOPIC topic.
      *
      * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder
-            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-            .groupBy((key, user) -> user.getNationality().toString(),
-                Grouped.with(GROUP_USER_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
-            .reduce(
-                new MaxAgeReducer(),
-                Materialized
-                    .<String, KafkaUser, KeyValueStore<Bytes, byte[]>>as(USER_REDUCE_STORE)
-                    .withKeySerde(Serdes.String())
-                    .withValueSerde(SerdesUtils.getValueSerdes())
-            )
-            .toStream()
-            .to(USER_REDUCE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+        streamsBuilder.<String, KafkaUser>stream(
+                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .groupBy(
+                        (key, user) -> user.getNationality().toString(),
+                        Grouped.with(GROUP_USER_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+                .reduce(
+                        new MaxAgeReducer(),
+                        Materialized.<String, KafkaUser, KeyValueStore<Bytes, byte[]>>as(USER_REDUCE_STORE)
+                                .withKeySerde(Serdes.String())
+                                .withValueSerde(SerdesUtils.getValueSerdes()))
+                .toStream()
+                .to(USER_REDUCE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private KafkaStreamsTopology() {}
 }

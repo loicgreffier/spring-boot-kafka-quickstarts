@@ -16,17 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.leftjoin.stream.table.constant;
 
-/**
- * State store name constants.
- */
+/** State store name constants. */
 public abstract class StateStore {
     public static final String COUNTRY_STORE = "COUNTRY_STORE";
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private StateStore() {}
 }

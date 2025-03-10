@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.print.app;
 
 import static io.github.loicgreffier.streams.print.constant.Topic.USER_TOPIC;
@@ -30,40 +29,37 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Printed;
 
-/**
- * Kafka Streams topology.
- */
+/** Kafka Streams topology. */
 @Slf4j
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology.
-     * The topology reads from the USER_TOPIC topic and prints the result to the file specified by
-     * the {@code filePath} parameter.
-     * The topology also reads from the USER_TOPIC_TWO topic and prints the result to the console.
+     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and prints the result to the file
+     * specified by the {@code filePath} parameter. The topology also reads from the USER_TOPIC_TWO topic and prints the
+     * result to the console.
      *
      * @param streamsBuilder The streams builder.
-     * @param filePath       The file path.
+     * @param filePath The file path.
      */
     public static void topology(StreamsBuilder streamsBuilder, String filePath) {
-        streamsBuilder
-            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-            .print(Printed.<String, KafkaUser>toFile(filePath)
-                .withKeyValueMapper(KafkaStreamsTopology::toOutput)
-                .withLabel(USER_TOPIC));
+        streamsBuilder.<String, KafkaUser>stream(
+                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .print(Printed.<String, KafkaUser>toFile(filePath)
+                        .withKeyValueMapper(KafkaStreamsTopology::toOutput)
+                        .withLabel(USER_TOPIC));
 
-        streamsBuilder
-            .<String, KafkaUser>stream(USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .print(Printed.<String, KafkaUser>toSysOut()
-                .withKeyValueMapper(KafkaStreamsTopology::toOutput)
-                .withLabel(USER_TOPIC_TWO));
+        streamsBuilder.<String, KafkaUser>stream(
+                        USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .print(Printed.<String, KafkaUser>toSysOut()
+                        .withKeyValueMapper(KafkaStreamsTopology::toOutput)
+                        .withLabel(USER_TOPIC_TWO));
     }
 
     /**
      * Formats the key and value into a string.
      *
-     * @param key         The key.
+     * @param key The key.
      * @param kafkaUser The value.
      * @return The formatted string.
      */
@@ -71,8 +67,6 @@ public class KafkaStreamsTopology {
         return String.format("Received key = %s, value = %s", key, kafkaUser);
     }
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private KafkaStreamsTopology() {}
 }

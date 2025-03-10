@@ -16,19 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.aggregate.constant;
 
-/**
- * Topic name constants.
- */
+/** Topic name constants. */
 public abstract class Topic {
     public static final String USER_TOPIC = "USER_TOPIC";
     public static final String USER_AGGREGATE_TOPIC = "USER_AGGREGATE_TOPIC";
     public static final String GROUP_USER_BY_LAST_NAME_TOPIC = "GROUP_USER_BY_LAST_NAME_TOPIC";
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private Topic() {}
 }

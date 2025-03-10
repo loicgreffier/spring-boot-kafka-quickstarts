@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.store.keyvalue;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -73,17 +72,12 @@ class KafkaStreamsStoreKeyValueApplicationTest {
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(
-            streamsBuilder.build(),
-            properties,
-            Instant.parse("2000-01-01T01:00:00Z")
-        );
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-            USER_TOPIC,
-            new StringSerializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
-        );
+                USER_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
     }
 
     @AfterEach
@@ -102,8 +96,7 @@ class KafkaStreamsStoreKeyValueApplicationTest {
         KafkaUser marge = buildKafkaUser("Marge");
         inputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:00:30Z")));
 
-        KeyValueStore<String, KafkaUser> keyValueStore = testDriver
-            .getKeyValueStore(storeName);
+        KeyValueStore<String, KafkaUser> keyValueStore = testDriver.getKeyValueStore(storeName);
 
         assertEquals(homer, keyValueStore.get("1"));
         assertEquals(marge, keyValueStore.get("2"));
@@ -111,11 +104,11 @@ class KafkaStreamsStoreKeyValueApplicationTest {
 
     private KafkaUser buildKafkaUser(String firstName) {
         return KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName(firstName)
-            .setLastName("Simpson")
-            .setNationality(CountryCode.GB)
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .build();
+                .setId(1L)
+                .setFirstName(firstName)
+                .setLastName("Simpson")
+                .setNationality(CountryCode.GB)
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                .build();
     }
 }

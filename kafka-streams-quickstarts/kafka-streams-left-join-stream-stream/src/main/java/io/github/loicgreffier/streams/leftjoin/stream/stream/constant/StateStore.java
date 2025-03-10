@@ -16,17 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.leftjoin.stream.stream.constant;
 
-/**
- * State store name constants.
- */
+/** State store name constants. */
 public abstract class StateStore {
     public static final String USER_LEFT_JOIN_STREAM_STREAM_STORE = "USER_LEFT_JOIN_STREAM_STREAM_STORE";
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private StateStore() {}
 }

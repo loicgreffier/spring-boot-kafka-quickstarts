@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.producer.avro.specific;
 
 import static io.github.loicgreffier.producer.avro.specific.constant.Topic.USER_TOPIC;
@@ -52,23 +51,23 @@ class KafkaProducerAvroSpecificApplicationTest {
     };
 
     @Spy
-    private MockProducer<String, KafkaUser> mockProducer = new MockProducer<>(
-        false,
-        new StringSerializer(),
-        serializer
-    );
+    private MockProducer<String, KafkaUser> mockProducer =
+            new MockProducer<>(false, new StringSerializer(), serializer);
 
     @InjectMocks
     private ProducerRunner producerRunner;
 
     @Test
     void shouldSendSuccessfully() throws ExecutionException, InterruptedException {
-        ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(USER_TOPIC, "1", KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName("Homer")
-            .setLastName("Simpson")
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .build());
+        ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(
+                USER_TOPIC,
+                "1",
+                KafkaUser.newBuilder()
+                        .setId(1L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
         Future<RecordMetadata> recordMetadata = producerRunner.send(message);
         mockProducer.completeNext();
@@ -82,12 +81,15 @@ class KafkaProducerAvroSpecificApplicationTest {
 
     @Test
     void shouldSendWithFailure() {
-        ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(USER_TOPIC, "1", KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName("Homer")
-            .setLastName("Simpson")
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .build());
+        ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(
+                USER_TOPIC,
+                "1",
+                KafkaUser.newBuilder()
+                        .setId(1L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
         Future<RecordMetadata> recordMetadata = producerRunner.send(message);
         RuntimeException exception = new RuntimeException("Error sending message");

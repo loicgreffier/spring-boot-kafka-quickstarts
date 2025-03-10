@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.consumer.avro.specific.app;
 
 import java.util.Collection;
@@ -25,8 +24,8 @@ import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.common.TopicPartition;
 
 /**
- * This class represents a custom Kafka consumer rebalance listener that handles partition
- * revocation, assignment, and loss events.
+ * This class represents a custom Kafka consumer rebalance listener that handles partition revocation, assignment, and
+ * loss events.
  */
 @Slf4j
 public class CustomConsumerRebalanceListener implements ConsumerRebalanceListener {

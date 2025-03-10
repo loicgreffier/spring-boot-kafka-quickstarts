@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.exception.handler.processing.error;
 
 import java.util.Map;
@@ -25,25 +24,20 @@ import org.apache.kafka.streams.errors.ErrorHandlerContext;
 import org.apache.kafka.streams.errors.ProcessingExceptionHandler;
 import org.apache.kafka.streams.processor.api.Record;
 
-/**
- * Custom processing exception handler.
- */
+/** Custom processing exception handler. */
 @Slf4j
 public class CustomProcessingExceptionHandler implements ProcessingExceptionHandler {
     @Override
-    public ProcessingHandlerResponse handle(ErrorHandlerContext context,
-                                            Record<?, ?> record,
-                                            Exception exception) {
+    public ProcessingHandlerResponse handle(ErrorHandlerContext context, Record<?, ?> record, Exception exception) {
         log.warn(
-            "Exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}, key = {}, value = {}",
-            context.processorNodeId(),
-            context.topic(),
-            context.partition(),
-            context.offset(),
-            record != null ? record.key() : null,
-            record != null ? record.value() : null,
-            exception
-        );
+                "Exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}, key = {}, value = {}",
+                context.processorNodeId(),
+                context.topic(),
+                context.partition(),
+                context.offset(),
+                record != null ? record.key() : null,
+                record != null ? record.value() : null,
+                exception);
 
         if (exception instanceof IllegalArgumentException) {
             return ProcessingHandlerResponse.CONTINUE;

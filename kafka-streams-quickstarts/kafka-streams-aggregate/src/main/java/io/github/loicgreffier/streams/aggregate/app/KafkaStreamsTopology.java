@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.aggregate.app;
 
 import static io.github.loicgreffier.streams.aggregate.constant.StateStore.USER_AGGREGATE_STORE;
@@ -39,40 +38,33 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.state.KeyValueStore;
 
-/**
- * Kafka Streams topology.
- */
+/** Kafka Streams topology. */
 @Slf4j
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology.
-     * The topology reads from the USER_TOPIC topic, selects the key as the last name of the user, groups by key
-     * and aggregates the first names by last name.
-     * The result is written to the USER_AGGREGATE_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, selects the key as the last name
+     * of the user, groups by key and aggregates the first names by last name. The result is written to the
+     * USER_AGGREGATE_TOPIC topic.
      *
      * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder
-            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-            .selectKey((key, user) -> user.getLastName())
-            .groupByKey(Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
-            .aggregate(
-                () -> new KafkaUserGroup(new HashMap<>()),
-                new FirstNameByLastNameAggregator(),
-                Materialized
-                    .<String, KafkaUserGroup, KeyValueStore<Bytes, byte[]>>as(USER_AGGREGATE_STORE)
-                    .withKeySerde(Serdes.String())
-                    .withValueSerde(SerdesUtils.getValueSerdes())
-            )
-            .toStream()
-            .to(USER_AGGREGATE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+        streamsBuilder.<String, KafkaUser>stream(
+                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .selectKey((key, user) -> user.getLastName())
+                .groupByKey(Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+                .aggregate(
+                        () -> new KafkaUserGroup(new HashMap<>()),
+                        new FirstNameByLastNameAggregator(),
+                        Materialized.<String, KafkaUserGroup, KeyValueStore<Bytes, byte[]>>as(USER_AGGREGATE_STORE)
+                                .withKeySerde(Serdes.String())
+                                .withValueSerde(SerdesUtils.getValueSerdes()))
+                .toStream()
+                .to(USER_AGGREGATE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
-    /**
-     * Private constructor.
-     */
-    private KafkaStreamsTopology() { }
+    /** Private constructor. */
+    private KafkaStreamsTopology() {}
 }

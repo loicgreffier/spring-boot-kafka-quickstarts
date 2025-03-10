@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.producer.avro.generic.app;
 
 import static io.github.loicgreffier.producer.avro.generic.constant.Name.FIRST_NAMES;
@@ -41,9 +40,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-/**
- * This class represents a Kafka producer runner that sends records to a specific topic.
- */
+/** This class represents a Kafka producer runner that sends records to a specific topic. */
 @Slf4j
 @Component
 public class ProducerRunner {
@@ -59,10 +56,9 @@ public class ProducerRunner {
     }
 
     /**
-     * Asynchronously starts the Kafka producer when the application is ready.
-     * The asynchronous annotation is used to run the producer in a separate thread and
-     * not block the main thread.
-     * The Kafka producer produces generic Avro records to the USER_TOPIC topic.
+     * Asynchronously starts the Kafka producer when the application is ready. The asynchronous annotation is used to
+     * run the producer in a separate thread and not block the main thread. The Kafka producer produces generic Avro
+     * records to the USER_TOPIC topic.
      *
      * @throws IOException if the schema file cannot be read
      */
@@ -74,11 +70,8 @@ public class ProducerRunner {
 
         int i = 0;
         while (true) {
-            ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(
-                USER_TOPIC,
-                String.valueOf(i),
-                buildGenericRecord(schema, i)
-            );
+            ProducerRecord<String, GenericRecord> message =
+                    new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildGenericRecord(schema, i));
 
             send(message);
 
@@ -104,12 +97,13 @@ public class ProducerRunner {
             if (e != null) {
                 log.error(e.getMessage());
             } else {
-                log.info("Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
-                    recordMetadata.topic(),
-                    recordMetadata.partition(),
-                    recordMetadata.offset(),
-                    message.key(),
-                    message.value());
+                log.info(
+                        "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
+                        recordMetadata.topic(),
+                        recordMetadata.partition(),
+                        recordMetadata.offset(),
+                        message.key(),
+                        message.value());
             }
         });
     }
@@ -118,7 +112,7 @@ public class ProducerRunner {
      * Builds a generic Avro record.
      *
      * @param schema The Avro schema.
-     * @param id     The record id.
+     * @param id The record id.
      * @return The generic Avro record.
      */
     private GenericRecord buildGenericRecord(Schema schema, int id) {

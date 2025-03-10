@@ -16,15 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.print;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * This is the main class for the Kafka Streams application.
- */
+/** This is the main class for the Kafka Streams application. */
 @SpringBootApplication
 public class KafkaStreamsPrintApplication {
     /**

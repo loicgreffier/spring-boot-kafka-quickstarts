@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.exception.handler.deserialization.error;
 
 import java.util.Map;
@@ -25,24 +24,20 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.streams.errors.DeserializationExceptionHandler;
 import org.apache.kafka.streams.errors.ErrorHandlerContext;
 
-/**
- * Custom deserialization exception handler.
- */
+/** Custom deserialization exception handler. */
 @Slf4j
 public class CustomDeserializationExceptionHandler implements DeserializationExceptionHandler {
 
     @Override
-    public DeserializationHandlerResponse handle(ErrorHandlerContext context,
-                                                 ConsumerRecord<byte[], byte[]> record,
-                                                 Exception exception) {
+    public DeserializationHandlerResponse handle(
+            ErrorHandlerContext context, ConsumerRecord<byte[], byte[]> record, Exception exception) {
         log.warn(
-            "Exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
-            context.processorNodeId(),
-            context.topic(),
-            context.partition(),
-            context.offset(),
-            exception
-        );
+                "Exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
+                context.processorNodeId(),
+                context.topic(),
+                context.partition(),
+                context.offset(),
+                exception);
 
         return DeserializationHandlerResponse.CONTINUE;
     }

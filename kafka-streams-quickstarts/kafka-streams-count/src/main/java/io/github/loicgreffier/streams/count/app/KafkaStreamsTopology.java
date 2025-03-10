@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.count.app;
 
 import static io.github.loicgreffier.streams.count.constant.StateStore.USER_COUNT_STORE;
@@ -36,35 +35,30 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.state.KeyValueStore;
 
-/**
- * Kafka Streams topology.
- */
+/** Kafka Streams topology. */
 @Slf4j
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology.
-     * The topology reads from the USER_TOPIC topic, groups by nationality and counts the number of users.
-     * The result is written to the USER_COUNT_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, groups by nationality and counts
+     * the number of users. The result is written to the USER_COUNT_TOPIC topic.
      *
      * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder
-            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-            .groupBy((key, user) -> user.getNationality().toString(),
-                Grouped.with(GROUP_USER_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
-            .count(Materialized
-                .<String, Long, KeyValueStore<Bytes, byte[]>>as(USER_COUNT_STORE)
-                .withKeySerde(Serdes.String())
-                .withValueSerde(Serdes.Long()))
-            .toStream()
-            .to(USER_COUNT_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
+        streamsBuilder.<String, KafkaUser>stream(
+                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .groupBy(
+                        (key, user) -> user.getNationality().toString(),
+                        Grouped.with(GROUP_USER_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+                .count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as(USER_COUNT_STORE)
+                        .withKeySerde(Serdes.String())
+                        .withValueSerde(Serdes.Long()))
+                .toStream()
+                .to(USER_COUNT_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
     }
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private KafkaStreamsTopology() {}
 }

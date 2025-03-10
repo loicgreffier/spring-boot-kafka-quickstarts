@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.producer.avro.specific.app;
 
 import static io.github.loicgreffier.producer.avro.specific.constant.Name.FIRST_NAMES;
@@ -37,9 +36,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-/**
- * This class represents a Kafka producer runner that sends records to a specific topic.
- */
+/** This class represents a Kafka producer runner that sends records to a specific topic. */
 @Slf4j
 @Component
 public class ProducerRunner {
@@ -55,21 +52,17 @@ public class ProducerRunner {
     }
 
     /**
-     * Asynchronously starts the Kafka producer when the application is ready.
-     * The asynchronous annotation is used to run the producer in a separate thread and
-     * not block the main thread.
-     * The Kafka producer produces specific Avro records to the USER_TOPIC topic.
+     * Asynchronously starts the Kafka producer when the application is ready. The asynchronous annotation is used to
+     * run the producer in a separate thread and not block the main thread. The Kafka producer produces specific Avro
+     * records to the USER_TOPIC topic.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         int i = 0;
         while (true) {
-            ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(
-                USER_TOPIC,
-                String.valueOf(i),
-                buildKafkaUser(i)
-            );
+            ProducerRecord<String, KafkaUser> message =
+                    new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildKafkaUser(i));
 
             send(message);
 
@@ -95,12 +88,13 @@ public class ProducerRunner {
             if (e != null) {
                 log.error(e.getMessage());
             } else {
-                log.info("Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
-                    recordMetadata.topic(),
-                    recordMetadata.partition(),
-                    recordMetadata.offset(),
-                    message.key(),
-                    message.value());
+                log.info(
+                        "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
+                        recordMetadata.topic(),
+                        recordMetadata.partition(),
+                        recordMetadata.offset(),
+                        message.key(),
+                        message.value());
             }
         });
     }
@@ -113,10 +107,10 @@ public class ProducerRunner {
      */
     private KafkaUser buildKafkaUser(int id) {
         return KafkaUser.newBuilder()
-            .setId((long) id)
-            .setFirstName(FIRST_NAMES[new Random().nextInt(FIRST_NAMES.length)])
-            .setLastName(LAST_NAMES[new Random().nextInt(LAST_NAMES.length)])
-            .setBirthDate(Instant.now())
-            .build();
+                .setId((long) id)
+                .setFirstName(FIRST_NAMES[new Random().nextInt(FIRST_NAMES.length)])
+                .setLastName(LAST_NAMES[new Random().nextInt(LAST_NAMES.length)])
+                .setBirthDate(Instant.now())
+                .build();
     }
 }

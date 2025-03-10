@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.merge;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -76,27 +75,20 @@ class KafkaStreamsMergeApplicationTest {
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(
-            streamsBuilder.build(),
-            properties,
-            Instant.parse("2000-01-01T01:00:00Z")
-        );
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopicOne = testDriver.createInputTopic(
-            USER_TOPIC,
-            new StringSerializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
-        );
+                USER_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
         inputTopicTwo = testDriver.createInputTopic(
-            USER_TOPIC_TWO,
-            new StringSerializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
-        );
+                USER_TOPIC_TWO,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-            USER_MERGE_TOPIC,
-            new StringDeserializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
-        );
+                USER_MERGE_TOPIC,
+                new StringDeserializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -122,11 +114,11 @@ class KafkaStreamsMergeApplicationTest {
 
     private KafkaUser buildKafkaUser(String firstName) {
         return KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName(firstName)
-            .setLastName("Simpson")
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .setNationality(CountryCode.US)
-            .build();
+                .setId(1L)
+                .setFirstName(firstName)
+                .setLastName("Simpson")
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                .setNationality(CountryCode.US)
+                .build();
     }
 }

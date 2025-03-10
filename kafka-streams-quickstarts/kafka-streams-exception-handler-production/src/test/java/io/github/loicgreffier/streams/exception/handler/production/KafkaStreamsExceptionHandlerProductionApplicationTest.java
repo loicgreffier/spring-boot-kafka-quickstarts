@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.exception.handler.production;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.AUTO_REGISTER_SCHEMAS;
@@ -74,44 +73,29 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
         properties.setProperty(APPLICATION_ID_CONFIG, "streams-production-exception-handler-test");
         properties.setProperty(BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         properties.setProperty(STATE_DIR_CONFIG, STATE_DIR);
-        properties.setProperty(DEFAULT_PRODUCTION_EXCEPTION_HANDLER_CLASS_CONFIG,
-            CustomProductionExceptionHandler.class.getName());
+        properties.setProperty(
+                DEFAULT_PRODUCTION_EXCEPTION_HANDLER_CLASS_CONFIG, CustomProductionExceptionHandler.class.getName());
         properties.setProperty(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
 
         // Create SerDes that throws an exception when the application tries to serialize
-        Map<String, String> serializationExceptionConfig = Map.of(
-            SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL,
-            AUTO_REGISTER_SCHEMAS, "false"
-        );
+        Map<String, String> serializationExceptionConfig =
+                Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL, AUTO_REGISTER_SCHEMAS, "false");
         SerdesUtils.setSerdesConfig(serializationExceptionConfig);
 
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(
-            streamsBuilder.build(),
-            properties,
-            Instant.parse("2000-01-01T01:00:00Z")
-        );
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         // Create SerDes for input and output topics only
-        Map<String, String> config = Map.of(
-            SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL
-        );
+        Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
 
         SpecificAvroSerde<KafkaUser> serDes = new SpecificAvroSerde<>();
         serDes.configure(config, false);
 
-        inputTopic = testDriver.createInputTopic(
-            USER_TOPIC,
-            new StringSerializer(),
-            serDes.serializer()
-        );
+        inputTopic = testDriver.createInputTopic(USER_TOPIC, new StringSerializer(), serDes.serializer());
         outputTopic = testDriver.createOutputTopic(
-            USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC,
-            new StringDeserializer(),
-            serDes.deserializer()
-        );
+                USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC, new StringDeserializer(), serDes.deserializer());
     }
 
     @AfterEach
@@ -130,17 +114,19 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
         assertTrue(results.isEmpty());
 
         assertEquals(1.0, testDriver.metrics().get(droppedRecordsTotalMetric()).metricValue());
-        assertEquals(0.03333333333333333, testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
+        assertEquals(
+                0.03333333333333333,
+                testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
     private KafkaUser buildKafkaUser() {
         return KafkaUser.newBuilder()
-            .setId(10L)
-            .setFirstName("Homer")
-            .setLastName("Simpson")
-            .setNationality(CountryCode.US)
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .build();
+                .setId(10L)
+                .setFirstName("Homer")
+                .setLastName("Simpson")
+                .setNationality(CountryCode.US)
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                .build();
     }
 
     private MetricName droppedRecordsTotalMetric() {
@@ -153,11 +139,9 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
 
     private MetricName createMetric(String name, String description) {
         return new MetricName(
-            name, "stream-task-metrics", description,
-            mkMap(
-                mkEntry("thread-id", Thread.currentThread().getName()),
-                mkEntry("task-id", "0_0")
-            )
-        );
+                name,
+                "stream-task-metrics",
+                description,
+                mkMap(mkEntry("thread-id", Thread.currentThread().getName()), mkEntry("task-id", "0_0")));
     }
 }

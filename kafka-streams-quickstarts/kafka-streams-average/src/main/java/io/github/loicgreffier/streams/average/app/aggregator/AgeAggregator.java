@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.average.app.aggregator;
 
 import io.github.loicgreffier.avro.KafkaAverageAge;
@@ -26,16 +25,14 @@ import java.time.Period;
 import java.time.ZoneOffset;
 import org.apache.kafka.streams.kstream.Aggregator;
 
-/**
- * This class represents an aggregator that aggregates the age.
- */
+/** This class represents an aggregator that aggregates the age. */
 public class AgeAggregator implements Aggregator<String, KafkaUser, KafkaAverageAge> {
     /**
      * Aggregates the age.
      *
-     * @param key         The key of the record.
+     * @param key The key of the record.
      * @param kafkaUser The value of the record.
-     * @param aggregate   The aggregate.
+     * @param aggregate The aggregate.
      * @return The updated aggregate.
      */
     @Override
@@ -44,7 +41,8 @@ public class AgeAggregator implements Aggregator<String, KafkaUser, KafkaAverage
 
         LocalDate currentDate = LocalDate.now();
         LocalDate birthDate = LocalDate.ofInstant(kafkaUser.getBirthDate(), ZoneOffset.UTC);
-        aggregate.setAgeSum(aggregate.getAgeSum() + Period.between(birthDate, currentDate).getYears());
+        aggregate.setAgeSum(
+                aggregate.getAgeSum() + Period.between(birthDate, currentDate).getYears());
         return aggregate;
     }
 }

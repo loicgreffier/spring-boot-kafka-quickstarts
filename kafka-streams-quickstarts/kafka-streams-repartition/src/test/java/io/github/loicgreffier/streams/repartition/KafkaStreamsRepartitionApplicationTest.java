@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.repartition;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -74,22 +73,16 @@ class KafkaStreamsRepartitionApplicationTest {
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(
-            streamsBuilder.build(),
-            properties,
-            Instant.parse("2000-01-01T01:00:00Z")
-        );
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-            USER_TOPIC,
-            new StringSerializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
-        );
+                USER_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-            "streams-repartition-test-" + USER_TOPIC + "-repartition",
-            new StringDeserializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
-        );
+                "streams-repartition-test-" + USER_TOPIC + "-repartition",
+                new StringDeserializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -111,11 +104,11 @@ class KafkaStreamsRepartitionApplicationTest {
 
     private KafkaUser buildKafkaUser() {
         return KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName("Homer")
-            .setLastName("Simpson")
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .setNationality(CountryCode.US)
-            .build();
+                .setId(1L)
+                .setFirstName("Homer")
+                .setLastName("Simpson")
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                .setNationality(CountryCode.US)
+                .build();
     }
 }

@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.store.window.timestamped;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -77,17 +76,12 @@ class KafkaStreamsStoreWindowTimestampedApplicationTest {
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(
-            streamsBuilder.build(),
-            properties,
-            Instant.parse("2000-01-01T01:00:00Z")
-        );
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-            USER_TOPIC,
-            new StringSerializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
-        );
+                USER_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
     }
 
     @AfterEach
@@ -110,68 +104,89 @@ class KafkaStreamsStoreWindowTimestampedApplicationTest {
         inputTopic.pipeInput(new TestRecord<>("2", marge, margeTimestamp));
         inputTopic.pipeInput(new TestRecord<>("2", marge, margeTimestamp.plusSeconds(10)));
 
-        WindowStore<String, ValueAndTimestamp<KafkaUser>> windowStore = testDriver
-            .getTimestampedWindowStore(storeName);
+        WindowStore<String, ValueAndTimestamp<KafkaUser>> windowStore = testDriver.getTimestampedWindowStore(storeName);
 
         // Fetch from window store by key and timestamp. The timestamp used to fetch has to be equal to
         // the window start time to get the value.
 
-        assertEquals(homer, windowStore.fetch("1", homerTimestamp.toEpochMilli()).value());
         assertEquals(
-            "2000-01-01T01:00:00Z",
-            Instant.ofEpochMilli(windowStore.fetch("1", homerTimestamp.toEpochMilli()).timestamp()).toString()
-        );
-        assertEquals(homer, windowStore.fetch("1", homerTimestamp.plusSeconds(10).toEpochMilli()).value());
+                homer, windowStore.fetch("1", homerTimestamp.toEpochMilli()).value());
         assertEquals(
-            "2000-01-01T01:00:10Z",
-            Instant.ofEpochMilli(windowStore.fetch("1", homerTimestamp.plusSeconds(10).toEpochMilli()).timestamp())
-                .toString()
-        );
+                "2000-01-01T01:00:00Z",
+                Instant.ofEpochMilli(windowStore
+                                .fetch("1", homerTimestamp.toEpochMilli())
+                                .timestamp())
+                        .toString());
+        assertEquals(
+                homer,
+                windowStore
+                        .fetch("1", homerTimestamp.plusSeconds(10).toEpochMilli())
+                        .value());
+        assertEquals(
+                "2000-01-01T01:00:10Z",
+                Instant.ofEpochMilli(windowStore
+                                .fetch("1", homerTimestamp.plusSeconds(10).toEpochMilli())
+                                .timestamp())
+                        .toString());
         assertNull(windowStore.fetch("1", homerTimestamp.plusSeconds(1).toEpochMilli()));
 
         // Fetch from window store by key and time range.
 
         try (WindowStoreIterator<ValueAndTimestamp<KafkaUser>> iterator = windowStore.fetch(
-            "1",
-            homerTimestamp.minusSeconds(30).toEpochMilli(),
-            homerTimestamp.plusSeconds(30).toEpochMilli()
-        )) {
+                "1",
+                homerTimestamp.minusSeconds(30).toEpochMilli(),
+                homerTimestamp.plusSeconds(30).toEpochMilli())) {
             ValueAndTimestamp<KafkaUser> valueAndTimestamp = iterator.next().value;
             assertEquals(homer, valueAndTimestamp.value());
-            assertEquals("2000-01-01T01:00:00Z", Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
+            assertEquals(
+                    "2000-01-01T01:00:00Z",
+                    Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
 
             valueAndTimestamp = iterator.next().value;
             assertEquals(homer, valueAndTimestamp.value());
-            assertEquals("2000-01-01T01:00:10Z", Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
+            assertEquals(
+                    "2000-01-01T01:00:10Z",
+                    Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
 
             assertFalse(iterator.hasNext());
         }
 
-        assertEquals(marge, windowStore.fetch("2", margeTimestamp.toEpochMilli()).value());
         assertEquals(
-            "2000-01-01T01:00:30Z",
-            Instant.ofEpochMilli(windowStore.fetch("2", margeTimestamp.toEpochMilli()).timestamp()).toString()
-        );
-        assertEquals(marge, windowStore.fetch("2", margeTimestamp.plusSeconds(10).toEpochMilli()).value());
+                marge, windowStore.fetch("2", margeTimestamp.toEpochMilli()).value());
         assertEquals(
-            "2000-01-01T01:00:40Z",
-            Instant.ofEpochMilli(windowStore.fetch("2", margeTimestamp.plusSeconds(10).toEpochMilli()).timestamp())
-                .toString()
-        );
+                "2000-01-01T01:00:30Z",
+                Instant.ofEpochMilli(windowStore
+                                .fetch("2", margeTimestamp.toEpochMilli())
+                                .timestamp())
+                        .toString());
+        assertEquals(
+                marge,
+                windowStore
+                        .fetch("2", margeTimestamp.plusSeconds(10).toEpochMilli())
+                        .value());
+        assertEquals(
+                "2000-01-01T01:00:40Z",
+                Instant.ofEpochMilli(windowStore
+                                .fetch("2", margeTimestamp.plusSeconds(10).toEpochMilli())
+                                .timestamp())
+                        .toString());
         assertNull(windowStore.fetch("2", margeTimestamp.plusSeconds(1).toEpochMilli()));
 
         try (WindowStoreIterator<ValueAndTimestamp<KafkaUser>> iterator = windowStore.fetch(
-            "2",
-            margeTimestamp.minusSeconds(30).toEpochMilli(),
-            margeTimestamp.plusSeconds(30).toEpochMilli()
-        )) {
+                "2",
+                margeTimestamp.minusSeconds(30).toEpochMilli(),
+                margeTimestamp.plusSeconds(30).toEpochMilli())) {
             ValueAndTimestamp<KafkaUser> valueAndTimestamp = iterator.next().value;
             assertEquals(marge, valueAndTimestamp.value());
-            assertEquals("2000-01-01T01:00:30Z", Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
+            assertEquals(
+                    "2000-01-01T01:00:30Z",
+                    Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
 
             valueAndTimestamp = iterator.next().value;
             assertEquals(marge, valueAndTimestamp.value());
-            assertEquals("2000-01-01T01:00:40Z", Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
+            assertEquals(
+                    "2000-01-01T01:00:40Z",
+                    Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
 
             assertFalse(iterator.hasNext());
         }
@@ -179,11 +194,11 @@ class KafkaStreamsStoreWindowTimestampedApplicationTest {
 
     private KafkaUser buildKafkaUser(String firstName) {
         return KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName(firstName)
-            .setLastName("Simpson")
-            .setNationality(CountryCode.GB)
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .build();
+                .setId(1L)
+                .setFirstName(firstName)
+                .setLastName("Simpson")
+                .setNationality(CountryCode.GB)
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                .build();
     }
 }

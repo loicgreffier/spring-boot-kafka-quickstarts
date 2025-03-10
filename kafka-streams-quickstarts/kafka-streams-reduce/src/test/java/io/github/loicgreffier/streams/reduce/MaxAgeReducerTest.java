@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.reduce;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,25 +31,25 @@ class MaxAgeReducerTest {
         MaxAgeReducer reducer = new MaxAgeReducer();
 
         KafkaUser oldest = KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName("Homer")
-            .setLastName("Simpson")
-            .setBirthDate(Instant.parse("1956-08-29T18:35:24Z"))
-            .build();
+                .setId(1L)
+                .setFirstName("Homer")
+                .setLastName("Simpson")
+                .setBirthDate(Instant.parse("1956-08-29T18:35:24Z"))
+                .build();
 
         KafkaUser oldestSameYear = KafkaUser.newBuilder()
-            .setId(2L)
-            .setFirstName("Kirk")
-            .setLastName("Van Houten")
-            .setBirthDate(Instant.parse("1956-02-18T12:00:46Z"))
-            .build();
+                .setId(2L)
+                .setFirstName("Kirk")
+                .setLastName("Van Houten")
+                .setBirthDate(Instant.parse("1956-02-18T12:00:46Z"))
+                .build();
 
         KafkaUser youngest = KafkaUser.newBuilder()
-            .setId(3L)
-            .setFirstName("Bart")
-            .setLastName("Simpson")
-            .setBirthDate(Instant.parse("1995-12-15T23:06:22Z"))
-            .build();
+                .setId(3L)
+                .setFirstName("Bart")
+                .setLastName("Simpson")
+                .setBirthDate(Instant.parse("1995-12-15T23:06:22Z"))
+                .build();
 
         assertEquals(oldest, reducer.apply(youngest, oldest));
         assertEquals(oldestSameYear, reducer.apply(oldest, oldestSameYear));

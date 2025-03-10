@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.average;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,30 +37,30 @@ class AgeAggregatorTest {
         LocalDate currentDate = LocalDate.now();
 
         KafkaUser userOne = KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName("Bart")
-            .setLastName("Simpson")
-            .setNationality(CountryCode.US)
-            .setBirthDate(currentDate.minusYears(25).atStartOfDay().toInstant(ZoneOffset.UTC)) // 25 years old
-            .build();
+                .setId(1L)
+                .setFirstName("Bart")
+                .setLastName("Simpson")
+                .setNationality(CountryCode.US)
+                .setBirthDate(currentDate.minusYears(25).atStartOfDay().toInstant(ZoneOffset.UTC)) // 25 years old
+                .build();
         aggregator.apply(CountryCode.US.toString(), userOne, averageAge);
 
         KafkaUser userTwo = KafkaUser.newBuilder()
-            .setId(2L)
-            .setFirstName("Homer")
-            .setLastName("Simpson")
-            .setNationality(CountryCode.US)
-            .setBirthDate(currentDate.minusYears(50).atStartOfDay().toInstant(ZoneOffset.UTC)) // 50 years old
-            .build();
+                .setId(2L)
+                .setFirstName("Homer")
+                .setLastName("Simpson")
+                .setNationality(CountryCode.US)
+                .setBirthDate(currentDate.minusYears(50).atStartOfDay().toInstant(ZoneOffset.UTC)) // 50 years old
+                .build();
         aggregator.apply(CountryCode.US.toString(), userTwo, averageAge);
 
         KafkaUser userThree = KafkaUser.newBuilder()
-            .setId(3L)
-            .setFirstName("Abraham")
-            .setLastName("Simpson")
-            .setNationality(CountryCode.US)
-            .setBirthDate(currentDate.minusYears(75).atStartOfDay().toInstant(ZoneOffset.UTC)) // 75 years old
-            .build();
+                .setId(3L)
+                .setFirstName("Abraham")
+                .setLastName("Simpson")
+                .setNationality(CountryCode.US)
+                .setBirthDate(currentDate.minusYears(75).atStartOfDay().toInstant(ZoneOffset.UTC)) // 75 years old
+                .build();
         aggregator.apply(CountryCode.US.toString(), userThree, averageAge);
 
         assertEquals(3L, averageAge.getCount());

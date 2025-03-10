@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.store.keyvalue.app;
 
 import io.github.loicgreffier.streams.store.keyvalue.property.KafkaStreamsProperties;
@@ -33,9 +32,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-/**
- * This class represents a Kafka Streams runner that runs a topology.
- */
+/** This class represents a Kafka Streams runner that runs a topology. */
 @Slf4j
 @Component
 public class KafkaStreamsRunner {
@@ -55,8 +52,8 @@ public class KafkaStreamsRunner {
     }
 
     /**
-     * Starts the Kafka Streams when the application is ready.
-     * The Kafka Streams topology is built in the {@link KafkaStreamsTopology} class.
+     * Starts the Kafka Streams when the application is ready. The Kafka Streams topology is built in the
+     * {@link KafkaStreamsTopology} class.
      */
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
@@ -70,8 +67,10 @@ public class KafkaStreamsRunner {
         kafkaStreams = new KafkaStreams(topology, properties.asProperties());
 
         kafkaStreams.setUncaughtExceptionHandler(exception -> {
-            log.error("A not covered exception occurred in {} Kafka Streams. Shutting down...",
-                properties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG), exception);
+            log.error(
+                    "A not covered exception occurred in {} Kafka Streams. Shutting down...",
+                    properties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG),
+                    exception);
 
             applicationContext.close();
             return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
@@ -79,8 +78,9 @@ public class KafkaStreamsRunner {
 
         kafkaStreams.setStateListener((newState, oldState) -> {
             if (newState.equals(KafkaStreams.State.ERROR)) {
-                log.error("The {} Kafka Streams is in error state...",
-                    properties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
+                log.error(
+                        "The {} Kafka Streams is in error state...",
+                        properties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
 
                 applicationContext.close();
             }
@@ -89,9 +89,7 @@ public class KafkaStreamsRunner {
         kafkaStreams.start();
     }
 
-    /**
-     * Closes the Kafka Streams when the application is stopped.
-     */
+    /** Closes the Kafka Streams when the application is stopped. */
     @PreDestroy
     public void preDestroy() {
         log.info("Closing streams");

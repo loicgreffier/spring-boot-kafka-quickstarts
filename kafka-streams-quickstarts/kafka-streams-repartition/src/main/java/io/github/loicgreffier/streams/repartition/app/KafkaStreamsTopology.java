@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.repartition.app;
 
 import static io.github.loicgreffier.streams.repartition.constant.Topic.USER_TOPIC;
@@ -29,32 +28,26 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Repartitioned;
 
-/**
- * Kafka Streams topology.
- */
+/** Kafka Streams topology. */
 @Slf4j
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology.
-     * The topology reads from the USER_TOPIC topic and repartitions the stream with 3 partitions.
-     * The result is written to the USER_TOPIC repartition topic.
+     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and repartitions the stream with
+     * 3 partitions. The result is written to the USER_TOPIC repartition topic.
      *
      * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder
-            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-            .repartition(Repartitioned
-                .<String, KafkaUser>as(USER_TOPIC)
-                .withKeySerde(Serdes.String())
-                .withValueSerde(SerdesUtils.getValueSerdes())
-                .withNumberOfPartitions(3));
+        streamsBuilder.<String, KafkaUser>stream(
+                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .repartition(Repartitioned.<String, KafkaUser>as(USER_TOPIC)
+                        .withKeySerde(Serdes.String())
+                        .withValueSerde(SerdesUtils.getValueSerdes())
+                        .withNumberOfPartitions(3));
     }
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private KafkaStreamsTopology() {}
 }

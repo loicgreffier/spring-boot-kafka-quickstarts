@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.consumer.avro.specific;
 
 import static io.github.loicgreffier.consumer.avro.specific.constant.Topic.USER_TOPIC;
@@ -63,13 +62,17 @@ class KafkaConsumerAvroSpecificApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1",
-            KafkaUser.newBuilder()
-                .setId(1L)
-                .setFirstName("Homer")
-                .setLastName("Simpson")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-                .build());
+        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+                USER_TOPIC,
+                0,
+                0,
+                "1",
+                KafkaUser.newBuilder()
+                        .setId(1L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -82,28 +85,31 @@ class KafkaConsumerAvroSpecificApplicationTest {
 
     @Test
     void shouldFailOnPoisonPill() {
-        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1",
-            KafkaUser.newBuilder()
-                .setId(1L)
-                .setFirstName("Homer")
-                .setLastName("Simpson")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-                .build());
+        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+                USER_TOPIC,
+                0,
+                0,
+                "1",
+                KafkaUser.newBuilder()
+                        .setId(1L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(() -> {
             throw new RecordDeserializationException(
-                RecordDeserializationException.DeserializationExceptionOrigin.VALUE,
-                topicPartition,
-                1,
-                0,
-                null,
-                null,
-                null,
-                null,
-                "Error deserializing",
-                new Exception()
-            );
+                    RecordDeserializationException.DeserializationExceptionOrigin.VALUE,
+                    topicPartition,
+                    1,
+                    0,
+                    null,
+                    null,
+                    null,
+                    null,
+                    "Error deserializing",
+                    new Exception());
         });
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
 

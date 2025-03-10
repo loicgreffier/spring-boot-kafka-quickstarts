@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.map.app;
 
 import static io.github.loicgreffier.streams.map.constant.Topic.USER_MAP_TOPIC;
@@ -31,34 +30,28 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
 
-/**
- * Kafka Streams topology.
- */
+/** Kafka Streams topology. */
 @Slf4j
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology.
-     * The topology reads from the USER_TOPIC topic, maps the first name and the last name to upper case and changes
-     * the key to the last name.
-     * The result is written to the USER_MAP_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, maps the first name and the last
+     * name to upper case and changes the key to the last name. The result is written to the USER_MAP_TOPIC topic.
      *
      * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder
-            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-            .map((key, user) -> {
-                user.setFirstName(user.getFirstName().toUpperCase());
-                user.setLastName(user.getLastName().toUpperCase());
-                return KeyValue.pair(user.getLastName(), user);
-            })
-            .to(USER_MAP_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+        streamsBuilder.<String, KafkaUser>stream(
+                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .map((key, user) -> {
+                    user.setFirstName(user.getFirstName().toUpperCase());
+                    user.setLastName(user.getLastName().toUpperCase());
+                    return KeyValue.pair(user.getLastName(), user);
+                })
+                .to(USER_MAP_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private KafkaStreamsTopology() {}
 }

@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.producer.headers.app;
 
 import static io.github.loicgreffier.producer.headers.constant.Topic.STRING_TOPIC;
@@ -33,9 +32,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-/**
- * This class represents a Kafka producer runner that sends records to a specific topic.
- */
+/** This class represents a Kafka producer runner that sends records to a specific topic. */
 @Slf4j
 @Component
 public class ProducerRunner {
@@ -51,21 +48,17 @@ public class ProducerRunner {
     }
 
     /**
-     * Asynchronously starts the Kafka producer when the application is ready.
-     * The asynchronous annotation is used to run the producer in a separate thread and
-     * not block the main thread.
-     * The Kafka producer produces string records with headers to the STRING_TOPIC topic.
+     * Asynchronously starts the Kafka producer when the application is ready. The asynchronous annotation is used to
+     * run the producer in a separate thread and not block the main thread. The Kafka producer produces string records
+     * with headers to the STRING_TOPIC topic.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         int i = 0;
         while (true) {
-            ProducerRecord<String, String> message = new ProducerRecord<>(
-                STRING_TOPIC,
-                String.valueOf(i),
-                String.format("Message %s", i)
-            );
+            ProducerRecord<String, String> message =
+                    new ProducerRecord<>(STRING_TOPIC, String.valueOf(i), String.format("Message %s", i));
 
             message.headers().add("id", String.valueOf(i).getBytes(StandardCharsets.UTF_8));
             message.headers().add("message", String.format("Message %s", i).getBytes(StandardCharsets.UTF_8));
@@ -94,12 +87,13 @@ public class ProducerRunner {
             if (e != null) {
                 log.error(e.getMessage());
             } else {
-                log.info("Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
-                    recordMetadata.topic(),
-                    recordMetadata.partition(),
-                    recordMetadata.offset(),
-                    message.key(),
-                    message.value());
+                log.info(
+                        "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
+                        recordMetadata.topic(),
+                        recordMetadata.partition(),
+                        recordMetadata.offset(),
+                        message.key(),
+                        message.value());
             }
         });
     }

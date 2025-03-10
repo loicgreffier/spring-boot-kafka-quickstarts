@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.exception.handler.processing.app;
 
 import static io.github.loicgreffier.streams.exception.handler.processing.constant.Topic.USER_PROCESSING_EXCEPTION_HANDLER_TOPIC;
@@ -31,38 +30,34 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
 
-/**
- * Kafka Streams topology.
- */
+/** Kafka Streams topology. */
 @Slf4j
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology.
-     * The topology reads from the USER_TOPIC topic.
-     * It throws an exception while mapping the value if the birthdate is negative and while processing the value if
-     * the first name or the last name is null. Additionally, it schedules a punctuation that periodically throws a
-     * processing exception.
-     * The result is written to the USER_PROCESSING_EXCEPTION_HANDLER_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic. It throws an exception while
+     * mapping the value if the birthdate is negative and while processing the value if the first name or the last name
+     * is null. Additionally, it schedules a punctuation that periodically throws a processing exception. The result is
+     * written to the USER_PROCESSING_EXCEPTION_HANDLER_TOPIC topic.
      *
      * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder
-            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-            .mapValues(user -> {
-                if (user.getBirthDate().toEpochMilli() < 0) {
-                    throw new IllegalArgumentException("Age must be positive");
-                }
-                return user;
-            })
-            .processValues(ErrorProcessor::new)
-            .to(USER_PROCESSING_EXCEPTION_HANDLER_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+        streamsBuilder.<String, KafkaUser>stream(
+                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .mapValues(user -> {
+                    if (user.getBirthDate().toEpochMilli() < 0) {
+                        throw new IllegalArgumentException("Age must be positive");
+                    }
+                    return user;
+                })
+                .processValues(ErrorProcessor::new)
+                .to(
+                        USER_PROCESSING_EXCEPTION_HANDLER_TOPIC,
+                        Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private KafkaStreamsTopology() {}
 }

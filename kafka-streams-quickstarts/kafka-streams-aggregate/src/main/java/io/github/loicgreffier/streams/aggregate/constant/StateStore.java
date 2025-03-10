@@ -16,17 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.aggregate.constant;
 
-/**
- * State store name constants.
- */
+/** State store name constants. */
 public abstract class StateStore {
     public static final String USER_AGGREGATE_STORE = "USER_AGGREGATE_STORE";
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private StateStore() {}
 }

@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.exception.handler.deserialization.app;
 
 import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC;
@@ -30,29 +29,25 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
 
-/**
- * Kafka Streams topology.
- */
+/** Kafka Streams topology. */
 @Slf4j
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology.
-     * The topology reads from the USER_TOPIC topic and only displays the received key and value.
-     * The result is written to the USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and only displays the received
+     * key and value. The result is written to the USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC topic.
      *
      * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder
-            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-            .to(USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC,
-                Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+        streamsBuilder.<String, KafkaUser>stream(
+                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .to(
+                        USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC,
+                        Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private KafkaStreamsTopology() {}
 }

@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.consumer.headers.app;
 
 import static io.github.loicgreffier.consumer.headers.constant.Topic.STRING_TOPIC;
@@ -36,10 +35,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-/**
- * This class represents a Kafka consumer runner that subscribes to a specific topic and
- * processes Kafka records.
- */
+/** This class represents a Kafka consumer runner that subscribes to a specific topic and processes Kafka records. */
 @Slf4j
 @Component
 public class ConsumerRunner {
@@ -55,10 +51,9 @@ public class ConsumerRunner {
     }
 
     /**
-     * Asynchronously starts the Kafka consumer when the application is ready.
-     * The asynchronous annotation is used to run the consumer in a separate thread and
-     * not block the main thread.
-     * The Kafka consumer processes string records with headers from the STRING_TOPIC topic.
+     * Asynchronously starts the Kafka consumer when the application is ready. The asynchronous annotation is used to
+     * run the consumer in a separate thread and not block the main thread. The Kafka consumer processes string records
+     * with headers from the STRING_TOPIC topic.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
@@ -74,16 +69,21 @@ public class ConsumerRunner {
 
                 for (ConsumerRecord<String, String> message : messages) {
                     Header headerId = message.headers().lastHeader("id");
-                    String headerIdValue = headerId != null
-                        ? new String(headerId.value(), StandardCharsets.UTF_8) : "";
+                    String headerIdValue = headerId != null ? new String(headerId.value(), StandardCharsets.UTF_8) : "";
 
                     Header headerMessage = message.headers().lastHeader("message");
-                    String headerMessageValue = headerMessage != null
-                        ? new String(headerMessage.value(), StandardCharsets.UTF_8) : "";
+                    String headerMessageValue =
+                            headerMessage != null ? new String(headerMessage.value(), StandardCharsets.UTF_8) : "";
 
-                    log.info("Received offset = {}, partition = {}, key = {}, value = {}, header id = {}, "
-                            + "header message = {}", message.offset(), message.partition(), message.key(),
-                        message.value(), headerIdValue, headerMessageValue);
+                    log.info(
+                            "Received offset = {}, partition = {}, key = {}, value = {}, header id = {}, "
+                                    + "header message = {}",
+                            message.offset(),
+                            message.partition(),
+                            message.key(),
+                            message.value(),
+                            headerIdValue,
+                            headerMessageValue);
                 }
 
                 if (!messages.isEmpty()) {
@@ -98,9 +98,7 @@ public class ConsumerRunner {
         }
     }
 
-    /**
-     * Performs a synchronous commit of the consumed records.
-     */
+    /** Performs a synchronous commit of the consumed records. */
     private void doCommitSync() {
         try {
             log.info("Committing the pulled records");

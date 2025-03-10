@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.consumer.circuit.breaker;
 
 import static io.github.loicgreffier.consumer.circuit.breaker.constant.Topic.USER_TOPIC;
@@ -62,13 +61,17 @@ class KafkaConsumerCircuitBreakerApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1",
-            KafkaUser.newBuilder()
-                .setId(1L)
-                .setFirstName("Homer")
-                .setLastName("Simpson")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-                .build());
+        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+                USER_TOPIC,
+                0,
+                0,
+                "1",
+                KafkaUser.newBuilder()
+                        .setId(1L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -81,37 +84,44 @@ class KafkaConsumerCircuitBreakerApplicationTest {
 
     @Test
     void shouldBreakCircuitOnPoisonPill() {
-        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1",
-            KafkaUser.newBuilder()
-                .setId(1L)
-                .setFirstName("Homer")
-                .setLastName("Simpson")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-                .build());
+        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+                USER_TOPIC,
+                0,
+                0,
+                "1",
+                KafkaUser.newBuilder()
+                        .setId(1L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
-        ConsumerRecord<String, KafkaUser> message2 = new ConsumerRecord<>(USER_TOPIC, 0, 2, "2",
-            KafkaUser.newBuilder()
-                .setId(2L)
-                .setFirstName("Homer")
-                .setLastName("Simpson")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-                .build());
+        ConsumerRecord<String, KafkaUser> message2 = new ConsumerRecord<>(
+                USER_TOPIC,
+                0,
+                2,
+                "2",
+                KafkaUser.newBuilder()
+                        .setId(2L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
 
         mockConsumer.schedulePollTask(() -> {
             throw new RecordDeserializationException(
-                RecordDeserializationException.DeserializationExceptionOrigin.VALUE,
-                topicPartition,
-                1,
-                0,
-                null,
-                null,
-                null,
-                null,
-                "Error deserializing",
-                new Exception()
-            );
+                    RecordDeserializationException.DeserializationExceptionOrigin.VALUE,
+                    topicPartition,
+                    1,
+                    0,
+                    null,
+                    null,
+                    null,
+                    null,
+                    "Error deserializing",
+                    new Exception());
         });
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message2));

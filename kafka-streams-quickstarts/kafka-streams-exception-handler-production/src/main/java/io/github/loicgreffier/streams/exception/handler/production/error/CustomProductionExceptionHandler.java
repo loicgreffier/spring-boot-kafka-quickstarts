@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.exception.handler.production.error;
 
 import java.util.Map;
@@ -26,57 +25,52 @@ import org.apache.kafka.common.errors.RecordTooLargeException;
 import org.apache.kafka.streams.errors.ErrorHandlerContext;
 import org.apache.kafka.streams.errors.ProductionExceptionHandler;
 
-/**
- * Custom production exception handler.
- */
+/** Custom production exception handler. */
 @Slf4j
 public class CustomProductionExceptionHandler implements ProductionExceptionHandler {
 
     @Override
-    public ProductionExceptionHandlerResponse handle(ErrorHandlerContext context,
-                                                     ProducerRecord<byte[], byte[]> record,
-                                                     Exception exception) {
+    public ProductionExceptionHandlerResponse handle(
+            ErrorHandlerContext context, ProducerRecord<byte[], byte[]> record, Exception exception) {
         if (exception instanceof RecordTooLargeException) {
             log.warn(
-                "Record too large exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
-                context.processorNodeId(),
-                context.topic(),
-                context.partition(),
-                context.offset(),
-                exception
-            );
+                    "Record too large exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
+                    context.processorNodeId(),
+                    context.topic(),
+                    context.partition(),
+                    context.offset(),
+                    exception);
 
             return ProductionExceptionHandlerResponse.CONTINUE;
         }
 
         log.warn(
-            "Exception caught during production for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
-            context.processorNodeId(),
-            context.topic(),
-            context.partition(),
-            context.offset(),
-            exception
-        );
+                "Exception caught during production for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
+                context.processorNodeId(),
+                context.topic(),
+                context.partition(),
+                context.offset(),
+                exception);
 
         return ProductionExceptionHandlerResponse.FAIL;
     }
 
     @Override
-    public ProductionExceptionHandlerResponse handleSerializationException(ErrorHandlerContext context,
-                                                                           ProducerRecord record,
-                                                                           Exception exception,
-                                                                           SerializationExceptionOrigin origin) {
+    public ProductionExceptionHandlerResponse handleSerializationException(
+            ErrorHandlerContext context,
+            ProducerRecord record,
+            Exception exception,
+            SerializationExceptionOrigin origin) {
         log.warn(
-            "Exception caught during serialization for topic = {}, partition = {},"
-                + " offset = {}, origin = {}, key = {}, value = {}",
-            context.topic(),
-            context.partition(),
-            context.offset(),
-            origin,
-            record.key(),
-            record.value(),
-            exception
-        );
+                "Exception caught during serialization for topic = {}, partition = {},"
+                        + " offset = {}, origin = {}, key = {}, value = {}",
+                context.topic(),
+                context.partition(),
+                context.offset(),
+                origin,
+                record.key(),
+                record.value(),
+                exception);
 
         return ProductionExceptionHandlerResponse.CONTINUE;
     }

@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.consumer.retry;
 
 import static io.github.loicgreffier.consumer.retry.constant.Topic.STRING_TOPIC;
@@ -105,7 +104,8 @@ class KafkaConsumerRetryApplicationTest {
         // Should read from message 2 on second poll loop
         doNothing().when(externalService).call(argThat(arg -> !arg.equals(message2)));
         doThrow(new Exception("Call to external system failed"))
-            .when(externalService).call(message2);
+                .when(externalService)
+                .call(message2);
 
         consumerRunner.run();
 
@@ -124,8 +124,9 @@ class KafkaConsumerRetryApplicationTest {
         }
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
 
-        doThrow(new Exception("Call to external system failed")).when(externalService)
-            .call(message);
+        doThrow(new Exception("Call to external system failed"))
+                .when(externalService)
+                .call(message);
 
         consumerRunner.run();
 
@@ -144,10 +145,11 @@ class KafkaConsumerRetryApplicationTest {
         }
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
 
-        when(properties.getProperties()).thenReturn(
-            Map.of(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, OffsetResetStrategy.LATEST.toString()));
-        doThrow(new Exception("Call to external system failed")).when(externalService)
-            .call(message);
+        when(properties.getProperties())
+                .thenReturn(Map.of(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, OffsetResetStrategy.LATEST.toString()));
+        doThrow(new Exception("Call to external system failed"))
+                .when(externalService)
+                .call(message);
 
         consumerRunner.run();
 

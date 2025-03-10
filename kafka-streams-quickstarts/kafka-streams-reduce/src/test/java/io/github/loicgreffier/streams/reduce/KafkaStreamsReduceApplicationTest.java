@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.reduce;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -77,22 +76,16 @@ class KafkaStreamsReduceApplicationTest {
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(
-            streamsBuilder.build(),
-            properties,
-            Instant.parse("2000-01-01T01:00:00Z")
-        );
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-            USER_TOPIC,
-            new StringSerializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
-        );
+                USER_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-            USER_REDUCE_TOPIC,
-            new StringDeserializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
-        );
+                USER_REDUCE_TOPIC,
+                new StringDeserializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -104,29 +97,15 @@ class KafkaStreamsReduceApplicationTest {
 
     @Test
     void shouldReduceByNationalityAndKeepOldest() {
-        KafkaUser oldestUs = buildKafkaUser(
-            "Homer",
-            "Simpson",
-            Instant.parse("1956-08-29T18:35:24Z"),
-            CountryCode.US);
+        KafkaUser oldestUs = buildKafkaUser("Homer", "Simpson", Instant.parse("1956-08-29T18:35:24Z"), CountryCode.US);
 
-        KafkaUser youngestUs = buildKafkaUser(
-            "Bart",
-            "Simpson",
-            Instant.parse("1994-11-09T08:08:50Z"),
-            CountryCode.US);
+        KafkaUser youngestUs = buildKafkaUser("Bart", "Simpson", Instant.parse("1994-11-09T08:08:50Z"), CountryCode.US);
 
-        KafkaUser youngestBe = buildKafkaUser(
-            "Milhouse",
-            "Van Houten",
-            Instant.parse("1996-02-02T04:58:01Z"),
-            CountryCode.BE);
+        KafkaUser youngestBe =
+                buildKafkaUser("Milhouse", "Van Houten", Instant.parse("1996-02-02T04:58:01Z"), CountryCode.BE);
 
-        KafkaUser oldestBe = buildKafkaUser(
-            "Kirk",
-            "Van Houten",
-            Instant.parse("1976-05-26T04:52:06Z"),
-            CountryCode.BE);
+        KafkaUser oldestBe =
+                buildKafkaUser("Kirk", "Van Houten", Instant.parse("1976-05-26T04:52:06Z"), CountryCode.BE);
 
         inputTopic.pipeInput("1", oldestUs);
         inputTopic.pipeInput("2", youngestUs);
@@ -146,16 +125,13 @@ class KafkaStreamsReduceApplicationTest {
         assertEquals(oldestBe, stateStore.get(CountryCode.BE.toString()));
     }
 
-    private KafkaUser buildKafkaUser(String firstName,
-                                         String lastName,
-                                         Instant birthDate,
-                                         CountryCode nationality) {
+    private KafkaUser buildKafkaUser(String firstName, String lastName, Instant birthDate, CountryCode nationality) {
         return KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName(firstName)
-            .setLastName(lastName)
-            .setBirthDate(birthDate)
-            .setNationality(nationality)
-            .build();
+                .setId(1L)
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setBirthDate(birthDate)
+                .setNationality(nationality)
+                .build();
     }
 }
