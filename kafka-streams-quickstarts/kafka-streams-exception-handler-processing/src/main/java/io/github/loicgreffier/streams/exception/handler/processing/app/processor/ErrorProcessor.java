@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.exception.handler.processing.app.processor;
 
 import io.github.loicgreffier.avro.KafkaUser;
@@ -26,9 +25,7 @@ import org.apache.kafka.streams.processor.api.ContextualFixedKeyProcessor;
 import org.apache.kafka.streams.processor.api.FixedKeyProcessorContext;
 import org.apache.kafka.streams.processor.api.FixedKeyRecord;
 
-/**
- * This class represents a processor that throws an exception during processing and punctuation.
- */
+/** This class represents a processor that throws an exception during processing and punctuation. */
 public class ErrorProcessor extends ContextualFixedKeyProcessor<String, KafkaUser, KafkaUser> {
 
     /**
@@ -39,13 +36,9 @@ public class ErrorProcessor extends ContextualFixedKeyProcessor<String, KafkaUse
     @Override
     public void init(FixedKeyProcessorContext<String, KafkaUser> context) {
         super.init(context);
-        context.schedule(
-            Duration.ofMinutes(1),
-            PunctuationType.WALL_CLOCK_TIME,
-            timestamp -> {
-                throw new IllegalArgumentException("Forced processing exception during punctuation");
-            }
-        );
+        context.schedule(Duration.ofMinutes(1), PunctuationType.WALL_CLOCK_TIME, timestamp -> {
+            throw new IllegalArgumentException("Forced processing exception during punctuation");
+        });
     }
 
     /**

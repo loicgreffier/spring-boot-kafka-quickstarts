@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,26 +34,35 @@ class FirstNameByLastNameAggregatorTest {
         FirstNameByLastNameAggregator aggregator = new FirstNameByLastNameAggregator();
         KafkaUserGroup group = new KafkaUserGroup(new HashMap<>());
 
-        aggregator.apply("Simpson", KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName("Homer")
-            .setLastName("Simpson")
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .build(), group);
+        aggregator.apply(
+                "Simpson",
+                KafkaUser.newBuilder()
+                        .setId(1L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build(),
+                group);
 
-        aggregator.apply("Simpson", KafkaUser.newBuilder()
-            .setId(2L)
-            .setFirstName("Marge")
-            .setLastName("Simpson")
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .build(), group);
+        aggregator.apply(
+                "Simpson",
+                KafkaUser.newBuilder()
+                        .setId(2L)
+                        .setFirstName("Marge")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build(),
+                group);
 
-        aggregator.apply("Van Houten", KafkaUser.newBuilder()
-            .setId(3L)
-            .setFirstName("Milhouse")
-            .setLastName("Van Houten")
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .build(), group);
+        aggregator.apply(
+                "Van Houten",
+                KafkaUser.newBuilder()
+                        .setId(3L)
+                        .setFirstName("Milhouse")
+                        .setLastName("Van Houten")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build(),
+                group);
 
         assertTrue(group.getFirstNameByLastName().containsKey("Simpson"));
         assertEquals(2, group.getFirstNameByLastName().get("Simpson").size());
@@ -63,6 +71,7 @@ class FirstNameByLastNameAggregatorTest {
 
         assertTrue(group.getFirstNameByLastName().containsKey("Van Houten"));
         assertEquals(1, group.getFirstNameByLastName().get("Van Houten").size());
-        assertEquals("Milhouse", group.getFirstNameByLastName().get("Van Houten").getFirst());
+        assertEquals(
+                "Milhouse", group.getFirstNameByLastName().get("Van Houten").getFirst());
     }
 }

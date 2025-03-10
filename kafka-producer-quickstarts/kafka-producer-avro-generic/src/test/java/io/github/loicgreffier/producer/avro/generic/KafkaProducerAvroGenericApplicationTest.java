@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.producer.avro.generic;
 
 import static io.github.loicgreffier.producer.avro.generic.constant.Topic.USER_TOPIC;
@@ -57,11 +56,8 @@ class KafkaProducerAvroGenericApplicationTest {
     };
 
     @Spy
-    private MockProducer<String, GenericRecord> mockProducer = new MockProducer<>(
-        false,
-        new StringSerializer(),
-        serializer
-    );
+    private MockProducer<String, GenericRecord> mockProducer =
+            new MockProducer<>(false, new StringSerializer(), serializer);
 
     @InjectMocks
     private ProducerRunner producerRunner;
@@ -126,10 +122,11 @@ class KafkaProducerAvroGenericApplicationTest {
         ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(USER_TOPIC, "1", genericRecord);
 
         SerializationException serializationException =
-            assertThrows(SerializationException.class, () -> producerRunner.send(message));
+                assertThrows(SerializationException.class, () -> producerRunner.send(message));
 
         assertEquals("Error serializing Avro message", serializationException.getMessage());
-        assertEquals("Not in union [\"null\",\"long\"]: aStringThatShouldBeALong (field=id)",
-            serializationException.getCause().getMessage());
+        assertEquals(
+                "Not in union [\"null\",\"long\"]: aStringThatShouldBeALong (field=id)",
+                serializationException.getCause().getMessage());
     }
 }

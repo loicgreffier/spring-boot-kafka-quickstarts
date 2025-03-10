@@ -16,20 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.leftjoin.stream.table.constant;
 
-/**
- * Topic name constants.
- */
+/** Topic name constants. */
 public abstract class Topic {
     public static final String COUNTRY_TOPIC = "COUNTRY_TOPIC";
     public static final String USER_TOPIC = "USER_TOPIC";
     public static final String USER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC = "USER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC";
     public static final String USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC = "USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC";
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private Topic() {}
 }

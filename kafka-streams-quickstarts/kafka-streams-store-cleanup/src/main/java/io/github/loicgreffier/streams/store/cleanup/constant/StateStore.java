@@ -16,17 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.store.cleanup.constant;
 
-/**
- * State store name constants.
- */
+/** State store name constants. */
 public abstract class StateStore {
     public static final String USER_SCHEDULE_STORE_CLEANUP_STORE = "USER_SCHEDULE_STORE_CLEANUP_STORE";
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private StateStore() {}
 }

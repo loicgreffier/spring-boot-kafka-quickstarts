@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.consumer.retry.app;
 
 import java.util.Collection;
@@ -30,8 +29,8 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 
 /**
- * This class represents a custom Kafka consumer rebalance listener that handles partition
- * revocation, assignment, and loss events.
+ * This class represents a custom Kafka consumer rebalance listener that handles partition revocation, assignment, and
+ * loss events.
  */
 @Slf4j
 public class CustomConsumerRebalanceListener implements ConsumerRebalanceListener {
@@ -44,8 +43,8 @@ public class CustomConsumerRebalanceListener implements ConsumerRebalanceListene
      * @param consumer The Kafka consumer.
      * @param offsets The map of offsets.
      */
-    public CustomConsumerRebalanceListener(Consumer<String, String> consumer,
-                                           Map<TopicPartition, OffsetAndMetadata> offsets) {
+    public CustomConsumerRebalanceListener(
+            Consumer<String, String> consumer, Map<TopicPartition, OffsetAndMetadata> offsets) {
         this.consumer = consumer;
         this.offsets = offsets;
     }
@@ -65,8 +64,8 @@ public class CustomConsumerRebalanceListener implements ConsumerRebalanceListene
     }
 
     /**
-     * Called when partitions are assigned to the consumer.
-     * For each assigned partition, it loads the last committed offset.
+     * Called when partitions are assigned to the consumer. For each assigned partition, it loads the last committed
+     * offset.
      *
      * @param partitions The collection of assigned partitions.
      */
@@ -75,10 +74,9 @@ public class CustomConsumerRebalanceListener implements ConsumerRebalanceListene
         log.info("Partition assigned : {}", partitions);
 
         Map<TopicPartition, OffsetAndMetadata> offsetsTopicPartitions = consumer.committed(new HashSet<>(partitions));
-        offsets.putAll(offsetsTopicPartitions.entrySet()
-            .stream()
-            .filter(entry -> entry.getValue() != null)
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+        offsets.putAll(offsetsTopicPartitions.entrySet().stream()
+                .filter(entry -> entry.getValue() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
     /**

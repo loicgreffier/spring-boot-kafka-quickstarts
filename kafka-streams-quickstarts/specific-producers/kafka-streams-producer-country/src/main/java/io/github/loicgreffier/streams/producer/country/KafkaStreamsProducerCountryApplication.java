@@ -16,16 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.producer.country;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-/**
- * This is the main class for the Kafka producer application.
- */
+/** This is the main class for the Kafka producer application. */
 @EnableAsync
 @SpringBootApplication
 public class KafkaStreamsProducerCountryApplication {

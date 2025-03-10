@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.store.keyvalue.timestamped.app.processor;
 
 import io.github.loicgreffier.avro.KafkaUser;
@@ -27,9 +26,7 @@ import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
 
-/**
- * This class represents a processor that puts the messages in a timestamped key-value store.
- */
+/** This class represents a processor that puts the messages in a timestamped key-value store. */
 @Slf4j
 public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUser> {
     private final String storeName;

@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.consumer.avro.generic.app;
 
 import static io.github.loicgreffier.consumer.avro.generic.constant.Topic.USER_TOPIC;
@@ -35,10 +34,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-/**
- * This class represents a Kafka consumer runner that subscribes to a specific topic and
- * processes Kafka records.
- */
+/** This class represents a Kafka consumer runner that subscribes to a specific topic and processes Kafka records. */
 @Slf4j
 @Component
 public class ConsumerRunner {
@@ -54,11 +50,9 @@ public class ConsumerRunner {
     }
 
     /**
-     * Asynchronously starts the Kafka consumer when the application is ready.
-     * The asynchronous annotation is used to run the consumer in a separate thread and
-     * not block the main thread.
-     * The Kafka consumer processes generic Avro records from the USER_TOPIC topic,
-     * so it does not require to know the schema of the records.
+     * Asynchronously starts the Kafka consumer when the application is ready. The asynchronous annotation is used to
+     * run the consumer in a separate thread and not block the main thread. The Kafka consumer processes generic Avro
+     * records from the USER_TOPIC topic, so it does not require to know the schema of the records.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
@@ -73,12 +67,13 @@ public class ConsumerRunner {
                 log.info("Pulled {} records", messages.count());
 
                 for (ConsumerRecord<String, GenericRecord> message : messages) {
-                    log.info("Received offset = {}, partition = {}, key = {}, firstName = {}, lastName = {}",
-                        message.offset(),
-                        message.partition(),
-                        message.key(),
-                        message.value().get("firstName"),
-                        message.value().get("lastName"));
+                    log.info(
+                            "Received offset = {}, partition = {}, key = {}, firstName = {}, lastName = {}",
+                            message.offset(),
+                            message.partition(),
+                            message.key(),
+                            message.value().get("firstName"),
+                            message.value().get("lastName"));
                 }
 
                 if (!messages.isEmpty()) {
@@ -93,9 +88,7 @@ public class ConsumerRunner {
         }
     }
 
-    /**
-     * Performs a synchronous commit of the consumed records.
-     */
+    /** Performs a synchronous commit of the consumed records. */
     private void doCommitSync() {
         try {
             log.info("Committing the pulled records");

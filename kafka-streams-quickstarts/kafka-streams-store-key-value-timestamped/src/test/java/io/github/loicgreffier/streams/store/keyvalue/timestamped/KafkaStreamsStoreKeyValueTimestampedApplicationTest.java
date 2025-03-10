@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.store.keyvalue.timestamped;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -74,17 +73,12 @@ class KafkaStreamsStoreKeyValueTimestampedApplicationTest {
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(
-            streamsBuilder.build(),
-            properties,
-            Instant.parse("2000-01-01T01:00:00Z")
-        );
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-            USER_TOPIC,
-            new StringSerializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
-        );
+                USER_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
     }
 
     @AfterEach
@@ -103,28 +97,28 @@ class KafkaStreamsStoreKeyValueTimestampedApplicationTest {
         KafkaUser marge = buildKafkaUser("Marge");
         inputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:00:30Z")));
 
-        KeyValueStore<String, ValueAndTimestamp<KafkaUser>> timestampedKeyValueStore = testDriver
-            .getTimestampedKeyValueStore(storeName);
+        KeyValueStore<String, ValueAndTimestamp<KafkaUser>> timestampedKeyValueStore =
+                testDriver.getTimestampedKeyValueStore(storeName);
 
         assertEquals(homer, timestampedKeyValueStore.get("1").value());
         assertEquals(
-            "2000-01-01T01:00:00Z",
-            Instant.ofEpochMilli(timestampedKeyValueStore.get("1").timestamp()).toString()
-        );
+                "2000-01-01T01:00:00Z",
+                Instant.ofEpochMilli(timestampedKeyValueStore.get("1").timestamp())
+                        .toString());
         assertEquals(marge, timestampedKeyValueStore.get("2").value());
         assertEquals(
-            "2000-01-01T01:00:30Z",
-            Instant.ofEpochMilli(timestampedKeyValueStore.get("2").timestamp()).toString()
-        );
+                "2000-01-01T01:00:30Z",
+                Instant.ofEpochMilli(timestampedKeyValueStore.get("2").timestamp())
+                        .toString());
     }
 
     private KafkaUser buildKafkaUser(String firstName) {
         return KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName(firstName)
-            .setLastName("Simpson")
-            .setNationality(CountryCode.GB)
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .build();
+                .setId(1L)
+                .setFirstName(firstName)
+                .setLastName("Simpson")
+                .setNationality(CountryCode.GB)
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                .build();
     }
 }

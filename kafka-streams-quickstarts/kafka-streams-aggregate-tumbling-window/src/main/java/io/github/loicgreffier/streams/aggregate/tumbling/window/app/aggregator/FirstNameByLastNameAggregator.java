@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.aggregate.tumbling.window.app.aggregator;
 
 import io.github.loicgreffier.avro.KafkaUser;
@@ -25,17 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.kafka.streams.kstream.Aggregator;
 
-/**
- * This class represents an aggregator that aggregates the first names by last name.
- */
+/** This class represents an aggregator that aggregates the first names by last name. */
 public class FirstNameByLastNameAggregator implements Aggregator<String, KafkaUser, KafkaUserGroup> {
 
     /**
      * Aggregates the first names by last name.
      *
-     * @param key         The key of the record.
+     * @param key The key of the record.
      * @param kafkaUser The value of the record.
-     * @param aggregate   The aggregate.
+     * @param aggregate The aggregate.
      * @return The updated aggregate.
      */
     @Override

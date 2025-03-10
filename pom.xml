@@ -8,7 +8,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.4.3</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
 
     <groupId>io.github.loicgreffier</groupId>
@@ -32,14 +32,14 @@
 
     <properties>
         <avro.version>1.12.0</avro.version>
-        <checkstyle.version>10.21.4</checkstyle.version>
         <java.version>21</java.version>
         <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
         <kafka.version>3.9.0</kafka.version>
         <kafka-avro-serializer.version>7.9.0</kafka-avro-serializer.version>
         <kafka-streams-avro-serde.version>7.9.0</kafka-streams-avro-serde.version>
         <lombok.version>1.18.36</lombok.version>
-        <maven.checkstyle.plugin>3.6.0</maven.checkstyle.plugin>
+        <palantir.version>2.39.0</palantir.version>
+        <spotless-maven-plugin.version>2.44.3</spotless-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -114,32 +114,32 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${maven.checkstyle.plugin}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.puppycrawl.tools</groupId>
-                        <artifactId>checkstyle</artifactId>
-                        <version>${checkstyle.version}</version>
-                    </dependency>
-                </dependencies>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless-maven-plugin.version}</version>
                 <configuration>
-                    <configLocation>.checkstyle/checkstyle.xml</configLocation>
-                    <violationSeverity>info</violationSeverity>
-                    <consoleOutput>true</consoleOutput>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <sourceDirectories>
-                        <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
-                    </sourceDirectories>
-                    <testSourceDirectories>
-                        <testSourceDirectory>${project.build.testSourceDirectory}</testSourceDirectory>
-                    </testSourceDirectories>
+                    <java>
+                        <includes>
+                            <include>src/main/java/**/*.java</include>
+                            <include>src/test/java/**/*.java</include>
+                        </includes>
+                        <palantirJavaFormat>
+                            <version>${palantir.version}</version>
+                            <style>PALANTIR</style>
+                            <formatJavadoc>true</formatJavadoc>
+                        </palantirJavaFormat>
+                        <removeUnusedImports />
+                        <formatAnnotations />
+                        <importOrder />
+                        <trimTrailingWhitespace />
+                        <endWithNewline />
+                        <licenseHeader>
+                            <file>.format/HEADER</file>
+                        </licenseHeader>
+                    </java>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>check-style</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>

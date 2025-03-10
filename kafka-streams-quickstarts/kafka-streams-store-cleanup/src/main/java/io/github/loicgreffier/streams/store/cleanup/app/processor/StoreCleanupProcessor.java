@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.store.cleanup.app.processor;
 
 import static io.github.loicgreffier.streams.store.cleanup.constant.StateStore.USER_SCHEDULE_STORE_CLEANUP_STORE;
@@ -32,17 +31,15 @@ import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
 
-/**
- * This class represents a processor that fills and cleans a state store.
- */
+/** This class represents a processor that fills and cleans a state store. */
 @Slf4j
 public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUser> {
     private KeyValueStore<String, KafkaUser> userStore;
 
     /**
-     * Initialize the processor.
-     * Opens the state store and schedules the punctuation. The punctuation is scheduled on stream time and forwards
-     * the tombstones. The stream time is used to avoid triggering unnecessary punctuation if no record comes.
+     * Initialize the processor. Opens the state store and schedules the punctuation. The punctuation is scheduled on
+     * stream time and forwards the tombstones. The stream time is used to avoid triggering unnecessary punctuation if
+     * no record comes.
      *
      * @param context The processor context.
      */
@@ -72,9 +69,8 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaUser
     }
 
     /**
-     * For each entry in the state store, forwards a tombstone to the output topic
-     * (which is also the input topic of the processor).
-     * When the tombstone is received by the processor, the corresponding key is deleted.
+     * For each entry in the state store, forwards a tombstone to the output topic (which is also the input topic of the
+     * processor). When the tombstone is received by the processor, the corresponding key is deleted.
      *
      * @param timestamp The timestamp of the punctuation.
      */

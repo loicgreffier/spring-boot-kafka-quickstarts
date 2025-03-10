@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.exception.handler.processing;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -73,10 +72,9 @@ class KafkaStreamsExceptionHandlerProcessingApplicationTest {
         properties.setProperty(APPLICATION_ID_CONFIG, "streams-processing-exception-handler-test");
         properties.setProperty(BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         properties.setProperty(STATE_DIR_CONFIG, STATE_DIR);
-        properties.setProperty(PROCESSING_EXCEPTION_HANDLER_CLASS_CONFIG,
-            CustomProcessingExceptionHandler.class.getName());
+        properties.setProperty(
+                PROCESSING_EXCEPTION_HANDLER_CLASS_CONFIG, CustomProcessingExceptionHandler.class.getName());
         properties.setProperty(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
-
 
         // Create SerDes
         Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
@@ -85,22 +83,16 @@ class KafkaStreamsExceptionHandlerProcessingApplicationTest {
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(
-            streamsBuilder.build(),
-            properties,
-            Instant.parse("2000-01-01T01:00:00Z")
-        );
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-            USER_TOPIC,
-            new StringSerializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
-        );
+                USER_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-            USER_PROCESSING_EXCEPTION_HANDLER_TOPIC,
-            new StringDeserializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
-        );
+                USER_PROCESSING_EXCEPTION_HANDLER_TOPIC,
+                new StringDeserializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -122,17 +114,19 @@ class KafkaStreamsExceptionHandlerProcessingApplicationTest {
         assertTrue(results.isEmpty());
 
         assertEquals(3.0, testDriver.metrics().get(droppedRecordsTotalMetric()).metricValue());
-        assertEquals(0.03333333333333333, testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
+        assertEquals(
+                0.03333333333333333,
+                testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
     private KafkaUser buildKafkaUser(String firstName, Instant birthDate) {
         return KafkaUser.newBuilder()
-            .setId(10L)
-            .setFirstName(firstName)
-            .setLastName("Simpson")
-            .setNationality(CountryCode.US)
-            .setBirthDate(birthDate)
-            .build();
+                .setId(10L)
+                .setFirstName(firstName)
+                .setLastName("Simpson")
+                .setNationality(CountryCode.US)
+                .setBirthDate(birthDate)
+                .build();
     }
 
     private MetricName droppedRecordsTotalMetric() {
@@ -145,11 +139,9 @@ class KafkaStreamsExceptionHandlerProcessingApplicationTest {
 
     private MetricName createMetric(String name, String description) {
         return new MetricName(
-            name, "stream-task-metrics", description,
-            mkMap(
-                mkEntry("thread-id", Thread.currentThread().getName()),
-                mkEntry("task-id", "0_0")
-            )
-        );
+                name,
+                "stream-task-metrics",
+                description,
+                mkMap(mkEntry("thread-id", Thread.currentThread().getName()), mkEntry("task-id", "0_0")));
     }
 }

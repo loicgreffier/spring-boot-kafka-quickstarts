@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.consumer.headers;
 
 import static io.github.loicgreffier.consumer.headers.constant.Topic.STRING_TOPIC;
@@ -84,17 +83,16 @@ class KafkaConsumerHeadersApplicationTest {
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message1));
         mockConsumer.schedulePollTask(() -> {
             throw new RecordDeserializationException(
-                RecordDeserializationException.DeserializationExceptionOrigin.VALUE,
-                topicPartition,
-                1,
-                0,
-                null,
-                null,
-                null,
-                null,
-                "Error deserializing",
-                new Exception()
-            );
+                    RecordDeserializationException.DeserializationExceptionOrigin.VALUE,
+                    topicPartition,
+                    1,
+                    0,
+                    null,
+                    null,
+                    null,
+                    null,
+                    "Error deserializing",
+                    new Exception());
         });
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message2));
 

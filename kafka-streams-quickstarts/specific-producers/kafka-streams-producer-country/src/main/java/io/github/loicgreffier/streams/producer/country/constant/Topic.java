@@ -16,17 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.producer.country.constant;
 
-/**
- * Topic name constants.
- */
+/** Topic name constants. */
 public abstract class Topic {
     public static final String COUNTRY_TOPIC = "COUNTRY_TOPIC";
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private Topic() {}
 }

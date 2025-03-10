@@ -16,18 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.store.window.constant;
 
-/**
- * State store name constants.
- */
+/** State store name constants. */
 public abstract class StateStore {
     public static final String USER_WINDOW_STORE = "USER_WINDOW_STORE";
     public static final String USER_WINDOW_SUPPLIER_STORE = "USER_WINDOW_SUPPLIER_STORE";
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private StateStore() {}
 }

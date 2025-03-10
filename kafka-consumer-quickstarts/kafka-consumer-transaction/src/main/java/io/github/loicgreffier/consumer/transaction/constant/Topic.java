@@ -16,18 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.consumer.transaction.constant;
 
-/**
- * Topic name constants.
- */
+/** Topic name constants. */
 public abstract class Topic {
     public static final String FIRST_STRING_TOPIC = "FIRST_STRING_TOPIC";
     public static final String SECOND_STRING_TOPIC = "SECOND_STRING_TOPIC";
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private Topic() {}
 }

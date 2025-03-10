@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.consumer.retry.app;
 
 import static io.github.loicgreffier.consumer.retry.constant.Topic.STRING_TOPIC;
@@ -42,10 +41,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-/**
- * This class represents a Kafka consumer runner that subscribes to a specific topic and
- * processes Kafka records.
- */
+/** This class represents a Kafka consumer runner that subscribes to a specific topic and processes Kafka records. */
 @Slf4j
 @Component
 public class ConsumerRunner {
@@ -61,26 +57,22 @@ public class ConsumerRunner {
      * @param externalService The external service.
      * @param properties The consumer properties.
      */
-    public ConsumerRunner(Consumer<String, String> consumer,
-                          ExternalService externalService,
-                          ConsumerProperties properties) {
+    public ConsumerRunner(
+            Consumer<String, String> consumer, ExternalService externalService, ConsumerProperties properties) {
         this.consumer = consumer;
         this.externalService = externalService;
         this.properties = properties;
     }
 
     /**
-     * Asynchronously starts the Kafka consumer when the application is ready.
-     * The asynchronous annotation is used to run the consumer in a separate thread and
-     * not block the main thread.
-     * The Kafka consumer processes messages from the STRING_TOPIC topic.
-     * If an error occurs during the external system call, the consumer pauses the topic-partitions.
-     * and rewinds to the failed record offset as a call to poll() has automatically advanced the consumer offsets.
-     * The consumer being paused, it will not commit the offsets and the next
-     * call to poll() will not return any records. Consequently, the consumer
-     * will honor the pause duration given by the poll() timeout.
-     * Once the pause duration is elapsed, the consumer will resume the topic-partitions
-     * and consume the records from the failed record offset.
+     * Asynchronously starts the Kafka consumer when the application is ready. The asynchronous annotation is used to
+     * run the consumer in a separate thread and not block the main thread. The Kafka consumer processes messages from
+     * the STRING_TOPIC topic. If an error occurs during the external system call, the consumer pauses the
+     * topic-partitions. and rewinds to the failed record offset as a call to poll() has automatically advanced the
+     * consumer offsets. The consumer being paused, it will not commit the offsets and the next call to poll() will not
+     * return any records. Consequently, the consumer will honor the pause duration given by the poll() timeout. Once
+     * the pause duration is elapsed, the consumer will resume the topic-partitions and consume the records from the
+     * failed record offset.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
@@ -88,8 +80,8 @@ public class ConsumerRunner {
         try {
             log.info("Subscribing to {} topic", STRING_TOPIC);
 
-            consumer.subscribe(Collections.singleton(STRING_TOPIC),
-                new CustomConsumerRebalanceListener(consumer, offsets));
+            consumer.subscribe(
+                    Collections.singleton(STRING_TOPIC), new CustomConsumerRebalanceListener(consumer, offsets));
 
             while (true) {
                 ConsumerRecords<String, String> messages = consumer.poll(Duration.ofMillis(1000));
@@ -101,8 +93,12 @@ public class ConsumerRunner {
                 }
 
                 for (ConsumerRecord<String, String> message : messages) {
-                    log.info("Received offset = {}, partition = {}, key = {}, value = {}",
-                        message.offset(), message.partition(), message.key(), message.value());
+                    log.info(
+                            "Received offset = {}, partition = {}, key = {}, value = {}",
+                            message.offset(),
+                            message.partition(),
+                            message.key(),
+                            message.value());
 
                     try {
                         // e.g. enrichment of a record with webservice, database...
@@ -140,20 +136,20 @@ public class ConsumerRunner {
         return !consumer.paused().isEmpty();
     }
 
-    /**
-     * Rewinds the consumer the last saved offsets for each topic-partition.
-     */
+    /** Rewinds the consumer the last saved offsets for each topic-partition. */
     private void rewind() {
         if (offsets.isEmpty()) {
-            String autoOffsetReset = properties.getProperties()
-                .getOrDefault(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
-                    OffsetResetStrategy.EARLIEST.name().toLowerCase());
+            String autoOffsetReset = properties
+                    .getProperties()
+                    .getOrDefault(
+                            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
+                            OffsetResetStrategy.EARLIEST.name().toLowerCase());
 
             if (autoOffsetReset.equalsIgnoreCase(
-                OffsetResetStrategy.EARLIEST.name().toLowerCase())) {
+                    OffsetResetStrategy.EARLIEST.name().toLowerCase())) {
                 consumer.seekToBeginning(consumer.assignment());
             } else if (autoOffsetReset.equalsIgnoreCase(
-                OffsetResetStrategy.LATEST.name().toLowerCase())) {
+                    OffsetResetStrategy.LATEST.name().toLowerCase())) {
                 consumer.seekToEnd(consumer.assignment());
             }
         }
@@ -164,27 +160,26 @@ public class ConsumerRunner {
             if (entry.getValue() != null) {
                 consumer.seek(entry.getKey(), entry.getValue());
             } else {
-                log.warn("Cannot rewind on {} to null offset, this could happen if the consumer "
-                    + "group was just created", entry.getKey());
+                log.warn(
+                        "Cannot rewind on {} to null offset, this could happen if the consumer "
+                                + "group was just created",
+                        entry.getKey());
             }
         }
     }
 
     /**
-     * Saves all the successfully processed records offsets by topic-partition.
-     * It saves the offset of the next record to be processed in order to rewind
-     * the consumer to the failed record offset in case of an external system error.
+     * Saves all the successfully processed records offsets by topic-partition. It saves the offset of the next record
+     * to be processed in order to rewind the consumer to the failed record offset in case of an external system error.
      *
      * @param message The message that was successfully processed.
      */
     private void updateOffsetsPosition(ConsumerRecord<String, String> message) {
-        offsets.put(new TopicPartition(message.topic(), message.partition()),
-            new OffsetAndMetadata(message.offset() + 1));
+        offsets.put(
+                new TopicPartition(message.topic(), message.partition()), new OffsetAndMetadata(message.offset() + 1));
     }
 
-    /**
-     * Performs a synchronous commit of the consumed records.
-     */
+    /** Performs a synchronous commit of the consumed records. */
     private void doCommitSync() {
         try {
             log.info("Committing the pulled records");

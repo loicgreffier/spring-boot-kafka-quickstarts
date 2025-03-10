@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.store.window;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -76,17 +75,12 @@ class KafkaStreamsStoreWindowApplicationTest {
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(
-            streamsBuilder.build(),
-            properties,
-            Instant.parse("2000-01-01T01:00:00Z")
-        );
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-            USER_TOPIC,
-            new StringSerializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
-        );
+                USER_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
     }
 
     @AfterEach
@@ -109,23 +103,22 @@ class KafkaStreamsStoreWindowApplicationTest {
         inputTopic.pipeInput(new TestRecord<>("2", marge, margeTimestamp));
         inputTopic.pipeInput(new TestRecord<>("2", marge, margeTimestamp.plusSeconds(10)));
 
-        WindowStore<String, KafkaUser> windowStore = testDriver
-            .getWindowStore(storeName);
+        WindowStore<String, KafkaUser> windowStore = testDriver.getWindowStore(storeName);
 
         // Fetch from window store by key and timestamp. The timestamp used to fetch has to be equal to
         // the window start time to get the value.
 
         assertEquals(homer, windowStore.fetch("1", homerTimestamp.toEpochMilli()));
-        assertEquals(homer, windowStore.fetch("1", homerTimestamp.plusSeconds(10).toEpochMilli()));
+        assertEquals(
+                homer, windowStore.fetch("1", homerTimestamp.plusSeconds(10).toEpochMilli()));
         assertNull(windowStore.fetch("1", homerTimestamp.plusSeconds(1).toEpochMilli()));
 
         // Fetch from window store by key and time range.
 
         try (WindowStoreIterator<KafkaUser> iterator = windowStore.fetch(
-            "1",
-            homerTimestamp.minusSeconds(30).toEpochMilli(),
-            homerTimestamp.plusSeconds(30).toEpochMilli()
-        )) {
+                "1",
+                homerTimestamp.minusSeconds(30).toEpochMilli(),
+                homerTimestamp.plusSeconds(30).toEpochMilli())) {
             assertEquals(homer, iterator.next().value);
             assertEquals(homer, iterator.next().value);
 
@@ -133,14 +126,14 @@ class KafkaStreamsStoreWindowApplicationTest {
         }
 
         assertEquals(marge, windowStore.fetch("2", margeTimestamp.toEpochMilli()));
-        assertEquals(marge, windowStore.fetch("2", margeTimestamp.plusSeconds(10).toEpochMilli()));
+        assertEquals(
+                marge, windowStore.fetch("2", margeTimestamp.plusSeconds(10).toEpochMilli()));
         assertNull(windowStore.fetch("2", margeTimestamp.plusSeconds(1).toEpochMilli()));
 
         try (WindowStoreIterator<KafkaUser> iterator = windowStore.fetch(
-            "2",
-            margeTimestamp.minusSeconds(30).toEpochMilli(),
-            margeTimestamp.plusSeconds(30).toEpochMilli()
-        )) {
+                "2",
+                margeTimestamp.minusSeconds(30).toEpochMilli(),
+                margeTimestamp.plusSeconds(30).toEpochMilli())) {
             assertEquals(marge, iterator.next().value);
             assertEquals(marge, iterator.next().value);
 
@@ -150,11 +143,11 @@ class KafkaStreamsStoreWindowApplicationTest {
 
     private KafkaUser buildKafkaUser(String firstName) {
         return KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName(firstName)
-            .setLastName("Simpson")
-            .setNationality(CountryCode.GB)
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .build();
+                .setId(1L)
+                .setFirstName(firstName)
+                .setLastName("Simpson")
+                .setNationality(CountryCode.GB)
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                .build();
     }
 }

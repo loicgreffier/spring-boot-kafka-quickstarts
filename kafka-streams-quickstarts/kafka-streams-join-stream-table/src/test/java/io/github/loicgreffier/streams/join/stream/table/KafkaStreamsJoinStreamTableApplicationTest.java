@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.join.stream.table;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -82,32 +81,24 @@ class KafkaStreamsJoinStreamTableApplicationTest {
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(
-            streamsBuilder.build(),
-            properties,
-            Instant.parse("2000-01-01T01:00:00Z")
-        );
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         userInputTopic = testDriver.createInputTopic(
-            USER_TOPIC,
-            new StringSerializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
-        );
+                USER_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
         countryInputTopic = testDriver.createInputTopic(
-            COUNTRY_TOPIC,
-            new StringSerializer(),
-            SerdesUtils.<KafkaCountry>getValueSerdes().serializer()
-        );
+                COUNTRY_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaCountry>getValueSerdes().serializer());
         rekeyUserOutputTopic = testDriver.createOutputTopic(
-            "streams-join-stream-table-test-" + USER_JOIN_STREAM_TABLE_REKEY_TOPIC + "-repartition",
-            new StringDeserializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().deserializer()
-        );
+                "streams-join-stream-table-test-" + USER_JOIN_STREAM_TABLE_REKEY_TOPIC + "-repartition",
+                new StringDeserializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
         joinOutputTopic = testDriver.createOutputTopic(
-            USER_COUNTRY_JOIN_STREAM_TABLE_TOPIC,
-            new StringDeserializer(),
-            SerdesUtils.<KafkaJoinUserCountry>getValueSerdes().deserializer()
-        );
+                USER_COUNTRY_JOIN_STREAM_TABLE_TOPIC,
+                new StringDeserializer(),
+                SerdesUtils.<KafkaJoinUserCountry>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -152,20 +143,20 @@ class KafkaStreamsJoinStreamTableApplicationTest {
 
     private KafkaUser buildKafkaUser() {
         return KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName("Homer")
-            .setLastName("Simpson")
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .setNationality(CountryCode.US)
-            .build();
+                .setId(1L)
+                .setFirstName("Homer")
+                .setLastName("Simpson")
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                .setNationality(CountryCode.US)
+                .build();
     }
 
     private KafkaCountry buildKafkaCountry() {
         return KafkaCountry.newBuilder()
-            .setCode(CountryCode.US)
-            .setName("United States")
-            .setCapital("Washington")
-            .setOfficialLanguage("English")
-            .build();
+                .setCode(CountryCode.US)
+                .setName("United States")
+                .setCapital("Washington")
+                .setOfficialLanguage("English")
+                .build();
     }
 }

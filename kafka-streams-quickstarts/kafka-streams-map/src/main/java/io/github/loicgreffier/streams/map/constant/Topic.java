@@ -16,18 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.map.constant;
 
-/**
- * Topic name constants.
- */
+/** Topic name constants. */
 public abstract class Topic {
     public static final String USER_TOPIC = "USER_TOPIC";
     public static final String USER_MAP_TOPIC = "USER_MAP_TOPIC";
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private Topic() {}
 }

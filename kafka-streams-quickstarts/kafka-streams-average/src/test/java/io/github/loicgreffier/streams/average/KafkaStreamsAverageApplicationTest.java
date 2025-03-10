@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.average;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -81,22 +80,14 @@ class KafkaStreamsAverageApplicationTest {
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(
-            streamsBuilder.build(),
-            properties,
-            Instant.parse("2000-01-01T01:00:00Z")
-        );
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-            USER_TOPIC,
-            new StringSerializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
-        );
-        outputTopic = testDriver.createOutputTopic(
-            USER_AVERAGE_TOPIC,
-            new StringDeserializer(),
-            new LongDeserializer()
-        );
+                USER_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+        outputTopic =
+                testDriver.createOutputTopic(USER_AVERAGE_TOPIC, new StringDeserializer(), new LongDeserializer());
     }
 
     @AfterEach
@@ -110,10 +101,10 @@ class KafkaStreamsAverageApplicationTest {
     void shouldComputeAverageAgeByNationality() {
         LocalDate currentDate = LocalDate.now();
 
-        KafkaUser yearsOld25 = buildKafkaUser("Homer",
-            currentDate.minusYears(25).atStartOfDay().toInstant(ZoneOffset.UTC));
-        KafkaUser yearsOld75 = buildKafkaUser("Marge",
-            currentDate.minusYears(75).atStartOfDay().toInstant(ZoneOffset.UTC));
+        KafkaUser yearsOld25 = buildKafkaUser(
+                "Homer", currentDate.minusYears(25).atStartOfDay().toInstant(ZoneOffset.UTC));
+        KafkaUser yearsOld75 = buildKafkaUser(
+                "Marge", currentDate.minusYears(75).atStartOfDay().toInstant(ZoneOffset.UTC));
 
         inputTopic.pipeInput("1", yearsOld25);
         inputTopic.pipeInput("2", yearsOld75);
@@ -131,11 +122,11 @@ class KafkaStreamsAverageApplicationTest {
 
     private KafkaUser buildKafkaUser(String firstName, Instant birthDate) {
         return KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName(firstName)
-            .setLastName("Simpson")
-            .setNationality(CountryCode.US)
-            .setBirthDate(birthDate)
-            .build();
+                .setId(1L)
+                .setFirstName(firstName)
+                .setLastName("Simpson")
+                .setNationality(CountryCode.US)
+                .setBirthDate(birthDate)
+                .build();
     }
 }

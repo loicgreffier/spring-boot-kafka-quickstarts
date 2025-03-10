@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.consumer.avro.generic.property;
 
 import java.util.HashMap;
@@ -26,9 +25,7 @@ import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * This class represents Kafka consumer properties configuration.
- */
+/** This class represents Kafka consumer properties configuration. */
 @Getter
 @Configuration
 @ConfigurationProperties(prefix = "kafka")

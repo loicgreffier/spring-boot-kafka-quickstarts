@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.processvalues.serdes;
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
@@ -24,9 +23,7 @@ import java.util.Map;
 import lombok.Setter;
 import org.apache.avro.specific.SpecificRecord;
 
-/**
- * Utility class for Serdes.
- */
+/** Utility class for Serdes. */
 public class SerdesUtils {
     @Setter
     private static Map<String, String> serdesConfig;
@@ -43,8 +40,6 @@ public class SerdesUtils {
         return serdes;
     }
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private SerdesUtils() {}
 }

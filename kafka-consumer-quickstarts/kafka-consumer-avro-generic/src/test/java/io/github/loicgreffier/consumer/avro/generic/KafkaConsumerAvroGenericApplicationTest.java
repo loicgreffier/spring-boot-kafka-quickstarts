@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.consumer.avro.generic;
 
 import static io.github.loicgreffier.consumer.avro.generic.constant.Topic.USER_TOPIC;
@@ -76,7 +75,9 @@ class KafkaConsumerAvroGenericApplicationTest {
         genericRecord.put("id", 1L);
         genericRecord.put("firstName", "Homer");
         genericRecord.put("lastName", "Simpson");
-        genericRecord.put("birthDate", Timestamp.from(Instant.parse("2000-01-01T01:00:00Z")).getTime());
+        genericRecord.put(
+                "birthDate",
+                Timestamp.from(Instant.parse("2000-01-01T01:00:00Z")).getTime());
 
         ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1", genericRecord);
 
@@ -98,24 +99,25 @@ class KafkaConsumerAvroGenericApplicationTest {
         genericRecord.put("id", 1L);
         genericRecord.put("firstName", "Homer");
         genericRecord.put("lastName", "Simpson");
-        genericRecord.put("birthDate", Timestamp.from(Instant.parse("2000-01-01T01:00:00Z")).getTime());
+        genericRecord.put(
+                "birthDate",
+                Timestamp.from(Instant.parse("2000-01-01T01:00:00Z")).getTime());
 
         ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1", genericRecord);
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(() -> {
             throw new RecordDeserializationException(
-                RecordDeserializationException.DeserializationExceptionOrigin.VALUE,
-                topicPartition,
-                1,
-                0,
-                null,
-                null,
-                null,
-                null,
-                "Error deserializing",
-                new Exception()
-            );
+                    RecordDeserializationException.DeserializationExceptionOrigin.VALUE,
+                    topicPartition,
+                    1,
+                    0,
+                    null,
+                    null,
+                    null,
+                    null,
+                    "Error deserializing",
+                    new Exception());
         });
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
 

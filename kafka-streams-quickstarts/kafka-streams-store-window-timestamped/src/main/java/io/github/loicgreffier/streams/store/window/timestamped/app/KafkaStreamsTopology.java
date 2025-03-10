@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.store.window.timestamped.app;
 
 import static io.github.loicgreffier.streams.store.window.timestamped.constant.StateStore.USER_TIMESTAMPED_WINDOW_STORE;
@@ -39,68 +38,57 @@ import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
 import org.apache.kafka.streams.state.TimestampedWindowStore;
 
-/**
- * Kafka Streams topology.
- */
+/** Kafka Streams topology. */
 @Slf4j
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology.
-     * The topology reads from the USER_TOPIC topic and processes the records with
+     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and processes the records with
      * the {@link PutInStoreProcessor} processor that puts the records in a {@link TimestampedWindowStore} state store.
-     * It demonstrates the two strategies to use a state store in a processor:
-     * - Using the {@link StreamsBuilder#addStateStore(StoreBuilder)} and specifying the store names
-     * in the {@link org.apache.kafka.streams.kstream.KStream#process(ProcessorSupplier, String...)} method.
-     * - Using the {@link ProcessorSupplier#stores()} method to attach the store to the topology and the processor.
+     * It demonstrates the two strategies to use a state store in a processor: - Using the
+     * {@link StreamsBuilder#addStateStore(StoreBuilder)} and specifying the store names in the
+     * {@link org.apache.kafka.streams.kstream.KStream#process(ProcessorSupplier, String...)} method. - Using the
+     * {@link ProcessorSupplier#stores()} method to attach the store to the topology and the processor.
      *
      * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        final StoreBuilder<TimestampedWindowStore<String, KafkaUser>> storeBuilder = Stores
-            .timestampedWindowStoreBuilder(
-                Stores.persistentTimestampedWindowStore(
-                    USER_TIMESTAMPED_WINDOW_STORE,
-                    Duration.ofMinutes(10),
-                    Duration.ofMinutes(5),
-                    false
-                ),
-                Serdes.String(), SerdesUtils.getValueSerdes()
-            );
+        final StoreBuilder<TimestampedWindowStore<String, KafkaUser>> storeBuilder =
+                Stores.timestampedWindowStoreBuilder(
+                        Stores.persistentTimestampedWindowStore(
+                                USER_TIMESTAMPED_WINDOW_STORE, Duration.ofMinutes(10), Duration.ofMinutes(5), false),
+                        Serdes.String(),
+                        SerdesUtils.getValueSerdes());
 
-        streamsBuilder
-            .addStateStore(storeBuilder)
-            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .process(() -> new PutInStoreProcessor(storeBuilder.name()), storeBuilder.name());
+        streamsBuilder.addStateStore(storeBuilder).<String, KafkaUser>stream(
+                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .process(() -> new PutInStoreProcessor(storeBuilder.name()), storeBuilder.name());
 
-        streamsBuilder
-            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .process(new ProcessorSupplier<String, KafkaUser, String, KafkaUser>() {
-                @Override
-                public Set<StoreBuilder<?>> stores() {
-                    StoreBuilder<TimestampedWindowStore<String, KafkaUser>> supplierStoreBuilder = Stores
-                        .timestampedWindowStoreBuilder(
-                            Stores.persistentTimestampedWindowStore(
-                                USER_TIMESTAMPED_WINDOW_SUPPLIER_STORE,
-                                Duration.ofMinutes(10),
-                                Duration.ofMinutes(5),
-                                false
-                            ),
-                            Serdes.String(), SerdesUtils.getValueSerdes()
-                        );
+        streamsBuilder.<String, KafkaUser>stream(
+                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .process(new ProcessorSupplier<String, KafkaUser, String, KafkaUser>() {
+                    @Override
+                    public Set<StoreBuilder<?>> stores() {
+                        StoreBuilder<TimestampedWindowStore<String, KafkaUser>> supplierStoreBuilder =
+                                Stores.timestampedWindowStoreBuilder(
+                                        Stores.persistentTimestampedWindowStore(
+                                                USER_TIMESTAMPED_WINDOW_SUPPLIER_STORE,
+                                                Duration.ofMinutes(10),
+                                                Duration.ofMinutes(5),
+                                                false),
+                                        Serdes.String(),
+                                        SerdesUtils.getValueSerdes());
 
-                    return Collections.singleton(supplierStoreBuilder);
-                }
+                        return Collections.singleton(supplierStoreBuilder);
+                    }
 
-                @Override
-                public Processor<String, KafkaUser, String, KafkaUser> get() {
-                    return new PutInStoreProcessor(USER_TIMESTAMPED_WINDOW_SUPPLIER_STORE);
-                }
-            });
+                    @Override
+                    public Processor<String, KafkaUser, String, KafkaUser> get() {
+                        return new PutInStoreProcessor(USER_TIMESTAMPED_WINDOW_SUPPLIER_STORE);
+                    }
+                });
     }
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private KafkaStreamsTopology() {}
 }

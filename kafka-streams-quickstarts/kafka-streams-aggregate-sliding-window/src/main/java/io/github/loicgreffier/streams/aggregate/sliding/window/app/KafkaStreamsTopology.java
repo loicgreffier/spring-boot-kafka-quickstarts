@@ -16,9 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.aggregate.sliding.window.app;
-
 
 import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.StateStore.USER_AGGREGATE_SLIDING_WINDOW_STORE;
 import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.Topic.GROUP_USER_BY_LAST_NAME_TOPIC;
@@ -42,57 +40,50 @@ import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.SlidingWindows;
 import org.apache.kafka.streams.state.WindowStore;
 
-/**
- * Kafka Streams topology.
- */
+/** Kafka Streams topology. */
 @Slf4j
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology.
-     * The topology reads from the USER_TOPIC topic, selects the key as the last name of the user, groups by key
-     * and aggregates the first names by last name in 5-minute tumbling windows with 1-minute grace period.
-     * A new key is generated with the window start and end time.
-     * The result is written to the USER_AGGREGATE_SLIDING_WINDOW_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, selects the key as the last name
+     * of the user, groups by key and aggregates the first names by last name in 5-minute tumbling windows with 1-minute
+     * grace period. A new key is generated with the window start and end time. The result is written to the
+     * USER_AGGREGATE_SLIDING_WINDOW_TOPIC topic.
      *
-     * <p>
-     * {@link org.apache.kafka.streams.kstream.SlidingWindows} are aligned to the records timestamp.
-     * They are created each time a record is processed and when a record becomes older than the window size.
-     * They are bounded such as:
+     * <p>{@link org.apache.kafka.streams.kstream.SlidingWindows} are aligned to the records timestamp. They are created
+     * each time a record is processed and when a record becomes older than the window size. They are bounded such as:
+     *
      * <ul>
-     *     <li>[timestamp - window size, timestamp]</li>
-     *     <li>[timestamp + 1ms, timestamp + window size + 1ms]</li>
+     *   <li>[timestamp - window size, timestamp]
+     *   <li>[timestamp + 1ms, timestamp + window size + 1ms]
      * </ul>
-     * They are looking backward in time.
-     * Two records are in the same window if the difference between their timestamps is less than the window size.
-     * </p>
+     *
+     * They are looking backward in time. Two records are in the same window if the difference between their timestamps
+     * is less than the window size.
      *
      * @param streamsBuilder The streams builder.
      * @see org.apache.kafka.streams.kstream.internals.KStreamSlidingWindowAggregate
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder
-            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-            .selectKey((key, user) -> user.getLastName())
-            .groupByKey(Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
-            .windowedBy(SlidingWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)))
-            .aggregate(
-                () -> new KafkaUserGroup(new HashMap<>()),
-                new FirstNameByLastNameAggregator(),
-                Materialized
-                    .<String, KafkaUserGroup, WindowStore<Bytes, byte[]>>as(USER_AGGREGATE_SLIDING_WINDOW_STORE)
-                    .withKeySerde(Serdes.String())
-                    .withValueSerde(SerdesUtils.getValueSerdes())
-            )
-            .toStream()
-            .selectKey((key, groupedUsers) ->
-                key.key() + "@" + key.window().startTime() + "->" + key.window().endTime())
-            .to(USER_AGGREGATE_SLIDING_WINDOW_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+        streamsBuilder.<String, KafkaUser>stream(
+                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .selectKey((key, user) -> user.getLastName())
+                .groupByKey(Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+                .windowedBy(SlidingWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)))
+                .aggregate(
+                        () -> new KafkaUserGroup(new HashMap<>()),
+                        new FirstNameByLastNameAggregator(),
+                        Materialized.<String, KafkaUserGroup, WindowStore<Bytes, byte[]>>as(
+                                        USER_AGGREGATE_SLIDING_WINDOW_STORE)
+                                .withKeySerde(Serdes.String())
+                                .withValueSerde(SerdesUtils.getValueSerdes()))
+                .toStream()
+                .selectKey((key, groupedUsers) -> key.key() + "@" + key.window().startTime() + "->"
+                        + key.window().endTime())
+                .to(USER_AGGREGATE_SLIDING_WINDOW_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private KafkaStreamsTopology() {}
 }

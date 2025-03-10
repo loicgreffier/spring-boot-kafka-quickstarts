@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.print.app;
 
 import io.github.loicgreffier.streams.print.property.ApplicationProperties;
@@ -38,9 +37,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-/**
- * This class represents a Kafka Streams runner that runs a topology.
- */
+/** This class represents a Kafka Streams runner that runs a topology. */
 @Slf4j
 @Component
 public class KafkaStreamsRunner {
@@ -56,24 +53,26 @@ public class KafkaStreamsRunner {
      * @param kafkaStreamsProperties The Kafka Streams properties
      * @param applicationProperties The application properties
      */
-    public KafkaStreamsRunner(ConfigurableApplicationContext applicationContext,
-                              KafkaStreamsProperties kafkaStreamsProperties,
-                              ApplicationProperties applicationProperties) {
+    public KafkaStreamsRunner(
+            ConfigurableApplicationContext applicationContext,
+            KafkaStreamsProperties kafkaStreamsProperties,
+            ApplicationProperties applicationProperties) {
         this.applicationContext = applicationContext;
         this.kafkaStreamsProperties = kafkaStreamsProperties;
         this.applicationProperties = applicationProperties;
     }
 
     /**
-     * Starts the Kafka Streams when the application is ready.
-     * The Kafka Streams topology is built in the {@link KafkaStreamsTopology} class.
+     * Starts the Kafka Streams when the application is ready. The Kafka Streams topology is built in the
+     * {@link KafkaStreamsTopology} class.
      */
     @EventListener(ApplicationReadyEvent.class)
     public void run() throws IOException {
         SerdesUtils.setSerdesConfig(kafkaStreamsProperties.getProperties());
 
-        Path filePath = Paths.get(applicationProperties.getFilePath()
-            .substring(0, applicationProperties.getFilePath().lastIndexOf("/")));
+        Path filePath = Paths.get(applicationProperties
+                .getFilePath()
+                .substring(0, applicationProperties.getFilePath().lastIndexOf("/")));
         if (!Files.exists(filePath)) {
             Files.createDirectories(filePath);
         }
@@ -86,9 +85,10 @@ public class KafkaStreamsRunner {
         kafkaStreams = new KafkaStreams(topology, kafkaStreamsProperties.asProperties());
 
         kafkaStreams.setUncaughtExceptionHandler(exception -> {
-            log.error("A not covered exception occurred in {} Kafka Streams. Shutting down...",
-                kafkaStreamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG),
-                exception);
+            log.error(
+                    "A not covered exception occurred in {} Kafka Streams. Shutting down...",
+                    kafkaStreamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG),
+                    exception);
 
             applicationContext.close();
             return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
@@ -96,8 +96,9 @@ public class KafkaStreamsRunner {
 
         kafkaStreams.setStateListener((newState, oldState) -> {
             if (newState.equals(KafkaStreams.State.ERROR)) {
-                log.error("The {} Kafka Streams is in error state...",
-                    kafkaStreamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
+                log.error(
+                        "The {} Kafka Streams is in error state...",
+                        kafkaStreamsProperties.asProperties().get(StreamsConfig.APPLICATION_ID_CONFIG));
 
                 applicationContext.close();
             }
@@ -106,9 +107,7 @@ public class KafkaStreamsRunner {
         kafkaStreams.start();
     }
 
-    /**
-     * Closes the Kafka Streams when the application is stopped.
-     */
+    /** Closes the Kafka Streams when the application is stopped. */
     @PreDestroy
     public void preDestroy() {
         log.info("Closing streams");

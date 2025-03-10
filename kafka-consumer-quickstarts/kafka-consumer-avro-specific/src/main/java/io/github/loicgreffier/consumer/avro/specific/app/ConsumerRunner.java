@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.consumer.avro.specific.app;
 
 import static io.github.loicgreffier.consumer.avro.specific.constant.Topic.USER_TOPIC;
@@ -35,10 +34,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-/**
- * This class represents a Kafka consumer runner that subscribes to a specific topic and
- * processes Kafka records.
- */
+/** This class represents a Kafka consumer runner that subscribes to a specific topic and processes Kafka records. */
 @Slf4j
 @Component
 public class ConsumerRunner {
@@ -54,10 +50,9 @@ public class ConsumerRunner {
     }
 
     /**
-     * Asynchronously starts the Kafka consumer when the application is ready.
-     * The asynchronous annotation is used to run the consumer in a separate thread and
-     * not block the main thread.
-     * The Kafka consumer processes specific Avro records from the USER_TOPIC topic.
+     * Asynchronously starts the Kafka consumer when the application is ready. The asynchronous annotation is used to
+     * run the consumer in a separate thread and not block the main thread. The Kafka consumer processes specific Avro
+     * records from the USER_TOPIC topic.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
@@ -72,8 +67,12 @@ public class ConsumerRunner {
                 log.info("Pulled {} records", messages.count());
 
                 for (ConsumerRecord<String, KafkaUser> message : messages) {
-                    log.info("Received offset = {}, partition = {}, key = {}, value = {}",
-                        message.offset(), message.partition(), message.key(), message.value());
+                    log.info(
+                            "Received offset = {}, partition = {}, key = {}, value = {}",
+                            message.offset(),
+                            message.partition(),
+                            message.key(),
+                            message.value());
                 }
 
                 if (!messages.isEmpty()) {
@@ -88,9 +87,7 @@ public class ConsumerRunner {
         }
     }
 
-    /**
-     * Performs a synchronous commit of the consumed records.
-     */
+    /** Performs a synchronous commit of the consumed records. */
     private void doCommitSync() {
         try {
             log.info("Committing the pulled records");

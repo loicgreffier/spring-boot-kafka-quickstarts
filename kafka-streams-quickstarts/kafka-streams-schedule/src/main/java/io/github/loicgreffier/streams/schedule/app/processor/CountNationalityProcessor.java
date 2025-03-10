@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.schedule.app.processor;
 
 import static io.github.loicgreffier.streams.schedule.constant.StateStore.USER_SCHEDULE_STORE;
@@ -34,18 +33,16 @@ import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
 
-/**
- * This class represents a processor that counts the number of users by nationality.
- */
+/** This class represents a processor that counts the number of users by nationality. */
 @Slf4j
 public class CountNationalityProcessor extends ContextualProcessor<String, KafkaUser, String, Long> {
     private KeyValueStore<String, Long> countNationalityStore;
 
     /**
-     * Initialize the processor.
-     * Opens the state store and schedules the punctuations. The first punctuation is scheduled on wall clock time and
-     * resets the counters every 2 minutes. The second punctuation is scheduled on stream time and forwards the counters
-     * to the output topic every minute. The stream time avoids triggering unnecessary punctuation if no record comes.
+     * Initialize the processor. Opens the state store and schedules the punctuations. The first punctuation is
+     * scheduled on wall clock time and resets the counters every 2 minutes. The second punctuation is scheduled on
+     * stream time and forwards the counters to the output topic every minute. The stream time avoids triggering
+     * unnecessary punctuation if no record comes.
      *
      * @param context The processor context.
      */
@@ -100,11 +97,11 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
             while (iterator.hasNext()) {
                 KeyValue<String, Long> keyValue = iterator.next();
                 context().forward(new Record<>(keyValue.key, keyValue.value, timestamp));
-                log.info("{} users of {} nationality at {}",
-                    keyValue.value,
-                    keyValue.key,
-                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(timestamp))
-                );
+                log.info(
+                        "{} users of {} nationality at {}",
+                        keyValue.value,
+                        keyValue.key,
+                        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(timestamp)));
             }
         }
     }

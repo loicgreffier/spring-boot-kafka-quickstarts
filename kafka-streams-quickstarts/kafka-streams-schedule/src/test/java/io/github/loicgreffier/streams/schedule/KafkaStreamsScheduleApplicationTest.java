@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.schedule;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -80,22 +79,14 @@ class KafkaStreamsScheduleApplicationTest {
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(
-            streamsBuilder.build(),
-            properties,
-            Instant.parse("2000-01-01T01:00:00Z")
-        );
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-            USER_TOPIC,
-            new StringSerializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
-        );
-        outputTopic = testDriver.createOutputTopic(
-            USER_SCHEDULE_TOPIC,
-            new StringDeserializer(),
-            new LongDeserializer()
-        );
+                USER_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+        outputTopic =
+                testDriver.createOutputTopic(USER_SCHEDULE_TOPIC, new StringDeserializer(), new LongDeserializer());
     }
 
     @AfterEach
@@ -108,36 +99,21 @@ class KafkaStreamsScheduleApplicationTest {
     @Test
     void shouldCountUserByNationality() {
         inputTopic.pipeInput(new TestRecord<>(
-            "1",
-            buildKafkaUser("Homer", "Simpson", CountryCode.US),
-            Instant.parse("2000-01-01T01:00:00Z"))
-        );
+                "1", buildKafkaUser("Homer", "Simpson", CountryCode.US), Instant.parse("2000-01-01T01:00:00Z")));
 
         inputTopic.pipeInput(new TestRecord<>(
-            "2",
-            buildKafkaUser("Marge", "Simpson", CountryCode.US),
-            Instant.parse("2000-01-01T01:01:00Z"))
-        );
+                "2", buildKafkaUser("Marge", "Simpson", CountryCode.US), Instant.parse("2000-01-01T01:01:00Z")));
 
         inputTopic.pipeInput(new TestRecord<>(
-            "3",
-            buildKafkaUser("Milhouse", "Van Houten", CountryCode.BE),
-            Instant.parse("2000-01-01T01:01:30Z"))
-        );
+                "3", buildKafkaUser("Milhouse", "Van Houten", CountryCode.BE), Instant.parse("2000-01-01T01:01:30Z")));
 
         inputTopic.pipeInput(new TestRecord<>(
-            "4",
-            buildKafkaUser("Luigi", "Risotto", CountryCode.IT),
-            Instant.parse("2000-01-01T01:02:00Z"))
-        );
+                "4", buildKafkaUser("Luigi", "Risotto", CountryCode.IT), Instant.parse("2000-01-01T01:02:00Z")));
 
         testDriver.advanceWallClockTime(Duration.ofMinutes(2));
 
         inputTopic.pipeInput(new TestRecord<>(
-            "5",
-            buildKafkaUser("Bart", "Simpson", CountryCode.US),
-            Instant.parse("2000-01-01T01:04:00Z"))
-        );
+                "5", buildKafkaUser("Bart", "Simpson", CountryCode.US), Instant.parse("2000-01-01T01:04:00Z")));
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
@@ -180,11 +156,11 @@ class KafkaStreamsScheduleApplicationTest {
 
     private KafkaUser buildKafkaUser(String firstName, String lastName, CountryCode nationality) {
         return KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName(firstName)
-            .setLastName(lastName)
-            .setNationality(nationality)
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .build();
+                .setId(1L)
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setNationality(nationality)
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                .build();
     }
 }

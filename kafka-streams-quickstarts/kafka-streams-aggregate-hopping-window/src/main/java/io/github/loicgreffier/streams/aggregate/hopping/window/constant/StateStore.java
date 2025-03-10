@@ -16,17 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.aggregate.hopping.window.constant;
 
-/**
- * State store name constants.
- */
+/** State store name constants. */
 public abstract class StateStore {
     public static final String USER_AGGREGATE_HOPPING_WINDOW_STORE = "USER_AGGREGATE_HOPPING_WINDOW_STORE";
 
-    /**
-     * Private constructor.
-     */
-    private StateStore() { }
+    /** Private constructor. */
+    private StateStore() {}
 }

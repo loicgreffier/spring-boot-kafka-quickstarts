@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.store.cleanup;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
@@ -72,17 +71,12 @@ class KafkaStreamsStoreCleanupApplicationTest {
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
-        testDriver = new TopologyTestDriver(
-            streamsBuilder.build(),
-            properties,
-            Instant.parse("2000-01-01T01:00:00Z")
-        );
+        testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-            USER_TOPIC,
-            new StringSerializer(),
-            SerdesUtils.<KafkaUser>getValueSerdes().serializer()
-        );
+                USER_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
     }
 
     @AfterEach
@@ -103,10 +97,9 @@ class KafkaStreamsStoreCleanupApplicationTest {
         KafkaUser milhouse = buildKafkaUser("Milhouse", "Van Houten");
         inputTopic.pipeInput(new TestRecord<>("3", milhouse, Instant.parse("2000-01-01T01:00:40Z")));
 
-        KeyValueStore<String, KafkaUser> stateStore = testDriver
-            .getKeyValueStore(USER_SCHEDULE_STORE_CLEANUP_STORE);
+        KeyValueStore<String, KafkaUser> stateStore = testDriver.getKeyValueStore(USER_SCHEDULE_STORE_CLEANUP_STORE);
 
-        // The 1st stream time punctuate is triggered after the 1st record is pushed, 
+        // The 1st stream time punctuate is triggered after the 1st record is pushed,
         // so the 1st record is not in the store anymore.
         assertNull(stateStore.get("1"));
         assertEquals(marge, stateStore.get("2"));
@@ -127,11 +120,11 @@ class KafkaStreamsStoreCleanupApplicationTest {
 
     private KafkaUser buildKafkaUser(String firstName, String lastName) {
         return KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName(firstName)
-            .setLastName(lastName)
-            .setNationality(CountryCode.GB)
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .build();
+                .setId(1L)
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setNationality(CountryCode.GB)
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                .build();
     }
 }

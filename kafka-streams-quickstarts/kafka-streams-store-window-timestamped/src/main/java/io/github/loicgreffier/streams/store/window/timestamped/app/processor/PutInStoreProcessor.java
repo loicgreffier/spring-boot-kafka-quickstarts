@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.store.window.timestamped.app.processor;
 
 import io.github.loicgreffier.avro.KafkaUser;
@@ -27,9 +26,7 @@ import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.TimestampedWindowStore;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
 
-/**
- * This class represents a processor that puts the messages in a timestamped window store.
- */
+/** This class represents a processor that puts the messages in a timestamped window store. */
 @Slf4j
 public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUser> {
     private final String storeName;
@@ -56,8 +53,7 @@ public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, 
     }
 
     /**
-     * Inserts the message in the state store.
-     * The window start time is set to the message timestamp.
+     * Inserts the message in the state store. The window start time is set to the message timestamp.
      *
      * @param message the message to process.
      */
@@ -65,9 +61,6 @@ public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, 
     public void process(Record<String, KafkaUser> message) {
         log.info("Put key = {}, value = {} in store {}", message.key(), message.value(), storeName);
         timestampedWindowStore.put(
-            message.key(),
-            ValueAndTimestamp.make(message.value(), message.timestamp()),
-            message.timestamp()
-        );
+                message.key(), ValueAndTimestamp.make(message.value(), message.timestamp()), message.timestamp());
     }
 }

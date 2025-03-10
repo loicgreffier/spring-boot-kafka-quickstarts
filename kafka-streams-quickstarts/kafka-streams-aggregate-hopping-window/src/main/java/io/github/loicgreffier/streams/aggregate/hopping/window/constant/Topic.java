@@ -16,19 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.aggregate.hopping.window.constant;
 
-/**
- * Topic name constants.
- */
+/** Topic name constants. */
 public abstract class Topic {
     public static final String USER_TOPIC = "USER_TOPIC";
     public static final String GROUP_USER_BY_LAST_NAME_TOPIC = "GROUP_USER_BY_LAST_NAME_TOPIC";
     public static final String USER_AGGREGATE_HOPPING_WINDOW_TOPIC = "USER_AGGREGATE_HOPPING_WINDOW_TOPIC";
 
-    /**
-     * Private constructor.
-     */
-    private Topic() { }
+    /** Private constructor. */
+    private Topic() {}
 }

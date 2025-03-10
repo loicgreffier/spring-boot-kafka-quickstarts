@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.flatmap.app;
 
 import static io.github.loicgreffier.streams.flatmap.constant.Topic.USER_FLATMAP_TOPIC;
@@ -32,33 +31,27 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
 
-
-/**
- * Kafka Streams topology.
- */
+/** Kafka Streams topology. */
 @Slf4j
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology.
-     * The topology reads from the USER_TOPIC topic, maps the value to a list of key-value pairs containing
-     * the first name and the last name as key and value respectively and upper case the key.
+     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, maps the value to a list of
+     * key-value pairs containing the first name and the last name as key and value respectively and upper case the key.
      * The result is written to the USER_FLATMAP_TOPIC topic.
      *
      * @param streamsBuilder The streams builder.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder
-            .<String, KafkaUser>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-            .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-            .flatMap((key, user) -> Arrays.asList(
-                KeyValue.pair(user.getFirstName().toUpperCase(), user.getFirstName()),
-                KeyValue.pair(user.getLastName().toUpperCase(), user.getLastName())))
-            .to(USER_FLATMAP_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
+        streamsBuilder.<String, KafkaUser>stream(
+                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .flatMap((key, user) -> Arrays.asList(
+                        KeyValue.pair(user.getFirstName().toUpperCase(), user.getFirstName()),
+                        KeyValue.pair(user.getLastName().toUpperCase(), user.getLastName())))
+                .to(USER_FLATMAP_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
     }
 
-    /**
-     * Private constructor.
-     */
+    /** Private constructor. */
     private KafkaStreamsTopology() {}
 }

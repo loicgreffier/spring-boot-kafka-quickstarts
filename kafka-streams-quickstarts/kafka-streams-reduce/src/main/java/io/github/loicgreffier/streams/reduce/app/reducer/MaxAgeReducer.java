@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.streams.reduce.app.reducer;
 
 import io.github.loicgreffier.avro.KafkaUser;
@@ -24,15 +23,12 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import org.apache.kafka.streams.kstream.Reducer;
 
-/**
- * This class represents a reducer that reduces the input values to the one with the maximum age.
- */
+/** This class represents a reducer that reduces the input values to the one with the maximum age. */
 public class MaxAgeReducer implements Reducer<KafkaUser> {
     /**
-     * Reduces the input values to the one with the maximum age.
-     * The age is calculated from the birth date.
+     * Reduces the input values to the one with the maximum age. The age is calculated from the birth date.
      *
-     * @param reduced  The reduced value.
+     * @param reduced The reduced value.
      * @param toReduce The value to reduce.
      * @return The reduced value.
      */

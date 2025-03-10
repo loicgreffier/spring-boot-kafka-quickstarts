@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.github.loicgreffier.producer.transaction;
 
 import static io.github.loicgreffier.producer.transaction.constant.Topic.FIRST_STRING_TOPIC;
@@ -39,11 +38,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class KafkaProducerTransactionApplicationTest {
     @Spy
-    private MockProducer<String, String> mockProducer = new MockProducer<>(
-        false,
-        new StringSerializer(),
-        new StringSerializer()
-    );
+    private MockProducer<String, String> mockProducer =
+            new MockProducer<>(false, new StringSerializer(), new StringSerializer());
 
     @InjectMocks
     private ProducerRunner producerRunner;
