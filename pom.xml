@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.4.3</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>io.github.loicgreffier</groupId>
@@ -102,11 +101,11 @@
                             <style>PALANTIR</style>
                             <formatJavadoc>true</formatJavadoc>
                         </palantirJavaFormat>
-                        <removeUnusedImports/>
-                        <formatAnnotations/>
-                        <importOrder/>
-                        <trimTrailingWhitespace/>
-                        <endWithNewline/>
+                        <removeUnusedImports />
+                        <formatAnnotations />
+                        <importOrder />
+                        <trimTrailingWhitespace />
+                        <endWithNewline />
                         <licenseHeader>
                             <file>.spotless/HEADER</file>
                         </licenseHeader>
@@ -125,7 +124,7 @@
                             <sortPlugins>groupId,artifactId</sortPlugins>
                             <sortProperties>true</sortProperties>
                             <sortModules>true</sortModules>
-                            <endWithNewline/>
+                            <endWithNewline />
                             <sortExecutions>true</sortExecutions>
                         </sortPom>
                     </pom>
@@ -148,9 +147,7 @@
                         <image>eclipse-temurin:21_35-jre</image>
                     </from>
                     <to>
-                        <image>
-                            docker.io/loicgreffier/spring-boot-kafka-quickstarts:${project.artifactId}-${project.version}
-                        </image>
+                        <image>docker.io/loicgreffier/spring-boot-kafka-quickstarts:${project.artifactId}-${project.version}</image>
                     </to>
                     <container>
                         <ports>
