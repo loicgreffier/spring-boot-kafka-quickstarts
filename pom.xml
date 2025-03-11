@@ -125,7 +125,6 @@
                             <sortProperties>true</sortProperties>
                             <sortModules>true</sortModules>
                             <endWithNewline />
-                            <sortExecutions>true</sortExecutions>
                         </sortPom>
                     </pom>
                 </configuration>
@@ -156,6 +155,7 @@
                     </container>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
