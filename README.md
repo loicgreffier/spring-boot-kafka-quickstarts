@@ -10,6 +10,8 @@
 [![Spring Boot Version](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fraw.githubusercontent.com%2Floicgreffier%2Fspring-boot-kafka-quickstarts%2Fmain%2Fpom.xml&query=%2F*%5Blocal-name()%3D'project'%5D%2F*%5Blocal-name()%3D'parent'%5D%2F*%5Blocal-name()%3D'version'%5D%2Ftext()&style=for-the-badge&logo=spring-boot&label=version)](https://github.com/loicgreffier/spring-boot-kafka-quickstarts/blob/main/pom.xml)
 [![GitHub Stars](https://img.shields.io/github/stars/loicgreffier/spring-boot-kafka-quickstarts?logo=github&style=for-the-badge)](https://github.com/loicgreffier/spring-boot-kafka-quickstarts)
 [![Docker Pulls](https://img.shields.io/docker/pulls/loicgreffier/spring-boot-kafka-quickstarts?label=Pulls&logo=docker&style=for-the-badge)](https://hub.docker.com/r/loicgreffier/spring-boot-kafka-quickstarts/tags)
+[![SonarCloud Coverage](https://img.shields.io/sonar/coverage/loicgreffier_spring-boot-kafka-quickstarts?logo=sonarcloud&server=https%3A%2F%2Fsonarcloud.io&style=for-the-badge)](https://sonarcloud.io/component_measures?id=loicgreffier_spring-boot-kafka-quickstarts&metric=coverage&view=list)
+[![SonarCloud Tests](https://img.shields.io/sonar/tests/loicgreffier_spring-boot-kafka-quickstarts/main?server=https%3A%2F%2Fsonarcloud.io&style=for-the-badge&logo=sonarcloud)](https://sonarcloud.io/component_measures?metric=tests&view=list&id=loicgreffier_spring-boot-kafka-quickstarts)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?logo=apache&style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
 
 [Producer](#producers) • [Consumer](#consumers) • [Streams](#kafka-streams)
