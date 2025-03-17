@@ -40,6 +40,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProducerRunner {
+    private Random random = new Random();
     private final Producer<String, KafkaUser> producer;
 
     /**
@@ -111,13 +112,12 @@ public class ProducerRunner {
     private KafkaUser buildKafkaUser(int id) {
         return KafkaUser.newBuilder()
                 .setId((long) id)
-                .setFirstName(FIRST_NAMES[new Random().nextInt(FIRST_NAMES.length)])
-                .setLastName(LAST_NAMES[new Random().nextInt(LAST_NAMES.length)])
-                .setNationality(CountryCode.values()[new Random().nextInt(CountryCode.values().length)])
-                .setBirthDate(Instant.ofEpochSecond(new Random()
-                        .nextLong(
-                                Instant.parse("1924-01-01T00:00:00Z").getEpochSecond(),
-                                Instant.now().getEpochSecond())))
+                .setFirstName(FIRST_NAMES[random.nextInt(FIRST_NAMES.length)])
+                .setLastName(LAST_NAMES[random.nextInt(LAST_NAMES.length)])
+                .setNationality(CountryCode.values()[random.nextInt(CountryCode.values().length)])
+                .setBirthDate(Instant.ofEpochSecond(random.nextLong(
+                        Instant.parse("1924-01-01T00:00:00Z").getEpochSecond(),
+                        Instant.now().getEpochSecond())))
                 .build();
     }
 }
