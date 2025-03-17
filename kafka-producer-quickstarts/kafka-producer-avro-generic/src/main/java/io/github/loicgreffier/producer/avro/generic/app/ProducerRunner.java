@@ -44,6 +44,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProducerRunner {
+    private Random random = new Random();
     private final Producer<String, GenericRecord> producer;
 
     /**
@@ -118,8 +119,8 @@ public class ProducerRunner {
     private GenericRecord buildGenericRecord(Schema schema, int id) {
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", (long) id);
-        genericRecord.put("firstName", FIRST_NAMES[new Random().nextInt(FIRST_NAMES.length)]);
-        genericRecord.put("lastName", LAST_NAMES[new Random().nextInt(LAST_NAMES.length)]);
+        genericRecord.put("firstName", FIRST_NAMES[random.nextInt(FIRST_NAMES.length)]);
+        genericRecord.put("lastName", LAST_NAMES[random.nextInt(LAST_NAMES.length)]);
         genericRecord.put("birthDate", System.currentTimeMillis());
         return genericRecord;
     }
