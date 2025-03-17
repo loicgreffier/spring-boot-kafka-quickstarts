@@ -22,6 +22,20 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
       - name: Lint
         run: mvn spotless:check
 
@@ -36,3 +50,9 @@ jobs:
         uses: mikepenz/action-junit-report@v5
         with:
           report_paths: '**/target/surefire-reports/TEST-*.xml'
+
+      - name: Sonar
+        run: mvn verify sonar:sonar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
