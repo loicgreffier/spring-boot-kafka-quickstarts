@@ -30,7 +30,7 @@
         <kafka-streams-avro-serde.version>7.9.0</kafka-streams-avro-serde.version>
         <kafka.version>3.9.0</kafka.version>
         <lombok.version>1.18.36</lombok.version>
-        <palantir.version>2.39.0</palantir.version>
+        <palantir.version>2.58.0</palantir.version>
         <spotless-maven-plugin.version>2.44.3</spotless-maven-plugin.version>
     </properties>
 
