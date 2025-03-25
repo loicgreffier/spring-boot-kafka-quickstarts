@@ -1,7 +1,10 @@
-name: Push Main
+name: Build
 
 on:
   push:
+    branches:
+      - 'main'
+  pull_request:
     branches:
       - 'main'
 
@@ -14,6 +17,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
 
       - name: Cache SonarQube packages
         uses: actions/cache@v4
@@ -29,21 +39,11 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: maven
-
       - name: Lint
         run: mvn spotless:check
 
       - name: Build
-        run: mvn -B compile
-
-      - name: Test
-        run: mvn -B test
+        run: mvn clean package
 
       - name: Publish test report
         if: always()
@@ -52,12 +52,14 @@ jobs:
           report_paths: '**/target/surefire-reports/TEST-*.xml'
 
       - name: Sonar
+        if: github.event.pull_request.head.repo.fork == false
         run: mvn verify sonar:sonar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Docker
+        if: github.ref == 'refs/heads/main'
         run: mvn -B -DskipTests package jib:build -Djib.to.auth.username=$DOCKER_USER -Djib.to.auth.password=$DOCKER_TOKEN
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
