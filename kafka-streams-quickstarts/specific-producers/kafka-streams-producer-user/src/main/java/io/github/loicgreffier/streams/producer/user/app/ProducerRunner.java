@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProducerRunner {
-    private Random random = new Random();
+    private final Random random = new Random();
     private final Producer<String, KafkaUser> producer;
 
     /**
@@ -53,7 +53,7 @@ public class ProducerRunner {
     }
 
     /**
-     * Asynchronously starts the Kafka producer when the application is ready. The asynchronous annotation is used to
+     * Asynchronously starts the Kafka producer when the application is ready. The {@code @Async} annotation is used to
      * run the producer in a separate thread and not block the main thread. The Kafka producer produces user records to
      * two topics USER_TOPIC and USER_TOPIC_TWO.
      */
