@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.loicgreffier.producer.simple.app.ProducerRunner;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.apache.kafka.clients.producer.MockProducer;
@@ -47,7 +48,10 @@ class KafkaProducerSimpleApplicationTest {
 
     @Test
     void shouldSendSuccessfully() throws ExecutionException, InterruptedException {
-        ProducerRecord<String, String> message = new ProducerRecord<>(STRING_TOPIC, "1", "Message 1");
+        String kafkaUser = buildKafkaUser();
+        ProducerRecord<String, String> message = new ProducerRecord<>(
+                STRING_TOPIC, UUID.nameUUIDFromBytes(kafkaUser.getBytes()).toString(), kafkaUser);
+
         Future<RecordMetadata> recordMetadata = producerRunner.send(message);
         mockProducer.completeNext();
 
@@ -60,7 +64,10 @@ class KafkaProducerSimpleApplicationTest {
 
     @Test
     void shouldSendWithFailure() {
-        ProducerRecord<String, String> message = new ProducerRecord<>(STRING_TOPIC, "1", "Message 1");
+        String kafkaUser = buildKafkaUser();
+        ProducerRecord<String, String> message = new ProducerRecord<>(
+                STRING_TOPIC, UUID.nameUUIDFromBytes(kafkaUser.getBytes()).toString(), kafkaUser);
+
         Future<RecordMetadata> recordMetadata = producerRunner.send(message);
         RuntimeException exception = new RuntimeException("Error sending message");
         mockProducer.errorNext(exception);
@@ -69,5 +76,9 @@ class KafkaProducerSimpleApplicationTest {
         assertEquals(executionException.getCause(), exception);
         assertEquals(1, mockProducer.history().size());
         assertEquals(message, mockProducer.history().getFirst());
+    }
+
+    private String buildKafkaUser() {
+        return String.format("%s %s", "Homer", "Simpson");
     }
 }

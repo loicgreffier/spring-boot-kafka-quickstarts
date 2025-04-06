@@ -18,8 +18,12 @@
  */
 package io.github.loicgreffier.producer.simple.app;
 
+import static io.github.loicgreffier.producer.simple.constant.Name.FIRST_NAMES;
+import static io.github.loicgreffier.producer.simple.constant.Name.LAST_NAMES;
 import static io.github.loicgreffier.producer.simple.constant.Topic.STRING_TOPIC;
 
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +39,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProducerRunner {
+    private final Random random = new Random();
     private final Producer<String, String> producer;
 
     /**
@@ -54,10 +59,10 @@ public class ProducerRunner {
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
-        int i = 0;
         while (true) {
-            ProducerRecord<String, String> message =
-                    new ProducerRecord<>(STRING_TOPIC, String.valueOf(i), String.format("Message %s", i));
+            String kafkaUser = buildKafkaUser();
+            ProducerRecord<String, String> message = new ProducerRecord<>(
+                    STRING_TOPIC, UUID.nameUUIDFromBytes(kafkaUser.getBytes()).toString(), kafkaUser);
 
             send(message);
 
@@ -67,8 +72,6 @@ public class ProducerRunner {
                 log.error("Interruption during sleep between message production", e);
                 Thread.currentThread().interrupt();
             }
-
-            i++;
         }
     }
 
@@ -92,5 +95,17 @@ public class ProducerRunner {
                         message.value());
             }
         });
+    }
+
+    /**
+     * Builds a Kafka user as a string record.
+     *
+     * @return The string record.
+     */
+    private String buildKafkaUser() {
+        String firstName = FIRST_NAMES[random.nextInt(FIRST_NAMES.length)];
+        String lastName = LAST_NAMES[random.nextInt(LAST_NAMES.length)];
+
+        return String.format("%s %s", firstName, lastName);
     }
 }

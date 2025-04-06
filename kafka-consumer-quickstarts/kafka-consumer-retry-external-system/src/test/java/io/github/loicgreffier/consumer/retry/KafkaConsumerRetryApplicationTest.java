@@ -31,6 +31,7 @@ import io.github.loicgreffier.consumer.retry.property.ConsumerProperties;
 import io.github.loicgreffier.consumer.retry.service.ExternalService;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
@@ -71,7 +72,9 @@ class KafkaConsumerRetryApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
+        String kafkaUser = buildKafkaUser();
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(
+                STRING_TOPIC, 0, 0, UUID.nameUUIDFromBytes(kafkaUser.getBytes()).toString(), kafkaUser);
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -85,9 +88,11 @@ class KafkaConsumerRetryApplicationTest {
 
     @Test
     void shouldRewindOffsetOnExternalSystemError() throws Exception {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
-        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(STRING_TOPIC, 0, 1, "2", "Message 2");
-        ConsumerRecord<String, String> message3 = new ConsumerRecord<>(STRING_TOPIC, 0, 2, "3", "Message 3");
+        String kafkaUser = buildKafkaUser();
+        String key = UUID.nameUUIDFromBytes(kafkaUser.getBytes()).toString();
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, key, kafkaUser);
+        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(STRING_TOPIC, 0, 1, key, kafkaUser);
+        ConsumerRecord<String, String> message3 = new ConsumerRecord<>(STRING_TOPIC, 0, 2, key, kafkaUser);
 
         // First poll to rewind, second poll to resume
         for (int i = 0; i < 2; i++) {
@@ -117,7 +122,9 @@ class KafkaConsumerRetryApplicationTest {
 
     @Test
     void shouldRewindToEarliestOnExternalSystemError() throws Exception {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
+        String kafkaUser = buildKafkaUser();
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(
+                STRING_TOPIC, 0, 0, UUID.nameUUIDFromBytes(kafkaUser.getBytes()).toString(), kafkaUser);
 
         for (int i = 0; i < 2; i++) {
             mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -138,7 +145,9 @@ class KafkaConsumerRetryApplicationTest {
 
     @Test
     void shouldRewindToLatestOnExternalSystemError() throws Exception {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 2");
+        String kafkaUser = buildKafkaUser();
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(
+                STRING_TOPIC, 0, 0, UUID.nameUUIDFromBytes(kafkaUser.getBytes()).toString(), kafkaUser);
 
         for (int i = 0; i < 2; i++) {
             mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -157,5 +166,9 @@ class KafkaConsumerRetryApplicationTest {
         verify(mockConsumer).pause(Collections.singleton(topicPartition));
         verify(mockConsumer).seekToEnd(Collections.singleton(topicPartition));
         verify(mockConsumer).resume(Collections.singleton(topicPartition));
+    }
+
+    private String buildKafkaUser() {
+        return String.format("%s %s", "Homer", "Simpson");
     }
 }

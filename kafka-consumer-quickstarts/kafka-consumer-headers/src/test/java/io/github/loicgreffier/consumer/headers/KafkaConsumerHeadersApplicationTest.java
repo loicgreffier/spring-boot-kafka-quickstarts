@@ -26,9 +26,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import io.github.loicgreffier.consumer.headers.app.ConsumerRunner;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
 import org.apache.kafka.clients.consumer.OffsetResetStrategy;
@@ -61,9 +61,10 @@ class KafkaConsumerHeadersApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
-        message.headers().add("id", "1".getBytes(StandardCharsets.UTF_8));
-        message.headers().add("message", "Message 1".getBytes(StandardCharsets.UTF_8));
+        String kafkaUser = buildKafkaUser();
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(
+                STRING_TOPIC, 0, 0, UUID.nameUUIDFromBytes(kafkaUser.getBytes()).toString(), kafkaUser);
+        message.headers().add("message", kafkaUser.getBytes());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -77,8 +78,10 @@ class KafkaConsumerHeadersApplicationTest {
 
     @Test
     void shouldFailOnPoisonPill() {
-        ConsumerRecord<String, String> message1 = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
-        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(STRING_TOPIC, 0, 2, "2", "Message 2");
+        String kafkaUser = buildKafkaUser();
+        String key = UUID.nameUUIDFromBytes(kafkaUser.getBytes()).toString();
+        ConsumerRecord<String, String> message1 = new ConsumerRecord<>(STRING_TOPIC, 0, 0, key, kafkaUser);
+        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(STRING_TOPIC, 0, 2, key, kafkaUser);
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message1));
         mockConsumer.schedulePollTask(() -> {
@@ -101,5 +104,9 @@ class KafkaConsumerHeadersApplicationTest {
         assertTrue(mockConsumer.closed());
         verify(mockConsumer, times(3)).poll(any());
         verify(mockConsumer).commitSync();
+    }
+
+    private String buildKafkaUser() {
+        return String.format("%s %s", "Homer", "Simpson");
     }
 }

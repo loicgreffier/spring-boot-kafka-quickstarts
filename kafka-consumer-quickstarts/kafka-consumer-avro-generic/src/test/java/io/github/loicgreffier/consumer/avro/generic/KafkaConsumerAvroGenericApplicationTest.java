@@ -25,13 +25,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.google.common.primitives.Bytes;
 import io.github.loicgreffier.consumer.avro.generic.app.ConsumerRunner;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -71,14 +71,7 @@ class KafkaConsumerAvroGenericApplicationTest {
         File schemaFile = new ClassPathResource("user.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
-        GenericRecord genericRecord = new GenericData.Record(schema);
-        genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "Homer");
-        genericRecord.put("lastName", "Simpson");
-        genericRecord.put(
-                "birthDate",
-                Timestamp.from(Instant.parse("2000-01-01T01:00:00Z")).getTime());
-
+        GenericRecord genericRecord = buildGenericRecord(schema);
         ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1", genericRecord);
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -95,14 +88,7 @@ class KafkaConsumerAvroGenericApplicationTest {
         File schemaFile = new ClassPathResource("user.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
-        GenericRecord genericRecord = new GenericData.Record(schema);
-        genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "Homer");
-        genericRecord.put("lastName", "Simpson");
-        genericRecord.put(
-                "birthDate",
-                Timestamp.from(Instant.parse("2000-01-01T01:00:00Z")).getTime());
-
+        GenericRecord genericRecord = buildGenericRecord(schema);
         ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1", genericRecord);
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -126,5 +112,20 @@ class KafkaConsumerAvroGenericApplicationTest {
         assertTrue(mockConsumer.closed());
         verify(mockConsumer, times(3)).poll(any());
         verify(mockConsumer).commitSync();
+    }
+
+    private GenericRecord buildGenericRecord(Schema schema) {
+        String firstName = "Homer";
+        String lastName = "Simpson";
+
+        GenericRecord genericRecord = new GenericData.Record(schema);
+        genericRecord.put(
+                "id",
+                UUID.nameUUIDFromBytes(Bytes.concat(firstName.getBytes(), lastName.getBytes()))
+                        .toString());
+        genericRecord.put("firstName", firstName);
+        genericRecord.put("lastName", lastName);
+
+        return genericRecord;
     }
 }

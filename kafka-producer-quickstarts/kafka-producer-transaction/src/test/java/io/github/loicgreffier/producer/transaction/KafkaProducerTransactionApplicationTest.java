@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.loicgreffier.producer.transaction.app.ProducerRunner;
 import java.util.Arrays;
+import java.util.UUID;
 import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -48,8 +49,13 @@ class KafkaProducerTransactionApplicationTest {
     void shouldAbortTransaction() {
         mockProducer.initTransactions();
 
-        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, "3", "Message 1");
-        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "4", "Message 2");
+        String kafkaUser = buildKafkaUser("Abraham");
+        String key = UUID.nameUUIDFromBytes(kafkaUser.getBytes()).toString();
+        String firstName = kafkaUser.split(" ")[0];
+        String lastName = kafkaUser.split(" ")[1];
+
+        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, key, firstName);
+        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, key, lastName);
         producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
         assertTrue(mockProducer.history().isEmpty());
@@ -63,18 +69,32 @@ class KafkaProducerTransactionApplicationTest {
     void shouldCommitTransaction() {
         mockProducer.initTransactions();
 
-        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, "1", "Message 1");
-        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "2", "Message 2");
+        String kafkaUser = buildKafkaUser("Homer");
+        String key = UUID.nameUUIDFromBytes(kafkaUser.getBytes()).toString();
+        String firstName = kafkaUser.split(" ")[0];
+        String lastName = kafkaUser.split(" ")[1];
+
+        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, key, firstName);
+        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, key, lastName);
         producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
         assertEquals(2, mockProducer.history().size());
         assertEquals(FIRST_STRING_TOPIC, mockProducer.history().get(0).topic());
-        assertEquals("Message 1", mockProducer.history().get(0).value());
+        assertEquals("Homer", mockProducer.history().get(0).value());
         assertEquals(SECOND_STRING_TOPIC, mockProducer.history().get(1).topic());
-        assertEquals("Message 2", mockProducer.history().get(1).value());
+        assertEquals("Simpson", mockProducer.history().get(1).value());
         assertTrue(mockProducer.transactionInitialized());
         assertTrue(mockProducer.transactionCommitted());
         assertFalse(mockProducer.transactionAborted());
         assertFalse(mockProducer.transactionInFlight());
+    }
+
+    /**
+     * Builds a Kafka user as a string record.
+     *
+     * @return The string record.
+     */
+    private String buildKafkaUser(String firstName) {
+        return String.format("%s %s", firstName, "Simpson");
     }
 }

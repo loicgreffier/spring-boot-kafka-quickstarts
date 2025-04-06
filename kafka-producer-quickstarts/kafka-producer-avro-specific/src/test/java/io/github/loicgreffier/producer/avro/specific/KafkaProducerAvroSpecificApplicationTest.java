@@ -23,12 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.google.common.primitives.Bytes;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.producer.avro.specific.app.ProducerRunner;
-import java.time.Instant;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.apache.kafka.clients.producer.MockProducer;
@@ -59,15 +60,8 @@ class KafkaProducerAvroSpecificApplicationTest {
 
     @Test
     void shouldSendSuccessfully() throws ExecutionException, InterruptedException {
-        ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(
-                USER_TOPIC,
-                "1",
-                KafkaUser.newBuilder()
-                        .setId(1L)
-                        .setFirstName("Homer")
-                        .setLastName("Simpson")
-                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-                        .build());
+        KafkaUser kafkaUser = buildKafkaUser();
+        ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(USER_TOPIC, kafkaUser.getId(), kafkaUser);
 
         Future<RecordMetadata> recordMetadata = producerRunner.send(message);
         mockProducer.completeNext();
@@ -81,15 +75,8 @@ class KafkaProducerAvroSpecificApplicationTest {
 
     @Test
     void shouldSendWithFailure() {
-        ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(
-                USER_TOPIC,
-                "1",
-                KafkaUser.newBuilder()
-                        .setId(1L)
-                        .setFirstName("Homer")
-                        .setLastName("Simpson")
-                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-                        .build());
+        KafkaUser kafkaUser = buildKafkaUser();
+        ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(USER_TOPIC, kafkaUser.getId(), kafkaUser);
 
         Future<RecordMetadata> recordMetadata = producerRunner.send(message);
         RuntimeException exception = new RuntimeException("Error sending message");
@@ -99,5 +86,17 @@ class KafkaProducerAvroSpecificApplicationTest {
         assertEquals(executionException.getCause(), exception);
         assertEquals(1, mockProducer.history().size());
         assertEquals(message, mockProducer.history().getFirst());
+    }
+
+    private KafkaUser buildKafkaUser() {
+        String firstName = "Homer";
+        String lastName = "Simpson";
+
+        return KafkaUser.newBuilder()
+                .setId(UUID.nameUUIDFromBytes(Bytes.concat(firstName.getBytes(), lastName.getBytes()))
+                        .toString())
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .build();
     }
 }

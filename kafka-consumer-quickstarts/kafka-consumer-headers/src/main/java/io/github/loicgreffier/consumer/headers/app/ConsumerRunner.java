@@ -68,21 +68,16 @@ public class ConsumerRunner {
                 log.info("Pulled {} records", messages.count());
 
                 for (ConsumerRecord<String, String> message : messages) {
-                    Header headerId = message.headers().lastHeader("id");
-                    String headerIdValue = headerId != null ? new String(headerId.value(), StandardCharsets.UTF_8) : "";
-
                     Header headerMessage = message.headers().lastHeader("message");
                     String headerMessageValue =
                             headerMessage != null ? new String(headerMessage.value(), StandardCharsets.UTF_8) : "";
 
                     log.info(
-                            "Received offset = {}, partition = {}, key = {}, value = {}, header id = {}, "
-                                    + "header message = {}",
+                            "Received offset = {}, partition = {}, key = {}, value = {}, header = {}",
                             message.offset(),
                             message.partition(),
                             message.key(),
                             message.value(),
-                            headerIdValue,
                             headerMessageValue);
                 }
 
