@@ -1,15 +1,13 @@
 # Producer Simple
 
-This module demonstrates the following:
-
-- The use of the Kafka Clients producer API.
-- Unit testing using a Mock producer.
-
-This module produces records of type `<String, String>` to a topic named `STRING_TOPIC`.
+This module produces records of type `<String, String>` to the `STRING_TOPIC`.
+It demonstrates the following:
+- Use of the Kafka Clients producer API
+- Unit testing with a mock producer
 
 ## Prerequisites
 
-To compile and run this demo, you will need the following:
+To compile and run this demo, you’ll need:
 
 - Java 21
 - Maven
@@ -28,8 +26,8 @@ To run the application in Docker, use the following command:
 docker-compose up -d
 ```
 
-This command will start the following services in Docker:
+This command starts the following services in Docker:
 
 - 1 Kafka broker (KRaft mode)
 - 1 Control Center
-- 1 producer Simple
+- 1 Producer Simple

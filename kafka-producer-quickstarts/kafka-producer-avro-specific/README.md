@@ -1,16 +1,14 @@
 # Producer Avro Specific
 
-This module demonstrates the following:
-
-- The use of the Kafka Clients producer API.
-- The use of Apache Avro and specific records.
-- Unit testing using a Mock producer.
-
-This module produces records of type `<String, KafkaUser>` to a topic named `USER_TOPIC`.
+This module produces records of type `<String, KafkaUser>` to the `USER_TOPIC`.
+It demonstrates the following:
+- Use of the Kafka Clients producer API
+- Use of Apache Avro and specific records
+- Unit testing with a mock producer
 
 ## Prerequisites
 
-To compile and run this demo, you will need the following:
+To compile and run this demo, you’ll need:
 
 - Java 21
 - Maven
@@ -29,9 +27,9 @@ To run the application in Docker, use the following command:
 docker-compose up -d
 ```
 
-This command will start the following services in Docker:
+This command starts the following services in Docker:
 
 - 1 Kafka broker (KRaft mode)
-- 1 Schema registry
+- 1 Schema Registry
 - 1 Control Center
-- 1 producer Avro Specific
+- 1 Producer Avro Specific

@@ -1,17 +1,14 @@
 # Consumer Transactional
 
-This module demonstrates the following:
+This module consumes records of type `<String, String>` from topics named `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC` using the transaction isolation level read_committed.
+It demonstrates the following:
 
-- The use of the Kafka Clients consumer API.
-- The use of isolation level.
-
-This module consumes records of type `<String, String>` from topics named `FIRST_STRING_TOPIC`
-and `SECOND_STRING_TOPIC`. It utilizes an isolation level of `read_committed` to ensure that only committed records are
-consumed, filtering out any uncommitted or transactionally aborted records.
+- Use of the Kafka Clients consumer API
+- Use of isolation levels
 
 ## Prerequisites
 
-To compile and run this demo, you will need the following:
+To compile and run this demo, you’ll need:
 
 - Java 21
 - Maven
@@ -22,7 +19,7 @@ To compile and run this demo, you will need the following:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, String>` to topics named `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`. You can use the [producer transaction](../../kafka-producer-quickstarts/kafka-producer-transaction) to do this.
+- Produce records of type `<String, String>` to topics named `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`. You can use the [producer Transaction](../../kafka-producer-quickstarts/kafka-producer-transaction) for this.
 - Start the consumer.
 
 To run the application in Docker, use the following command:
@@ -31,9 +28,9 @@ To run the application in Docker, use the following command:
 docker-compose up -d
 ```
 
-This command will start the following services in Docker:
+This command starts the following services in Docker:
 
 - 1 Kafka broker (KRaft mode)
 - 1 Control Center
-- 1 producer Transaction
-- 1 consumer Transaction
+- 1 Producer Transaction
+- 1 Consumer Transaction
