@@ -24,10 +24,10 @@ import static io.github.loicgreffier.streams.aggregate.constant.Topic.USER_AGGRE
 import static io.github.loicgreffier.streams.aggregate.constant.Topic.USER_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserAggregate;
-import io.github.loicgreffier.streams.aggregate.app.aggregator.KafkaUserAggregator;
+import io.github.loicgreffier.avro.KafkaUserGroup;
+import io.github.loicgreffier.streams.aggregate.app.aggregator.FirstNameByLastNameAggregator;
 import io.github.loicgreffier.streams.aggregate.serdes.SerdesUtils;
-import java.util.ArrayList;
+import java.util.HashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -44,8 +44,8 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, selects the key as the last name
-     * of the user, groups by key and aggregates users by last name. The result is written to the USER_AGGREGATE_TOPIC
-     * topic.
+     * of the user, groups by key and aggregates the first names by last name. The result is written to the
+     * USER_AGGREGATE_TOPIC topic.
      *
      * @param streamsBuilder The streams builder.
      */
@@ -56,9 +56,9 @@ public class KafkaStreamsTopology {
                 .selectKey((key, user) -> user.getLastName())
                 .groupByKey(Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .aggregate(
-                        () -> new KafkaUserAggregate(new ArrayList<>()),
-                        new KafkaUserAggregator(),
-                        Materialized.<String, KafkaUserAggregate, KeyValueStore<Bytes, byte[]>>as(USER_AGGREGATE_STORE)
+                        () -> new KafkaUserGroup(new HashMap<>()),
+                        new FirstNameByLastNameAggregator(),
+                        Materialized.<String, KafkaUserGroup, KeyValueStore<Bytes, byte[]>>as(USER_AGGREGATE_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))
                 .toStream()

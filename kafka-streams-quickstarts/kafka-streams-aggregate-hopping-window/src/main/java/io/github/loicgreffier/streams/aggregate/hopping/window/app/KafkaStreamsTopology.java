@@ -24,11 +24,11 @@ import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.T
 import static io.github.loicgreffier.streams.aggregate.hopping.window.constant.Topic.USER_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserAggregate;
-import io.github.loicgreffier.streams.aggregate.hopping.window.app.aggregator.KafkaUserAggregator;
+import io.github.loicgreffier.avro.KafkaUserGroup;
+import io.github.loicgreffier.streams.aggregate.hopping.window.app.aggregator.FirstNameByLastNameAggregator;
 import io.github.loicgreffier.streams.aggregate.hopping.window.serdes.SerdesUtils;
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.HashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -46,9 +46,9 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, selects the key as the last name
-     * of the user, groups by key and aggregates users by last name in 5 minutes hopping windows with 1-minute grace
-     * period and 2 minutes advance period. A new key is generated with the window start and end time. The result is
-     * written to the USER_AGGREGATE_HOPPING_WINDOW_TOPIC topic.
+     * of the user, groups by key and aggregates the first names by last name in 5 minutes hopping windows with 1-minute
+     * grace period and 2 minutes advance period. A new key is generated with the window start and end time. The result
+     * is written to the USER_AGGREGATE_HOPPING_WINDOW_TOPIC topic.
      *
      * <p>Hopping windows are aligned to the epoch. The first window starts at 1970-01-01T00:00:00Z. Then, every 2
      * minutes, a new window of 5 minutes is created as long as the stream time advances. A record belongs to a hopping
@@ -65,9 +65,9 @@ public class KafkaStreamsTopology {
                 .windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1))
                         .advanceBy(Duration.ofMinutes(2)))
                 .aggregate(
-                        () -> new KafkaUserAggregate(new ArrayList<>()),
-                        new KafkaUserAggregator(),
-                        Materialized.<String, KafkaUserAggregate, WindowStore<Bytes, byte[]>>as(
+                        () -> new KafkaUserGroup(new HashMap<>()),
+                        new FirstNameByLastNameAggregator(),
+                        Materialized.<String, KafkaUserGroup, WindowStore<Bytes, byte[]>>as(
                                         USER_AGGREGATE_HOPPING_WINDOW_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))

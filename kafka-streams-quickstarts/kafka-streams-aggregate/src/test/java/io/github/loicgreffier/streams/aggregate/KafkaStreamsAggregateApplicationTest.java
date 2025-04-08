@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserAggregate;
+import io.github.loicgreffier.avro.KafkaUserGroup;
 import io.github.loicgreffier.streams.aggregate.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.aggregate.serdes.SerdesUtils;
 import java.io.IOException;
@@ -59,7 +59,7 @@ class KafkaStreamsAggregateApplicationTest {
 
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, KafkaUser> inputTopic;
-    private TestOutputTopic<String, KafkaUserAggregate> outputTopic;
+    private TestOutputTopic<String, KafkaUserGroup> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -86,7 +86,7 @@ class KafkaStreamsAggregateApplicationTest {
         outputTopic = testDriver.createOutputTopic(
                 USER_AGGREGATE_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUserAggregate>getValueSerdes().deserializer());
+                SerdesUtils.<KafkaUserGroup>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -98,30 +98,31 @@ class KafkaStreamsAggregateApplicationTest {
 
     @Test
     void shouldAggregate() {
-        KafkaUser homer = buildKafkaUser("Homer");
-        inputTopic.pipeInput("1", homer);
+        inputTopic.pipeInput("1", buildKafkaUser("Homer"));
+        inputTopic.pipeInput("2", buildKafkaUser("Marge"));
+        inputTopic.pipeInput("3", buildKafkaUser("Bart"));
 
-        KafkaUser marge = buildKafkaUser("Marge");
-        inputTopic.pipeInput("2", marge);
-
-        KafkaUser bart = buildKafkaUser("Bart");
-        inputTopic.pipeInput("3", bart);
-
-        List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, KafkaUserGroup>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.get(0).key);
-        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
+        assertIterableEquals(
+                List.of("Homer"), results.get(0).value.getFirstNameByLastName().get("Simpson"));
 
         assertEquals("Simpson", results.get(1).key);
-        assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
+        assertIterableEquals(
+                List.of("Homer", "Marge"),
+                results.get(1).value.getFirstNameByLastName().get("Simpson"));
 
         assertEquals("Simpson", results.get(2).key);
-        assertIterableEquals(List.of(homer, marge, bart), results.get(2).value.getUsers());
+        assertIterableEquals(
+                List.of("Homer", "Marge", "Bart"),
+                results.get(2).value.getFirstNameByLastName().get("Simpson"));
 
-        KeyValueStore<String, KafkaUserAggregate> stateStore = testDriver.getKeyValueStore(USER_AGGREGATE_STORE);
+        KeyValueStore<String, KafkaUserGroup> stateStore = testDriver.getKeyValueStore(USER_AGGREGATE_STORE);
 
         assertIterableEquals(
-                List.of(homer, marge, bart), stateStore.get("Simpson").getUsers());
+                List.of("Homer", "Marge", "Bart"),
+                stateStore.get("Simpson").getFirstNameByLastName().get("Simpson"));
     }
 
     private KafkaUser buildKafkaUser(String firstName) {

@@ -16,17 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.github.loicgreffier.streams.aggregate.app.aggregator;
+package io.github.loicgreffier.streams.aggregate.sliding.window.app.aggregator;
 
 import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserAggregate;
+import io.github.loicgreffier.avro.KafkaUserGroup;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.kafka.streams.kstream.Aggregator;
 
-/** This class represents an aggregator that aggregates users by last name. */
-public class KafkaUserAggregator implements Aggregator<String, KafkaUser, KafkaUserAggregate> {
+/** This class represents an aggregator that aggregates the first names by last name. */
+public class FirstNameByLastNameAggregator implements Aggregator<String, KafkaUser, KafkaUserGroup> {
 
     /**
-     * Aggregates users by last name.
+     * Aggregates the first names by last name.
      *
      * @param key The key of the record.
      * @param kafkaUser The value of the record.
@@ -34,8 +36,13 @@ public class KafkaUserAggregator implements Aggregator<String, KafkaUser, KafkaU
      * @return The updated aggregate.
      */
     @Override
-    public KafkaUserAggregate apply(String key, KafkaUser kafkaUser, KafkaUserAggregate aggregate) {
-        aggregate.getUsers().add(kafkaUser);
+    public KafkaUserGroup apply(String key, KafkaUser kafkaUser, KafkaUserGroup aggregate) {
+        aggregate.getFirstNameByLastName().putIfAbsent(kafkaUser.getLastName(), new ArrayList<>());
+
+        List<String> firstNames = aggregate.getFirstNameByLastName().get(kafkaUser.getLastName());
+        firstNames.add(kafkaUser.getFirstName());
+        aggregate.getFirstNameByLastName().put(kafkaUser.getLastName(), firstNames);
+
         return aggregate;
     }
 }
