@@ -24,12 +24,11 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.google.common.primitives.Bytes;
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.consumer.circuit.breaker.app.ConsumerRunner;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
-import java.util.UUID;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
 import org.apache.kafka.clients.consumer.OffsetResetStrategy;
@@ -62,9 +61,17 @@ class KafkaConsumerCircuitBreakerApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        KafkaUser kafkaUser = buildKafkaUser();
-        ConsumerRecord<String, KafkaUser> message =
-                new ConsumerRecord<>(USER_TOPIC, 0, 0, kafkaUser.getId(), kafkaUser);
+        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+                USER_TOPIC,
+                0,
+                0,
+                "1",
+                KafkaUser.newBuilder()
+                        .setId(1L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -77,12 +84,29 @@ class KafkaConsumerCircuitBreakerApplicationTest {
 
     @Test
     void shouldBreakCircuitOnPoisonPill() {
-        KafkaUser kafkaUser = buildKafkaUser();
-        ConsumerRecord<String, KafkaUser> message =
-                new ConsumerRecord<>(USER_TOPIC, 0, 0, kafkaUser.getId(), kafkaUser);
+        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+                USER_TOPIC,
+                0,
+                0,
+                "1",
+                KafkaUser.newBuilder()
+                        .setId(1L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
-        ConsumerRecord<String, KafkaUser> message2 =
-                new ConsumerRecord<>(USER_TOPIC, 0, 2, kafkaUser.getId(), kafkaUser);
+        ConsumerRecord<String, KafkaUser> message2 = new ConsumerRecord<>(
+                USER_TOPIC,
+                0,
+                2,
+                "2",
+                KafkaUser.newBuilder()
+                        .setId(2L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
 
@@ -110,17 +134,5 @@ class KafkaConsumerCircuitBreakerApplicationTest {
         verify(mockConsumer, times(5)).poll(any());
         verify(mockConsumer, times(2)).commitSync();
         verify(mockConsumer).seek(topicPartition, 2);
-    }
-
-    private KafkaUser buildKafkaUser() {
-        String firstName = "Homer";
-        String lastName = "Simpson";
-
-        return KafkaUser.newBuilder()
-                .setId(UUID.nameUUIDFromBytes(Bytes.concat(firstName.getBytes(), lastName.getBytes()))
-                        .toString())
-                .setFirstName(firstName)
-                .setLastName(lastName)
-                .build();
     }
 }

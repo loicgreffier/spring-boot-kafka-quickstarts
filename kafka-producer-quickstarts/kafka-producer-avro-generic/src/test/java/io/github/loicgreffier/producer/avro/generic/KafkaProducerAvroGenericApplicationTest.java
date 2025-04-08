@@ -23,14 +23,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.google.common.primitives.Bytes;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import io.github.loicgreffier.producer.avro.generic.app.ProducerRunner;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.apache.avro.Schema;
@@ -69,9 +67,13 @@ class KafkaProducerAvroGenericApplicationTest {
         File schemaFile = new ClassPathResource("user.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
-        GenericRecord genericRecord = buildGenericRecord(schema);
-        ProducerRecord<String, GenericRecord> message =
-                new ProducerRecord<>(USER_TOPIC, genericRecord.get("id").toString(), genericRecord);
+        GenericRecord genericRecord = new GenericData.Record(schema);
+        genericRecord.put("id", 1L);
+        genericRecord.put("firstName", "Homer");
+        genericRecord.put("lastName", "Simpson");
+        genericRecord.put("birthDate", System.currentTimeMillis());
+
+        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(USER_TOPIC, "1", genericRecord);
 
         Future<RecordMetadata> recordMetadata = producerRunner.send(message);
         mockProducer.completeNext();
@@ -88,9 +90,13 @@ class KafkaProducerAvroGenericApplicationTest {
         File schemaFile = new ClassPathResource("user.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
-        GenericRecord genericRecord = buildGenericRecord(schema);
-        ProducerRecord<String, GenericRecord> message =
-                new ProducerRecord<>(USER_TOPIC, genericRecord.get("id").toString(), genericRecord);
+        GenericRecord genericRecord = new GenericData.Record(schema);
+        genericRecord.put("id", 1L);
+        genericRecord.put("firstName", "Homer");
+        genericRecord.put("lastName", "Simpson");
+        genericRecord.put("birthDate", System.currentTimeMillis());
+
+        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(USER_TOPIC, "1", genericRecord);
 
         Future<RecordMetadata> recordMetadata = producerRunner.send(message);
         RuntimeException exception = new RuntimeException("Error sending message");
@@ -107,32 +113,20 @@ class KafkaProducerAvroGenericApplicationTest {
         File schemaFile = new ClassPathResource("user.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
-        GenericRecord genericRecord = buildGenericRecord(schema);
-        genericRecord.put("id", 666L); // Wrong type, should be a String
-        ProducerRecord<String, GenericRecord> message =
-                new ProducerRecord<>(USER_TOPIC, genericRecord.get("id").toString(), genericRecord);
+        GenericRecord genericRecord = new GenericData.Record(schema);
+        genericRecord.put("id", "aStringThatShouldBeALong");
+        genericRecord.put("firstName", "Homer");
+        genericRecord.put("lastName", "Simpson");
+        genericRecord.put("birthDate", System.currentTimeMillis());
+
+        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(USER_TOPIC, "1", genericRecord);
 
         SerializationException serializationException =
                 assertThrows(SerializationException.class, () -> producerRunner.send(message));
 
         assertEquals("Error serializing Avro message", serializationException.getMessage());
         assertEquals(
-                "Not in union [\"null\",\"string\"]: 666 (field=id)",
+                "Not in union [\"null\",\"long\"]: aStringThatShouldBeALong (field=id)",
                 serializationException.getCause().getMessage());
-    }
-
-    private GenericRecord buildGenericRecord(Schema schema) {
-        String firstName = "Homer";
-        String lastName = "Simpson";
-
-        GenericRecord genericRecord = new GenericData.Record(schema);
-        genericRecord.put(
-                "id",
-                UUID.nameUUIDFromBytes(Bytes.concat(firstName.getBytes(), lastName.getBytes()))
-                        .toString());
-        genericRecord.put("firstName", firstName);
-        genericRecord.put("lastName", lastName);
-
-        return genericRecord;
     }
 }

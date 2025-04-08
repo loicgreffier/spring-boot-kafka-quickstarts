@@ -22,11 +22,9 @@ import static io.github.loicgreffier.producer.avro.generic.constant.Name.FIRST_N
 import static io.github.loicgreffier.producer.avro.generic.constant.Name.LAST_NAMES;
 import static io.github.loicgreffier.producer.avro.generic.constant.Topic.USER_TOPIC;
 
-import com.google.common.primitives.Bytes;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +44,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProducerRunner {
-    private final Random random = new Random();
+    private Random random = new Random();
     private final Producer<String, GenericRecord> producer;
 
     /**
@@ -71,10 +69,10 @@ public class ProducerRunner {
         File schemaFile = new ClassPathResource("user.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
+        int i = 0;
         while (true) {
-            GenericRecord genericRecord = buildGenericRecord(schema);
             ProducerRecord<String, GenericRecord> message =
-                    new ProducerRecord<>(USER_TOPIC, genericRecord.get("id").toString(), genericRecord);
+                    new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildGenericRecord(schema, i));
 
             send(message);
 
@@ -84,6 +82,8 @@ public class ProducerRunner {
                 log.error("Interruption during sleep between message production", e);
                 Thread.currentThread().interrupt();
             }
+
+            i++;
         }
     }
 
@@ -113,20 +113,15 @@ public class ProducerRunner {
      * Builds a generic Avro record.
      *
      * @param schema The Avro schema.
+     * @param id The record id.
      * @return The generic Avro record.
      */
-    private GenericRecord buildGenericRecord(Schema schema) {
-        String firstName = FIRST_NAMES[random.nextInt(FIRST_NAMES.length)];
-        String lastName = LAST_NAMES[random.nextInt(LAST_NAMES.length)];
-
+    private GenericRecord buildGenericRecord(Schema schema, int id) {
         GenericRecord genericRecord = new GenericData.Record(schema);
-        genericRecord.put(
-                "id",
-                UUID.nameUUIDFromBytes(Bytes.concat(firstName.getBytes(), lastName.getBytes()))
-                        .toString());
-        genericRecord.put("firstName", firstName);
-        genericRecord.put("lastName", lastName);
-
+        genericRecord.put("id", (long) id);
+        genericRecord.put("firstName", FIRST_NAMES[random.nextInt(FIRST_NAMES.length)]);
+        genericRecord.put("lastName", LAST_NAMES[random.nextInt(LAST_NAMES.length)]);
+        genericRecord.put("birthDate", System.currentTimeMillis());
         return genericRecord;
     }
 }

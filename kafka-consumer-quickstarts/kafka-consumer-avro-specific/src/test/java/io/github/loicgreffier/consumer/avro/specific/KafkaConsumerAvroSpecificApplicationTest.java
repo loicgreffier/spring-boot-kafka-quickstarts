@@ -25,12 +25,11 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.google.common.primitives.Bytes;
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.consumer.avro.specific.app.ConsumerRunner;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
-import java.util.UUID;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
 import org.apache.kafka.clients.consumer.OffsetResetStrategy;
@@ -63,9 +62,17 @@ class KafkaConsumerAvroSpecificApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        KafkaUser kafkaUser = buildKafkaUser();
-        ConsumerRecord<String, KafkaUser> message =
-                new ConsumerRecord<>(USER_TOPIC, 0, 0, kafkaUser.getId(), kafkaUser);
+        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+                USER_TOPIC,
+                0,
+                0,
+                "1",
+                KafkaUser.newBuilder()
+                        .setId(1L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -78,9 +85,17 @@ class KafkaConsumerAvroSpecificApplicationTest {
 
     @Test
     void shouldFailOnPoisonPill() {
-        KafkaUser kafkaUser = buildKafkaUser();
-        ConsumerRecord<String, KafkaUser> message =
-                new ConsumerRecord<>(USER_TOPIC, 0, 0, kafkaUser.getId(), kafkaUser);
+        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+                USER_TOPIC,
+                0,
+                0,
+                "1",
+                KafkaUser.newBuilder()
+                        .setId(1L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(() -> {
@@ -103,17 +118,5 @@ class KafkaConsumerAvroSpecificApplicationTest {
         assertTrue(mockConsumer.closed());
         verify(mockConsumer, times(3)).poll(any());
         verify(mockConsumer).commitSync();
-    }
-
-    private KafkaUser buildKafkaUser() {
-        String firstName = "Homer";
-        String lastName = "Simpson";
-
-        return KafkaUser.newBuilder()
-                .setId(UUID.nameUUIDFromBytes(Bytes.concat(firstName.getBytes(), lastName.getBytes()))
-                        .toString())
-                .setFirstName(firstName)
-                .setLastName(lastName)
-                .build();
     }
 }

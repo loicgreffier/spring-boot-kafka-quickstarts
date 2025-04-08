@@ -18,14 +18,11 @@
  */
 package io.github.loicgreffier.producer.transaction.app;
 
-import static io.github.loicgreffier.producer.transaction.constant.Name.FIRST_NAMES;
-import static io.github.loicgreffier.producer.transaction.constant.Name.LAST_NAMES;
 import static io.github.loicgreffier.producer.transaction.constant.Topic.FIRST_STRING_TOPIC;
 import static io.github.loicgreffier.producer.transaction.constant.Topic.SECOND_STRING_TOPIC;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +41,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProducerRunner {
-    private final Random random = new Random();
     private final Producer<String, String> producer;
 
     /**
@@ -68,17 +64,15 @@ public class ProducerRunner {
         log.info("Init transactions");
         producer.initTransactions();
 
+        int i = 0;
         while (true) {
-            String kafkaUser = buildKafkaUser();
-            String key = UUID.nameUUIDFromBytes(kafkaUser.getBytes()).toString();
-            String firstName = kafkaUser.split(" ")[0];
-            String lastName = kafkaUser.split(" ")[1];
+            ProducerRecord<String, String> firstMessage =
+                    new ProducerRecord<>(FIRST_STRING_TOPIC, String.valueOf(i), String.format("Message %s", i));
 
-            ProducerRecord<String, String> firstNameMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, key, firstName);
+            ProducerRecord<String, String> secondMessage =
+                    new ProducerRecord<>(SECOND_STRING_TOPIC, String.valueOf(i), String.format("Message %s", i));
 
-            ProducerRecord<String, String> lastNameMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, key, lastName);
-
-            sendInTransaction(List.of(firstNameMessage, lastNameMessage));
+            sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
             try {
                 TimeUnit.SECONDS.sleep(1);
@@ -86,12 +80,14 @@ public class ProducerRunner {
                 log.error("Interruption during sleep between message production", e);
                 Thread.currentThread().interrupt();
             }
+
+            i++;
         }
     }
 
     /**
-     * Sends a list of messages to the Kafka topics in a single transaction. If the first message value is greater than
-     * or equal to 7, an exception is thrown to simulate an error and abort the transaction.
+     * Sends a list of messages to the Kafka topics in a single transaction. If the first message key is a multiple of
+     * 3, the transaction is aborted.
      *
      * @param messages The messages to send.
      */
@@ -102,7 +98,7 @@ public class ProducerRunner {
 
             messages.forEach(this::send);
 
-            if (messages.getFirst().value().length() >= 7) {
+            if (Integer.parseInt(messages.get(0).key()) % 3 == 0) {
                 throw new Exception("Error during transaction...");
             }
 
@@ -126,7 +122,13 @@ public class ProducerRunner {
     public Future<RecordMetadata> send(ProducerRecord<String, String> message) {
         return producer.send(message, (recordMetadata, e) -> {
             if (e != null) {
-                log.error(e.getMessage());
+                log.error(
+                        e.getMessage() + " (topic = {}, partition = {}, offset = {}, key = {}, value = {})",
+                        recordMetadata.topic(),
+                        recordMetadata.partition(),
+                        recordMetadata.offset(),
+                        message.key(),
+                        message.value());
             } else {
                 log.info(
                         "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
@@ -137,17 +139,5 @@ public class ProducerRunner {
                         message.value());
             }
         });
-    }
-
-    /**
-     * Builds a Kafka user as a string record.
-     *
-     * @return The string record.
-     */
-    private String buildKafkaUser() {
-        String firstName = FIRST_NAMES[random.nextInt(FIRST_NAMES.length)];
-        String lastName = LAST_NAMES[random.nextInt(LAST_NAMES.length)];
-
-        return String.format("%s %s", firstName, lastName);
     }
 }

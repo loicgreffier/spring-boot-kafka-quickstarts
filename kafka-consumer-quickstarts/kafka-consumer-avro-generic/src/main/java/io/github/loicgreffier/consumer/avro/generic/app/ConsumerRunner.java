@@ -68,11 +68,12 @@ public class ConsumerRunner {
 
                 for (ConsumerRecord<String, GenericRecord> message : messages) {
                     log.info(
-                            "Received offset = {}, partition = {}, key = {}, value = {}",
+                            "Received offset = {}, partition = {}, key = {}, firstName = {}, lastName = {}",
                             message.offset(),
                             message.partition(),
                             message.key(),
-                            message.value());
+                            message.value().get("firstName"),
+                            message.value().get("lastName"));
                 }
 
                 if (!messages.isEmpty()) {

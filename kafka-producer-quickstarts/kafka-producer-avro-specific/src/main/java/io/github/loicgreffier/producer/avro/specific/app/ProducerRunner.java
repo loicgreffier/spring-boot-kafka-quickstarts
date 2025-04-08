@@ -22,10 +22,9 @@ import static io.github.loicgreffier.producer.avro.specific.constant.Name.FIRST_
 import static io.github.loicgreffier.producer.avro.specific.constant.Name.LAST_NAMES;
 import static io.github.loicgreffier.producer.avro.specific.constant.Topic.USER_TOPIC;
 
-import com.google.common.primitives.Bytes;
 import io.github.loicgreffier.avro.KafkaUser;
+import java.time.Instant;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +40,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProducerRunner {
-    private final Random random = new Random();
+    private Random random = new Random();
     private final Producer<String, KafkaUser> producer;
 
     /**
@@ -61,9 +60,10 @@ public class ProducerRunner {
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
+        int i = 0;
         while (true) {
-            KafkaUser kafkaUser = buildKafkaUser();
-            ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(USER_TOPIC, kafkaUser.getId(), kafkaUser);
+            ProducerRecord<String, KafkaUser> message =
+                    new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildKafkaUser(i));
 
             send(message);
 
@@ -73,6 +73,8 @@ public class ProducerRunner {
                 log.error("Interruption during sleep between message production", e);
                 Thread.currentThread().interrupt();
             }
+
+            i++;
         }
     }
 
@@ -101,17 +103,15 @@ public class ProducerRunner {
     /**
      * Builds a specific Avro record.
      *
+     * @param id The record id.
      * @return The specific Avro record.
      */
-    private KafkaUser buildKafkaUser() {
-        String firstName = FIRST_NAMES[random.nextInt(FIRST_NAMES.length)];
-        String lastName = LAST_NAMES[random.nextInt(LAST_NAMES.length)];
-
+    private KafkaUser buildKafkaUser(int id) {
         return KafkaUser.newBuilder()
-                .setId(UUID.nameUUIDFromBytes(Bytes.concat(firstName.getBytes(), lastName.getBytes()))
-                        .toString())
-                .setFirstName(firstName)
-                .setLastName(lastName)
+                .setId((long) id)
+                .setFirstName(FIRST_NAMES[random.nextInt(FIRST_NAMES.length)])
+                .setLastName(LAST_NAMES[random.nextInt(LAST_NAMES.length)])
+                .setBirthDate(Instant.now())
                 .build();
     }
 }
