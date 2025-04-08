@@ -2,16 +2,16 @@
 
 This module demonstrates the following:
 
-- The use of the Kafka Clients consumer API.
-- The use of isolation level.
+- How to use the Kafka Clients consumer API.
+- How to use the isolation level setting.
 
 This module consumes records of type `<String, String>` from topics named `FIRST_STRING_TOPIC`
-and `SECOND_STRING_TOPIC`. It utilizes an isolation level of `read_committed` to ensure that only committed records are
+and `SECOND_STRING_TOPIC`. It uses an isolation level of `read_committed` to ensure that only committed records are
 consumed, filtering out any uncommitted or transactionally aborted records.
 
 ## Prerequisites
 
-To compile and run this demo, you will need the following:
+To compile and run this demo, you’ll need:
 
 - Java 21
 - Maven

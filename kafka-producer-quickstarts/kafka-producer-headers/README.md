@@ -10,7 +10,7 @@ This module produces records of type `<String, String>` with headers to a topic 
 
 ## Prerequisites
 
-To compile and run this demo, you will need the following:
+To compile and run this demo, you’ll need:
 
 - Java 21
 - Maven
@@ -31,7 +31,6 @@ docker-compose up -d
 
 This command will start the following services in Docker:
 
-- 1 Zookeeper KRaft
 - 1 Kafka broker
 - 1 Control Center
 - 1 producer Headers

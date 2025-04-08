@@ -11,7 +11,7 @@ and `SECOND_STRING_TOPIC`.
 
 ## Prerequisites
 
-To compile and run this demo, you will need the following:
+To compile and run this demo, you’ll need:
 
 - Java 21
 - Maven

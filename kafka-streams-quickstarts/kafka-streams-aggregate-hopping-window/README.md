@@ -27,7 +27,7 @@ The output records will be in the following format:
 
 ## Prerequisites
 
-To compile and run this demo, you will need the following:
+To compile and run this demo, you’ll need:
 
 - Java 21
 - Maven
@@ -50,7 +50,7 @@ docker-compose up -d
 This command will start the following services in Docker:
 
 - 1 Kafka broker (KRaft mode)
-- 1 Schema registry
+- 1 Schema Registry
 - 1 Control Center
 - 1 producer User
 - 1 Kafka Streams Aggregate Hopping Window

@@ -9,7 +9,7 @@ This module produces records of type `<String, String>` to a topic named `STRING
 
 ## Prerequisites
 
-To compile and run this demo, you will need the following:
+To compile and run this demo, you’ll need:
 
 - Java 21
 - Maven
