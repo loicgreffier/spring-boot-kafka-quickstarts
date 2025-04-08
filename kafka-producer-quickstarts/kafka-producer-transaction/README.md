@@ -1,15 +1,17 @@
 # Producer Transaction
 
-This module produces transactional records of type `<String, String>` to two topics: `FIRST_STRING_TOPIC`
+This module demonstrates the following:
+
+- The use of the Kafka Clients producer API.
+- The use of Kafka transactions.
+- Unit testing using a Mock producer.
+
+This module produces transactional records of type `<String, String>` to two topics named `FIRST_STRING_TOPIC`
 and `SECOND_STRING_TOPIC`.
-It demonstrates the following:
-- Use of the Kafka Clients producer API
-- Use of Kafka transactions
-- Unit testing with a mock producer
 
 ## Prerequisites
 
-To compile and run this demo, you’ll need:
+To compile and run this demo, you will need the following:
 
 - Java 21
 - Maven
@@ -28,8 +30,8 @@ To run the application in Docker, use the following command:
 docker-compose up -d
 ```
 
-This command starts the following services in Docker:
+This command will start the following services in Docker:
 
 - 1 Kafka broker (KRaft mode)
 - 1 Control Center
-- 1 Producer Transaction
+- 1 producer Transaction

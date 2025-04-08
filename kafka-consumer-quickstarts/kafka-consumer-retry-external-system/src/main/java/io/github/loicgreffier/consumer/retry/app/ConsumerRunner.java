@@ -65,14 +65,14 @@ public class ConsumerRunner {
     }
 
     /**
-     * Asynchronously starts the Kafka consumer once the application is ready. The {@code @Async} annotation ensures
-     * that the consumer runs in a separate thread, preventing the main thread from being blocked. The Kafka consumer
-     * processes messages from the STRING_TOPIC topic. If an error occurs during the external system call, the consumer
-     * pauses the topic-partitions. and rewinds to the failed record offset as a call to poll() has automatically
-     * advanced the consumer offsets. The consumer being paused, it will not commit the offsets and the next call to
-     * poll() will not return any records. Consequently, the consumer will honor the pause duration given by the poll()
-     * timeout. Once the pause duration is elapsed, the consumer will resume the topic-partitions and consume the
-     * records from the failed record offset.
+     * Asynchronously starts the Kafka consumer when the application is ready. The asynchronous annotation is used to
+     * run the consumer in a separate thread and not block the main thread. The Kafka consumer processes messages from
+     * the STRING_TOPIC topic. If an error occurs during the external system call, the consumer pauses the
+     * topic-partitions. and rewinds to the failed record offset as a call to poll() has automatically advanced the
+     * consumer offsets. The consumer being paused, it will not commit the offsets and the next call to poll() will not
+     * return any records. Consequently, the consumer will honor the pause duration given by the poll() timeout. Once
+     * the pause duration is elapsed, the consumer will resume the topic-partitions and consume the records from the
+     * failed record offset.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
