@@ -24,11 +24,11 @@ import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.T
 import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.Topic.USER_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserGroup;
-import io.github.loicgreffier.streams.aggregate.sliding.window.app.aggregator.FirstNameByLastNameAggregator;
+import io.github.loicgreffier.avro.KafkaUserAggregate;
+import io.github.loicgreffier.streams.aggregate.sliding.window.app.aggregator.UserAggregator;
 import io.github.loicgreffier.streams.aggregate.sliding.window.serdes.SerdesUtils;
 import java.time.Duration;
-import java.util.HashMap;
+import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -46,7 +46,7 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, selects the key as the last name
-     * of the user, groups by key and aggregates the first names by last name in 5-minute tumbling windows with 1-minute
+     * of the user, groups by key and aggregates users by last name in 5-minute tumbling windows with 1-minute
      * grace period. A new key is generated with the window start and end time. The result is written to the
      * USER_AGGREGATE_SLIDING_WINDOW_TOPIC topic.
      *
@@ -72,9 +72,9 @@ public class KafkaStreamsTopology {
                 .groupByKey(Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .windowedBy(SlidingWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)))
                 .aggregate(
-                        () -> new KafkaUserGroup(new HashMap<>()),
-                        new FirstNameByLastNameAggregator(),
-                        Materialized.<String, KafkaUserGroup, WindowStore<Bytes, byte[]>>as(
+                    () -> new KafkaUserAggregate(new ArrayList<>()),
+                    new UserAggregator(),
+                        Materialized.<String, KafkaUserAggregate, WindowStore<Bytes, byte[]>>as(
                                         USER_AGGREGATE_SLIDING_WINDOW_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))

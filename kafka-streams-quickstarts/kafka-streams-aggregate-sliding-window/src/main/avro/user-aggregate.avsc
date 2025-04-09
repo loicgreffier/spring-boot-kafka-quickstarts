@@ -1,0 +1,14 @@
+{
+  "namespace": "io.github.loicgreffier.avro",
+  "type": "record",
+  "name": "KafkaUserAggregate",
+  "fields": [
+    {
+      "name": "users",
+      "type": {
+        "type": "array",
+        "items" : "KafkaUser"
+      }
+    }
+  ]
+}

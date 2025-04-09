@@ -33,7 +33,7 @@ docker-compose up -d
 
 This command will start the following services in Docker:
 
-- 1 Kafka broker (KRaft mode)
+- 1 Kafka Broker (KRaft mode)
 - 1 Control Center
 - 1 producer Transaction
 - 1 consumer Transaction
