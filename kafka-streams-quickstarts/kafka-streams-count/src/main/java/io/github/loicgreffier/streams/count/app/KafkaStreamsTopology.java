@@ -40,10 +40,13 @@ import org.apache.kafka.streams.state.KeyValueStore;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, groups by nationality and counts
-     * the number of users. The result is written to the USER_COUNT_TOPIC topic.
+     * Builds the Kafka Streams topology.
      *
-     * @param streamsBuilder The streams builder.
+     * <p>This topology reads records from the {@code USER_TOPIC} topic, groups the records by nationality, and counts
+     * the number of users in each group. The aggregated count for each nationality is written to the
+     * {@code USER_COUNT_TOPIC} topic.
+     *
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, KafkaUser>stream(

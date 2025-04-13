@@ -34,11 +34,11 @@ import org.apache.kafka.streams.kstream.Printed;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and prints the result to the file
-     * specified by the {@code filePath} parameter. The topology also reads from the USER_TOPIC_TWO topic and prints the
+     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} and writes the result to the
+     * file specified by the {@code filePath} parameter. It also reads from the {@code USER_TOPIC_TWO} and prints the
      * result to the console.
      *
-     * @param streamsBuilder The streams builder.
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      * @param filePath The file path.
      */
     public static void topology(StreamsBuilder streamsBuilder, String filePath) {

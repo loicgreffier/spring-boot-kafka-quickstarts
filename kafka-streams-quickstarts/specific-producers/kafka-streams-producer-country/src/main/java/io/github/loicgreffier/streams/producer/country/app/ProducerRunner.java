@@ -47,9 +47,12 @@ public class ProducerRunner {
     }
 
     /**
-     * Asynchronously starts the Kafka producer when the application is ready. The asynchronous annotation is used to
-     * run the producer in a separate thread and not block the main thread. The Kafka producer produces country records
-     * to the COUNTRY_TOPIC topic.
+     * Asynchronously starts the Kafka producer when the application is ready.
+     *
+     * <p>The {@code @Async} annotation is used to run the producer in a separate thread, preventing it from blocking
+     * the main thread.
+     *
+     * <p>The Kafka producer sends country records to the {@code COUNTRY_TOPIC}.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)

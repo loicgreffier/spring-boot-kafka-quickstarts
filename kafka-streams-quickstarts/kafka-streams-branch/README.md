@@ -3,7 +3,7 @@
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and splits the stream into different branches based on the user's last name.
 It demonstrates the following:
 
-- How to use the Kafka Streams DSL, including `branch()` and `peek()`.
+- How to use the Kafka Streams DSL, including `split()`, `branch()` and `peek()`.
 - Unit testing using the Topology Test Driver.
 
 ![topology.png](topology.png)

@@ -45,23 +45,25 @@ import org.apache.kafka.streams.state.WindowStore;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, selects the key as the last name
-     * of the user, groups by key and aggregates users by last name in 5-minute tumbling windows with 1-minute grace
-     * period. A new key is generated with the window start and end time. The result is written to the
-     * USER_AGGREGATE_SLIDING_WINDOW_TOPIC topic.
+     * Builds the Kafka Streams topology.
      *
-     * <p>{@link org.apache.kafka.streams.kstream.SlidingWindows} are aligned to the records timestamp. They are created
-     * each time a record is processed and when a record becomes older than the window size. They are bounded such as:
+     * <p>This topology reads records from the {@code USER_TOPIC} topic, selects the last name of the user as the key,
+     * groups the records by key, and aggregates users by last name using 5-minute tumbling windows with a 1-minute
+     * grace period. A new key is generated with the window's start and end times. The aggregated results are written to
+     * the {@code USER_AGGREGATE_SLIDING_WINDOW_TOPIC} topic.
+     *
+     * <p>{@link org.apache.kafka.streams.kstream.SlidingWindows} are aligned to the record's timestamp. Each time a
+     * record is processed, a new window is created. The window is bounded as follows:
      *
      * <ul>
      *   <li>[timestamp - window size, timestamp]
      *   <li>[timestamp + 1ms, timestamp + window size + 1ms]
      * </ul>
      *
-     * They are looking backward in time. Two records are in the same window if the difference between their timestamps
-     * is less than the window size.
+     * <p>The sliding window looks backward in time. Two records are considered to be in the same window if the
+     * difference between their timestamps is less than the window size.
      *
-     * @param streamsBuilder The streams builder.
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      * @see org.apache.kafka.streams.kstream.internals.KStreamSlidingWindowAggregate
      */
     public static void topology(StreamsBuilder streamsBuilder) {

@@ -43,17 +43,18 @@ import org.apache.kafka.streams.state.TimestampedWindowStore;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and processes the records with
-     * the {@link PutInStoreProcessor} processor that puts the records in a {@link TimestampedWindowStore} state store.
-     * It demonstrates the two strategies to use a state store in a processor:
+     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} and processes the records using
+     * the {@link PutInStoreProcessor} processor, which writes the records to a {@link TimestampedWindowStore} state
+     * store. It demonstrates two strategies for using a state store in a processor:
      *
      * <ul>
-     *   <li>Using the {@link StreamsBuilder#addStateStore(StoreBuilder)} and specifying the store names in the
+     *   <li>Using {@link StreamsBuilder#addStateStore(StoreBuilder)} and specifying the store names in the
      *       {@link org.apache.kafka.streams.kstream.KStream#process(ProcessorSupplier, String...)} method.
-     *   <li>Using the {@link ProcessorSupplier#stores()} method to attach the store to the topology and the processor.
+     *   <li>Using the {@link ProcessorSupplier#stores()} method to attach the store to both the topology and the
+     *       processor.
      * </ul>
      *
-     * @param streamsBuilder The streams builder.
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         final StoreBuilder<TimestampedWindowStore<String, KafkaUser>> storeBuilder =

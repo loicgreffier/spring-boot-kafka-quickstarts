@@ -42,21 +42,22 @@ import org.apache.kafka.streams.kstream.StreamJoined;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and the USER_TOPIC_TWO topic. The
-     * stream is joined to the other stream by last name with an inner join and 5-minute symmetric join windows with
-     * 1-minute grace period. The result is written to the USER_JOIN_STREAM_STREAM_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic and the
+     * {@code USER_TOPIC_TWO} topic. The stream is joined to the other stream by last name using an inner join, with a
+     * 5-minute symmetric join window and a 1-minute grace period. The result is written to the
+     * {@code USER_JOIN_STREAM_STREAM_TOPIC} topic.
      *
      * <p>An inner join emits an output when both streams have records with the same key.
      *
-     * <p>{@link JoinWindows} are aligned to the records timestamp. They are created each time a record is processed and
-     * are bounded such as [timestamp - before, timestamp + after]. An output is produced if a record is found in the
-     * secondary stream that has a timestamp within the window of a record in the primary stream such as:
+     * <p>{@link JoinWindows} are aligned to the record's timestamp. They are created each time a record is processed
+     * and are bounded as [timestamp - before, timestamp + after]. An output is produced if a record from the secondary
+     * stream has a timestamp within the window of a record from the primary stream, such as:
      *
      * <pre>
      * {@code stream1.ts - before <= stream2.ts AND stream2.ts <= stream1.ts + after}
      * </pre>
      *
-     * @param streamsBuilder The streams builder.
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         KStream<String, KafkaUser> streamTwo = streamsBuilder.<String, KafkaUser>stream(

@@ -35,11 +35,11 @@ import org.apache.kafka.streams.kstream.Produced;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and processes the records with
-     * the {@link UserMetadataFixedKeyProcessor} processor. The result is written to the USER_PROCESS_VALUES_TOPIC
-     * topic.
+     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} and processes the records using
+     * the {@link UserMetadataFixedKeyProcessor} processor. The result is written to the
+     * {@code USER_PROCESS_VALUES_TOPIC}.
      *
-     * @param streamsBuilder The streams builder.
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, KafkaUser>stream(

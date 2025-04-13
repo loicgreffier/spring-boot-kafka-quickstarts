@@ -42,11 +42,14 @@ import org.apache.kafka.streams.state.KeyValueStore;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, groups by nationality and
-     * aggregates the age sum and count. Then, the average age is computed. The result is written to the
-     * USER_AVERAGE_TOPIC topic.
+     * Builds the Kafka Streams topology.
      *
-     * @param streamsBuilder The streams builder.
+     * <p>This topology reads records from the {@code USER_TOPIC} topic, groups the records by nationality, and performs
+     * an aggregation of the total age sum and count for each nationality. Afterward, the average age for each group is
+     * computed by dividing the total age sum by the count. The result, which includes the average age by nationality,
+     * is written to the {@code USER_AVERAGE_TOPIC} topic.
+     *
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, KafkaUser>stream(

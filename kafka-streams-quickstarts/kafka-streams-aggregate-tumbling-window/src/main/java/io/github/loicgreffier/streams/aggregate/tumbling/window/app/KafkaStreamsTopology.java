@@ -45,16 +45,18 @@ import org.apache.kafka.streams.state.WindowStore;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, selects the key as the last name
-     * of the user, groups by key and aggregates users by last name in 5 minutes tumbling windows with 1-minute grace
-     * period. A new key is generated with the window start and end time. The result is written to the
-     * USER_AGGREGATE_TUMBLING_WINDOW_TOPIC topic.
+     * Builds the Kafka Streams topology.
      *
-     * <p>Tumbling windows are aligned to the epoch. The first window starts at 1970-01-01T00:00:00Z. Then, every 5
-     * minutes, a new window of 5 minutes is created as long as the stream time advances. A record belongs to a tumbling
-     * window if its timestamp is in the range [windowStart, windowEnd).
+     * <p>This topology reads records from the {@code USER_TOPIC} topic, selects the last name of the user as the key,
+     * groups the records by key, and aggregates users by last name using tumbling windows. The tumbling windows are 5
+     * minutes in length, with a 1-minute grace period. A new key is generated based on the window's start and end time.
+     * The aggregated result is written to the {@code USER_AGGREGATE_TUMBLING_WINDOW_TOPIC} topic.
      *
-     * @param streamsBuilder The streams builder.
+     * <p>Tumbling windows are aligned to the epoch (1970-01-01T00:00:00Z). Every 5 minutes, a new 5-minute window is
+     * created, as long as the stream time progresses. A record belongs to a tumbling window if its timestamp is within
+     * the window's range, i.e., between {@code windowStart} and {@code windowEnd}.
+     *
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, KafkaUser>stream(

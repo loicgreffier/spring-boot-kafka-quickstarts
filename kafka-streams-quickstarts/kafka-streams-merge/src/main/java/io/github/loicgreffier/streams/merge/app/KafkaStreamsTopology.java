@@ -36,10 +36,11 @@ import org.apache.kafka.streams.kstream.Produced;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and the USER_TOPIC_TWO topic,
-     * then merge the two streams into the USER_MERGE_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic and the
+     * {@code USER_TOPIC_TWO} topic, then merges the two streams into a single stream and writes the result to the
+     * {@code USER_MERGE_TOPIC} topic.
      *
-     * @param streamsBuilder The streams builder.
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         KStream<String, KafkaUser> streamOne = streamsBuilder.<String, KafkaUser>stream(

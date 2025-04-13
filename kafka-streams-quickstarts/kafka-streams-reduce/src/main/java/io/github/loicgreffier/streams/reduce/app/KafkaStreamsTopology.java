@@ -41,10 +41,11 @@ import org.apache.kafka.streams.state.KeyValueStore;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, groups by nationality and
-     * reduces the stream to the user with the max age. The result is written to the USER_REDUCE_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic, groups by nationality
+     * and reduces the stream to the user with the max age. The result is written to the {@code USER_REDUCE_TOPIC}
+     * topic.
      *
-     * @param streamsBuilder The streams builder.
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, KafkaUser>stream(

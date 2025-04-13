@@ -37,20 +37,21 @@ public class KafkaStreamsTopology {
     private static final int ONE_MEBIBYTE = 1048576;
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and either:
+     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic and either:
      *
      * <ul>
-     *   <li>Populates the email field changing the record type from KafkaUser to KafkaUserWithEmail. As the email field
-     *       is not nullable, it breaks the schema backward compatibility and triggers a serialization exception when
-     *       registering the schema in the Schema Registry automatically.
-     *   <li>Populates the biography field with a large text that exceeds the maximum record size allowed by Kafka
-     *       (1MiB). It triggers a production exception due to the record being too large.
+     *   <li>Populates the email field, changing the record type from {@link KafkaUser} to {@link KafkaUserWithEmail}.
+     *       Since the email field is non-nullable, this breaks schema backward compatibility, triggering a
+     *       serialization exception when registering the schema in the Schema Registry automatically.
+     *   <li>Populates the biography field with a large text that exceeds the maximum record size allowed by Kafka (1
+     *       MiB), triggering a production exception due to the record being too large.
      * </ul>
      *
-     * The population of the email field and the biography field is not triggered for all records to avoid generating
-     * too many exceptions. The result is written to the USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC topic.
+     * The population of the email and biography fields is not applied to all records in order to avoid generating too
+     * many exceptions. Serialization and production exceptions are handled by the produce exception handler. The result
+     * is written to the {@code USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC} topic.
      *
-     * @param streamsBuilder The streams builder.
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         StringBuilder stringBuilder = new StringBuilder();

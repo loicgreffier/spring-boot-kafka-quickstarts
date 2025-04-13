@@ -46,11 +46,13 @@ import org.apache.kafka.streams.state.KeyValueStore;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and the USER_TOPIC_TWO topic.
-     * Both topics are grouped by last name and cogrouped. The cogrouped stream then aggregates users by last name. The
-     * result is written to the USER_COGROUP_TOPIC topic.
+     * Builds the Kafka Streams topology.
      *
-     * @param streamsBuilder The streams builder.
+     * <p>This topology reads records from the {@code USER_TOPIC} and {@code USER_TOPIC_TWO} topics. Both topics are
+     * grouped by last name and cogrouped to combine the data from both streams. After cogrouping, the stream aggregates
+     * the users by last name. The result of the aggregation is written to the {@code USER_COGROUP_TOPIC} topic.
+     *
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         final UserAggregator aggregator = new UserAggregator();

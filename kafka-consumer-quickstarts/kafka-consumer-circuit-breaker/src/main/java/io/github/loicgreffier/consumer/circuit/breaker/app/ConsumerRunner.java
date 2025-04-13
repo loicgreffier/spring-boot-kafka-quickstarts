@@ -51,12 +51,18 @@ public class ConsumerRunner {
     }
 
     /**
-     * Asynchronously starts the Kafka consumer when the application is ready. The asynchronous annotation is used to
-     * run the consumer in a separate thread and not block the main thread. The Kafka consumer processes messages from
-     * the USER_TOPIC topic and handles deserialization errors. If a poison pill is found in the middle of a batch of
-     * valid records, the {@link Consumer#poll(Duration)} method will return the good records in the first loop, then
-     * throw the deserialization exception in the second. When a deserialization error occurs, the consumer seeks to the
-     * next offset in order to skip the record that caused the error.
+     * Asynchronously starts the Kafka consumer when the application is ready.
+     *
+     * <p>The {@code @Async} annotation ensures that the consumer runs in a separate thread, allowing the main
+     * application thread to remain unblocked during startup.
+     *
+     * <p>This Kafka consumer listens to the {@code USER_TOPIC} and handles messages that may include deserialization
+     * errors. In cases where a poison pill (malformed record) is encountered in the middle of a batch, the
+     * {@link Consumer#poll(Duration)} method will first return all valid records. On the subsequent poll, it will throw
+     * a deserialization exception for the problematic record.
+     *
+     * <p>When such an error occurs, the consumer is configured to seek past the offending offset to skip the corrupted
+     * record and continue processing the stream.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)

@@ -42,14 +42,14 @@ import org.apache.kafka.streams.state.KeyValueStore;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and the COUNTRY_TOPIC topic as a
-     * global table. The stream is joined to the global table by nationality with a left join. The result is written to
-     * the USER_COUNTRY_LEFT_JOIN_STREAM_GLOBAL_TABLE_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic and the
+     * {@code COUNTRY_TOPIC} topic as a global table. The stream is joined to the global table by nationality using a
+     * left join. The result is written to the {@code USER_COUNTRY_LEFT_JOIN_STREAM_GLOBAL_TABLE_TOPIC} topic.
      *
      * <p>A left join emits an output for each record in the primary stream. If there is no matching record in the
-     * secondary stream, a null value is returned.
+     * secondary stream, a {@code null} value is returned for the missing fields from the secondary stream.
      *
-     * @param streamsBuilder The streams builder.
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         GlobalKTable<String, KafkaCountry> countryGlobalTable = streamsBuilder.globalTable(

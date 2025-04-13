@@ -35,10 +35,11 @@ import org.apache.kafka.streams.kstream.Produced;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, maps the first name and the last
-     * name to upper case and changes the key to the last name. The result is written to the USER_MAP_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic, maps the first name and
+     * last name to uppercase, and changes the key of the record to the last name. The transformed records are then
+     * written to the {@code USER_MAP_TOPIC} topic.
      *
-     * @param streamsBuilder The streams builder.
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, KafkaUser>stream(

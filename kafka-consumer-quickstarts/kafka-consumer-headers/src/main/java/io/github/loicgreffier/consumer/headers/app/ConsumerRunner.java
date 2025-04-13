@@ -51,9 +51,13 @@ public class ConsumerRunner {
     }
 
     /**
-     * Asynchronously starts the Kafka consumer when the application is ready. The asynchronous annotation is used to
-     * run the consumer in a separate thread and not block the main thread. The Kafka consumer processes string records
-     * with headers from the STRING_TOPIC topic.
+     * Asynchronously starts the Kafka consumer when the application is ready.
+     *
+     * <p>The {@code @Async} annotation ensures that the consumer runs in a separate thread, preventing it from blocking
+     * the main application thread during startup.
+     *
+     * <p>This Kafka consumer listens to the {@code STRING_TOPIC} and processes string records along with their
+     * associated headers.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)

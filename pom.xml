@@ -147,7 +147,7 @@
                 <version>${jib-maven-plugin.version}</version>
                 <configuration>
                     <from>
-                        <image>eclipse-temurin:21-jre-alpine</image>
+                        <image>eclipse-temurin:21-jre</image>
                     </from>
                     <to>
                         <image>docker.io/loicgreffier/spring-boot-kafka-quickstarts:${project.artifactId}-${project.version}</image>

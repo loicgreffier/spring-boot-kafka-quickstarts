@@ -32,10 +32,10 @@ import org.apache.kafka.streams.kstream.Consumed;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic. For each record, it logs the key
-     * and the value.
+     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic. For each record, it logs
+     * the key and value of the record.
      *
-     * @param streamsBuilder The streams builder.
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, KafkaUser>stream(

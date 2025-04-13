@@ -35,11 +35,13 @@ import org.apache.kafka.streams.kstream.Produced;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic. It throws an exception while
-     * mapping the value if the birthdate is negative. The result is written to the
-     * USER_PROCESSING_EXCEPTION_HANDLER_TOPIC topic.
+     * Builds the Kafka Streams topology.
      *
-     * @param streamsBuilder The streams builder.
+     * <p>This topology reads records from the {@code USER_TOPIC} topic. It throws an exception while mapping the value
+     * if the birthdate is negative. The exceptions are handled by the processing exception handler. The processed
+     * records are written to the {@code USER_PROCESSING_EXCEPTION_HANDLER_TOPIC} topic.
+     *
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, KafkaUser>stream(

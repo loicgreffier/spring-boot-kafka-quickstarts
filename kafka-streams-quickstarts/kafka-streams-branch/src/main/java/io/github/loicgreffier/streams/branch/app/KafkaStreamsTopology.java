@@ -40,19 +40,25 @@ import org.apache.kafka.streams.kstream.Produced;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic. Then, the stream is split into
-     * two branches:
+     * Builds the Kafka Streams topology.
+     *
+     * <p>This topology reads records from the {@code USER_TOPIC} topic, then splits the stream into three branches:
      *
      * <ul>
-     *   <li>the first branch is filtered by the last name starting with "S".
-     *   <li>the second branch is filtered by the last name starting with "F".
-     *   <li>the default branch is used for all other last names.
+     *   <li>The first branch filters records where the last name starts with "S".
+     *   <li>The second branch filters records where the last name starts with "F".
+     *   <li>The default branch is used for all records with last names that do not start with "S" or "F".
      * </ul>
      *
-     * The result is written to the USER_BRANCH_A_TOPIC topic, USER_BRANCH_B_TOPIC topic and USER_BRANCH_DEFAULT_TOPIC
-     * topic.
+     * <p>The filtered records are written to the following topics:
      *
-     * @param streamsBuilder The streams builder.
+     * <ul>
+     *   <li>{@code USER_BRANCH_A_TOPIC} for records with last names starting with "S".
+     *   <li>{@code USER_BRANCH_B_TOPIC} for records with last names starting with "F".
+     *   <li>{@code USER_BRANCH_DEFAULT_TOPIC} for all other records.
+     * </ul>
+     *
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         Map<String, KStream<String, KafkaUser>> branches = streamsBuilder.<String, KafkaUser>stream(

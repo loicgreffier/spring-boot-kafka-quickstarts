@@ -42,13 +42,14 @@ import org.apache.kafka.streams.state.KeyValueStore;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and the COUNTRY_TOPIC topic as a
-     * global table. The stream is joined to the global table by nationality with an inner join. The result is written
-     * to the USER_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic and the
+     * {@code COUNTRY_TOPIC} topic as a global table. The stream is joined to the global table by nationality using an
+     * inner join. The result is written to the {@code USER_COUNTRY_JOIN_STREAM_GLOBAL_TABLE_TOPIC} topic.
      *
-     * <p>An inner join emits an output when both streams have records with the same key.
+     * <p>An inner join emits an output record only when both the stream and the global table have records with the same
+     * key.
      *
-     * @param streamsBuilder The streams builder.
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         GlobalKTable<String, KafkaCountry> countryGlobalTable = streamsBuilder.globalTable(

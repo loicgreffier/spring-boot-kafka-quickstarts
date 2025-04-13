@@ -42,23 +42,23 @@ import org.apache.kafka.streams.kstream.StreamJoined;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and the USER_TOPIC_TWO topic. The
-     * stream is joined to the other stream by last name with an outer and 5-minute symmetric join windows with 1-minute
-     * grace period. The result is written to the USER_OUTER_JOIN_STREAM_STREAM_TOPIC topic.
+     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} and {@code USER_TOPIC_TWO}
+     * topics. The streams are joined by last name using an outer join with 5-minute symmetric join windows and a
+     * 1-minute grace period. The result is written to the {@code USER_OUTER_JOIN_STREAM_STREAM_TOPIC} topic.
      *
-     * <p>An outer join emits an output for each record in both streams. If there is no matching record in the other
-     * stream, a null value is returned at the end of the join window + grace period. A new record to process is
-     * required to make the stream time advance and emit the null result.
+     * <p>An outer join produces an output for each record in both streams. If no matching record is found in the other
+     * stream, a null value is returned at the end of the join window plus the grace period. A new record is required to
+     * advance the stream time and emit the null result.
      *
-     * <p>{@link JoinWindows} are aligned to the records timestamp. They are created each time a record is processed and
-     * are bounded such as [timestamp - before, timestamp + after]. An output is produced if a record is found in the
-     * secondary stream that has a timestamp within the window of a record in the primary stream such as:
+     * <p>{@link JoinWindows} are aligned to the record's timestamp. They are created each time a record is processed,
+     * with bounds defined as [timestamp - before, timestamp + after]. An output is produced if a record in the
+     * secondary stream has a timestamp within the window of a record in the primary stream, as shown below:
      *
      * <pre>
      * {@code stream1.ts - before <= stream2.ts AND stream2.ts <= stream1.ts + after}
      * </pre>
      *
-     * @param streamsBuilder The streams builder.
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         KStream<String, KafkaUser> streamTwo = streamsBuilder.<String, KafkaUser>stream(

@@ -34,10 +34,13 @@ import org.apache.kafka.streams.kstream.Produced;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and only displays the received
-     * key and value. The result is written to the USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC topic.
+     * Builds the Kafka Streams topology.
      *
-     * @param streamsBuilder The streams builder.
+     * <p>This topology reads records from the {@code USER_TOPIC} topic, processes each record by displaying its key and
+     * value. If a deserialization exception occurs, it will be handled by the deserialization exception handler. The
+     * result will be written to the {@code USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC} topic.
+     *
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, KafkaUser>stream(

@@ -53,10 +53,14 @@ public class ProducerRunner {
     }
 
     /**
-     * Asynchronously starts the Kafka producer when the application is ready. The asynchronous annotation is used to
-     * run the producer in a separate thread and not block the main thread. The Kafka producer produces two string
-     * records to two topics (FIRST_STRING_TOPIC and SECOND_STRING_TOPIC) in a single transaction. Either both records
-     * are validated by the transaction or both records are discarded.
+     * Asynchronously starts the Kafka producer when the application is ready.
+     *
+     * <p>The {@code @Async} annotation is used to run the producer in a separate thread, ensuring it does not block the
+     * main thread.
+     *
+     * <p>The Kafka producer sends two string records to two topics: {@code FIRST_STRING_TOPIC} and
+     * {@code SECOND_STRING_TOPIC}, within a single transaction. Either both records are successfully committed as part
+     * of the transaction, or both are discarded if the transaction fails.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)

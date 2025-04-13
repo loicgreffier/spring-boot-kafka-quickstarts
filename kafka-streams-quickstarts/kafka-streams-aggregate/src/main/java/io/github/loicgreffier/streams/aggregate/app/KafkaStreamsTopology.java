@@ -43,10 +43,13 @@ import org.apache.kafka.streams.state.KeyValueStore;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, selects the key as the last name
-     * of the user, groups by key and aggregates the users. The result is written to the USER_AGGREGATE_TOPIC topic.
+     * Builds the Kafka Streams topology.
      *
-     * @param streamsBuilder The streams builder.
+     * <p>This topology reads records from the {@code USER_TOPIC} topic, selects the last name of the user as the key,
+     * groups the records by the selected key, and aggregates the users by key. The aggregated results are then written
+     * to the {@code USER_AGGREGATE_TOPIC} topic.
+     *
+     * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, KafkaUser>stream(

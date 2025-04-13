@@ -65,14 +65,22 @@ public class ConsumerRunner {
     }
 
     /**
-     * Asynchronously starts the Kafka consumer when the application is ready. The asynchronous annotation is used to
-     * run the consumer in a separate thread and not block the main thread. The Kafka consumer processes messages from
-     * the STRING_TOPIC topic. If an error occurs during the external system call, the consumer pauses the
-     * topic-partitions. and rewinds to the failed record offset as a call to poll() has automatically advanced the
-     * consumer offsets. The consumer being paused, it will not commit the offsets and the next call to poll() will not
-     * return any records. Consequently, the consumer will honor the pause duration given by the poll() timeout. Once
-     * the pause duration is elapsed, the consumer will resume the topic-partitions and consume the records from the
-     * failed record offset.
+     * Asynchronously starts the Kafka consumer when the application is ready.
+     *
+     * <p>The {@code @Async} annotation ensures that the consumer runs in a separate thread, allowing the main
+     * application thread to remain unblocked.
+     *
+     * <p>This Kafka consumer processes messages from the {@code STRING_TOPIC} topic. If an error occurs during an
+     * external system call, the consumer will:
+     *
+     * <ul>
+     *   <li>Pause the affected topic-partitions.
+     *   <li>Rewind to the offset of the failed record, since {@code poll()} automatically advances the offsets.
+     *   <li>Avoid committing offsets while paused, ensuring the failed record can be retried.
+     * </ul>
+     *
+     * <p>While the consumer is paused, {@code poll()} will return no records but will still honor its timeout. After
+     * the pause duration elapses, the consumer resumes the topic-partitions and reprocesses the failed record.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
@@ -169,8 +177,11 @@ public class ConsumerRunner {
     }
 
     /**
-     * Saves all the successfully processed records offsets by topic-partition. It saves the offset of the next record
-     * to be processed in order to rewind the consumer to the failed record offset in case of an external system error.
+     * Saves the offset of a successfully processed record by topic-partition.
+     *
+     * <p>This method stores the offset of the *next* record to be processed. In the event of an external system
+     * failure, this allows the consumer to rewind and reprocess the last failed record by seeking to the previously
+     * saved offset.
      *
      * @param message The message that was successfully processed.
      */
