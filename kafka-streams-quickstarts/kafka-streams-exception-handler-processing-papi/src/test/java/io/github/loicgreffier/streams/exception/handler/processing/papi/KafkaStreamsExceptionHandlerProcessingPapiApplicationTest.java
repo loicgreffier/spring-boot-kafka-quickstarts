@@ -16,31 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.github.loicgreffier.streams.exception.handler.production;
+package io.github.loicgreffier.streams.exception.handler.processing.papi;
 
-import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.AUTO_REGISTER_SCHEMAS;
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.processing.papi.constant.Topic.USER_PROCESSING_EXCEPTION_HANDLER_PAPI_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.processing.papi.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.common.utils.Utils.mkEntry;
 import static org.apache.kafka.common.utils.Utils.mkMap;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
-import static org.apache.kafka.streams.StreamsConfig.DEFAULT_PRODUCTION_EXCEPTION_HANDLER_CLASS_CONFIG;
+import static org.apache.kafka.streams.StreamsConfig.PROCESSING_EXCEPTION_HANDLER_CLASS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.github.loicgreffier.avro.CountryCode;
 import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.streams.exception.handler.production.app.KafkaStreamsTopology;
-import io.github.loicgreffier.streams.exception.handler.production.error.CustomProductionExceptionHandler;
-import io.github.loicgreffier.streams.exception.handler.production.serdes.SerdesUtils;
+import io.github.loicgreffier.streams.exception.handler.processing.papi.app.KafkaStreamsTopology;
+import io.github.loicgreffier.streams.exception.handler.processing.papi.error.CustomProcessingExceptionHandler;
+import io.github.loicgreffier.streams.exception.handler.processing.papi.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +55,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class KafkaStreamsExceptionHandlerProductionApplicationTest {
-    private static final String CLASS_NAME = KafkaStreamsExceptionHandlerProductionApplicationTest.class.getName();
+class KafkaStreamsExceptionHandlerProcessingPapiApplicationTest {
+    private static final String CLASS_NAME = KafkaStreamsExceptionHandlerProcessingPapiApplicationTest.class.getName();
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
@@ -70,32 +68,30 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
     void setUp() {
         // Dummy properties required for test driver
         Properties properties = new Properties();
-        properties.setProperty(APPLICATION_ID_CONFIG, "streams-production-exception-handler-test");
+        properties.setProperty(APPLICATION_ID_CONFIG, "streams-processing-exception-handler-papi-test");
         properties.setProperty(BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         properties.setProperty(STATE_DIR_CONFIG, STATE_DIR);
         properties.setProperty(
-                DEFAULT_PRODUCTION_EXCEPTION_HANDLER_CLASS_CONFIG, CustomProductionExceptionHandler.class.getName());
+                PROCESSING_EXCEPTION_HANDLER_CLASS_CONFIG, CustomProcessingExceptionHandler.class.getName());
         properties.setProperty(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
 
-        // Create SerDes that throws an exception when the application tries to serialize
-        Map<String, String> serializationExceptionConfig =
-                Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL, AUTO_REGISTER_SCHEMAS, "false");
-        SerdesUtils.setSerdesConfig(serializationExceptionConfig);
+        // Create SerDes
+        Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
+        SerdesUtils.setSerdesConfig(config);
 
         // Create topology
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         KafkaStreamsTopology.topology(streamsBuilder);
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
-        // Create SerDes for input and output topics only
-        Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
-
-        SpecificAvroSerde<KafkaUser> serDes = new SpecificAvroSerde<>();
-        serDes.configure(config, false);
-
-        inputTopic = testDriver.createInputTopic(USER_TOPIC, new StringSerializer(), serDes.serializer());
+        inputTopic = testDriver.createInputTopic(
+                USER_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-                USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC, new StringDeserializer(), serDes.deserializer());
+                USER_PROCESSING_EXCEPTION_HANDLER_PAPI_TOPIC,
+                new StringDeserializer(),
+                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -106,26 +102,31 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
     }
 
     @Test
-    void shouldHandleSerializationExceptionsAndContinueProcessing() {
-        inputTopic.pipeInput("10", buildKafkaUser());
+    void shouldHandleIllegalArgumentExceptionAndContinueProcessing() {
+        inputTopic.pipeInput("1", buildKafkaUser("Homer", Instant.parse("1949-01-01T01:00:00Z")));
+
+        KafkaUser bart = buildKafkaUser("Bart", Instant.parse("1980-01-01T01:00:00Z"));
+        inputTopic.pipeInput("2", bart);
+
+        testDriver.advanceWallClockTime(Duration.ofMinutes(2));
 
         List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
-        assertTrue(results.isEmpty());
+        assertEquals(bart, results.getFirst().value);
 
-        assertEquals(1.0, testDriver.metrics().get(droppedRecordsTotalMetric()).metricValue());
+        assertEquals(2.0, testDriver.metrics().get(droppedRecordsTotalMetric()).metricValue());
         assertEquals(
                 0.03333333333333333,
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
-    private KafkaUser buildKafkaUser() {
+    private KafkaUser buildKafkaUser(String firstName, Instant birthDate) {
         return KafkaUser.newBuilder()
                 .setId(1L)
-                .setFirstName("Homer")
+                .setFirstName(firstName)
                 .setLastName("Simpson")
                 .setNationality(CountryCode.US)
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                .setBirthDate(birthDate)
                 .build();
     }
 
