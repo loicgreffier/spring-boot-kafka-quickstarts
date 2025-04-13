@@ -39,4 +39,3 @@ public class UserAggregator implements Aggregator<String, KafkaUser, KafkaUserAg
         return aggregate;
     }
 }
-

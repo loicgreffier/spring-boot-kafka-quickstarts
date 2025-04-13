@@ -1,11 +1,10 @@
 # Producer Simple
 
-This module demonstrates the following:
+This module produces records of type `<String, String>` to the `STRING_TOPIC`.
+It demonstrates the following:
 
 - The use of the Kafka Clients producer API.
 - Unit testing using a Mock producer.
-
-This module produces records of type `<String, String>` to a topic named `STRING_TOPIC`.
 
 ## Prerequisites
 
@@ -32,4 +31,4 @@ This command will start the following services in Docker:
 
 - 1 Kafka Broker (KRaft mode)
 - 1 Control Center
-- 1 producer Simple
+- 1 Producer Simple

@@ -1,16 +1,10 @@
 # Kafka Streams Merge
 
-This module demonstrates the following:
+This module streams records of type `<String, KafkaUser>` from two topics: `USER_TOPIC` and `USER_TOPIC_TWO`, and merges them into a single stream.
+It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `merge()` and `peek()`.
 - Unit testing using the Topology Test Driver.
-
-In this module, records of type `<String, KafkaUser>` are streamed from two topics named `USER_TOPIC`
-and `USER_TOPIC_TWO`.
-The following tasks are performed:
-
-1. Merge the two streams into a single stream.
-2. Write the merged stream to a new topic named `USER_MERGE_TOPIC`.
 
 ![topology.png](topology.png)
 
@@ -27,7 +21,7 @@ To compile and run this demo, you’ll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaUser>` to a topic named `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) to do this.
+- Produce records of type `<String, KafkaUser>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
 - Start the Kafka Streams application.
 
 To run the application in Docker, use the following command:

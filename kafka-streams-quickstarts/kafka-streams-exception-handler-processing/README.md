@@ -1,23 +1,11 @@
 # Kafka Streams Processing Exception Handler
 
-This module demonstrates the following:
+This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and handles processing exceptions.
+It demonstrates the following:
 
-- The use of the Kafka Streams configuration `processing.exception.handler` to handle processing exceptions that occur in 
-DSL operations and the processor API.
-- The implementation of a custom processing exception handler.
+- How to use the Kafka Streams configuration `processing.exception.handler` to handle processing exceptions in DSL operations, as introduced by [KIP-1033](https://cwiki.apache.org/confluence/display/KAFKA/KIP-1033%3A+Add+Kafka+Streams+exception+handler+for+exceptions+occurring+during+processing).
+- How to implement a custom processing exception handler.
 - Unit testing using the Topology Test Driver.
-
-In this module, records of type `<String, KafkaUser>` are streamed from a topic named `USER_TOPIC`.
-The following tasks are performed:
-
-1. Log the received records.
-2. Map the values of the records and throw a processing exception if the birthdate is negative.
-3. Process the values of the records and throw a processing exception if the last name or the first name is empty.
-4. Schedule a punctuation every 1 minute to throw a processing exception.
-5. Write the records as they are to a new topic named `USER_PROCESSING_EXCEPTION_HANDLER_TOPIC`.
-
-The custom processing exception handler is invoked when any of these exceptions are thrown.
-It logs the exceptions and continues processing for `IllegalArgumentException`, but fails the processing for other exceptions.
 
 ![topology.png](topology.png)
 
@@ -34,7 +22,7 @@ To compile and run this demo, you’ll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaUser>` to a topic named `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) to do this.
+- Produce records of type `<String, KafkaUser>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
 - Start the Kafka Streams application.
 
 To run the application in Docker, use the following command:

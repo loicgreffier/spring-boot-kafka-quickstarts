@@ -110,24 +110,18 @@ class KafkaStreamsAggregateApplicationTest {
         List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.get(0).key);
-        assertIterableEquals(
-                List.of(homer), results.get(0).value.getUsers());
+        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
 
         assertEquals("Simpson", results.get(1).key);
-        assertIterableEquals(
-                List.of(homer, marge),
-                results.get(1).value.getUsers());
+        assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
 
         assertEquals("Simpson", results.get(2).key);
-        assertIterableEquals(
-                List.of(homer, marge, bart),
-                results.get(2).value.getUsers());
+        assertIterableEquals(List.of(homer, marge, bart), results.get(2).value.getUsers());
 
         KeyValueStore<String, KafkaUserAggregate> stateStore = testDriver.getKeyValueStore(USER_AGGREGATE_STORE);
 
         assertIterableEquals(
-                List.of(homer, marge, bart),
-                stateStore.get("Simpson").getUsers());
+                List.of(homer, marge, bart), stateStore.get("Simpson").getUsers());
     }
 
     private KafkaUser buildKafkaUser(String firstName) {

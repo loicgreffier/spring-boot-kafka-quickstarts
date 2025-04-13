@@ -1,14 +1,10 @@
 # Kafka Streams Repartition
 
-This module demonstrates the following:
+This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and repartitions them to a new topic with 3 partitions.
+It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `repartition()` and `peek()`.
 - Unit testing using the Topology Test Driver.
-
-In this module, records of type `<String, KafkaUser>` are streamed from a topic named `USER_TOPIC`.
-The following tasks are performed:
-
-1. Repartition the records into a new topic named `USER_TOPIC-repartition` with 3 partitions.
 
 ![topology.png](topology.png)
 
@@ -25,7 +21,7 @@ To compile and run this demo, you’ll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaUser>` to a topic named `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) to do this.
+- Produce records of type `<String, KafkaUser>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
 - Start the Kafka Streams application.
 
 To run the application in Docker, use the following command:

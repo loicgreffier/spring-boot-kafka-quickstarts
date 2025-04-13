@@ -23,8 +23,8 @@ import static io.github.loicgreffier.streams.average.constant.Topic.GROUP_USER_B
 import static io.github.loicgreffier.streams.average.constant.Topic.USER_AVERAGE_TOPIC;
 import static io.github.loicgreffier.streams.average.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaAverageAge;
 import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.KafkaUserAverageAge;
 import io.github.loicgreffier.streams.average.app.aggregator.AgeAggregator;
 import io.github.loicgreffier.streams.average.serdes.SerdesUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -56,9 +56,9 @@ public class KafkaStreamsTopology {
                         (key, user) -> user.getNationality().toString(),
                         Grouped.with(GROUP_USER_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .aggregate(
-                        () -> new KafkaAverageAge(0L, 0L),
+                        () -> new KafkaUserAverageAge(0L, 0L),
                         new AgeAggregator(),
-                        Materialized.<String, KafkaAverageAge, KeyValueStore<Bytes, byte[]>>as(USER_AVERAGE_STORE)
+                        Materialized.<String, KafkaUserAverageAge, KeyValueStore<Bytes, byte[]>>as(USER_AVERAGE_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))
                 .mapValues(value -> value.getAgeSum() / value.getCount())

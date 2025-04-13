@@ -1,14 +1,8 @@
 # Kafka Streams Print
 
-This module demonstrates the usage of the Kafka Streams DSL `print()` and `peek()`.
-
-In this module, records of type `<String, KafkaUser>` are streamed from two topics named `USER_TOPIC`
-and `USER_TOPIC_TWO`.
-The following tasks are performed:
-
-1. Stream records of type `<String, KafkaUser>` from the topic `USER_TOPIC` and print them to the
-   file `/tmp/kafka-streams-quickstarts/streams-print-output.log`.
-2. Stream records of type `<String, KafkaUser>` from the topic `USER_TOPIC_TWO` and print them to the system output.
+This module streams records of type `<String, KafkaUser>` from two topics: `USER_TOPIC`
+and `USER_TOPIC_TWO`, and prints each record to a file and the console, respectively.
+It demonstrates how to use the Kafka Streams DSL `print()`.
 
 ![topology.png](topology.png)
 
@@ -25,7 +19,7 @@ To compile and run this demo, you’ll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaUser>` to topics named `USER_TOPIC` and `USER_TOPIC_TWO`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) to do this.
+- Produce records of type `<String, KafkaUser>` to the `USER_TOPIC` and `USER_TOPIC_TWO`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
 - Start the Kafka Streams application.
 
 To run the application in Docker, use the following command:

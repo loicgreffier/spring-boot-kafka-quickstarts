@@ -1,13 +1,12 @@
 # Producer Transaction
 
-This module demonstrates the following:
+This module produces transactional records of type `<String, String>` to two topics: `FIRST_STRING_TOPIC`
+and `SECOND_STRING_TOPIC`.
+It demonstrates the following:
 
 - The use of the Kafka Clients producer API.
 - The use of Kafka transactions.
 - Unit testing using a Mock producer.
-
-This module produces transactional records of type `<String, String>` to two topics named `FIRST_STRING_TOPIC`
-and `SECOND_STRING_TOPIC`.
 
 ## Prerequisites
 
@@ -34,4 +33,4 @@ This command will start the following services in Docker:
 
 - 1 Kafka Broker (KRaft mode)
 - 1 Control Center
-- 1 producer Transaction
+- 1 Producer Transaction

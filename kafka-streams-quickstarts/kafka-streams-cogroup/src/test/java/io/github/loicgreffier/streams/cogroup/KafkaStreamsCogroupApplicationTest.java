@@ -49,7 +49,6 @@ import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.state.KeyValueStore;
-import org.apache.kafka.streams.test.TestRecord;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -114,19 +113,15 @@ class KafkaStreamsCogroupApplicationTest {
         List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.get(0).key);
-        assertIterableEquals(
-                List.of(homer), results.get(0).value.getUsers());
+        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
 
         assertEquals("Simpson", results.get(1).key);
-        assertIterableEquals(
-                List.of(homer, marge),
-                results.get(1).value.getUsers());
+        assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
 
-        KeyValueStore<String, KafkaUserAggregate> stateStore = testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
+        KeyValueStore<String, KafkaUserAggregate> stateStore =
+                testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
 
-        assertIterableEquals(
-                List.of(homer, marge),
-                stateStore.get("Simpson").getUsers());
+        assertIterableEquals(List.of(homer, marge), stateStore.get("Simpson").getUsers());
     }
 
     @Test
@@ -140,19 +135,15 @@ class KafkaStreamsCogroupApplicationTest {
         List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.get(0).key);
-        assertIterableEquals(
-                List.of(homer), results.get(0).value.getUsers());
+        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
 
         assertEquals("Simpson", results.get(1).key);
-        assertIterableEquals(
-                List.of(homer, marge),
-                results.get(1).value.getUsers());
+        assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
 
-        KeyValueStore<String, KafkaUserAggregate> stateStore = testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
+        KeyValueStore<String, KafkaUserAggregate> stateStore =
+                testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
 
-        assertIterableEquals(
-                List.of(homer, marge),
-                stateStore.get("Simpson").getUsers());
+        assertIterableEquals(List.of(homer, marge), stateStore.get("Simpson").getUsers());
     }
 
     @Test
@@ -169,24 +160,19 @@ class KafkaStreamsCogroupApplicationTest {
         List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.get(0).key);
-        assertIterableEquals(
-                List.of(homer), results.get(0).value.getUsers());
+        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
 
         assertEquals("Simpson", results.get(1).key);
-        assertIterableEquals(
-                List.of(homer, marge),
-                results.get(1).value.getUsers());
+        assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
 
         assertEquals("Simpson", results.get(2).key);
-        assertIterableEquals(
-                List.of(homer, marge, bart),
-                results.get(2).value.getUsers());
+        assertIterableEquals(List.of(homer, marge, bart), results.get(2).value.getUsers());
 
-        KeyValueStore<String, KafkaUserAggregate> stateStore = testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
+        KeyValueStore<String, KafkaUserAggregate> stateStore =
+                testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
 
         assertIterableEquals(
-                List.of(homer, marge, bart),
-                stateStore.get("Simpson").getUsers());
+                List.of(homer, marge, bart), stateStore.get("Simpson").getUsers());
     }
 
     private KafkaUser buildKafkaUser(String firstName) {

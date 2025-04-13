@@ -46,8 +46,8 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, selects the key as the last name
-     * of the user, groups by key and aggregates users by last name in 5-minute tumbling windows with 1-minute
-     * grace period. A new key is generated with the window start and end time. The result is written to the
+     * of the user, groups by key and aggregates users by last name in 5-minute tumbling windows with 1-minute grace
+     * period. A new key is generated with the window start and end time. The result is written to the
      * USER_AGGREGATE_SLIDING_WINDOW_TOPIC topic.
      *
      * <p>{@link org.apache.kafka.streams.kstream.SlidingWindows} are aligned to the records timestamp. They are created
@@ -72,8 +72,8 @@ public class KafkaStreamsTopology {
                 .groupByKey(Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .windowedBy(SlidingWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)))
                 .aggregate(
-                    () -> new KafkaUserAggregate(new ArrayList<>()),
-                    new UserAggregator(),
+                        () -> new KafkaUserAggregate(new ArrayList<>()),
+                        new UserAggregator(),
                         Materialized.<String, KafkaUserAggregate, WindowStore<Bytes, byte[]>>as(
                                         USER_AGGREGATE_SLIDING_WINDOW_STORE)
                                 .withKeySerde(Serdes.String())

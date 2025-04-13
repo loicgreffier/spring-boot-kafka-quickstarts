@@ -21,8 +21,8 @@ package io.github.loicgreffier.streams.average;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaAverageAge;
 import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.KafkaUserAverageAge;
 import io.github.loicgreffier.streams.average.app.aggregator.AgeAggregator;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -32,7 +32,7 @@ class AgeAggregatorTest {
     @Test
     void shouldAggregateAgeByNationality() {
         AgeAggregator aggregator = new AgeAggregator();
-        KafkaAverageAge averageAge = new KafkaAverageAge(0L, 0L);
+        KafkaUserAverageAge averageAge = new KafkaUserAverageAge(0L, 0L);
 
         LocalDate currentDate = LocalDate.now();
 

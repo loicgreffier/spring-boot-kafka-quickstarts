@@ -1,17 +1,10 @@
 # Kafka Streams FlatMap
 
-This module demonstrates the following:
+This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and flattens them into separate records for the user's last name and first name.
+It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `flatMap()` and `peek()`.
 - Unit testing using the Topology Test Driver.
-
-In this module, records of type `<String, KafkaUser>` are streamed from a topic named `USER_TOPIC`.
-The following tasks are performed:
-
-1. Map the `KafkaUser` value to extract both the first name and last name.
-2. Convert the respective keys to uppercase for the first name and last name.
-3. Flatten the resulting key-value pairs.
-4. Write the flattened key-value pairs into a new topic named `USER_FLATMAP_TOPIC`.
 
 ![topology.png](topology.png)
 
@@ -28,7 +21,7 @@ To compile and run this demo, you’ll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaUser>` to a topic named `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) to do this.
+- Produce records of type `<String, KafkaUser>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
 - Start the Kafka Streams application.
 
 To run the application in Docker, use the following command:

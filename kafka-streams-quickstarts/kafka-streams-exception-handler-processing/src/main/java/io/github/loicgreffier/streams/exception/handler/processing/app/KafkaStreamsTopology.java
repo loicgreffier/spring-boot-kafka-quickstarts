@@ -22,7 +22,6 @@ import static io.github.loicgreffier.streams.exception.handler.processing.consta
 import static io.github.loicgreffier.streams.exception.handler.processing.constant.Topic.USER_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.streams.exception.handler.processing.app.processor.ErrorProcessor;
 import io.github.loicgreffier.streams.exception.handler.processing.serdes.SerdesUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
@@ -36,9 +35,8 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic. It throws an exception while
-     * mapping the value if the birthdate is negative and while processing the value if the first name or the last name
-     * is null. Additionally, it schedules a punctuation that periodically throws a processing exception. The result is
-     * written to the USER_PROCESSING_EXCEPTION_HANDLER_TOPIC topic.
+     * mapping the value if the birthdate is negative. The result is written to the
+     * USER_PROCESSING_EXCEPTION_HANDLER_TOPIC topic.
      *
      * @param streamsBuilder The streams builder.
      */
@@ -52,7 +50,6 @@ public class KafkaStreamsTopology {
                     }
                     return user;
                 })
-                .processValues(ErrorProcessor::new)
                 .to(
                         USER_PROCESSING_EXCEPTION_HANDLER_TOPIC,
                         Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));

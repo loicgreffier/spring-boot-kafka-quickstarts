@@ -44,8 +44,7 @@ public class KafkaStreamsTopology {
 
     /**
      * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic, selects the key as the last name
-     * of the user, groups by key and aggregates the users. The result is written to the
-     * USER_AGGREGATE_TOPIC topic.
+     * of the user, groups by key and aggregates the users. The result is written to the USER_AGGREGATE_TOPIC topic.
      *
      * @param streamsBuilder The streams builder.
      */

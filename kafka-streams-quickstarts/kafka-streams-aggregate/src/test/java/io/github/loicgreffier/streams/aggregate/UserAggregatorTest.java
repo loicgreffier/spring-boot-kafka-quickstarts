@@ -38,20 +38,17 @@ class UserAggregatorTest {
         aggregator.apply("Simpson", homer, group);
 
         KafkaUser marge = buildKafkaUser("Marge");
-        aggregator.apply(
-                "Simpson",
-            marge,
-                group);
+        aggregator.apply("Simpson", marge, group);
 
         assertIterableEquals(List.of(homer, marge), group.getUsers());
     }
 
     private KafkaUser buildKafkaUser(String firstName) {
         return KafkaUser.newBuilder()
-            .setId(1L)
-            .setFirstName(firstName)
-            .setLastName("Simpson")
-            .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-            .build();
+                .setId(1L)
+                .setFirstName(firstName)
+                .setLastName("Simpson")
+                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                .build();
     }
 }

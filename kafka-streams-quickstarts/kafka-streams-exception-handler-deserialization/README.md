@@ -1,19 +1,11 @@
 # Kafka Streams Deserialization Exception Handler
 
-This module demonstrates the following:
+This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and handles deserialization exceptions.
+It demonstrates the following:
 
-- The use of the Kafka Streams configuration `default.deserialization.exception.handler` to handle deserialization exceptions.
-- The implementation of a custom deserialization exception handler.
+- How to use the Kafka Streams configuration `default.deserialization.exception.handler` to handle deserialization exceptions.
+- How to implement a custom deserialization exception handler.
 - Unit testing using the Topology Test Driver.
-
-In this module, records of type `<String, KafkaUser>` are streamed from a topic named `USER_TOPIC`.
-The following tasks are performed:
-
-1. Log the received records.
-2. Write the records as they are to a new topic named `USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC`.
-
-The custom deserialization exception handler is invoked when the configured serdes fail to deserialize the records.
-It logs the exceptions and continues processing.
 
 ![topology.png](topology.png)
 
@@ -30,10 +22,9 @@ To compile and run this demo, you’ll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaUser>` to a topic named `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) to do this.
+- Produce records of type `<String, KafkaUser>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
 - Start the Kafka Streams application.
-- To activate the custom deserialization exception handler, produce a record with a value that cannot be deserialized to the `KafkaUser` type to the `USER_TOPIC` (e.g., a record with a value that is not in Avro format). 
-  You can use the Control Center to do this.
+- To activate the custom deserialization exception handler, produce a record with a value that cannot be deserialized to the `KafkaUser` type (e.g., a value that is not in Avro format) to the `USER_TOPIC`. You can use the Control Center for this.
 
 To run the application in Docker, use the following command:
 

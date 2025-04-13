@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaAverageAge;
 import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.KafkaUserAverageAge;
 import io.github.loicgreffier.streams.average.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.average.serdes.SerdesUtils;
 import java.io.IOException;
@@ -114,7 +114,7 @@ class KafkaStreamsAverageApplicationTest {
         assertEquals(KeyValue.pair("US", 25L), results.get(0));
         assertEquals(KeyValue.pair("US", 50L), results.get(1));
 
-        KeyValueStore<String, KafkaAverageAge> stateStore = testDriver.getKeyValueStore(USER_AVERAGE_STORE);
+        KeyValueStore<String, KafkaUserAverageAge> stateStore = testDriver.getKeyValueStore(USER_AVERAGE_STORE);
 
         assertEquals(2L, stateStore.get("US").getCount());
         assertEquals(100L, stateStore.get("US").getAgeSum());

@@ -1,7 +1,7 @@
 {
   "namespace": "io.github.loicgreffier.avro",
   "type": "record",
-  "name": "KafkaAverageAge",
+  "name": "KafkaUserAverageAge",
   "fields": [
     {
       "name": "count",

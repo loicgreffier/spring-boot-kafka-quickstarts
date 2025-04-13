@@ -28,7 +28,6 @@ import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.PROCESSING_EXCEPTION_HANDLER_CLASS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
@@ -39,7 +38,6 @@ import io.github.loicgreffier.streams.exception.handler.processing.serdes.Serdes
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -105,15 +103,15 @@ class KafkaStreamsExceptionHandlerProcessingApplicationTest {
     @Test
     void shouldHandleIllegalArgumentExceptionAndContinueProcessing() {
         inputTopic.pipeInput("1", buildKafkaUser("Homer", Instant.parse("1949-01-01T01:00:00Z")));
-        inputTopic.pipeInput("2", buildKafkaUser(null, Instant.parse("1980-01-01T01:00:00Z")));
 
-        testDriver.advanceWallClockTime(Duration.ofMinutes(2));
+        KafkaUser bart = buildKafkaUser("Bart", Instant.parse("1980-01-01T01:00:00Z"));
+        inputTopic.pipeInput("2", bart);
 
         List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
-        assertTrue(results.isEmpty());
+        assertEquals(bart, results.getFirst().value);
 
-        assertEquals(3.0, testDriver.metrics().get(droppedRecordsTotalMetric()).metricValue());
+        assertEquals(1.0, testDriver.metrics().get(droppedRecordsTotalMetric()).metricValue());
         assertEquals(
                 0.03333333333333333,
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());

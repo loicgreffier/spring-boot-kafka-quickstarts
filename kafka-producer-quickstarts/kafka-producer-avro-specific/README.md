@@ -1,12 +1,11 @@
 # Producer Avro Specific
 
-This module demonstrates the following:
+This module produces records of type `<String, KafkaUser>` to the `USER_TOPIC`.
+It demonstrates the following:
 
 - The use of the Kafka Clients producer API.
 - The use of Apache Avro and specific records.
 - Unit testing using a Mock producer.
-
-This module produces records of type `<String, KafkaUser>` to a topic named `USER_TOPIC`.
 
 ## Prerequisites
 
@@ -34,4 +33,4 @@ This command will start the following services in Docker:
 - 1 Kafka Broker (KRaft mode)
 - 1 Schema Registry
 - 1 Control Center
-- 1 producer Avro Specific
+- 1 Producer Avro Specific

@@ -1,17 +1,11 @@
 # Kafka Streams Process
 
-This module demonstrates the following:
+This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC`, uses the Processor API to enrich the values with metadata, and changes the key.
+It demonstrates the following:
 
-- How to use the Kafka Streams DSL, including `process()`.
-- Accessing and enriching records with metadata using the processor context.
+- How to use the Kafka Streams Processor API, including `process()`.
+- How to access and enrich records with metadata using the processor context.
 - Unit testing with the Topology Test Driver.
-
-In this module, records of type `<String, KafkaUser>` are streamed from a topic named `USER_TOPIC`.
-The following tasks are performed:
-
-1. Each record is processed using a custom processor that enriches the value with metadata such as the topic, partition,
-   and offset information. The processor also changes the key of the record by using the last name.
-2. The processed records with enriched metadata are written to a new topic named `USER_PROCESS_TOPIC`.
 
 ![topology.png](topology.png)
 
@@ -28,7 +22,7 @@ To compile and run this demo, you’ll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaUser>` to a topic named `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) to do this.
+- Produce records of type `<String, KafkaUser>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
 - Start the Kafka Streams application.
 
 To run the application in Docker, use the following command:

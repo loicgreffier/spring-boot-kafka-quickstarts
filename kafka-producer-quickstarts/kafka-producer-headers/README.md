@@ -1,12 +1,11 @@
 # Producer Headers
 
-This module demonstrates the following:
+This module produces records of type `<String, String>` with headers to the `STRING_TOPIC`.
+It demonstrates the following:
 
 - The use of the Kafka Clients producer API.
 - The use of headers in Kafka records.
 - Unit testing using a Mock producer.
-
-This module produces records of type `<String, String>` with headers to a topic named `STRING_TOPIC`.
 
 ## Prerequisites
 
@@ -33,5 +32,5 @@ This command will start the following services in Docker:
 
 - 1 Kafka broker
 - 1 Control Center
-- 1 producer Headers
+- 1 Producer Headers
 

@@ -18,15 +18,15 @@
  */
 package io.github.loicgreffier.streams.average.app.aggregator;
 
-import io.github.loicgreffier.avro.KafkaAverageAge;
 import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.KafkaUserAverageAge;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneOffset;
 import org.apache.kafka.streams.kstream.Aggregator;
 
 /** This class represents an aggregator that aggregates the age. */
-public class AgeAggregator implements Aggregator<String, KafkaUser, KafkaAverageAge> {
+public class AgeAggregator implements Aggregator<String, KafkaUser, KafkaUserAverageAge> {
     /**
      * Aggregates the age.
      *
@@ -36,7 +36,7 @@ public class AgeAggregator implements Aggregator<String, KafkaUser, KafkaAverage
      * @return The updated aggregate.
      */
     @Override
-    public KafkaAverageAge apply(String key, KafkaUser kafkaUser, KafkaAverageAge aggregate) {
+    public KafkaUserAverageAge apply(String key, KafkaUser kafkaUser, KafkaUserAverageAge aggregate) {
         aggregate.setCount(aggregate.getCount() + 1);
 
         LocalDate currentDate = LocalDate.now();

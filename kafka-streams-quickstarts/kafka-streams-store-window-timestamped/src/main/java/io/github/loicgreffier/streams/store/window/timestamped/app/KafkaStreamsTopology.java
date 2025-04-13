@@ -45,10 +45,13 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology. The topology reads from the USER_TOPIC topic and processes the records with
      * the {@link PutInStoreProcessor} processor that puts the records in a {@link TimestampedWindowStore} state store.
-     * It demonstrates the two strategies to use a state store in a processor: - Using the
-     * {@link StreamsBuilder#addStateStore(StoreBuilder)} and specifying the store names in the
-     * {@link org.apache.kafka.streams.kstream.KStream#process(ProcessorSupplier, String...)} method. - Using the
-     * {@link ProcessorSupplier#stores()} method to attach the store to the topology and the processor.
+     * It demonstrates the two strategies to use a state store in a processor:
+     *
+     * <ul>
+     *   <li>Using the {@link StreamsBuilder#addStateStore(StoreBuilder)} and specifying the store names in the
+     *       {@link org.apache.kafka.streams.kstream.KStream#process(ProcessorSupplier, String...)} method.
+     *   <li>Using the {@link ProcessorSupplier#stores()} method to attach the store to the topology and the processor.
+     * </ul>
      *
      * @param streamsBuilder The streams builder.
      */

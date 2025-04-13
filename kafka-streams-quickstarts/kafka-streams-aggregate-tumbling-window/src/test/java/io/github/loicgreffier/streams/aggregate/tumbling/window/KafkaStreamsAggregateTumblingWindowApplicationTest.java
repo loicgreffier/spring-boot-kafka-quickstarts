@@ -106,7 +106,7 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
 
         KafkaUser marge = buildKafkaUser("Marge");
         inputTopic.pipeInput("2", marge, Instant.parse("2000-01-01T01:02:00Z"));
-        
+
         KafkaUser bart = buildKafkaUser("Bart");
         inputTopic.pipeInput("3", bart, Instant.parse("2000-01-01T01:04:00Z"));
 
@@ -114,20 +114,15 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
 
         // Homer arrives
         assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
-        assertIterableEquals(
-                List.of(homer), results.get(0).value.getUsers());
+        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
 
         // Marge arrives
         assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(1).key);
-        assertIterableEquals(
-                List.of(homer, marge),
-                results.get(1).value.getUsers());
+        assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
 
         // Bart arrives
         assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(2).key);
-        assertIterableEquals(
-                List.of(homer, marge, bart),
-                results.get(2).value.getUsers());
+        assertIterableEquals(List.of(homer, marge, bart), results.get(2).value.getUsers());
 
         WindowStore<String, KafkaUserAggregate> stateStore =
                 testDriver.getWindowStore(USER_AGGREGATE_TUMBLING_WINDOW_STORE);
@@ -141,9 +136,7 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
             assertEquals(
                     "2000-01-01T01:05:00Z",
                     keyValue00To05.key.window().endTime().toString());
-            assertIterableEquals(
-                    List.of(homer, marge, bart),
-                    keyValue00To05.value.getUsers());
+            assertIterableEquals(List.of(homer, marge, bart), keyValue00To05.value.getUsers());
 
             assertFalse(iterator.hasNext());
         }
@@ -164,12 +157,10 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         // Its timestamp (01:05:00) is not included in the window [01:00:00->01:05:00).
 
         assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
-        assertIterableEquals(
-                List.of(homer), results.get(0).value.getUsers());
+        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
 
         assertEquals("Simpson@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z", results.get(1).key);
-        assertIterableEquals(
-                List.of(marge), results.get(1).value.getUsers());
+        assertIterableEquals(List.of(marge), results.get(1).value.getUsers());
 
         WindowStore<String, KafkaUserAggregate> stateStore =
                 testDriver.getWindowStore(USER_AGGREGATE_TUMBLING_WINDOW_STORE);
@@ -183,9 +174,7 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
             assertEquals(
                     "2000-01-01T01:05:00Z",
                     keyValue00To05.key.window().endTime().toString());
-            assertIterableEquals(
-                    List.of(homer),
-                    keyValue00To05.value.getUsers());
+            assertIterableEquals(List.of(homer), keyValue00To05.value.getUsers());
 
             KeyValue<Windowed<String>, KafkaUserAggregate> keyValue05To10 = iterator.next();
             assertEquals("Simpson", keyValue05To10.key.key());
@@ -195,9 +184,7 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
             assertEquals(
                     "2000-01-01T01:10:00Z",
                     keyValue05To10.key.window().endTime().toString());
-            assertIterableEquals(
-                    List.of(marge),
-                    keyValue05To10.value.getUsers());
+            assertIterableEquals(List.of(marge), keyValue05To10.value.getUsers());
 
             assertFalse(iterator.hasNext());
         }
@@ -223,22 +210,18 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
 
         // Homer arrives
         assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
-        assertIterableEquals(
-                List.of(homer), results.get(0).value.getUsers());
+        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
 
         // Marge arrives
         assertEquals("Simpson@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z", results.get(1).key);
-        assertIterableEquals(
-                List.of(marge), results.get(1).value.getUsers());
+        assertIterableEquals(List.of(marge), results.get(1).value.getUsers());
 
         // Bart arrives
         // Even if the stream time is 01:05:30, the window [01:00:00Z->01:05:00Z) is
         // not yet closed because of the grace period of 1 minute.
         // Bart whose timestamp is 01:03:00 is included in the window.
         assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(2).key);
-        assertIterableEquals(
-                List.of(homer, bart),
-                results.get(2).value.getUsers());
+        assertIterableEquals(List.of(homer, bart), results.get(2).value.getUsers());
 
         WindowStore<String, KafkaUserAggregate> stateStore =
                 testDriver.getWindowStore(USER_AGGREGATE_TUMBLING_WINDOW_STORE);
@@ -252,9 +235,7 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
             assertEquals(
                     "2000-01-01T01:05:00Z",
                     keyValue00To05.key.window().endTime().toString());
-            assertIterableEquals(
-                    List.of(homer, bart),
-                    keyValue00To05.value.getUsers());
+            assertIterableEquals(List.of(homer, bart), keyValue00To05.value.getUsers());
 
             KeyValue<Windowed<String>, KafkaUserAggregate> keyValue05To10 = iterator.next();
             assertEquals("Simpson", keyValue05To10.key.key());
@@ -264,9 +245,7 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
             assertEquals(
                     "2000-01-01T01:10:00Z",
                     keyValue05To10.key.window().endTime().toString());
-            assertIterableEquals(
-                    List.of(marge),
-                    keyValue05To10.value.getUsers());
+            assertIterableEquals(List.of(marge), keyValue05To10.value.getUsers());
 
             assertFalse(iterator.hasNext());
         }
