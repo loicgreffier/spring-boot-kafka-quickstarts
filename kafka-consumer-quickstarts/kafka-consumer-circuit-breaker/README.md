@@ -26,7 +26,7 @@ To run the application manually:
     - Producing a non-Avro message (e.g., a plain String) to the `USER_TOPIC`.
 - Start the consumer.
 
-To run the application in Docker, use the following command:
+Alternatively, to run the application with Docker, use the following command:
 
 ```console
 docker-compose up -d

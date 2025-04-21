@@ -23,7 +23,7 @@ To run the application manually:
 - Produce records of type `<String, String>` with headers named `id` and `message` to the `STRING_TOPIC`. You can use the [Producer Headers](../../kafka-producer-quickstarts/kafka-producer-headers) for this.
 - Start the consumer.
 
-To run the application in Docker, use the following command:
+Alternatively, to run the application with Docker, use the following command:
 
 ```console
 docker-compose up -d

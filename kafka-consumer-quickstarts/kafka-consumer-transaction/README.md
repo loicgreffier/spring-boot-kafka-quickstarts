@@ -22,7 +22,7 @@ To run the application manually:
 - Produce records of type `<String, String>` to the `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`. You can use the [Producer Transaction](../../kafka-producer-quickstarts/kafka-producer-transaction) for this.
 - Start the consumer.
 
-To run the application in Docker, use the following command:
+Alternatively, to run the application with Docker, use the following command:
 
 ```console
 docker-compose up -d
