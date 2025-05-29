@@ -1,0 +1,38 @@
+{
+  "namespace": "io.github.loicgreffier.avro",
+  "type": "record",
+  "name": "KafkaOrder",
+  "fields": [
+    {
+      "name": "id",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Order id"
+    },
+    {
+      "name": "items",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    },
+    {
+      "name": "totalAmount",
+      "type": ["null","double"],
+      "default": null,
+      "doc": "Total amount of the order"
+    },
+    {
+      "name": "customerId",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Customer id"
+    }
+  ]
+}

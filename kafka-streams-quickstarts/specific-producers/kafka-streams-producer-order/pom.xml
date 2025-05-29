@@ -3,17 +3,18 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.loicgreffier</groupId>
-        <artifactId>kafka-streams-quickstarts</artifactId>
+        <artifactId>specific-producers</artifactId>
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>specific-producers</artifactId>
+    <artifactId>kafka-streams-producer-order</artifactId>
 
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>kafka-streams-producer-country</module>
-        <module>kafka-streams-producer-order</module>
-        <module>kafka-streams-producer-user</module>
-    </modules>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

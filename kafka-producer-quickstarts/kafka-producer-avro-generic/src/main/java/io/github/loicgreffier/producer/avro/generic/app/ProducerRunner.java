@@ -44,7 +44,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProducerRunner {
-    private Random random = new Random();
+    private final Random random = new Random();
     private final Producer<String, GenericRecord> producer;
 
     /**

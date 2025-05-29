@@ -110,11 +110,12 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 #### Processor
 
-| Module                                                                           | Library       | Content                                                                 | DSL               | Processor API                                |
-|:---------------------------------------------------------------------------------|---------------|-------------------------------------------------------------------------|-------------------|----------------------------------------------|
-| [Process](/kafka-streams-quickstarts/kafka-streams-process)                      | Kafka Streams | Apply a processor to a stream                                           | `process()`       | `context()`, `forward()`, `Record#headers()` |
-| [ProcessValues](/kafka-streams-quickstarts/kafka-streams-process-values)         | Kafka Streams | Apply a fixed key processor to a stream                                 | `processValues()` | `context()`, `forward()`, `Record#headers()` |
-| [Schedule](/kafka-streams-quickstarts/kafka-streams-schedule)                    | Kafka Streams | Schedule punctuation functions based on wall clock time and stream time | `process()`       | `schedule()`, `getStateStore()`              |
+| Module                                                                    | Library       | Content                                                                 | DSL                                                            | Processor API                                      |
+|:--------------------------------------------------------------------------|---------------|-------------------------------------------------------------------------|----------------------------------------------------------------|----------------------------------------------------|
+| [Process](/kafka-streams-quickstarts/kafka-streams-process)               | Kafka Streams | Apply a processor to a stream                                           | `process()`                                                    | `context()`, `forward()`, `Record#headers()`       |
+| [ProcessValues](/kafka-streams-quickstarts/kafka-streams-process-values)  | Kafka Streams | Apply a fixed key processor to a stream                                 | `processValues()`                                              | `context()`, `forward()`, `Record#headers()`       |
+| [Reconciliation](/kafka-streams-quickstarts/kafka-streams-reconciliation) | Kafka Streams | Reconcile events across two streams                                     | `selectKey()`, `repartition()`, `process()`, `addStateStore()` | `getStateStore()`, `forward()`, `Record#headers()` |
+| [Schedule](/kafka-streams-quickstarts/kafka-streams-schedule)             | Kafka Streams | Schedule punctuation functions based on wall clock time and stream time | `process()`                                                    | `schedule()`, `getStateStore()`                    |
 
 #### Stores
 
