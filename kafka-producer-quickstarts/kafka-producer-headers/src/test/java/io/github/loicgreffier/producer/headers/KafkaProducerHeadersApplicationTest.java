@@ -40,7 +40,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class KafkaProducerHeadersApplicationTest {
     @Spy
     private MockProducer<String, String> mockProducer =
-            new MockProducer<>(false, new StringSerializer(), new StringSerializer());
+            new MockProducer<>(false, null, new StringSerializer(), new StringSerializer());
 
     @InjectMocks
     private ProducerRunner producerRunner;

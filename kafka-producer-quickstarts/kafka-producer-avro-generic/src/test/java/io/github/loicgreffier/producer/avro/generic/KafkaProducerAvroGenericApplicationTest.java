@@ -57,7 +57,7 @@ class KafkaProducerAvroGenericApplicationTest {
 
     @Spy
     private MockProducer<String, GenericRecord> mockProducer =
-            new MockProducer<>(false, new StringSerializer(), serializer);
+            new MockProducer<>(false, null, new StringSerializer(), serializer);
 
     @InjectMocks
     private ProducerRunner producerRunner;
