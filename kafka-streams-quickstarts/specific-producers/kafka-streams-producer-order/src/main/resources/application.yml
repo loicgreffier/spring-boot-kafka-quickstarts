@@ -1,10 +1,10 @@
 kafka:
   properties:
-    acks: 'all'
+    acks: "all"
     avro.remove.java.properties: true
-    bootstrap.servers: 'localhost:9092'
-    client.id: 'streams-producer-order'
+    bootstrap.servers: "localhost:9092"
+    client.id: "streams-producer-order"
     enable.idempotence: true
-    key.serializer: 'org.apache.kafka.common.serialization.StringSerializer'
-    schema.registry.url: 'http://localhost:8081'
-    value.serializer: 'io.confluent.kafka.serializers.KafkaAvroSerializer'
+    key.serializer: "org.apache.kafka.common.serialization.StringSerializer"
+    schema.registry.url: "http://localhost:8081"
+    value.serializer: "io.confluent.kafka.serializers.KafkaAvroSerializer"

@@ -1,8 +1,8 @@
 kafka:
   properties:
-    acks: 'all'
-    bootstrap.servers: 'localhost:9092'
-    client.id: 'producer-headers'
+    acks: "all"
+    bootstrap.servers: "localhost:9092"
+    client.id: "producer-headers"
     enable.idempotence: true
-    key.serializer: 'org.apache.kafka.common.serialization.StringSerializer'
-    value.serializer: 'org.apache.kafka.common.serialization.StringSerializer'
+    key.serializer: "org.apache.kafka.common.serialization.StringSerializer"
+    value.serializer: "org.apache.kafka.common.serialization.StringSerializer"

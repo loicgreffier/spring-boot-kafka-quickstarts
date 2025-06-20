@@ -1,9 +1,9 @@
 kafka:
   properties:
-    acks: 'all'
-    bootstrap.servers: 'localhost:9092'
-    client.id: 'producer-transaction'
+    acks: "all"
+    bootstrap.servers: "localhost:9092"
+    client.id: "producer-transaction"
     enable.idempotence: true
-    key.serializer: 'org.apache.kafka.common.serialization.StringSerializer'
-    transactional.id: 'producer-transaction'
-    value.serializer: 'org.apache.kafka.common.serialization.StringSerializer'
+    key.serializer: "org.apache.kafka.common.serialization.StringSerializer"
+    transactional.id: "producer-transaction"
+    value.serializer: "org.apache.kafka.common.serialization.StringSerializer"
