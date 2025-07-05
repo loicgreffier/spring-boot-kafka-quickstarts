@@ -102,7 +102,7 @@ public class ProducerRunner {
 
             messages.forEach(this::send);
 
-            if (Integer.parseInt(messages.get(0).key()) % 3 == 0) {
+            if (Integer.parseInt(messages.getFirst().key()) % 3 == 0) {
                 throw new Exception("Error during transaction...");
             }
 

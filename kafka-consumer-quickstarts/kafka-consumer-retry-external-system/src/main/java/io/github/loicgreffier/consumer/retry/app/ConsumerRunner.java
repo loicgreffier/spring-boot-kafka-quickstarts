@@ -19,6 +19,8 @@
 package io.github.loicgreffier.consumer.retry.app;
 
 import static io.github.loicgreffier.consumer.retry.constant.Topic.STRING_TOPIC;
+import static org.apache.kafka.clients.consumer.internals.AutoOffsetResetStrategy.EARLIEST;
+import static org.apache.kafka.clients.consumer.internals.AutoOffsetResetStrategy.LATEST;
 
 import io.github.loicgreffier.consumer.retry.property.ConsumerProperties;
 import io.github.loicgreffier.consumer.retry.service.ExternalService;
@@ -33,7 +35,6 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
-import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -76,6 +77,7 @@ public class ConsumerRunner {
      * <ul>
      *   <li>Pause the affected topic-partitions.
      *   <li>Rewind to the offset of the failed record, since {@code poll()} automatically advances the offsets.
+     *   <li>Exit the loop without updating the offset position
      *   <li>Avoid committing offsets while paused, ensuring the failed record can be retried.
      * </ul>
      *
@@ -151,13 +153,11 @@ public class ConsumerRunner {
                     .getProperties()
                     .getOrDefault(
                             ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
-                            OffsetResetStrategy.EARLIEST.name().toLowerCase());
+                            EARLIEST.name().toLowerCase());
 
-            if (autoOffsetReset.equalsIgnoreCase(
-                    OffsetResetStrategy.EARLIEST.name().toLowerCase())) {
+            if (autoOffsetReset.equalsIgnoreCase(EARLIEST.name().toLowerCase())) {
                 consumer.seekToBeginning(consumer.assignment());
-            } else if (autoOffsetReset.equalsIgnoreCase(
-                    OffsetResetStrategy.LATEST.name().toLowerCase())) {
+            } else if (autoOffsetReset.equalsIgnoreCase(LATEST.name().toLowerCase())) {
                 consumer.seekToEnd(consumer.assignment());
             }
         }
@@ -179,9 +179,9 @@ public class ConsumerRunner {
     /**
      * Saves the offset of a successfully processed record by topic-partition.
      *
-     * <p>This method stores the offset of the *next* record to be processed. In the event of an external system
-     * failure, this allows the consumer to rewind and reprocess the last failed record by seeking to the previously
-     * saved offset.
+     * <p>This method stores the offset of the next record to be processed. In the event of an external system failure,
+     * this allows the consumer to rewind and reprocess the last failed record by seeking to the previously saved
+     * offset.
      *
      * @param message The message that was successfully processed.
      */
@@ -194,7 +194,7 @@ public class ConsumerRunner {
     private void doCommitSync() {
         try {
             log.info("Committing the pulled records");
-            consumer.commitSync();
+            consumer.commitSync(offsets);
         } catch (WakeupException e) {
             log.info("Wake up signal received during commit process");
             doCommitSync();

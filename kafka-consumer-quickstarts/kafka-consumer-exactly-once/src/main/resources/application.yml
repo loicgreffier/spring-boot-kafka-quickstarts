@@ -1,0 +1,29 @@
+kafka:
+  consumer:
+    properties:
+      auto.offset.reset: "earliest"
+      bootstrap.servers: "localhost:9092"
+      client.id: "consumer-exactly-once"
+      enable.auto.commit: false
+      fetch.max.wait.ms: 500
+      fetch.min.bytes: 1
+      group.id: "consumer-exactly-once"
+      heartbeat.interval.ms: 3000
+      key.deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+      max.poll.interval.ms: 300000
+      max.poll.records: 500
+      schema.registry.url: "http://localhost:8081"
+      session.timeout.ms: 45000
+      specific.avro.reader: true
+      value.deserializer: "io.confluent.kafka.serializers.KafkaAvroDeserializer"
+  producer:
+    properties:
+      acks: "all"
+      avro.remove.java.properties: true
+      bootstrap.servers: "localhost:9092"
+      client.id: "producer-exactly-once"
+      enable.idempotence: true
+      transactional.id: "producer-exactly-once"
+      key.serializer: "org.apache.kafka.common.serialization.StringSerializer"
+      schema.registry.url: "http://localhost:8081"
+      value.serializer: "io.confluent.kafka.serializers.KafkaAvroSerializer"
