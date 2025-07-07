@@ -61,10 +61,12 @@ public class ProducerRunner {
      * <p>The Kafka producer sends two string records to two topics: {@code FIRST_STRING_TOPIC} and
      * {@code SECOND_STRING_TOPIC}, within a single transaction. Either both records are successfully committed as part
      * of the transaction, or both are discarded if the transaction fails.
+     *
+     * @throws InterruptedException if the thread is interrupted while sleeping
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
-    public void run() {
+    public void run() throws InterruptedException {
         log.info("Init transactions");
         producer.initTransactions();
 
@@ -78,12 +80,7 @@ public class ProducerRunner {
 
             sendInTransaction(Arrays.asList(firstMessage, secondMessage));
 
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e) {
-                log.error("Interruption during sleep between message production", e);
-                Thread.currentThread().interrupt();
-            }
+            TimeUnit.SECONDS.sleep(1);
 
             i++;
         }

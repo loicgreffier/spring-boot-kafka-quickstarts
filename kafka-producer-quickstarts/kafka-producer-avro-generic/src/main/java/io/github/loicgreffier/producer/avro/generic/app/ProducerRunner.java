@@ -64,10 +64,11 @@ public class ProducerRunner {
      * <p>The Kafka producer produces generic Avro records to the USER_TOPIC topic.
      *
      * @throws IOException if the schema file cannot be read
+     * @throws InterruptedException if the thread is interrupted while sleeping
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
-    public void run() throws IOException {
+    public void run() throws IOException, InterruptedException {
         File schemaFile = new ClassPathResource("user.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
@@ -78,12 +79,7 @@ public class ProducerRunner {
 
             send(message);
 
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e) {
-                log.error("Interruption during sleep between message production", e);
-                Thread.currentThread().interrupt();
-            }
+            TimeUnit.SECONDS.sleep(1);
 
             i++;
         }

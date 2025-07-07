@@ -40,10 +40,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
- * This class represents a Kafka consumer runner that subscribes to a specific topic, processes Kafka records,
- * and sends the transformed records back to a topic.
+ * This class represents a Kafka consumer runner that subscribes to a specific topic, processes Kafka records, and sends
+ * the transformed records back to a topic.
  */
-
 @Slf4j
 @Component
 public class ConsumerRunner {
@@ -67,8 +66,8 @@ public class ConsumerRunner {
      * <p>The {@code @Async} annotation is used to run the consumer in a separate thread, ensuring that it does not
      * block the main application thread during startup.
      *
-     * <p>This Kafka consumer listens to the {@code USER_TOPIC}, processes records by mapping the first name and
-     * last name to uppercase
+     * <p>This Kafka consumer listens to the {@code USER_TOPIC}, processes records by mapping the first name and last
+     * name to uppercase
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
