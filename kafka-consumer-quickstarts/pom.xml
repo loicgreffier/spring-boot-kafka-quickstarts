@@ -14,10 +14,10 @@
     <modules>
         <module>kafka-consumer-avro-generic</module>
         <module>kafka-consumer-avro-specific</module>
-        <module>kafka-consumer-circuit-breaker</module>
         <module>kafka-consumer-exactly-once</module>
+        <module>kafka-consumer-exception-deserialization</module>
+        <module>kafka-consumer-exception-retry</module>
         <module>kafka-consumer-headers</module>
-        <module>kafka-consumer-retry-external-system</module>
         <module>kafka-consumer-simple</module>
         <module>kafka-consumer-transaction</module>
     </modules>

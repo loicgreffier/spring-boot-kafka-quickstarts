@@ -3,7 +3,7 @@
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and handles deserialization exceptions.
 It demonstrates the following:
 
-- How to use the Kafka Streams configuration `default.deserialization.exception.handler` to handle deserialization exceptions.
+- How to use the Kafka Streams configuration `deserialization.exception.handler` to handle deserialization exceptions.
 - How to implement a custom deserialization exception handler.
 - Unit testing using the Topology Test Driver.
 

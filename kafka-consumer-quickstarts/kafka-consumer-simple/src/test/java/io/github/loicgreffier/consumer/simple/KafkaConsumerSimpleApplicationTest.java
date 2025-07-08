@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
-import org.apache.kafka.clients.consumer.OffsetResetStrategy;
+import org.apache.kafka.clients.consumer.internals.AutoOffsetResetStrategy;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.RecordDeserializationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerSimpleApplicationTest {
     @Spy
-    private MockConsumer<String, String> mockConsumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
+    private MockConsumer<String, String> mockConsumer = new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
 
     @InjectMocks
     private ConsumerRunner consumerRunner;

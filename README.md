@@ -39,15 +39,15 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 ### Consumers
 
-| Module                                                                                    | Library       | Content                                                        |
-|:------------------------------------------------------------------------------------------|---------------|----------------------------------------------------------------|
-| [Avro Generic](/kafka-consumer-quickstarts/kafka-consumer-avro-generic)                   | Kafka Clients | Consume generic Avro records                                   |
-| [Avro Specific](/kafka-consumer-quickstarts/kafka-consumer-avro-specific)                 | Kafka Clients | Consume specific Avro records                                  |
-| [Circuit breaker](/kafka-consumer-quickstarts/kafka-consumer-circuit-breaker)             | Kafka Clients | Consume records while handling poison pills                    |
-| [Headers](/kafka-consumer-quickstarts/kafka-consumer-headers)                             | Kafka Clients | Consume records with headers                                   |
-| [Retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system) | Kafka Clients | Consume records while retrying on failed external system calls |
-| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                               | Kafka Clients | Consume String records                                         |
-| [Transaction](/kafka-consumer-quickstarts/kafka-consumer-transaction)                     | Kafka Clients | Consume records from committed transactions                    |
+| Module                                                                                            | Library       | Content                                                        |
+|:--------------------------------------------------------------------------------------------------|---------------|----------------------------------------------------------------|
+| [Avro Generic](/kafka-consumer-quickstarts/kafka-consumer-avro-generic)                           | Kafka Clients | Consume generic Avro records                                   |
+| [Avro Specific](/kafka-consumer-quickstarts/kafka-consumer-avro-specific)                         | Kafka Clients | Consume specific Avro records                                  |
+| [Deserialization Exception](/kafka-consumer-quickstarts/kafka-consumer-exception-deserialization) | Kafka Clients | Consume records while handling deserialization exceptions      |
+| [Headers](/kafka-consumer-quickstarts/kafka-consumer-headers)                                     | Kafka Clients | Consume records with headers                                   |
+| [Retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system)         | Kafka Clients | Consume records while retrying on failed external system calls |
+| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                                       | Kafka Clients | Consume String records                                         |
+| [Transaction](/kafka-consumer-quickstarts/kafka-consumer-transaction)                             | Kafka Clients | Consume records from committed transactions                    |
 
 ### Kafka Streams
 
@@ -129,12 +129,12 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 #### Handler
 
-| Module                                                                                                                   | Library       | Content                                        | Config                                      |
-|:-------------------------------------------------------------------------------------------------------------------------|---------------|------------------------------------------------|---------------------------------------------|
-| [Deserialization Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-deserialization)          | Kafka Streams | Handle deserialization exceptions              | `default.deserialization.exception.handler` |
-| [Processing Exception Handler DSL](/kafka-streams-quickstarts/kafka-streams-exception-handler-processing-dsl)            | Kafka Streams | Handle processing exceptions in DSL operations | `processing.exception.handler`              |
-| [Processing Exception Handler Processor API](/kafka-streams-quickstarts/kafka-streams-exception-handler-processing-papi) | Kafka Streams | Handle processing exceptions in Processor API  | `processing.exception.handler`              |
-| [Production Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-production)                    | Kafka Streams | Handle production and serialization exceptions | `default.production.exception.handler`      |
+| Module                                                                                                                   | Library       | Content                                        | Config                              |
+|:-------------------------------------------------------------------------------------------------------------------------|---------------|------------------------------------------------|-------------------------------------|
+| [Deserialization Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-deserialization)          | Kafka Streams | Handle deserialization exceptions              | `deserialization.exception.handler` |
+| [Processing Exception Handler DSL](/kafka-streams-quickstarts/kafka-streams-exception-handler-processing-dsl)            | Kafka Streams | Handle processing exceptions in DSL operations | `processing.exception.handler`      |
+| [Processing Exception Handler Processor API](/kafka-streams-quickstarts/kafka-streams-exception-handler-processing-papi) | Kafka Streams | Handle processing exceptions in Processor API  | `processing.exception.handler`      |
+| [Production Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-production)                    | Kafka Streams | Handle production and serialization exceptions | `production.exception.handler`      |
 
 ## Credits
 

@@ -16,25 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.github.loicgreffier.consumer.avro.generic;
+package io.github.loicgreffier.consumer.deserialization.exception;
 
-import static io.github.loicgreffier.consumer.avro.generic.constant.Topic.USER_TOPIC;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static io.github.loicgreffier.consumer.deserialization.exception.constant.Topic.USER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import io.github.loicgreffier.consumer.avro.generic.app.ConsumerRunner;
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
+import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.consumer.deserialization.exception.app.ConsumerRunner;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
-import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericData;
-import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
 import org.apache.kafka.clients.consumer.internals.AutoOffsetResetStrategy;
@@ -46,13 +40,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.ClassPathResource;
 
 @ExtendWith(MockitoExtension.class)
-class KafkaConsumerAvroGenericApplicationTest {
+class KafkaConsumerDeserializationExceptionApplicationTest {
     @Spy
-    private MockConsumer<String, GenericRecord> mockConsumer =
-            new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
+    private MockConsumer<String, KafkaUser> mockConsumer = new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
 
     @InjectMocks
     private ConsumerRunner consumerRunner;
@@ -68,19 +60,18 @@ class KafkaConsumerAvroGenericApplicationTest {
     }
 
     @Test
-    void shouldConsumeSuccessfully() throws IOException {
-        File schemaFile = new ClassPathResource("user.avsc").getFile();
-        Schema schema = new Schema.Parser().parse(schemaFile);
-
-        GenericRecord genericRecord = new GenericData.Record(schema);
-        genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "Homer");
-        genericRecord.put("lastName", "Simpson");
-        genericRecord.put(
-                "birthDate",
-                Timestamp.from(Instant.parse("2000-01-01T01:00:00Z")).getTime());
-
-        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1", genericRecord);
+    void shouldConsumeSuccessfully() {
+        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+                USER_TOPIC,
+                0,
+                0,
+                "1",
+                KafkaUser.newBuilder()
+                        .setId(1L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -92,21 +83,33 @@ class KafkaConsumerAvroGenericApplicationTest {
     }
 
     @Test
-    void shouldFailOnPoisonPill() throws IOException {
-        File schemaFile = new ClassPathResource("user.avsc").getFile();
-        Schema schema = new Schema.Parser().parse(schemaFile);
+    void shouldBreakCircuitOnDeserializationException() {
+        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+                USER_TOPIC,
+                0,
+                0,
+                "1",
+                KafkaUser.newBuilder()
+                        .setId(1L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
-        GenericRecord genericRecord = new GenericData.Record(schema);
-        genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "Homer");
-        genericRecord.put("lastName", "Simpson");
-        genericRecord.put(
-                "birthDate",
-                Timestamp.from(Instant.parse("2000-01-01T01:00:00Z")).getTime());
-
-        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1", genericRecord);
+        ConsumerRecord<String, KafkaUser> message2 = new ConsumerRecord<>(
+                USER_TOPIC,
+                0,
+                2,
+                "2",
+                KafkaUser.newBuilder()
+                        .setId(2L)
+                        .setFirstName("Homer")
+                        .setLastName("Simpson")
+                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
+
         mockConsumer.schedulePollTask(() -> {
             throw new RecordDeserializationException(
                     RecordDeserializationException.DeserializationExceptionOrigin.VALUE,
@@ -120,12 +123,16 @@ class KafkaConsumerAvroGenericApplicationTest {
                     "Error deserializing",
                     new Exception());
         });
-        mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
 
-        assertThrows(RecordDeserializationException.class, () -> consumerRunner.run());
+        mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message2));
+
+        mockConsumer.schedulePollTask(mockConsumer::wakeup);
+
+        consumerRunner.run();
 
         assertTrue(mockConsumer.closed());
-        verify(mockConsumer, times(3)).poll(any());
-        verify(mockConsumer).commitSync();
+        verify(mockConsumer, times(5)).poll(any());
+        verify(mockConsumer, times(2)).commitSync();
+        verify(mockConsumer).seek(topicPartition, 2);
     }
 }
