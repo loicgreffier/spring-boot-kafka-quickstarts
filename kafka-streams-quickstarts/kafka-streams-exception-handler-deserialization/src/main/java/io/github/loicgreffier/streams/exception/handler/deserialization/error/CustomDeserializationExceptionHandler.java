@@ -30,7 +30,7 @@ public class CustomDeserializationExceptionHandler implements DeserializationExc
 
     @Override
     public DeserializationHandlerResponse handle(
-            ErrorHandlerContext context, ConsumerRecord<byte[], byte[]> record, Exception exception) {
+            ErrorHandlerContext context, ConsumerRecord<byte[], byte[]> message, Exception exception) {
         log.warn(
                 "Exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
                 context.processorNodeId(),
