@@ -25,15 +25,14 @@ import static io.github.loicgreffier.producer.avro.generic.constant.Topic.USER_T
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
@@ -46,6 +45,9 @@ import org.springframework.stereotype.Component;
 public class ProducerRunner {
     private final Random random = new Random();
     private final Producer<String, GenericRecord> producer;
+
+    @Setter
+    private boolean stopped = false;
 
     /**
      * Constructor.
@@ -73,38 +75,28 @@ public class ProducerRunner {
         Schema schema = new Schema.Parser().parse(schemaFile);
 
         int i = 0;
-        while (true) {
+        while (!stopped) {
             ProducerRecord<String, GenericRecord> message =
                     new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildGenericRecord(schema, i));
 
-            send(message);
+            producer.send(message, (recordMetadata, e) -> {
+                if (e != null) {
+                    log.error(e.getMessage());
+                } else {
+                    log.info(
+                            "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
+                            recordMetadata.topic(),
+                            recordMetadata.partition(),
+                            recordMetadata.offset(),
+                            message.key(),
+                            message.value());
+                }
+            });
 
             TimeUnit.SECONDS.sleep(1);
 
             i++;
         }
-    }
-
-    /**
-     * Sends a message to the Kafka topic.
-     *
-     * @param message The message to send.
-     * @return A future of the record metadata.
-     */
-    public Future<RecordMetadata> send(ProducerRecord<String, GenericRecord> message) {
-        return producer.send(message, (recordMetadata, e) -> {
-            if (e != null) {
-                log.error(e.getMessage());
-            } else {
-                log.info(
-                        "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
-                        recordMetadata.topic(),
-                        recordMetadata.partition(),
-                        recordMetadata.offset(),
-                        message.key(),
-                        message.value());
-            }
-        });
     }
 
     /**

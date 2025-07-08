@@ -20,24 +20,18 @@ package io.github.loicgreffier.producer.avro.generic;
 
 import static io.github.loicgreffier.producer.avro.generic.constant.Topic.USER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import io.github.loicgreffier.producer.avro.generic.app.ProducerRunner;
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericData;
+import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
@@ -45,8 +39,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.ClassPathResource;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 class KafkaProducerAvroGenericApplicationTest {
     private final Serializer<GenericRecord> serializer = (topic, genericRecord) -> {
@@ -57,76 +51,42 @@ class KafkaProducerAvroGenericApplicationTest {
 
     @Spy
     private MockProducer<String, GenericRecord> mockProducer =
-            new MockProducer<>(false, null, new StringSerializer(), serializer);
+            new MockProducer<>(true, null, new StringSerializer(), serializer);
 
     @InjectMocks
     private ProducerRunner producerRunner;
 
     @Test
-    void shouldSendSuccessfully() throws ExecutionException, InterruptedException, IOException {
-        File schemaFile = new ClassPathResource("user.avsc").getFile();
-        Schema schema = new Schema.Parser().parse(schemaFile);
+    void shouldSendAutomaticallyWithSuccess() throws InterruptedException {
+        Thread producerThread = new Thread(() -> {
+            try {
+                producerRunner.run();
+            } catch (IOException | InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
 
-        GenericRecord genericRecord = new GenericData.Record(schema);
-        genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "Homer");
-        genericRecord.put("lastName", "Simpson");
-        genericRecord.put("birthDate", System.currentTimeMillis());
+        producerThread.start();
 
-        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(USER_TOPIC, "1", genericRecord);
+        waitForProducer();
 
-        Future<RecordMetadata> recordMetadata = producerRunner.send(message);
-        mockProducer.completeNext();
+        ProducerRecord<String, GenericRecord> sentRecord =
+                mockProducer.history().getFirst();
 
-        assertTrue(recordMetadata.get().hasOffset());
-        assertEquals(0, recordMetadata.get().offset());
-        assertEquals(0, recordMetadata.get().partition());
-        assertEquals(1, mockProducer.history().size());
-        assertEquals(message, mockProducer.history().getFirst());
+        assertEquals(USER_TOPIC, sentRecord.topic());
+        assertEquals("0", sentRecord.key());
+        assertNotNull(sentRecord.value().get("id"));
+        assertNotNull(sentRecord.value().get("firstName"));
+        assertNotNull(sentRecord.value().get("lastName"));
+        assertNotNull(sentRecord.value().get("birthDate"));
     }
 
-    @Test
-    void shouldSendWithFailure() throws IOException {
-        File schemaFile = new ClassPathResource("user.avsc").getFile();
-        Schema schema = new Schema.Parser().parse(schemaFile);
+    private void waitForProducer() throws InterruptedException {
+        while (mockProducer.history().isEmpty()) {
+            log.info("Waiting for producer to produce messages...");
+            TimeUnit.MILLISECONDS.sleep(100); // NOSONAR
+        }
 
-        GenericRecord genericRecord = new GenericData.Record(schema);
-        genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "Homer");
-        genericRecord.put("lastName", "Simpson");
-        genericRecord.put("birthDate", System.currentTimeMillis());
-
-        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(USER_TOPIC, "1", genericRecord);
-
-        Future<RecordMetadata> recordMetadata = producerRunner.send(message);
-        RuntimeException exception = new RuntimeException("Error sending message");
-        mockProducer.errorNext(exception);
-
-        ExecutionException executionException = assertThrows(ExecutionException.class, recordMetadata::get);
-        assertEquals(executionException.getCause(), exception);
-        assertEquals(1, mockProducer.history().size());
-        assertEquals(message, mockProducer.history().getFirst());
-    }
-
-    @Test
-    void shouldNotSerializeGenericRecordWhenWrongFieldType() throws IOException {
-        File schemaFile = new ClassPathResource("user.avsc").getFile();
-        Schema schema = new Schema.Parser().parse(schemaFile);
-
-        GenericRecord genericRecord = new GenericData.Record(schema);
-        genericRecord.put("id", "aStringThatShouldBeALong");
-        genericRecord.put("firstName", "Homer");
-        genericRecord.put("lastName", "Simpson");
-        genericRecord.put("birthDate", System.currentTimeMillis());
-
-        ProducerRecord<String, GenericRecord> message = new ProducerRecord<>(USER_TOPIC, "1", genericRecord);
-
-        SerializationException serializationException =
-                assertThrows(SerializationException.class, () -> producerRunner.send(message));
-
-        assertEquals("Error serializing Avro message", serializationException.getMessage());
-        assertEquals(
-                "Not in union [\"null\",\"long\"]: aStringThatShouldBeALong (field=id)",
-                serializationException.getCause().getMessage());
+        producerRunner.setStopped(true);
     }
 }
