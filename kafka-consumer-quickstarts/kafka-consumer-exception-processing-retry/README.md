@@ -1,10 +1,10 @@
-# Consumer Transactional
+# Consumer Exception Processing Retry
 
-This module consumes records of type `<String, String>` from two topics: `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`.
+This module consumes records of type `<String, String>` from the `STRING_TOPIC` and implements a retry mechanism to handle exceptions that occur while processing records.
 It demonstrates the following:
 
 - How to use the Kafka Clients consumer API.
-- How to configure the consumer’s `isolation.level` to `read_committed`, ensuring that only committed records are consumed while filtering out uncommitted or aborted transactional records.
+- Unit testing with a mock consumer.
 
 ## Prerequisites
 
@@ -19,7 +19,7 @@ To compile and run this demo, you’ll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, String>` to the `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`. You can use the [Producer Transaction](../../kafka-producer-quickstarts/kafka-producer-transaction) for this.
+- Produce records of type `<String, String>` to the `STRING_TOPIC`. You can use the [Producer Simple](../../kafka-producer-quickstarts/kafka-producer-simple) for this.
 - Start the consumer.
 
 Alternatively, to run the application with Docker, use the following command:
@@ -32,5 +32,5 @@ This command will start the following services in Docker:
 
 - 1 Kafka Broker (KRaft mode)
 - 1 Control Center
-- 1 Producer Transaction
-- 1 Consumer Transaction
+- 1 Producer Simple
+- 1 Consumer Exception Processing Retry

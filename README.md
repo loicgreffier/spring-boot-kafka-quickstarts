@@ -39,15 +39,15 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 ### Consumers
 
-| Module                                                                                            | Library       | Content                                                        |
-|:--------------------------------------------------------------------------------------------------|---------------|----------------------------------------------------------------|
-| [Avro Generic](/kafka-consumer-quickstarts/kafka-consumer-avro-generic)                           | Kafka Clients | Consume generic Avro records                                   |
-| [Avro Specific](/kafka-consumer-quickstarts/kafka-consumer-avro-specific)                         | Kafka Clients | Consume specific Avro records                                  |
-| [Deserialization Exception](/kafka-consumer-quickstarts/kafka-consumer-exception-deserialization) | Kafka Clients | Consume records while handling deserialization exceptions      |
-| [Headers](/kafka-consumer-quickstarts/kafka-consumer-headers)                                     | Kafka Clients | Consume records with headers                                   |
-| [Retry external system](/kafka-consumer-quickstarts/kafka-consumer-retry-external-system)         | Kafka Clients | Consume records while retrying on failed external system calls |
-| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                                       | Kafka Clients | Consume String records                                         |
-| [Transaction](/kafka-consumer-quickstarts/kafka-consumer-transaction)                             | Kafka Clients | Consume records from committed transactions                    |
+| Module                                                                                              | Library       | Content                                                    |
+|:----------------------------------------------------------------------------------------------------|---------------|------------------------------------------------------------|
+| [Avro Generic](/kafka-consumer-quickstarts/kafka-consumer-avro-generic)                             | Kafka Clients | Consume generic Avro records                               |
+| [Avro Specific](/kafka-consumer-quickstarts/kafka-consumer-avro-specific)                           | Kafka Clients | Consume specific Avro records                              |
+| [Exception Deserialization](/kafka-consumer-quickstarts/kafka-consumer-exception-deserialization)   | Kafka Clients | Consume records while handling deserialization exceptions  |
+| [Exception Processing Retry](/kafka-consumer-quickstarts/kafka-consumer-exception-processing-retry) | Kafka Clients | Consume records with retry logic for processing exceptions |
+| [Headers](/kafka-consumer-quickstarts/kafka-consumer-headers)                                       | Kafka Clients | Consume records with headers                               |
+| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                                         | Kafka Clients | Consume String records                                     |
+| [Transaction](/kafka-consumer-quickstarts/kafka-consumer-transaction)                               | Kafka Clients | Consume records from committed transactions                |
 
 ### Kafka Streams
 

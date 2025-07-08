@@ -1,4 +1,4 @@
-# Consumer Deserialization Exception
+# Consumer Exception Deserialization
 
 This module consumes records of type `<String, KafkaUser>` from the `USER_TOPIC` and gracefully handles deserialization exceptions by skipping the problematic record.
 It demonstrates the following:
@@ -38,4 +38,4 @@ This command will start the following services in Docker:
 - 1 Schema Registry
 - 1 Control Center
 - 1 Producer Avro Specific
-- 1 Deserialization Exception Consumer
+- 1 Consumer Exception Deserialization
