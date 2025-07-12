@@ -16,12 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.github.loicgreffier.consumer.exactly.once.constant;
+package io.github.loicgreffier.consumer.exactly.once;
 
-/** Topic name constants. */
-public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 
-    /** Private constructor. */
-    private Topic() {}
+/** This is the main class for the Kafka consumer application. */
+@EnableAsync
+@SpringBootApplication
+public class KafkaConsumerExactlyOnceProcessingApplication {
+    /**
+     * The main entry point of the Kafka consumer application.
+     *
+     * @param args The command line arguments.
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(KafkaConsumerExactlyOnceProcessingApplication.class, args);
+    }
 }

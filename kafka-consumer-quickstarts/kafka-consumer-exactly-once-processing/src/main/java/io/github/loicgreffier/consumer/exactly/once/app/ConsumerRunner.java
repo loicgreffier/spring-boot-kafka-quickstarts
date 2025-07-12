@@ -18,16 +18,14 @@
  */
 package io.github.loicgreffier.consumer.exactly.once.app;
 
+import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.PROCESSING_EXACTLY_ONCE_TOPIC;
 import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.USER_TOPIC;
 
 import io.github.loicgreffier.avro.KafkaUser;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.Producer;
@@ -86,20 +84,27 @@ public class ConsumerRunner {
                 log.info("Begin transaction");
                 producer.beginTransaction();
 
-                for (ConsumerRecord<String, KafkaUser> message : messages) {
-                    log.info(
-                            "Received offset = {}, partition = {}, key = {}, value = {}",
-                            message.offset(),
-                            message.partition(),
-                            message.key(),
-                            message.value());
+                List<ProducerRecord<String, KafkaUser>> transformedMessages = messages.partitions().stream()
+                        .flatMap(partition -> messages.records(partition).stream()
+                                .map(message -> {
+                                    log.info(
+                                            "Received offset = {}, partition = {}, key = {}, value = {}",
+                                            message.offset(),
+                                            message.partition(),
+                                            message.key(),
+                                            message.value());
 
-                    KafkaUser kafkaUser = message.value();
-                    kafkaUser.setFirstName(kafkaUser.getFirstName().toUpperCase());
-                    kafkaUser.setLastName(kafkaUser.getLastName().toUpperCase());
-                    ProducerRecord<String, KafkaUser> transformedMessage =
-                            new ProducerRecord<>(USER_TOPIC, message.key(), kafkaUser);
+                                    KafkaUser kafkaUser = message.value();
+                                    kafkaUser.setFirstName(
+                                            kafkaUser.getFirstName().toUpperCase());
+                                    kafkaUser.setLastName(
+                                            kafkaUser.getLastName().toUpperCase());
+                                    return new ProducerRecord<>(
+                                            PROCESSING_EXACTLY_ONCE_TOPIC, message.key(), kafkaUser);
+                                }))
+                        .toList();
 
+                transformedMessages.forEach(transformedMessage -> {
                     producer.send(transformedMessage, (recordMetadata, e) -> {
                         if (e != null) {
                             log.error(e.getMessage());
@@ -109,11 +114,11 @@ public class ConsumerRunner {
                                     recordMetadata.topic(),
                                     recordMetadata.partition(),
                                     recordMetadata.offset(),
-                                    message.key(),
-                                    message.value());
+                                    transformedMessage.key(),
+                                    transformedMessage.value());
                         }
                     });
-                }
+                });
 
                 if (!messages.isEmpty()) {
                     producer.sendOffsetsToTransaction(offsetsToCommit(), consumer.groupMetadata());
