@@ -43,6 +43,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 |:----------------------------------------------------------------------------------------------------|---------------|------------------------------------------------------------|
 | [Avro Generic](/kafka-consumer-quickstarts/kafka-consumer-avro-generic)                             | Kafka Clients | Consume generic Avro records                               |
 | [Avro Specific](/kafka-consumer-quickstarts/kafka-consumer-avro-specific)                           | Kafka Clients | Consume specific Avro records                              |
+| [Exactly Once Processing](/kafka-consumer-quickstarts/kafka-consumer-exactly-once-processing)       | Kafka Clients | Consume–process–produce loop with transactions             |
 | [Exception Deserialization](/kafka-consumer-quickstarts/kafka-consumer-exception-deserialization)   | Kafka Clients | Consume records while handling deserialization exceptions  |
 | [Exception Processing Retry](/kafka-consumer-quickstarts/kafka-consumer-exception-processing-retry) | Kafka Clients | Consume records with retry logic for processing exceptions |
 | [Headers](/kafka-consumer-quickstarts/kafka-consumer-headers)                                       | Kafka Clients | Consume records with headers                               |

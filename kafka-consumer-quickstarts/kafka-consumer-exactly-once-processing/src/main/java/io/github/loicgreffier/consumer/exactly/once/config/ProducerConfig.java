@@ -19,25 +19,24 @@
 package io.github.loicgreffier.consumer.exactly.once.config;
 
 import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.consumer.exactly.once.property.ConsumerProperties;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import io.github.loicgreffier.consumer.exactly.once.property.ProducerProperties;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/** This class provides configuration for creating a Kafka consumer instance. */
+/** This class provides configuration for creating a Kafka producer instance. */
 @Configuration
-public class ConsumerConfig {
+public class ProducerConfig {
     /**
-     * Creates a Kafka consumer instance using the specified properties. When the application is stopped, the consumer
-     * bean is automatically destroyed. When the consumer bean is destroyed, the {@link Consumer#wakeup()} method is
-     * called instead of {@link Consumer#close()} to ensure thread safety.
+     * Creates a Kafka producer instance using the specified properties. When the application is stopped, the producer
+     * bean is automatically destroyed and the {@link Producer#close()} method is automatically called.
      *
-     * @param properties The consumer properties to configure the Kafka consumer.
-     * @return A Kafka consumer instance.
+     * @param properties The producer properties to configure the Kafka producer.
+     * @return A Kafka producer instance.
      */
-    @Bean(destroyMethod = "wakeup")
-    public Consumer<String, KafkaUser> kafkaConsumer(ConsumerProperties properties) {
-        return new KafkaConsumer<>(properties.asProperties());
+    @Bean
+    public Producer<String, KafkaUser> kafkaProducer(ProducerProperties properties) {
+        return new KafkaProducer<>(properties.asProperties());
     }
 }
