@@ -1,10 +1,10 @@
 # Consumer Exactly Once Processing
 
-This module consumes records of type `<String, KafkaUser>` from the `USER_TOPIC`, maps the first name and last name to uppercase and send it to the `EXACTLY_ONCE_PROCESSING_TOPIC` withing a transaction.
+This module consumes records of type `<String, KafkaUser>` from the `USER_TOPIC`, maps the first and last names to uppercase, and sends them to the `EXACTLY_ONCE_PROCESSING_TOPIC` withing a transaction.
 It demonstrates the following:
 
-- How to use the Kafka Clients consumer and producer API.
-- How to use the Kafka transactions to achieve exactly-once processing.
+- How to use the Kafka Clients consumer and producer APIs.
+- How to use Kafka transactions to achieve exactly-once processing.
 - Unit testing with a mock consumer.
 
 ## Prerequisites

@@ -64,15 +64,15 @@ public class ConsumerRunner {
      * <p>The {@code @Async} annotation is used to run the consumer in a separate thread, ensuring that it does not
      * block the main application thread during startup.
      *
-     * <p>This Kafka consumer listens to the {@code USER_TOPIC}, and processes records by mapping the first name and last
-     * name to uppercase. It then sends the transformed records to the {@code EXACTLY_ONCE_PROCESSING_TOPIC} using
+     * <p>This Kafka consumer listens to the {@code USER_TOPIC}, and processes records by mapping the first name and
+     * last name to uppercase. It then sends the transformed records to the {@code EXACTLY_ONCE_PROCESSING_TOPIC} using
      * transactions, forming a consume-process-produce loop.
      *
      * <p>Transactions ensure that processed records are sent to the output topic along with the offsets of the
-     * partitions that were processed. This guarantees exactly-once processing — meaning that for each
-     * record received, its processed results will be reflected once, even in the event of failures. Without transactions,
-     * processing could lead to duplicate records in the output topic if a failure occurs after sending the records but
-     * before committing the offsets.
+     * partitions that were processed. This guarantees exactly-once processing, meaning that for each record received,
+     * its processed results will be reflected once, even in the event of failures. Without transactions, processing
+     * could lead to duplicate records in the output topic if a failure occurs after sending the records but before
+     * committing the offsets.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
