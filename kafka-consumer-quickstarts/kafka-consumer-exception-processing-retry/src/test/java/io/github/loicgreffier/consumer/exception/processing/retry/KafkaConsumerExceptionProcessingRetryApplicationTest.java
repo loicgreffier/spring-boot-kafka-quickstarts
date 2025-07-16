@@ -40,6 +40,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -80,7 +81,9 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
 
         assertTrue(mockConsumer.closed());
 
-        verify(mockConsumer).commitSync();
+        verify(mockConsumer).commitSync(argThat((ArgumentMatcher<Map<TopicPartition, OffsetAndMetadata>>)
+                argument -> argument.containsKey(new TopicPartition(STRING_TOPIC, 0))
+                        && argument.get(new TopicPartition(STRING_TOPIC, 0)).offset() == 1L));
     }
 
     @Test

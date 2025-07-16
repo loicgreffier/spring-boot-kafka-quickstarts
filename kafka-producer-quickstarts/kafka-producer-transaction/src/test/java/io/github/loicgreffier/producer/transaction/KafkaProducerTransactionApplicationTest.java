@@ -45,25 +45,6 @@ class KafkaProducerTransactionApplicationTest {
     private ProducerRunner producerRunner;
 
     @Test
-    void shouldAbortTransaction() throws InterruptedException {
-        Thread producerThread = new Thread(() -> {
-            try {
-                producerRunner.run();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        });
-
-        producerThread.start();
-
-        waitForProducer(true);
-
-        assertTrue(mockProducer.history().isEmpty());
-        assertTrue(mockProducer.transactionInitialized());
-        assertTrue(mockProducer.transactionAborted());
-    }
-
-    @Test
     void shouldCommitTransaction() throws InterruptedException {
         Thread producerThread = new Thread(() -> {
             try {
@@ -91,6 +72,25 @@ class KafkaProducerTransactionApplicationTest {
 
         assertTrue(mockProducer.transactionInitialized());
         assertTrue(mockProducer.transactionCommitted());
+    }
+
+    @Test
+    void shouldAbortTransaction() throws InterruptedException {
+        Thread producerThread = new Thread(() -> {
+            try {
+                producerRunner.run();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+
+        producerThread.start();
+
+        waitForProducer(true);
+
+        assertTrue(mockProducer.history().isEmpty());
+        assertTrue(mockProducer.transactionInitialized());
+        assertTrue(mockProducer.transactionAborted());
     }
 
     private void waitForProducer(boolean aborted) throws InterruptedException {

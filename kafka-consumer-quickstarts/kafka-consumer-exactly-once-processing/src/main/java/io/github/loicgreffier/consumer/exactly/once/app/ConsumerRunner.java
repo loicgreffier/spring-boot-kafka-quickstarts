@@ -142,9 +142,6 @@ public class ConsumerRunner {
         } finally {
             log.info("Closing consumer");
             consumer.close();
-
-            log.info("Closing producer");
-            producer.close();
         }
     }
 
