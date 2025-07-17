@@ -95,7 +95,7 @@ services:
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
-      - kafka-producer-exactly-once-processing
+      - kafka-producer-avro-specific
     ports:
       - "8083:8080"
     restart: unless-stopped
@@ -103,9 +103,17 @@ services:
       SPRING_APPLICATION_JSON: |
         {
           "kafka": {
-            "properties": {
-              "bootstrap.servers": "broker:29092",
-              "schema.registry.url": "http://schema-registry:8081"
+            "consumer": {
+              "properties": {
+                "bootstrap.servers": "broker:29092",
+                "schema.registry.url": "http://schema-registry:8081"
+              }
+            },
+            "producer": {
+              "properties": {
+                "bootstrap.servers": "broker:29092",
+                "schema.registry.url": "http://schema-registry:8081"
+              }
             }
           }
         }
