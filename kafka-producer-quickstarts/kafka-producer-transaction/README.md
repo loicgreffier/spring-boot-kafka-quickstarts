@@ -4,9 +4,9 @@ This module produces transactional records of type `<String, String>` to two top
 and `SECOND_STRING_TOPIC`.
 It demonstrates the following:
 
-- The use of the Kafka Clients producer API.
-- The use of Kafka transactions.
-- Unit testing using a Mock producer.
+- How to use the Kafka Clients producer API.
+- How to use Kafka transactions.
+- Unit testing with a mock producer.
 
 ## Prerequisites
 

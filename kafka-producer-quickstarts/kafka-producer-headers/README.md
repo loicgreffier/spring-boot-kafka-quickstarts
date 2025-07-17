@@ -3,9 +3,9 @@
 This module produces records of type `<String, String>` with headers to the `STRING_TOPIC`.
 It demonstrates the following:
 
-- The use of the Kafka Clients producer API.
-- The use of headers in Kafka records.
-- Unit testing using a Mock producer.
+- How to use the Kafka Clients producer API.
+- How to use headers in Kafka records.
+- Unit testing with a mock producer.
 
 ## Prerequisites
 

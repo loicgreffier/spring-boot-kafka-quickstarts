@@ -1,0 +1,17 @@
+kafka:
+  properties:
+    auto.offset.reset: "earliest"
+    bootstrap.servers: "localhost:9092"
+    client.id: "consumer-exception-deserialization"
+    enable.auto.commit: false
+    fetch.max.wait.ms: 500
+    fetch.min.bytes: 1
+    group.id: "consumer-exception-deserialization"
+    heartbeat.interval.ms: 3000
+    key.deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+    max.poll.interval.ms: 300000
+    max.poll.records: 500
+    schema.registry.url: "http://localhost:8081"
+    session.timeout.ms: 45000
+    specific.avro.reader: true
+    value.deserializer: "io.confluent.kafka.serializers.KafkaAvroDeserializer"

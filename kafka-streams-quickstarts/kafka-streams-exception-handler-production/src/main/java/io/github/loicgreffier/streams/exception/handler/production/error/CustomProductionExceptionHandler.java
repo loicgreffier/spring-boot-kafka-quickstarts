@@ -31,7 +31,7 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
 
     @Override
     public ProductionExceptionHandlerResponse handle(
-            ErrorHandlerContext context, ProducerRecord<byte[], byte[]> record, Exception exception) {
+            ErrorHandlerContext context, ProducerRecord<byte[], byte[]> message, Exception exception) {
         if (exception instanceof RecordTooLargeException) {
             log.warn(
                     "Record too large exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
@@ -58,7 +58,7 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
     @Override
     public ProductionExceptionHandlerResponse handleSerializationException(
             ErrorHandlerContext context,
-            ProducerRecord record,
+            ProducerRecord message,
             Exception exception,
             SerializationExceptionOrigin origin) {
         log.warn(
@@ -68,8 +68,8 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
                 context.partition(),
                 context.offset(),
                 origin,
-                record.key(),
-                record.value(),
+                message.key(),
+                message.value(),
                 exception);
 
         return ProductionExceptionHandlerResponse.CONTINUE;

@@ -59,10 +59,12 @@ public class ProducerRunner {
      * the main thread.
      *
      * <p>The Kafka producer sends user records to two topics: {@code USER_TOPIC} and {@code USER_TOPIC_TWO}.
+     *
+     * @throws InterruptedException if the thread is interrupted while sleeping
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
-    public void run() {
+    public void run() throws InterruptedException {
         int i = 0;
         while (true) {
             ProducerRecord<String, KafkaUser> messageOne =
@@ -74,12 +76,7 @@ public class ProducerRunner {
             send(messageOne);
             send(messageTwo);
 
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e) {
-                log.error("Interruption during sleep between message production", e);
-                Thread.currentThread().interrupt();
-            }
+            TimeUnit.SECONDS.sleep(1);
 
             i++;
         }

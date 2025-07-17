@@ -20,15 +20,12 @@ package io.github.loicgreffier.producer.simple;
 
 import static io.github.loicgreffier.producer.simple.constant.Topic.STRING_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.loicgreffier.producer.simple.app.ProducerRunner;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,38 +33,43 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 class KafkaProducerSimpleApplicationTest {
     @Spy
     private MockProducer<String, String> mockProducer =
-            new MockProducer<>(false, null, new StringSerializer(), new StringSerializer());
+            new MockProducer<>(true, null, new StringSerializer(), new StringSerializer());
 
     @InjectMocks
     private ProducerRunner producerRunner;
 
     @Test
-    void shouldSendSuccessfully() throws ExecutionException, InterruptedException {
-        ProducerRecord<String, String> message = new ProducerRecord<>(STRING_TOPIC, "1", "Message 1");
-        Future<RecordMetadata> recordMetadata = producerRunner.send(message);
-        mockProducer.completeNext();
+    void shouldSendAutomaticallyWithSuccess() throws InterruptedException {
+        Thread producerThread = new Thread(() -> {
+            try {
+                producerRunner.run();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
 
-        assertTrue(recordMetadata.get().hasOffset());
-        assertEquals(0, recordMetadata.get().offset());
-        assertEquals(0, recordMetadata.get().partition());
-        assertEquals(1, mockProducer.history().size());
-        assertEquals(message, mockProducer.history().getFirst());
+        producerThread.start();
+
+        waitForProducer();
+
+        ProducerRecord<String, String> sentRecord = mockProducer.history().getFirst();
+
+        assertEquals(STRING_TOPIC, sentRecord.topic());
+        assertEquals("0", sentRecord.key());
+        assertEquals("Message 0", sentRecord.value());
     }
 
-    @Test
-    void shouldSendWithFailure() {
-        ProducerRecord<String, String> message = new ProducerRecord<>(STRING_TOPIC, "1", "Message 1");
-        Future<RecordMetadata> recordMetadata = producerRunner.send(message);
-        RuntimeException exception = new RuntimeException("Error sending message");
-        mockProducer.errorNext(exception);
+    private void waitForProducer() throws InterruptedException {
+        while (mockProducer.history().isEmpty()) {
+            log.info("Waiting for producer to produce messages...");
+            TimeUnit.MILLISECONDS.sleep(100); // NOSONAR
+        }
 
-        ExecutionException executionException = assertThrows(ExecutionException.class, recordMetadata::get);
-        assertEquals(executionException.getCause(), exception);
-        assertEquals(1, mockProducer.history().size());
-        assertEquals(message, mockProducer.history().getFirst());
+        producerRunner.setStopped(true);
     }
 }

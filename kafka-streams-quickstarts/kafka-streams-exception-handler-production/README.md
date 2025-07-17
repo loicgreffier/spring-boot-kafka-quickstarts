@@ -3,7 +3,7 @@
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and handles serialization and production exceptions.
 It demonstrates the following:
 
-- How to use the Kafka Streams configuration `default.production.exception.handler` to handle production and serialization exceptions.
+- How to use the Kafka Streams configuration `production.exception.handler` to handle production and serialization exceptions.
 - How to implement a custom production exception handler.
 - Unit testing using the Topology Test Driver.
 

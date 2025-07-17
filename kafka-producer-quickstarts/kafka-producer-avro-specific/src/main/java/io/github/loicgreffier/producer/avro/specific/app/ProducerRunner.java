@@ -25,12 +25,11 @@ import static io.github.loicgreffier.producer.avro.specific.constant.Topic.USER_
 import io.github.loicgreffier.avro.KafkaUser;
 import java.time.Instant;
 import java.util.Random;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -42,6 +41,9 @@ import org.springframework.stereotype.Component;
 public class ProducerRunner {
     private final Random random = new Random();
     private final Producer<String, KafkaUser> producer;
+
+    @Setter
+    private boolean stopped = false;
 
     /**
      * Constructor.
@@ -59,48 +61,35 @@ public class ProducerRunner {
      * main thread.
      *
      * <p>The Kafka producer sends specific Avro records to the {@code USER_TOPIC} topic.
+     *
+     * @throws InterruptedException if the thread is interrupted while sleeping
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
-    public void run() {
+    public void run() throws InterruptedException {
         int i = 0;
-        while (true) {
+        while (!stopped) {
             ProducerRecord<String, KafkaUser> message =
                     new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildKafkaUser(i));
 
-            send(message);
+            producer.send(message, (recordMetadata, e) -> {
+                if (e != null) {
+                    log.error(e.getMessage());
+                } else {
+                    log.info(
+                            "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
+                            recordMetadata.topic(),
+                            recordMetadata.partition(),
+                            recordMetadata.offset(),
+                            message.key(),
+                            message.value());
+                }
+            });
 
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e) {
-                log.error("Interruption during sleep between message production", e);
-                Thread.currentThread().interrupt();
-            }
+            TimeUnit.SECONDS.sleep(1);
 
             i++;
         }
-    }
-
-    /**
-     * Sends a message to the Kafka topic.
-     *
-     * @param message The message to send.
-     * @return A future of the record metadata.
-     */
-    public Future<RecordMetadata> send(ProducerRecord<String, KafkaUser> message) {
-        return producer.send(message, (recordMetadata, e) -> {
-            if (e != null) {
-                log.error(e.getMessage());
-            } else {
-                log.info(
-                        "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
-                        recordMetadata.topic(),
-                        recordMetadata.partition(),
-                        recordMetadata.offset(),
-                        message.key(),
-                        message.value());
-            }
-        });
     }
 
     /**

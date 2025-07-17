@@ -19,13 +19,12 @@
 package io.github.loicgreffier.producer.transaction;
 
 import static io.github.loicgreffier.producer.transaction.constant.Topic.FIRST_STRING_TOPIC;
-import static io.github.loicgreffier.producer.transaction.constant.Topic.SECOND_STRING_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.loicgreffier.producer.transaction.app.ProducerRunner;
-import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -35,46 +34,71 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 class KafkaProducerTransactionApplicationTest {
     @Spy
     private MockProducer<String, String> mockProducer =
-            new MockProducer<>(false, null, new StringSerializer(), new StringSerializer());
+            new MockProducer<>(true, null, new StringSerializer(), new StringSerializer());
 
     @InjectMocks
     private ProducerRunner producerRunner;
 
     @Test
-    void shouldAbortTransaction() {
-        mockProducer.initTransactions();
+    void shouldCommitTransaction() throws InterruptedException {
+        Thread producerThread = new Thread(() -> {
+            try {
+                producerRunner.run();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
 
-        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, "3", "Message 1");
-        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "4", "Message 2");
-        producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
+        producerThread.start();
+
+        waitForProducer(false);
+
+        ProducerRecord<String, String> firstSentRecord = mockProducer.history().getFirst();
+
+        assertEquals(FIRST_STRING_TOPIC, firstSentRecord.topic());
+        assertEquals("1", firstSentRecord.key());
+        assertEquals("Message 1", firstSentRecord.value());
+
+        ProducerRecord<String, String> secondSentRecord = mockProducer.history().getFirst();
+
+        assertEquals(FIRST_STRING_TOPIC, secondSentRecord.topic());
+        assertEquals("1", secondSentRecord.key());
+        assertEquals("Message 1", secondSentRecord.value());
+
+        assertTrue(mockProducer.transactionInitialized());
+        assertTrue(mockProducer.transactionCommitted());
+    }
+
+    @Test
+    void shouldAbortTransaction() throws InterruptedException {
+        Thread producerThread = new Thread(() -> {
+            try {
+                producerRunner.run();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+
+        producerThread.start();
+
+        waitForProducer(true);
 
         assertTrue(mockProducer.history().isEmpty());
         assertTrue(mockProducer.transactionInitialized());
         assertTrue(mockProducer.transactionAborted());
-        assertFalse(mockProducer.transactionCommitted());
-        assertFalse(mockProducer.transactionInFlight());
     }
 
-    @Test
-    void shouldCommitTransaction() {
-        mockProducer.initTransactions();
+    private void waitForProducer(boolean aborted) throws InterruptedException {
+        while (aborted ? !mockProducer.transactionAborted() : !mockProducer.transactionCommitted()) {
+            log.info("Waiting for producer to produce messages...");
+            TimeUnit.MILLISECONDS.sleep(100); // NOSONAR
+        }
 
-        ProducerRecord<String, String> firstMessage = new ProducerRecord<>(FIRST_STRING_TOPIC, "1", "Message 1");
-        ProducerRecord<String, String> secondMessage = new ProducerRecord<>(SECOND_STRING_TOPIC, "2", "Message 2");
-        producerRunner.sendInTransaction(Arrays.asList(firstMessage, secondMessage));
-
-        assertEquals(2, mockProducer.history().size());
-        assertEquals(FIRST_STRING_TOPIC, mockProducer.history().get(0).topic());
-        assertEquals("Message 1", mockProducer.history().get(0).value());
-        assertEquals(SECOND_STRING_TOPIC, mockProducer.history().get(1).topic());
-        assertEquals("Message 2", mockProducer.history().get(1).value());
-        assertTrue(mockProducer.transactionInitialized());
-        assertTrue(mockProducer.transactionCommitted());
-        assertFalse(mockProducer.transactionAborted());
-        assertFalse(mockProducer.transactionInFlight());
+        producerRunner.setStopped(true);
     }
 }

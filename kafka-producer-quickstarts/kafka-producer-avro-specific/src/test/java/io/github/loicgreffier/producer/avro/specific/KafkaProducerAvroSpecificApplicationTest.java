@@ -20,20 +20,17 @@ package io.github.loicgreffier.producer.avro.specific;
 
 import static io.github.loicgreffier.producer.avro.specific.constant.Topic.USER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.producer.avro.specific.app.ProducerRunner;
-import java.time.Instant;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
@@ -42,6 +39,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 class KafkaProducerAvroSpecificApplicationTest {
     private final Serializer<KafkaUser> serializer = (topic, kafkaUser) -> {
@@ -52,52 +50,41 @@ class KafkaProducerAvroSpecificApplicationTest {
 
     @Spy
     private MockProducer<String, KafkaUser> mockProducer =
-            new MockProducer<>(false, null, new StringSerializer(), serializer);
+            new MockProducer<>(true, null, new StringSerializer(), serializer);
 
     @InjectMocks
     private ProducerRunner producerRunner;
 
     @Test
-    void shouldSendSuccessfully() throws ExecutionException, InterruptedException {
-        ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(
-                USER_TOPIC,
-                "1",
-                KafkaUser.newBuilder()
-                        .setId(1L)
-                        .setFirstName("Homer")
-                        .setLastName("Simpson")
-                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-                        .build());
+    void shouldSendAutomaticallyWithSuccess() throws InterruptedException {
+        Thread producerThread = new Thread(() -> {
+            try {
+                producerRunner.run();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
 
-        Future<RecordMetadata> recordMetadata = producerRunner.send(message);
-        mockProducer.completeNext();
+        producerThread.start();
 
-        assertTrue(recordMetadata.get().hasOffset());
-        assertEquals(0, recordMetadata.get().offset());
-        assertEquals(0, recordMetadata.get().partition());
-        assertEquals(1, mockProducer.history().size());
-        assertEquals(message, mockProducer.history().getFirst());
+        waitForProducer();
+
+        ProducerRecord<String, KafkaUser> sentRecord = mockProducer.history().getFirst();
+
+        assertEquals(USER_TOPIC, sentRecord.topic());
+        assertEquals("0", sentRecord.key());
+        assertNotNull(sentRecord.value().getId());
+        assertNotNull(sentRecord.value().getFirstName());
+        assertNotNull(sentRecord.value().getLastName());
+        assertNotNull(sentRecord.value().getBirthDate());
     }
 
-    @Test
-    void shouldSendWithFailure() {
-        ProducerRecord<String, KafkaUser> message = new ProducerRecord<>(
-                USER_TOPIC,
-                "1",
-                KafkaUser.newBuilder()
-                        .setId(1L)
-                        .setFirstName("Homer")
-                        .setLastName("Simpson")
-                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-                        .build());
+    private void waitForProducer() throws InterruptedException {
+        while (mockProducer.history().isEmpty()) {
+            log.info("Waiting for producer to produce messages...");
+            TimeUnit.MILLISECONDS.sleep(100); // NOSONAR
+        }
 
-        Future<RecordMetadata> recordMetadata = producerRunner.send(message);
-        RuntimeException exception = new RuntimeException("Error sending message");
-        mockProducer.errorNext(exception);
-
-        ExecutionException executionException = assertThrows(ExecutionException.class, recordMetadata::get);
-        assertEquals(executionException.getCause(), exception);
-        assertEquals(1, mockProducer.history().size());
-        assertEquals(message, mockProducer.history().getFirst());
+        producerRunner.setStopped(true);
     }
 }

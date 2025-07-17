@@ -37,7 +37,7 @@ import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
-import org.apache.kafka.clients.consumer.OffsetResetStrategy;
+import org.apache.kafka.clients.consumer.internals.AutoOffsetResetStrategy;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.RecordDeserializationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +51,8 @@ import org.springframework.core.io.ClassPathResource;
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerAvroGenericApplicationTest {
     @Spy
-    private MockConsumer<String, GenericRecord> mockConsumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
+    private MockConsumer<String, GenericRecord> mockConsumer =
+            new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
 
     @InjectMocks
     private ConsumerRunner consumerRunner;

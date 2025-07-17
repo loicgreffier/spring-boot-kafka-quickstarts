@@ -3,8 +3,8 @@
 This module produces records of type `<String, String>` to the `STRING_TOPIC`.
 It demonstrates the following:
 
-- The use of the Kafka Clients producer API.
-- Unit testing using a Mock producer.
+- How to use the Kafka Clients producer API.
+- Unit testing with a mock producer.
 
 ## Prerequisites
 

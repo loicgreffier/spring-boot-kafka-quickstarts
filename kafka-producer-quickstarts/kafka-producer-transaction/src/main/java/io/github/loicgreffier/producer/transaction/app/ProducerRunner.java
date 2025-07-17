@@ -21,14 +21,12 @@ package io.github.loicgreffier.producer.transaction.app;
 import static io.github.loicgreffier.producer.transaction.constant.Topic.FIRST_STRING_TOPIC;
 import static io.github.loicgreffier.producer.transaction.constant.Topic.SECOND_STRING_TOPIC;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.errors.AuthorizationException;
 import org.apache.kafka.common.errors.OutOfOrderSequenceException;
 import org.apache.kafka.common.errors.ProducerFencedException;
@@ -42,6 +40,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     private final Producer<String, String> producer;
+
+    @Setter
+    private boolean stopped = false;
 
     /**
      * Constructor.
@@ -61,81 +62,60 @@ public class ProducerRunner {
      * <p>The Kafka producer sends two string records to two topics: {@code FIRST_STRING_TOPIC} and
      * {@code SECOND_STRING_TOPIC}, within a single transaction. Either both records are successfully committed as part
      * of the transaction, or both are discarded if the transaction fails.
+     *
+     * @throws InterruptedException if the thread is interrupted while sleeping
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
-    public void run() {
+    public void run() throws InterruptedException {
         log.info("Init transactions");
         producer.initTransactions();
 
         int i = 0;
-        while (true) {
+        while (!stopped) {
             ProducerRecord<String, String> firstMessage =
                     new ProducerRecord<>(FIRST_STRING_TOPIC, String.valueOf(i), String.format("Message %s", i));
 
             ProducerRecord<String, String> secondMessage =
                     new ProducerRecord<>(SECOND_STRING_TOPIC, String.valueOf(i), String.format("Message %s", i));
 
-            sendInTransaction(Arrays.asList(firstMessage, secondMessage));
+            List<ProducerRecord<String, String>> messages = List.of(firstMessage, secondMessage);
 
             try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e) {
-                log.error("Interruption during sleep between message production", e);
-                Thread.currentThread().interrupt();
+                log.info("Begin transaction");
+                producer.beginTransaction();
+
+                messages.forEach(message -> producer.send(message, (recordMetadata, e) -> {
+                    if (e != null) {
+                        log.error(e.getMessage());
+                    } else {
+                        log.info(
+                                "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
+                                recordMetadata.topic(),
+                                recordMetadata.partition(),
+                                recordMetadata.offset(),
+                                message.key(),
+                                message.value());
+                    }
+                }));
+
+                if (Integer.parseInt(messages.getFirst().key()) % 3 == 0) {
+                    throw new Exception("Error during transaction...");
+                }
+
+                log.info("Commit transaction");
+                producer.commitTransaction();
+            } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException e) {
+                log.info("Closing producer");
+                producer.close();
+            } catch (Exception e) {
+                log.info("Abort transaction", e);
+                producer.abortTransaction();
             }
+
+            TimeUnit.SECONDS.sleep(1);
 
             i++;
         }
-    }
-
-    /**
-     * Sends a list of messages to the Kafka topics in a single transaction. If the first message key is a multiple of
-     * 3, the transaction is aborted.
-     *
-     * @param messages The messages to send.
-     */
-    public final void sendInTransaction(List<ProducerRecord<String, String>> messages) {
-        try {
-            log.info("Begin transaction");
-            producer.beginTransaction();
-
-            messages.forEach(this::send);
-
-            if (Integer.parseInt(messages.get(0).key()) % 3 == 0) {
-                throw new Exception("Error during transaction...");
-            }
-
-            log.info("Commit transaction");
-            producer.commitTransaction();
-        } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException e) {
-            log.info("Closing producer");
-            producer.close();
-        } catch (Exception e) {
-            log.info("Abort transaction", e);
-            producer.abortTransaction();
-        }
-    }
-
-    /**
-     * Sends a message to the Kafka topic.
-     *
-     * @param message The message to send.
-     * @return A future of the record metadata.
-     */
-    public Future<RecordMetadata> send(ProducerRecord<String, String> message) {
-        return producer.send(message, (recordMetadata, e) -> {
-            if (e != null) {
-                log.error(e.getMessage());
-            } else {
-                log.info(
-                        "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
-                        recordMetadata.topic(),
-                        recordMetadata.partition(),
-                        recordMetadata.offset(),
-                        message.key(),
-                        message.value());
-            }
-        });
     }
 }
