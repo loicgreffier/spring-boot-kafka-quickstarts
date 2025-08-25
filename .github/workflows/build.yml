@@ -53,6 +53,13 @@ jobs:
         with:
           report_paths: '**/target/surefire-reports/TEST-*.xml'
 
+      - name: Sonar
+        if: github.event.pull_request.head.repo.fork == false
+        run: mvn verify sonar:sonar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
       - name: Grype source code
         id: grype_source_code
         uses: anchore/scan-action@v6
@@ -68,13 +75,6 @@ jobs:
         with:
           sarif_file: ${{ steps.grype_source_code.outputs.sarif }}
           category: 'source-code'
-
-      - name: Sonar
-        if: github.event.pull_request.head.repo.fork == false
-        run: mvn verify sonar:sonar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Docker
         if: github.ref == 'refs/heads/main'
