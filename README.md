@@ -1,7 +1,7 @@
 <div align="center">
 
-<img src=".readme/kafka.png" alt="Apache Kafka"/>
-<img src=".readme/spring-boot.png" alt="Spring Boot"/>
+<img src=".readme/kafka.svg" alt="Apache Kafka"/>
+<img src=".readme/spring-boot.svg" alt="Spring Boot"/>
 
 # Spring Boot and Kafka Quickstarts
 
