@@ -31,8 +31,8 @@ docker-compose up -d
 
 This will start the following services in Docker:
 
-- 1 Kafka Broker
-- 1 Schema Registry
-- 1 Control Center
-- 1 Producer Avro Specific
-- 1 Consumer Exactly Once Processing
+- Kafka Broker
+- Schema Registry
+- Control Center
+- Producer Avro Specific
+- Consumer Exactly Once Processing

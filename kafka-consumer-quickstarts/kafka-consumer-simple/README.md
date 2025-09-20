@@ -30,7 +30,7 @@ docker-compose up -d
 
 This will start the following services in Docker:
 
-- 1 Kafka Broker
-- 1 Control Center
-- 1 Producer Simple
-- 1 Consumer Simple
+- Kafka Broker
+- Control Center
+- Producer Simple
+- Consumer Simple
