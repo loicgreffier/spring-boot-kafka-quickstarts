@@ -21,11 +21,11 @@ package io.github.loicgreffier.streams.filter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/** This is the main class for the Kafka Streams application. */
+/** This is the main class for the Spring Boot application. */
 @SpringBootApplication
 public class KafkaStreamsFilterApplication {
     /**
-     * The main entry point of the Kafka Streams application.
+     * The main entry point of the Spring Boot application.
      *
      * @param args The command line arguments.
      */

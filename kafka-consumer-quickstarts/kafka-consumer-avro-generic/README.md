@@ -29,9 +29,9 @@ Alternatively, to run the application with Docker, use the following command:
 docker-compose up -d
 ```
 
-This command will start the following services in Docker:
+This will start the following services in Docker:
 
-- 1 Kafka Broker (KRaft mode)
+- 1 Kafka Broker
 - 1 Schema Registry
 - 1 Control Center
 - 1 Producer Avro Generic
