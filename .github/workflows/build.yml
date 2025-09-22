@@ -62,7 +62,7 @@ jobs:
 
       - name: Grype source code
         id: grype_source_code
-        uses: anchore/scan-action@v6
+        uses: anchore/scan-action@v7
         with:
           path: .
           fail-build: true
