@@ -161,7 +161,7 @@
                 <version>${jib-maven-plugin.version}</version>
                 <configuration>
                     <from>
-                        <image>eclipse-temurin:21-jre</image>
+                        <image>eclipse-temurin:21-jre-alpine</image>
                         <platforms>
                             <platform>
                                 <architecture>amd64</architecture>
