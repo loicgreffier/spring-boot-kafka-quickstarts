@@ -28,14 +28,14 @@
         <java.version>21</java.version>
         <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
         <kafka-avro-serializer.version>8.0.1</kafka-avro-serializer.version>
-        <kafka-streams-avro-serde.version>8.0.0</kafka-streams-avro-serde.version>
+        <kafka-streams-avro-serde.version>8.0.1</kafka-streams-avro-serde.version>
         <kafka.version>4.0.0</kafka.version>
         <lombok.version>1.18.42</lombok.version>
         <palantir.version>2.58.0</palantir.version>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.organization>loicgreffier</sonar.organization>
         <sonar.projectKey>loicgreffier_spring-boot-kafka-quickstarts</sonar.projectKey>
-        <spotless-maven-plugin.version>2.46.1</spotless-maven-plugin.version>
+        <spotless-maven-plugin.version>3.0.0</spotless-maven-plugin.version>
     </properties>
 
     <dependencies>
