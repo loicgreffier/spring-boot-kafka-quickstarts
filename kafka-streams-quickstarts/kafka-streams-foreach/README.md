@@ -9,7 +9,7 @@ It demonstrates how to use the Kafka Streams DSL `foreach()`.
 
 To compile and run this demo, you’ll need:
 
-- Java 25
+- Java 21
 - Maven
 - Docker
 

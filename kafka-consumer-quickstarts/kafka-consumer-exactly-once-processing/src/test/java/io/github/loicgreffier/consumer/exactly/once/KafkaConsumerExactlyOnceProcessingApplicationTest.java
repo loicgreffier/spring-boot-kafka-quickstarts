@@ -49,7 +49,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class KafkaConsumerExactlyOnceProcessingApplicationTest {
+public class KafkaConsumerExactlyOnceProcessingApplicationTest {
     private final Serializer<KafkaUser> serializer = (topic, kafkaUser) -> {
         KafkaAvroSerializer inner = new KafkaAvroSerializer();
         inner.configure(Map.of(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://"), false);
