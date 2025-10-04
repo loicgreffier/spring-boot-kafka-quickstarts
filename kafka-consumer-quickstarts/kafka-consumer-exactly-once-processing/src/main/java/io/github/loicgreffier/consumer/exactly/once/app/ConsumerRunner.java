@@ -134,7 +134,7 @@ public class ConsumerRunner {
                     producer.commitTransaction();
                 }
             }
-        } catch (WakeupException e) {
+        } catch (WakeupException _) {
             log.info("Wake up signal received");
         } catch (Exception e) {
             log.info("Abort transaction", e);

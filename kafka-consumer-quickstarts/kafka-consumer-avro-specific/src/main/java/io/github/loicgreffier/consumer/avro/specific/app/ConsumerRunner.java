@@ -82,7 +82,7 @@ public class ConsumerRunner {
                     doCommitSync();
                 }
             }
-        } catch (WakeupException e) {
+        } catch (WakeupException _) {
             log.info("Wake up signal received");
         } finally {
             log.info("Closing consumer");
