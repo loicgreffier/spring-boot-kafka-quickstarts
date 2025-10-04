@@ -100,7 +100,7 @@ public class ConsumerRunner {
                     consumer.seek(e.topicPartition(), e.offset() + 1);
                 }
             }
-        } catch (WakeupException e) {
+        } catch (WakeupException _) {
             log.info("Wake up signal received");
         } finally {
             log.info("Closing consumer");

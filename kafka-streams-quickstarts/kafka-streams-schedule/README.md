@@ -15,7 +15,7 @@ It demonstrates the following:
 
 To compile and run this demo, you’ll need:
 
-- Java 21
+- Java 25
 - Maven
 - Docker
 
