@@ -8,15 +8,4 @@
     </parent>
 
     <artifactId>kafka-consumer-avro-generic</artifactId>
-
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/avro</directory>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
-    </build>
 </project>
