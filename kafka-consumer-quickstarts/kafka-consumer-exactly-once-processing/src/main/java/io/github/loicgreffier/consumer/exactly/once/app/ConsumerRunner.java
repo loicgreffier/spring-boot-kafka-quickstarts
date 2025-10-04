@@ -112,21 +112,20 @@ public class ConsumerRunner {
                                     }))
                             .toList();
 
-                    transformedMessages.forEach(transformedMessage -> {
-                        producer.send(transformedMessage, (recordMetadata, e) -> {
-                            if (e != null) {
-                                log.error(e.getMessage());
-                            } else {
-                                log.info(
-                                        "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
-                                        recordMetadata.topic(),
-                                        recordMetadata.partition(),
-                                        recordMetadata.offset(),
-                                        transformedMessage.key(),
-                                        transformedMessage.value());
-                            }
-                        });
-                    });
+                    transformedMessages.forEach(
+                            transformedMessage -> producer.send(transformedMessage, (recordMetadata, e) -> {
+                                if (e != null) {
+                                    log.error(e.getMessage());
+                                } else {
+                                    log.info(
+                                            "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
+                                            recordMetadata.topic(),
+                                            recordMetadata.partition(),
+                                            recordMetadata.offset(),
+                                            transformedMessage.key(),
+                                            transformedMessage.value());
+                                }
+                            }));
 
                     producer.sendOffsetsToTransaction(offsetsToCommit(), consumer.groupMetadata());
 

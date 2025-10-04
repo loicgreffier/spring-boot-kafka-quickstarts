@@ -29,7 +29,7 @@ public class KafkaStreamsStoreKeyValueApplication {
      *
      * @param args The command line arguments.
      */
-    public static void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.run(KafkaStreamsStoreKeyValueApplication.class, args);
     }
 }
