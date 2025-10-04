@@ -29,7 +29,7 @@ public class KafkaStreamsReduceApplication {
      *
      * @param args The command line arguments.
      */
-    static void main(String[] args) {
+    public static void main(String[] args) {
         SpringApplication.run(KafkaStreamsReduceApplication.class, args);
     }
 }
