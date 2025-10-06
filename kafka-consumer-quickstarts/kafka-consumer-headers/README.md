@@ -25,7 +25,7 @@ To run the application manually:
 
 Alternatively, to run the application with Docker, use the following command:
 
-```console
+```bash
 docker-compose up -d
 ```
 
