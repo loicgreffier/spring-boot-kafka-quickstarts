@@ -29,7 +29,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 ### Producers
 
-| Module                                                                    | Library       | Content                                                 |
+| Module                                                                    | Library       | Description                                             |
 |---------------------------------------------------------------------------|---------------|---------------------------------------------------------|
 | [Avro Generic](/kafka-producer-quickstarts/kafka-producer-avro-generic)   | Kafka Clients | Produce generic Avro records                            |
 | [Avro Specific](/kafka-producer-quickstarts/kafka-producer-avro-specific) | Kafka Clients | Produce specific Avro records                           |
@@ -39,7 +39,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 ### Consumers
 
-| Module                                                                                              | Library       | Content                                                    |
+| Module                                                                                              | Library       | Description                                                |
 |:----------------------------------------------------------------------------------------------------|---------------|------------------------------------------------------------|
 | [Avro Generic](/kafka-consumer-quickstarts/kafka-consumer-avro-generic)                             | Kafka Clients | Consume generic Avro records                               |
 | [Avro Specific](/kafka-consumer-quickstarts/kafka-consumer-avro-specific)                           | Kafka Clients | Consume specific Avro records                              |
@@ -62,7 +62,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 #### Stateless
 
-| Module                                                                   | Library       | Content                                                | DSL                       |
+| Module                                                                   | Library       | Description                                            | DSL                       |
 |:-------------------------------------------------------------------------|---------------|--------------------------------------------------------|---------------------------|
 | [Branch](/kafka-streams-quickstarts/kafka-streams-branch)                | Kafka Streams | Split and create branches from a stream                | `split()`, `branch()`     |
 | [Cogroup](/kafka-streams-quickstarts/kafka-streams-cogroup)              | Kafka Streams | Aggregate records of multiple streams by key           | `cogroup()`               |
@@ -79,7 +79,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 #### Aggregate
 
-| Module                                                                                          | Library       | Content                                                              | DSL                                                          |
+| Module                                                                                          | Library       | Description                                                          | DSL                                                          |
 |:------------------------------------------------------------------------------------------------|---------------|----------------------------------------------------------------------|--------------------------------------------------------------|
 | [Aggregate](/kafka-streams-quickstarts/kafka-streams-aggregate)                                 | Kafka Streams | Aggregate a stream by key in a single object                         | `groupByKey()`, `aggregate()`                                |
 | [Aggregate Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | Aggregate a stream by key and by hopping window with a grace period  | `groupByKey()`, `aggregate()`, `windowedBy()`, `advanceBy()` |
@@ -91,19 +91,19 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 #### Join
 
-| Module                                                                                                  | Library       | Content                                                   | DSL                  |
-|:--------------------------------------------------------------------------------------------------------|---------------|-----------------------------------------------------------|----------------------|
-| [Join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table)           | Kafka Streams | Perform an inner join between a stream and a global table | `join()`             |
-| [Join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-join-stream-stream)                       | Kafka Streams | Perform an inner join between two streams                 | `join()`             |
-| [Join Stream-Table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)                         | Kafka Streams | Perform an inner join between a stream and a table        | `join()`             |
-| [Left Join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-global-table) | Kafka Streams | Perform a left join between a stream and a global table   | `leftJoin()`         |
-| [Left Join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-left-join-stream-stream)             | Kafka Streams | Perform a left join between two streams                   | `leftJoin()`         |
-| [Left Join Stream-Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-table)               | Kafka Streams | Perform a left join between a stream and a table          | `leftJoin()`         |
-| [Outer Join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-outer-join-stream-stream)           | Kafka Streams | Perform an outer join between two streams                 | `outerJoin()`        |
+| Module                                                                                                  | Library       | Description                                               | DSL           |
+|:--------------------------------------------------------------------------------------------------------|---------------|-----------------------------------------------------------|---------------|
+| [Join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-join-stream-global-table)           | Kafka Streams | Perform an inner join between a stream and a global table | `join()`      |
+| [Join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-join-stream-stream)                       | Kafka Streams | Perform an inner join between two streams                 | `join()`      |
+| [Join Stream-Table](/kafka-streams-quickstarts/kafka-streams-join-stream-table)                         | Kafka Streams | Perform an inner join between a stream and a table        | `join()`      |
+| [Left Join Stream-Global Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-global-table) | Kafka Streams | Perform a left join between a stream and a global table   | `leftJoin()`  |
+| [Left Join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-left-join-stream-stream)             | Kafka Streams | Perform a left join between two streams                   | `leftJoin()`  |
+| [Left Join Stream-Table](/kafka-streams-quickstarts/kafka-streams-left-join-stream-table)               | Kafka Streams | Perform a left join between a stream and a table          | `leftJoin()`  |
+| [Outer Join Stream-Stream](/kafka-streams-quickstarts/kafka-streams-outer-join-stream-stream)           | Kafka Streams | Perform an outer join between two streams                 | `outerJoin()` |
 
 #### Windowing
 
-| Module                                                                                | Library       | Content                                              | DSL                           |
+| Module                                                                                | Library       | Description                                          | DSL                           |
 |:--------------------------------------------------------------------------------------|---------------|------------------------------------------------------|-------------------------------|
 | [Hopping Window](/kafka-streams-quickstarts/kafka-streams-aggregate-hopping-window)   | Kafka Streams | Group records by hopping window with a grace period  | `windowedBy()`, `advanceBy()` |
 | [Sliding Window](/kafka-streams-quickstarts/kafka-streams-aggregate-sliding-window)   | Kafka Streams | Group records by sliding window with a grace period  | `windowedBy()`                |
@@ -111,7 +111,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 #### Processor
 
-| Module                                                                    | Library       | Content                                                                 | DSL                                                            | Processor API                                      |
+| Module                                                                    | Library       | Description                                                             | DSL                                                            | Processor API                                      |
 |:--------------------------------------------------------------------------|---------------|-------------------------------------------------------------------------|----------------------------------------------------------------|----------------------------------------------------|
 | [Process](/kafka-streams-quickstarts/kafka-streams-process)               | Kafka Streams | Apply a processor to a stream                                           | `process()`                                                    | `context()`, `forward()`, `Record#headers()`       |
 | [ProcessValues](/kafka-streams-quickstarts/kafka-streams-process-values)  | Kafka Streams | Apply a fixed key processor to a stream                                 | `processValues()`                                              | `context()`, `forward()`, `Record#headers()`       |
@@ -120,7 +120,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 #### Stores
 
-| Module                                                                                              | Library       | Content                                                        | DSL                            | Processor API                   |
+| Module                                                                                              | Library       | Description                                                    | DSL                            | Processor API                   |
 |:----------------------------------------------------------------------------------------------------|---------------|----------------------------------------------------------------|--------------------------------|---------------------------------|
 | [Store Cleanup](/kafka-streams-quickstarts/kafka-streams-store-cleanup)                             | Kafka Streams | Schedule periodic store cleanup based on stream time           | `process()`                    | `schedule()`, `getStateStore()` |
 | [Key-Value Store](/kafka-streams-quickstarts/kafka-streams-store-key-value)                         | Kafka Streams | Insert and retrieve records from a key-value store             | `process()`, `addStateStore()` | `getStateStore()`               |
@@ -130,7 +130,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 #### Handler
 
-| Module                                                                                                                   | Library       | Content                                        | Config                              |
+| Module                                                                                                                   | Library       | Description                                    | Config                              |
 |:-------------------------------------------------------------------------------------------------------------------------|---------------|------------------------------------------------|-------------------------------------|
 | [Deserialization Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-deserialization)          | Kafka Streams | Handle deserialization exceptions              | `deserialization.exception.handler` |
 | [Processing Exception Handler DSL](/kafka-streams-quickstarts/kafka-streams-exception-handler-processing-dsl)            | Kafka Streams | Handle processing exceptions in DSL operations | `processing.exception.handler`      |
