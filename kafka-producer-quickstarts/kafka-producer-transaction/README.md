@@ -23,7 +23,7 @@ To run the application manually:
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
 - Start the producer.
 
-Alternatively, to run the application with Docker, use the following command:
+Alternatively, to run everything at once using Docker, run:
 
 ```bash
 docker-compose up -d

@@ -26,7 +26,7 @@ To run the application manually:
 - Start the Kafka Streams application.
 - To activate the custom deserialization exception handler, produce a record with a value that cannot be deserialized to the `KafkaUser` type (e.g., a value that is not in Avro format) to the `USER_TOPIC`. You can use the Control Center for this.
 
-Alternatively, to run the application with Docker, use the following command:
+Alternatively, to run everything at once using Docker, run:
 
 ```bash
 docker-compose up -d

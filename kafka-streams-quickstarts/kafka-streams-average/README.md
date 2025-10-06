@@ -24,7 +24,7 @@ To run the application manually:
 - Produce records of type `<String, KafkaUser>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
 - Start the Kafka Streams application.
 
-Alternatively, to run the application with Docker, use the following command:
+Alternatively, to run everything at once using Docker, run:
 
 ```bash
 docker-compose up -d

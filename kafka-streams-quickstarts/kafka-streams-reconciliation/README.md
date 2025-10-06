@@ -25,7 +25,7 @@ To run the application manually:
 - Produce records of type `<String, KafkaOrder>` to the `ORDER_TOPIC`. You can use the [Producer Order](../specific-producers/kafka-streams-producer-order) for this.
 - Start the Kafka Streams application.
 
-Alternatively, to run the application with Docker, use the following command:
+Alternatively, to run everything at once using Docker, run:
 
 ```bash
 docker-compose up -d
