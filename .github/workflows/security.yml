@@ -1,0 +1,32 @@
+name: Security
+
+on:
+  schedule:
+    - cron: '0 5 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Grype source code
+        id: grype_source_code
+        uses: anchore/scan-action@v7
+        with:
+          path: .
+          fail-build: false
+          severity-cutoff: high
+          only-fixed: true
+
+      - name: Upload Grype source code report
+        if: steps.grype_source_code.outputs.sarif != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: ${{ steps.grype_source_code.outputs.sarif }}
+          category: source-code

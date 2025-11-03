@@ -7,8 +7,6 @@ on:
   pull_request:
     branches:
       - 'main'
-  schedule:
-    - cron: '0 5 * * 1'
 
 jobs:
   build:
@@ -59,22 +57,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: Grype source code
-        id: grype_source_code
-        uses: anchore/scan-action@v7
-        with:
-          path: .
-          fail-build: true
-          severity-cutoff: high
-          only-fixed: true
-
-      - name: Upload Grype source code report
-        if: always() && steps.grype_source_code.outputs.sarif != ''
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: ${{ steps.grype_source_code.outputs.sarif }}
-          category: source-code
 
       - name: Docker
         if: github.ref == 'refs/heads/main'
