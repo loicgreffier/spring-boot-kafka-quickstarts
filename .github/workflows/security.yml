@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Scan
+  scan-code:
+    name: Scan code
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
