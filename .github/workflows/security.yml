@@ -15,18 +15,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Grype source code
-        id: grype_source_code
-        uses: anchore/scan-action@v7
+      - name: Trivy source code
+        id: trivy_source_code
+        uses: aquasecurity/trivy-action@0.28.0
         with:
-          path: .
-          fail-build: false
-          severity-cutoff: high
-          only-fixed: true
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln
+          severity: CRITICAL,HIGH
+          format: sarif
+          output: trivy-results.sarif
+          ignore-unfixed: true
 
-      - name: Upload Grype source code report
-        if: steps.grype_source_code.outputs.sarif != ''
+      - name: Upload Trivy source code report
+        if: always()
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: ${{ steps.grype_source_code.outputs.sarif }}
+          sarif_file: trivy-results.sarif
           category: source-code
