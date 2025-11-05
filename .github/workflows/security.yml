@@ -16,7 +16,6 @@ jobs:
           fetch-depth: 0
 
       - name: Trivy source code
-        id: trivy_source_code
         uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: fs
