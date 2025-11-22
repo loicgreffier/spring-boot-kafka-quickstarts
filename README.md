@@ -21,7 +21,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 ## Prerequisites
 
-- Java 21
+- Java 25
 - Maven
 - Docker
 
