@@ -13,7 +13,7 @@
 [![SonarCloud Tests](https://img.shields.io/sonar/tests/loicgreffier_spring-boot-kafka-quickstarts/main?server=https%3A%2F%2Fsonarcloud.io&style=for-the-badge&logo=sonarcloud)](https://sonarcloud.io/component_measures?metric=tests&view=list&id=loicgreffier_spring-boot-kafka-quickstarts)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?logo=apache&style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
 
-[Producer](#producers) • [Consumer](#consumers) • [Streams](#kafka-streams)
+[Producer](#producer) • [Consumer](#consumer) • [Streams](#kafka-streams)
 
 Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to simplify the development of applications.
 
@@ -27,7 +27,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 ## Quickstarts
 
-### Producers
+### Producer
 
 | Module                                                                    | Library       | Description                                             |
 |---------------------------------------------------------------------------|---------------|---------------------------------------------------------|
@@ -37,7 +37,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 | [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | Produce String records                                  |
 | [Transaction](/kafka-producer-quickstarts/kafka-producer-transaction)     | Kafka Clients | Produce to multiple topics while guaranteeing atomicity |
 
-### Consumers
+### Consumer
 
 | Module                                                                                              | Library       | Description                                                |
 |:----------------------------------------------------------------------------------------------------|---------------|------------------------------------------------------------|
