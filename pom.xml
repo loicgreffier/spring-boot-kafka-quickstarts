@@ -162,7 +162,7 @@
                 <version>${jib-maven-plugin.version}</version>
                 <configuration>
                     <from>
-                        <image>eclipse-temurin:25-jre-alpine</image>
+                        <image>eclipse-temurin:25-jre</image>
                         <platforms>
                             <platform>
                                 <architecture>amd64</architecture>
