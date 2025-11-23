@@ -1,6 +1,7 @@
 # Kafka Streams Merge
 
 This module streams records of type `<String, KafkaUser>` from two topics: `USER_TOPIC` and `USER_TOPIC_TWO`, and merges them into a single stream.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `merge()` and `peek()`.

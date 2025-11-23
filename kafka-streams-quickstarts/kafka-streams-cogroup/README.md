@@ -2,6 +2,7 @@
 
 This module streams records of type `<String, KafkaUser>` from two topics: `USER_TOPIC` and `USER_TOPIC_TWO`.
 It groups all streams and aggregates users by last name.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `cogroup()`, `groupBy()`, `aggregate()`, `toStream()` and `peek()`.

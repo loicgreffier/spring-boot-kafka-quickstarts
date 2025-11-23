@@ -1,6 +1,7 @@
 # Kafka Streams Aggregate Tumbling Window
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and aggregates users by last name using a 5-minute tumbling window and a 1-minute grace period for delayed records.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `aggregate()`, `windowedBy()`, `groupByKey()`, `selectKey()`, `toStream()` and `peek()`.

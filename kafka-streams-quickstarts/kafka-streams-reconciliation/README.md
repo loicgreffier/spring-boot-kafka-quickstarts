@@ -1,6 +1,7 @@
 # Kafka Streams Reconciliation
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and `<String, KafkaOrder>` from the `ORDER_TOPIC`, and reconciles an order with its customer.
+
 It demonstrates the following:
 
 - How to reconcile data from two different topics, regardless of the order in which records arrive or how much time passes between them.

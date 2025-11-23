@@ -1,6 +1,7 @@
 # Consumer Headers
 
 This module consumes records of type `<String, String>` from the `STRING_TOPIC` along with their associated headers.
+
 It demonstrates the following:
 
 - How to use the Kafka Clients consumer API.

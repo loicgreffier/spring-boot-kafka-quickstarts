@@ -1,6 +1,7 @@
 # Kafka Streams Process
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC`, uses the Processor API to enrich the values with metadata, and changes the key.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams Processor API, including `process()`.

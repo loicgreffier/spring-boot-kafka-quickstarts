@@ -2,6 +2,7 @@
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and aggregates users by last name using a 5-minute time window with a 2-minute hop, and a 1-minute grace period for
 delayed records.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `aggregate()`, `windowedBy().advanceBy()`, `groupByKey()`, `selectKey()`, `toStream()` and `peek()`.

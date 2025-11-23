@@ -1,6 +1,7 @@
 # Kafka Streams Average
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and computes the average user age by nationality.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `aggregate()`, `groupBy()`, `mapValues()`, `toStream()` and `peek()`.

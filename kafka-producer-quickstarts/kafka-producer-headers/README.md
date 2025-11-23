@@ -1,6 +1,7 @@
 # Producer Headers
 
 This module produces records of type `<String, String>` with headers to the `STRING_TOPIC`.
+
 It demonstrates the following:
 
 - How to use the Kafka Clients producer API.

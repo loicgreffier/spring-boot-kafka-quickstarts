@@ -1,6 +1,7 @@
 # Consumer Avro Specific
 
 This module consumes records of type `<String, KafkaUser>` from the `USER_TOPIC`.
+
 It demonstrates the following:
 
 - How to use the Kafka Clients consumer API.

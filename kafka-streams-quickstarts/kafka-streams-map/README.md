@@ -1,6 +1,7 @@
 # Kafka Streams Map
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and maps the key to the user's last name, and the value to the uppercase version of the user's first and last names.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `map()` and`peek()`.

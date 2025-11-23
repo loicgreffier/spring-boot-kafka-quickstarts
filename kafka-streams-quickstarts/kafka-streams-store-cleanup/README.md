@@ -1,6 +1,7 @@
 # Kafka Streams Store Cleanup
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and adds and deletes events from a store.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams Processor API, including `process()`, `addStateStore()` and `schedule()`.

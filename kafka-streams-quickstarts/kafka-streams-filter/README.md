@@ -1,6 +1,7 @@
 # Kafka Streams Filter
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and filters them based on the user's last name and first name.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `filter()`, `filterNot()` and `peek()`.

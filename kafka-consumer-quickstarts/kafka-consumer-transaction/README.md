@@ -1,6 +1,7 @@
 # Consumer Transactional
 
 This module consumes records of type `<String, String>` from two topics: `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`.
+
 It demonstrates the following:
 
 - How to use the Kafka Clients consumer API.

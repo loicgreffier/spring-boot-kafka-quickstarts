@@ -1,6 +1,7 @@
 # Consumer Exception Deserialization
 
 This module consumes records of type `<String, KafkaUser>` from the `USER_TOPIC` and gracefully handles deserialization exceptions by skipping the problematic record.
+
 It demonstrates the following:
 
 - How to use the Kafka Clients consumer API.

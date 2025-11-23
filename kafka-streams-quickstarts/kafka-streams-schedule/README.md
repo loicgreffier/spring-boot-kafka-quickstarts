@@ -2,6 +2,7 @@
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and uses the Processor API to count users by nationality. 
 It then schedules the emission of these counts to the downstream processor based on wall clock time and stream time.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams Processor API, including `process()` and `schedule()`.

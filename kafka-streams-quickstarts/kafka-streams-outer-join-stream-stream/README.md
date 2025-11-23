@@ -2,6 +2,7 @@
 
 This module streams records of type `<String, KafkaUser>` from two topics: `USER_TOPIC` and `USER_TOPIC_TWO`,
 and joins them by last name within a 5-minute window, allowing a 1-minute grace period for delayed records.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL to join two `KStream` using `outerJoin()`, `selectKey()` and `peek()`.

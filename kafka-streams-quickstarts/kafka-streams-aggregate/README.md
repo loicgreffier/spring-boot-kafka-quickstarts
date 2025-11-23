@@ -1,6 +1,7 @@
 # Kafka Streams Aggregate
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and aggregates users by last name.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `aggregate()`, `groupByKey()`, `selectKey()`, `toStream()` and `peek()`.

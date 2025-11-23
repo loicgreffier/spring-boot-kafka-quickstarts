@@ -1,6 +1,7 @@
 # Consumer Simple
 
 This module consumes records of type `<String, String>` from the `STRING_TOPIC`.
+
 It demonstrates the following:
 
 - How to use the Kafka Clients consumer API.

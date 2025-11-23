@@ -1,6 +1,7 @@
 # Kafka Streams Store Window Timestamped
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and stores them in two different timestamped window stores.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams Processor API, including `process()` and `addStateStore()`.

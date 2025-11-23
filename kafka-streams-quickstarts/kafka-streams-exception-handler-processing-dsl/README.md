@@ -1,6 +1,7 @@
 # Kafka Streams Processing Exception Handler DSL
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and handles processing exceptions in DLS operations.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams configuration `processing.exception.handler` to handle processing exceptions in DSL operations, as introduced by [KIP-1033](https://cwiki.apache.org/confluence/display/KAFKA/KIP-1033%3A+Add+Kafka+Streams+exception+handler+for+exceptions+occurring+during+processing).

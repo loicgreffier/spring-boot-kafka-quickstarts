@@ -1,6 +1,7 @@
 # Kafka Streams Deserialization Exception Handler
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and handles deserialization exceptions.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams configuration `deserialization.exception.handler` to handle deserialization exceptions.

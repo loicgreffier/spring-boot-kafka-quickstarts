@@ -1,6 +1,7 @@
 # Kafka Streams Repartition
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and repartitions them to a new topic with 3 partitions.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `repartition()` and `peek()`.

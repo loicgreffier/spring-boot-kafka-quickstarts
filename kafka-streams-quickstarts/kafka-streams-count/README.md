@@ -1,6 +1,7 @@
 # Kafka Streams Count
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and counts users by nationality.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `count()`, `groupBy()`, `toStream()` and `peek()`.

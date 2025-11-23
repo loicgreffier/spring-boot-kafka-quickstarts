@@ -1,6 +1,7 @@
 # Kafka Streams Select Key
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and selects the last name of each record as the new key.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `selectKey()` and `peek()`.

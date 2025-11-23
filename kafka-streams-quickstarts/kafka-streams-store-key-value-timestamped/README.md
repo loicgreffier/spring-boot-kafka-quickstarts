@@ -1,6 +1,7 @@
 # Kafka Streams Store Key-Value Timestamped
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and stores them in two different timestamped key-value stores.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams Processor API, including `process()` and `addStateStore()`.

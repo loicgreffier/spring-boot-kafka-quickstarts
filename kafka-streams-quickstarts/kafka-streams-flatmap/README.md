@@ -1,6 +1,7 @@
 # Kafka Streams FlatMap
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and flattens them into separate records for the user's last name and first name.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `flatMap()` and `peek()`.

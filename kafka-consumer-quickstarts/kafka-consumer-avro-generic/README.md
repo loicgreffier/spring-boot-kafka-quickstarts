@@ -1,6 +1,7 @@
 # Consumer Avro Generic
 
 This module consumes records of type `<String, GenericRecord>` from the `USER_TOPIC`.
+
 It demonstrates the following:
 
 - How to use the Kafka Clients consumer API.

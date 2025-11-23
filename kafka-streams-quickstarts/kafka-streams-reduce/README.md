@@ -1,6 +1,7 @@
 # Kafka Streams Reduce
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and reduces them to keep only the record with the maximum age over time.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `reduce()`, `groupBy()`, `toStream()` and `peek()`.

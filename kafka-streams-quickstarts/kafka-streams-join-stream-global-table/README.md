@@ -1,6 +1,7 @@
 # Kafka Streams Join Stream Global Table
 
 This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and joins them by nationality with records of type `<String, KafkaCountry>` from the `COUNTRY_TOPIC`.
+
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL to join a `KStream` with a `GlobalKTable` using `join()` and `peek()`.

@@ -1,6 +1,7 @@
 # Consumer Exception Processing Retry
 
 This module consumes records of type `<String, String>` from the `STRING_TOPIC` and implements a retry mechanism to handle exceptions that occur while processing records.
+
 It demonstrates the following:
 
 - How to use the Kafka Clients consumer API.
