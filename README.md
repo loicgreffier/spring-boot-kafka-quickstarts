@@ -139,10 +139,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 ## Credits
 
-[Confluent - Crossing the Streams](https://www.confluent.io/blog/crossing-streams-joins-apache-kafka)
-
-[Bill Bejeck - Windowing time semantics](https://www.linkedin.com/pulse/mastering-stream-processing-windowing-time-semantics-bill-bejeck-fp50e)
-
-[Apache Kafka - Sliding Windows](https://kafka.apache.org/30/javadoc/org/apache/kafka/streams/kstream/SlidingWindows.html)
-
-[Jeanlouisboudart - Retriable Consumer](https://github.com/jeanlouisboudart/retriable-consumer)
+- [Confluent - Crossing the Streams](https://www.confluent.io/blog/crossing-streams-joins-apache-kafka)
+- [Bill Bejeck - Windowing time semantics](https://www.linkedin.com/pulse/mastering-stream-processing-windowing-time-semantics-bill-bejeck-fp50e)
+- [Apache Kafka - Sliding Windows](https://kafka.apache.org/30/javadoc/org/apache/kafka/streams/kstream/SlidingWindows.html)
+- [Jeanlouisboudart - Retriable Consumer](https://github.com/jeanlouisboudart/retriable-consumer)
