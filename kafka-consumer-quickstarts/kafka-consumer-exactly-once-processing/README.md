@@ -9,7 +9,7 @@ It demonstrates the following:
 
 ## Prerequisites
 
-To compile and run this demo, you’ll need:
+To compile and run this demo, you'll need:
 
 - Java 25
 - Maven

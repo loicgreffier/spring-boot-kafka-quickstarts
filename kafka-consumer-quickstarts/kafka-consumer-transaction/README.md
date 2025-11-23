@@ -4,11 +4,11 @@ This module consumes records of type `<String, String>` from two topics: `FIRST_
 It demonstrates the following:
 
 - How to use the Kafka Clients consumer API.
-- How to configure the consumer’s `isolation.level` to `read_committed`, ensuring that only committed records are consumed while filtering out uncommitted or aborted transactional records.
+- How to configure the consumer's `isolation.level` to `read_committed`, ensuring that only committed records are consumed while filtering out uncommitted or aborted transactional records.
 
 ## Prerequisites
 
-To compile and run this demo, you’ll need:
+To compile and run this demo, you'll need:
 
 - Java 25
 - Maven

@@ -52,7 +52,7 @@ public class KafkaStreamsTopology {
      * record in the primary stream is required to advance the stream time and emit the {@code null} result for
      * unmatched records.
      *
-     * <p>{@link JoinWindows} are aligned to the record’s timestamp. They are created each time a record is processed
+     * <p>{@link JoinWindows} are aligned to the record's timestamp. They are created each time a record is processed
      * and are bounded such that the window is defined as [timestamp - before, timestamp + after]. An output is produced
      * if a record in the secondary stream has a timestamp within the window of a record in the primary stream, as shown
      * in the following condition:
