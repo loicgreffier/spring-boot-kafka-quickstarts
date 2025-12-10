@@ -32,7 +32,7 @@
         <kafka.version>4.0.0</kafka.version>
         <lombok.version>1.18.42</lombok.version>
         <palantir.version>2.82.0</palantir.version>
-        <sonar-maven-plugin.version>5.3.0.6276</sonar-maven-plugin.version>
+        <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.organization>loicgreffier</sonar.organization>
         <sonar.projectKey>loicgreffier_spring-boot-kafka-quickstarts</sonar.projectKey>
