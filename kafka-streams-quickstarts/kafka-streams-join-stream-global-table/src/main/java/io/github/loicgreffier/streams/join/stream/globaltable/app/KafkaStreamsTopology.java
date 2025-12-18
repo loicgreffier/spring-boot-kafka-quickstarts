@@ -61,7 +61,7 @@ public class KafkaStreamsTopology {
         streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-                .join(countryGlobalTable, (key, user) -> user.getNationality().toString(), (user, country) -> {
+                .join(countryGlobalTable, (_, user) -> user.getNationality().toString(), (user, country) -> {
                     log.info(
                             "Joined {} {} {} to country {} by code {}",
                             user.getId(),

@@ -44,8 +44,8 @@ public class KafkaStreamsTopology {
         streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-                .filter((key, user) -> user.getLastName().startsWith("S"))
-                .filterNot((key, user) -> !user.getFirstName().startsWith("H"))
+                .filter((_, user) -> user.getLastName().startsWith("S"))
+                .filterNot((_, user) -> !user.getFirstName().startsWith("H"))
                 .to(USER_FILTER_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 

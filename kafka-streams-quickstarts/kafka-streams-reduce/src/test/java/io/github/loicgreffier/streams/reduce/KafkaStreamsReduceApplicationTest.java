@@ -114,7 +114,7 @@ class KafkaStreamsReduceApplicationTest {
 
         List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair(CountryCode.US.toString(), oldestUs), results.get(0));
+        assertEquals(KeyValue.pair(CountryCode.US.toString(), oldestUs), results.getFirst());
         assertEquals(KeyValue.pair(CountryCode.US.toString(), oldestUs), results.get(1));
         assertEquals(KeyValue.pair(CountryCode.BE.toString(), youngestBe), results.get(2));
         assertEquals(KeyValue.pair(CountryCode.BE.toString(), oldestBe), results.get(3));

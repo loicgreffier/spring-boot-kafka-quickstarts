@@ -111,7 +111,7 @@ class KafkaStreamsAverageApplicationTest {
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("US", 25L), results.get(0));
+        assertEquals(KeyValue.pair("US", 25L), results.getFirst());
         assertEquals(KeyValue.pair("US", 50L), results.get(1));
 
         KeyValueStore<String, KafkaUserAverageAge> stateStore = testDriver.getKeyValueStore(USER_AVERAGE_STORE);

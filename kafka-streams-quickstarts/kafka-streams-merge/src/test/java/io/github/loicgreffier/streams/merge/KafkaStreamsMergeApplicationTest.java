@@ -108,7 +108,7 @@ class KafkaStreamsMergeApplicationTest {
 
         List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", firstUser), results.get(0));
+        assertEquals(KeyValue.pair("1", firstUser), results.getFirst());
         assertEquals(KeyValue.pair("2", secondUser), results.get(1));
     }
 

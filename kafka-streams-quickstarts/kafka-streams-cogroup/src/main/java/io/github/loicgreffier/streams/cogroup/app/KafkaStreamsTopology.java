@@ -61,14 +61,14 @@ public class KafkaStreamsTopology {
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
                 .groupBy(
-                        (key, user) -> user.getLastName(),
+                        (_, user) -> user.getLastName(),
                         Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()));
 
         final KGroupedStream<String, KafkaUser> groupedStreamTwo = streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
                 .groupBy(
-                        (key, user) -> user.getLastName(),
+                        (_, user) -> user.getLastName(),
                         Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC_TWO, Serdes.String(), SerdesUtils.getValueSerdes()));
 
         groupedStreamOne

@@ -61,30 +61,29 @@ public class KafkaStreamsTopology {
         streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-                .leftJoin(
-                        countryGlobalTable, (key, user) -> user.getNationality().toString(), (user, country) -> {
-                            if (country != null) {
-                                log.info(
-                                        "Joined {} {} {} to country {} by code {}",
-                                        user.getId(),
-                                        user.getFirstName(),
-                                        user.getLastName(),
-                                        country.getName(),
-                                        country.getCode());
-                            } else {
-                                log.info(
-                                        "No matching country for {} {} {} with code {}",
-                                        user.getId(),
-                                        user.getFirstName(),
-                                        user.getLastName(),
-                                        user.getNationality());
-                            }
+                .leftJoin(countryGlobalTable, (_, user) -> user.getNationality().toString(), (user, country) -> {
+                    if (country != null) {
+                        log.info(
+                                "Joined {} {} {} to country {} by code {}",
+                                user.getId(),
+                                user.getFirstName(),
+                                user.getLastName(),
+                                country.getName(),
+                                country.getCode());
+                    } else {
+                        log.info(
+                                "No matching country for {} {} {} with code {}",
+                                user.getId(),
+                                user.getFirstName(),
+                                user.getLastName(),
+                                user.getNationality());
+                    }
 
-                            return KafkaJoinUserCountry.newBuilder()
-                                    .setUser(user)
-                                    .setCountry(country)
-                                    .build();
-                        })
+                    return KafkaJoinUserCountry.newBuilder()
+                            .setUser(user)
+                            .setCountry(country)
+                            .build();
+                })
                 .to(
                         USER_COUNTRY_LEFT_JOIN_STREAM_GLOBAL_TABLE_TOPIC,
                         Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));

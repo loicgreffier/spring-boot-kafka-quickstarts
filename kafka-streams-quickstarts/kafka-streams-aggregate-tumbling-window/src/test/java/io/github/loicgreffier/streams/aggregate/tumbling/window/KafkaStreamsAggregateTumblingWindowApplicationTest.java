@@ -113,8 +113,8 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
 
         // Homer arrives
-        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
-        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
+        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.getFirst().key);
+        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
 
         // Marge arrives
         assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(1).key);
@@ -156,8 +156,8 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         // as the upper bound of tumbling window is exclusive.
         // Its timestamp (01:05:00) is not included in the window [01:00:00->01:05:00).
 
-        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
-        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
+        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.getFirst().key);
+        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
 
         assertEquals("Simpson@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z", results.get(1).key);
         assertIterableEquals(List.of(marge), results.get(1).value.getUsers());
@@ -209,8 +209,8 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
 
         // Homer arrives
-        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
-        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
+        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.getFirst().key);
+        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
 
         // Marge arrives
         assertEquals("Simpson@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z", results.get(1).key);

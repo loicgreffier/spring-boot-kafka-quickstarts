@@ -64,12 +64,12 @@ public class KafkaStreamsTopology {
         KStream<String, KafkaUser> streamTwo = streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-                .selectKey((key, user) -> user.getLastName());
+                .selectKey((_, user) -> user.getLastName());
 
         streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-                .selectKey((key, user) -> user.getLastName())
+                .selectKey((_, user) -> user.getLastName())
                 .outerJoin(
                         streamTwo,
                         (key, userLeft, userRight) -> {

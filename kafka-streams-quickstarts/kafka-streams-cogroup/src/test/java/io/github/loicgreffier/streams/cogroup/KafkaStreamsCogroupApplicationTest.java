@@ -112,8 +112,8 @@ class KafkaStreamsCogroupApplicationTest {
 
         List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Simpson", results.get(0).key);
-        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
+        assertEquals("Simpson", results.getFirst().key);
+        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
 
         assertEquals("Simpson", results.get(1).key);
         assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
@@ -134,8 +134,8 @@ class KafkaStreamsCogroupApplicationTest {
 
         List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Simpson", results.get(0).key);
-        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
+        assertEquals("Simpson", results.getFirst().key);
+        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
 
         assertEquals("Simpson", results.get(1).key);
         assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
@@ -159,8 +159,8 @@ class KafkaStreamsCogroupApplicationTest {
 
         List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Simpson", results.get(0).key);
-        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
+        assertEquals("Simpson", results.getFirst().key);
+        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
 
         assertEquals("Simpson", results.get(1).key);
         assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());

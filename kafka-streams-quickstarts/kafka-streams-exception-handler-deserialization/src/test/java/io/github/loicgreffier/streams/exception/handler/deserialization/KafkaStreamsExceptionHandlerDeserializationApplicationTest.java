@@ -120,7 +120,7 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
 
         List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", homer), results.get(0));
+        assertEquals(KeyValue.pair("1", homer), results.getFirst());
         assertEquals(KeyValue.pair("3", marge), results.get(1));
         assertEquals(KeyValue.pair("5", bart), results.get(2));
 

@@ -96,7 +96,7 @@ class KafkaStreamsFlatMapValuesApplicationTest {
 
         List<KeyValue<String, String>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", "Homer"), results.get(0));
+        assertEquals(KeyValue.pair("1", "Homer"), results.getFirst());
         assertEquals(KeyValue.pair("1", "Simpson"), results.get(1));
     }
 

@@ -102,7 +102,7 @@ class KafkaStreamsCountApplicationTest {
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair(CountryCode.US.toString(), 1L), results.get(0));
+        assertEquals(KeyValue.pair(CountryCode.US.toString(), 1L), results.getFirst());
         assertEquals(KeyValue.pair(CountryCode.BE.toString(), 1L), results.get(1));
         assertEquals(KeyValue.pair(CountryCode.US.toString(), 2L), results.get(2));
         assertEquals(KeyValue.pair(CountryCode.BE.toString(), 2L), results.get(3));

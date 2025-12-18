@@ -148,8 +148,8 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
         List<KeyValue<String, KafkaJoinUsers>> results = joinOutputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.getFirst().key);
-        assertEquals(homer, results.get(0).value.getUserOne());
-        assertEquals(marge, results.get(0).value.getUserTwo());
+        assertEquals(homer, results.getFirst().value.getUserOne());
+        assertEquals(marge, results.getFirst().value.getUserTwo());
 
         assertEquals("Simpson", results.get(1).key);
         assertEquals(bart, results.get(1).value.getUserOne());
@@ -279,8 +279,8 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
         // No record in the secondary stream matched the first record in the primary stream
         // at the end of the join window + grace period (01:06:00). Null value is emitted.
         assertEquals("Simpson", results.getFirst().key);
-        assertEquals(homer, results.get(0).value.getUserOne());
-        assertNull(results.get(0).value.getUserTwo());
+        assertEquals(homer, results.getFirst().value.getUserOne());
+        assertNull(results.getFirst().value.getUserTwo());
 
         // The delayed record finally comes and joined with the first record,
         // so an updated record is emitted with the right value.

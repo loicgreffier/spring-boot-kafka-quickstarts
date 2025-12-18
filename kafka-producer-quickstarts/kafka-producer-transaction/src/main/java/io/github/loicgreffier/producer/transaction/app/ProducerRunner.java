@@ -105,7 +105,7 @@ public class ProducerRunner {
 
                 log.info("Commit transaction");
                 producer.commitTransaction();
-            } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException e) {
+            } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException _) {
                 log.info("Closing producer");
                 producer.close();
             } catch (Exception e) {

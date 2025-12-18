@@ -118,8 +118,8 @@ class KafkaStreamsScheduleApplicationTest {
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
         // 1st stream time punctuate
-        assertEquals("US", results.get(0).key);
-        assertEquals(1, results.get(0).value);
+        assertEquals("US", results.getFirst().key);
+        assertEquals(1, results.getFirst().value);
 
         // 2nd stream time punctuate
         assertEquals("US", results.get(1).key);

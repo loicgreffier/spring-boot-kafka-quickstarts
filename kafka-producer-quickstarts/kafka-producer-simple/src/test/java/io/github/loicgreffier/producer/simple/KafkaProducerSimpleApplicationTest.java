@@ -48,7 +48,7 @@ class KafkaProducerSimpleApplicationTest {
         Thread producerThread = new Thread(() -> {
             try {
                 producerRunner.run();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException _) {
                 Thread.currentThread().interrupt();
             }
         });

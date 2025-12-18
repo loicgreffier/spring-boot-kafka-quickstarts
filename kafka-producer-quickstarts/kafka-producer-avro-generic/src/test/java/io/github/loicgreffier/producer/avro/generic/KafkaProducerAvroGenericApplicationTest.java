@@ -61,7 +61,7 @@ class KafkaProducerAvroGenericApplicationTest {
         Thread producerThread = new Thread(() -> {
             try {
                 producerRunner.run();
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException | InterruptedException _) {
                 Thread.currentThread().interrupt();
             }
         });

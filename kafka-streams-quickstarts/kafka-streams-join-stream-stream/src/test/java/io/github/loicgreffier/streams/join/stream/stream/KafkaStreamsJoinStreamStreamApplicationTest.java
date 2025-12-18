@@ -146,8 +146,8 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         List<KeyValue<String, KafkaJoinUsers>> results = joinOutputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.getFirst().key);
-        assertEquals(homer, results.get(0).value.getUserOne());
-        assertEquals(marge, results.get(0).value.getUserTwo());
+        assertEquals(homer, results.getFirst().value.getUserOne());
+        assertEquals(marge, results.getFirst().value.getUserTwo());
 
         assertEquals("Simpson", results.get(1).key);
         assertEquals(bart, results.get(1).value.getUserOne());
