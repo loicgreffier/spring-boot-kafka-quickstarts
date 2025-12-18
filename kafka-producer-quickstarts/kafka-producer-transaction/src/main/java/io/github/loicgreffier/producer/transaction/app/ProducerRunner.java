@@ -74,10 +74,10 @@ public class ProducerRunner {
         int i = 0;
         while (!stopped) {
             ProducerRecord<String, String> firstMessage =
-                    new ProducerRecord<>(FIRST_STRING_TOPIC, String.valueOf(i), String.format("Message %s", i));
+                    new ProducerRecord<>(FIRST_STRING_TOPIC, String.valueOf(i), "Message %s".formatted(i));
 
             ProducerRecord<String, String> secondMessage =
-                    new ProducerRecord<>(SECOND_STRING_TOPIC, String.valueOf(i), String.format("Message %s", i));
+                    new ProducerRecord<>(SECOND_STRING_TOPIC, String.valueOf(i), "Message %s".formatted(i));
 
             List<ProducerRecord<String, String>> messages = List.of(firstMessage, secondMessage);
 
@@ -105,7 +105,7 @@ public class ProducerRunner {
 
                 log.info("Commit transaction");
                 producer.commitTransaction();
-            } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException e) {
+            } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException _) {
                 log.info("Closing producer");
                 producer.close();
             } catch (Exception e) {

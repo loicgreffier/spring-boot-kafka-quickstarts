@@ -62,7 +62,7 @@ public class KafkaStreamsTopology {
         streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-                .selectKey((key, user) -> user.getLastName())
+                .selectKey((_, user) -> user.getLastName())
                 .groupByKey(Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)))
                 .aggregate(
@@ -73,7 +73,7 @@ public class KafkaStreamsTopology {
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))
                 .toStream()
-                .selectKey((key, groupedUsers) -> key.key() + "@" + key.window().startTime() + "->"
+                .selectKey((key, _) -> key.key() + "@" + key.window().startTime() + "->"
                         + key.window().endTime())
                 .to(USER_AGGREGATE_TUMBLING_WINDOW_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }

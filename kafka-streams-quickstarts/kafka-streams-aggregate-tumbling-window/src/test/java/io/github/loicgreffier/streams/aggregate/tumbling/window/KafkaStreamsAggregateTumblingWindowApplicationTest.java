@@ -36,7 +36,7 @@ import io.github.loicgreffier.streams.aggregate.tumbling.window.app.KafkaStreams
 import io.github.loicgreffier.streams.aggregate.tumbling.window.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +95,7 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
     @AfterEach
     void tearDown() throws IOException {
         testDriver.close();
-        Files.deleteIfExists(Paths.get(STATE_DIR));
+        Files.deleteIfExists(Path.of(STATE_DIR));
         MockSchemaRegistry.dropScope(MOCK_SCHEMA_REGISTRY_URL);
     }
 
@@ -113,8 +113,8 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
 
         // Homer arrives
-        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
-        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
+        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.getFirst().key);
+        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
 
         // Marge arrives
         assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(1).key);
@@ -156,8 +156,8 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         // as the upper bound of tumbling window is exclusive.
         // Its timestamp (01:05:00) is not included in the window [01:00:00->01:05:00).
 
-        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
-        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
+        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.getFirst().key);
+        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
 
         assertEquals("Simpson@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z", results.get(1).key);
         assertIterableEquals(List.of(marge), results.get(1).value.getUsers());
@@ -209,8 +209,8 @@ class KafkaStreamsAggregateTumblingWindowApplicationTest {
         List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
 
         // Homer arrives
-        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.get(0).key);
-        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
+        assertEquals("Simpson@2000-01-01T01:00:00Z->2000-01-01T01:05:00Z", results.getFirst().key);
+        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
 
         // Marge arrives
         assertEquals("Simpson@2000-01-01T01:05:00Z->2000-01-01T01:10:00Z", results.get(1).key);

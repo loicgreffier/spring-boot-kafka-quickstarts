@@ -66,9 +66,9 @@ public class KafkaStreamsTopology {
                 .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
                 .split(Named.as("BRANCH_"))
                 .branch(
-                        (key, value) -> value.getLastName().startsWith("S"),
+                        (_, value) -> value.getLastName().startsWith("S"),
                         Branched.withFunction(KafkaStreamsTopology::toUppercase, "A"))
-                .branch((key, value) -> value.getLastName().startsWith("F"), Branched.as("B"))
+                .branch((_, value) -> value.getLastName().startsWith("F"), Branched.as("B"))
                 .defaultBranch(Branched.withConsumer(stream -> stream.to(
                         USER_BRANCH_DEFAULT_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()))));
 

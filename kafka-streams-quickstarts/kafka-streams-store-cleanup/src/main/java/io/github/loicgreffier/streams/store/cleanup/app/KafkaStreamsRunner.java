@@ -77,7 +77,7 @@ public class KafkaStreamsRunner {
             return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
         });
 
-        kafkaStreams.setStateListener((newState, oldState) -> {
+        kafkaStreams.setStateListener((newState, _) -> {
             if (newState.equals(KafkaStreams.State.ERROR)) {
                 log.error(
                         "The {} Kafka Streams is in error state...",

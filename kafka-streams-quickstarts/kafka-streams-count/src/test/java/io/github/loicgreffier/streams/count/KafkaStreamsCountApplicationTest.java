@@ -34,7 +34,7 @@ import io.github.loicgreffier.streams.count.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.count.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +89,7 @@ class KafkaStreamsCountApplicationTest {
     @AfterEach
     void tearDown() throws IOException {
         testDriver.close();
-        Files.deleteIfExists(Paths.get(STATE_DIR));
+        Files.deleteIfExists(Path.of(STATE_DIR));
         MockSchemaRegistry.dropScope(MOCK_SCHEMA_REGISTRY_URL);
     }
 
@@ -102,7 +102,7 @@ class KafkaStreamsCountApplicationTest {
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair(CountryCode.US.toString(), 1L), results.get(0));
+        assertEquals(KeyValue.pair(CountryCode.US.toString(), 1L), results.getFirst());
         assertEquals(KeyValue.pair(CountryCode.BE.toString(), 1L), results.get(1));
         assertEquals(KeyValue.pair(CountryCode.US.toString(), 2L), results.get(2));
         assertEquals(KeyValue.pair(CountryCode.BE.toString(), 2L), results.get(3));

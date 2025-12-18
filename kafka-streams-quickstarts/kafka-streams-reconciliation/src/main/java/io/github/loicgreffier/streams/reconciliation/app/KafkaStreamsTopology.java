@@ -63,7 +63,7 @@ public class KafkaStreamsTopology {
 
         streamsBuilder.<String, KafkaOrder>stream(
                         ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .selectKey((key, value) -> String.valueOf(value.getCustomerId()))
+                .selectKey((_, value) -> String.valueOf(value.getCustomerId()))
                 .repartition(Repartitioned.<String, KafkaOrder>with(Serdes.String(), SerdesUtils.getValueSerdes())
                         .withName(ORDER_TOPIC))
                 .process(() -> new ReconciliationProcessor<>(), RECONCILIATION_STORE)

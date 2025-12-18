@@ -38,7 +38,7 @@ import io.github.loicgreffier.streams.outerjoin.stream.stream.constant.StateStor
 import io.github.loicgreffier.streams.outerjoin.stream.stream.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +115,7 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
     @AfterEach
     void tearDown() throws IOException {
         testDriver.close();
-        Files.deleteIfExists(Paths.get(STATE_DIR));
+        Files.deleteIfExists(Path.of(STATE_DIR));
         MockSchemaRegistry.dropScope(MOCK_SCHEMA_REGISTRY_URL);
     }
 
@@ -148,8 +148,8 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
         List<KeyValue<String, KafkaJoinUsers>> results = joinOutputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.getFirst().key);
-        assertEquals(homer, results.get(0).value.getUserOne());
-        assertEquals(marge, results.get(0).value.getUserTwo());
+        assertEquals(homer, results.getFirst().value.getUserOne());
+        assertEquals(marge, results.getFirst().value.getUserTwo());
 
         assertEquals("Simpson", results.get(1).key);
         assertEquals(bart, results.get(1).value.getUserOne());
@@ -218,8 +218,8 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
 
         // The right value is null because Marge arrived too late for Homer.
         assertEquals("Simpson", results.getFirst().key);
-        assertEquals(homer, results.get(0).value.getUserOne());
-        assertNull(results.get(0).value.getUserTwo());
+        assertEquals(homer, results.getFirst().value.getUserOne());
+        assertNull(results.getFirst().value.getUserTwo());
 
         // The left value is null because Bart arrived too late for Marge.
         assertEquals("Simpson", results.get(1).key);
@@ -283,8 +283,8 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
         // No record in the secondary stream matched the first record in the primary stream
         // at the end of the join window + grace period (01:06:00). Null value is emitted.
         assertEquals("Simpson", results.getFirst().key);
-        assertEquals(homer, results.get(0).value.getUserOne());
-        assertNull(results.get(0).value.getUserTwo());
+        assertEquals(homer, results.getFirst().value.getUserOne());
+        assertNull(results.getFirst().value.getUserTwo());
 
         // The delayed record finally comes and joined with the first record,
         // so an updated record is emitted with the right value.

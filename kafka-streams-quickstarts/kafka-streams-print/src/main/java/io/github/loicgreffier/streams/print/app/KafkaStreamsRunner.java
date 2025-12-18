@@ -25,7 +25,6 @@ import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -70,7 +69,7 @@ public class KafkaStreamsRunner {
     public void run() throws IOException {
         SerdesUtils.setSerdesConfig(kafkaStreamsProperties.getProperties());
 
-        Path filePath = Paths.get(applicationProperties
+        Path filePath = Path.of(applicationProperties
                 .getFilePath()
                 .substring(0, applicationProperties.getFilePath().lastIndexOf("/")));
         if (!Files.exists(filePath)) {
@@ -94,7 +93,7 @@ public class KafkaStreamsRunner {
             return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
         });
 
-        kafkaStreams.setStateListener((newState, oldState) -> {
+        kafkaStreams.setStateListener((newState, _) -> {
             if (newState.equals(KafkaStreams.State.ERROR)) {
                 log.error(
                         "The {} Kafka Streams is in error state...",

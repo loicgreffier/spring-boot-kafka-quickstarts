@@ -55,7 +55,7 @@ public class ErrorProcessor extends ContextualFixedKeyProcessor<String, KafkaUse
     @Override
     public void init(FixedKeyProcessorContext<String, KafkaUser> context) {
         super.init(context);
-        context.schedule(Duration.ofMinutes(1), PunctuationType.WALL_CLOCK_TIME, timestamp -> {
+        context.schedule(Duration.ofMinutes(1), PunctuationType.WALL_CLOCK_TIME, _ -> {
             throw new IllegalArgumentException("Forced processing exception during punctuation");
         });
     }

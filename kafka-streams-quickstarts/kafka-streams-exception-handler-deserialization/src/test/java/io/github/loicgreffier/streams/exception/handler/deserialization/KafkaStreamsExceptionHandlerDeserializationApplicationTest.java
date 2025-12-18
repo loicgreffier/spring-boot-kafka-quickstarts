@@ -37,7 +37,7 @@ import io.github.loicgreffier.streams.exception.handler.deserialization.error.Cu
 import io.github.loicgreffier.streams.exception.handler.deserialization.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +99,7 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
     @AfterEach
     void tearDown() throws IOException {
         testDriver.close();
-        Files.deleteIfExists(Paths.get(STATE_DIR));
+        Files.deleteIfExists(Path.of(STATE_DIR));
         MockSchemaRegistry.dropScope(MOCK_SCHEMA_REGISTRY_URL);
     }
 
@@ -120,7 +120,7 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
 
         List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", homer), results.get(0));
+        assertEquals(KeyValue.pair("1", homer), results.getFirst());
         assertEquals(KeyValue.pair("3", marge), results.get(1));
         assertEquals(KeyValue.pair("5", bart), results.get(2));
 

@@ -43,7 +43,7 @@ public class KafkaStreamsTopology {
         streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-                .selectKey((key, user) -> user.getLastName())
+                .selectKey((_, user) -> user.getLastName())
                 .to(USER_SELECT_KEY_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 

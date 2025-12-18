@@ -37,7 +37,7 @@ import io.github.loicgreffier.streams.exception.handler.processing.papi.error.Cu
 import io.github.loicgreffier.streams.exception.handler.processing.papi.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -97,7 +97,7 @@ class KafkaStreamsExceptionHandlerProcessingPapiApplicationTest {
     @AfterEach
     void tearDown() throws IOException {
         testDriver.close();
-        Files.deleteIfExists(Paths.get(STATE_DIR));
+        Files.deleteIfExists(Path.of(STATE_DIR));
         MockSchemaRegistry.dropScope(MOCK_SCHEMA_REGISTRY_URL);
     }
 

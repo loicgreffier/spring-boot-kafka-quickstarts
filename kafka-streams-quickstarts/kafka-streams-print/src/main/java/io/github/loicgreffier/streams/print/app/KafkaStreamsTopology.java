@@ -64,7 +64,7 @@ public class KafkaStreamsTopology {
      * @return The formatted string.
      */
     private static String toOutput(String key, KafkaUser kafkaUser) {
-        return String.format("Received key = %s, value = %s", key, kafkaUser);
+        return "Received key = %s, value = %s".formatted(key, kafkaUser);
     }
 
     /** Private constructor. */

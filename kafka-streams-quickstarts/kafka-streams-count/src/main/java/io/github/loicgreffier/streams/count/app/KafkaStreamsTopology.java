@@ -53,7 +53,7 @@ public class KafkaStreamsTopology {
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
                 .groupBy(
-                        (key, user) -> user.getNationality().toString(),
+                        (_, user) -> user.getNationality().toString(),
                         Grouped.with(GROUP_USER_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as(USER_COUNT_STORE)
                         .withKeySerde(Serdes.String())

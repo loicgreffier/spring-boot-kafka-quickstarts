@@ -46,7 +46,7 @@ public class KafkaStreamsTopology {
         streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
-                .flatMap((key, user) -> Arrays.asList(
+                .flatMap((_, user) -> Arrays.asList(
                         KeyValue.pair(user.getFirstName().toUpperCase(), user.getFirstName()),
                         KeyValue.pair(user.getLastName().toUpperCase(), user.getLastName())))
                 .to(USER_FLATMAP_TOPIC, Produced.with(Serdes.String(), Serdes.String()));

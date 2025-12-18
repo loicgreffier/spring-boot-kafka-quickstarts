@@ -35,7 +35,7 @@ import io.github.loicgreffier.streams.aggregate.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.aggregate.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +92,7 @@ class KafkaStreamsAggregateApplicationTest {
     @AfterEach
     void tearDown() throws IOException {
         testDriver.close();
-        Files.deleteIfExists(Paths.get(STATE_DIR));
+        Files.deleteIfExists(Path.of(STATE_DIR));
         MockSchemaRegistry.dropScope(MOCK_SCHEMA_REGISTRY_URL);
     }
 
@@ -109,8 +109,8 @@ class KafkaStreamsAggregateApplicationTest {
 
         List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Simpson", results.get(0).key);
-        assertIterableEquals(List.of(homer), results.get(0).value.getUsers());
+        assertEquals("Simpson", results.getFirst().key);
+        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
 
         assertEquals("Simpson", results.get(1).key);
         assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
