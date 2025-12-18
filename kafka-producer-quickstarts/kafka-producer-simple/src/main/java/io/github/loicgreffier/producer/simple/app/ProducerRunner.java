@@ -64,7 +64,7 @@ public class ProducerRunner {
         int i = 0;
         while (!stopped) {
             ProducerRecord<String, String> message =
-                    new ProducerRecord<>(STRING_TOPIC, String.valueOf(i), String.format("Message %s", i));
+                    new ProducerRecord<>(STRING_TOPIC, String.valueOf(i), "Message %s".formatted(i));
 
             producer.send(message, (recordMetadata, e) -> {
                 if (e != null) {

@@ -38,7 +38,7 @@ import io.github.loicgreffier.streams.join.stream.table.app.KafkaStreamsTopology
 import io.github.loicgreffier.streams.join.stream.table.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +104,7 @@ class KafkaStreamsJoinStreamTableApplicationTest {
     @AfterEach
     void tearDown() throws IOException {
         testDriver.close();
-        Files.deleteIfExists(Paths.get(STATE_DIR));
+        Files.deleteIfExists(Path.of(STATE_DIR));
         MockSchemaRegistry.dropScope(MOCK_SCHEMA_REGISTRY_URL);
     }
 

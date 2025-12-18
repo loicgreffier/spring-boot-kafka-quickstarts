@@ -22,7 +22,6 @@ import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.EXACTL
 import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.USER_TOPIC;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
