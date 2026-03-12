@@ -130,12 +130,13 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 
 #### Handler
 
-| Module                                                                                                                   | Library       | Description                                    | Config                              |
-|:-------------------------------------------------------------------------------------------------------------------------|---------------|------------------------------------------------|-------------------------------------|
-| [Deserialization Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-deserialization)          | Kafka Streams | Handle deserialization exceptions              | `deserialization.exception.handler` |
-| [Processing Exception Handler DSL](/kafka-streams-quickstarts/kafka-streams-exception-handler-processing-dsl)            | Kafka Streams | Handle processing exceptions in DSL operations | `processing.exception.handler`      |
-| [Processing Exception Handler Processor API](/kafka-streams-quickstarts/kafka-streams-exception-handler-processing-papi) | Kafka Streams | Handle processing exceptions in Processor API  | `processing.exception.handler`      |
-| [Production Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-production)                    | Kafka Streams | Handle production and serialization exceptions | `production.exception.handler`      |
+| Module                                                                                                                   | Library       | Description                                               | Config                                |
+|:-------------------------------------------------------------------------------------------------------------------------|---------------|-----------------------------------------------------------|---------------------------------------|
+| [Deserialization Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-deserialization)          | Kafka Streams | Handle deserialization exceptions                         | `deserialization.exception.handler`   |
+| [Dead Letter Queue (DLQ)](/kafka-streams-quickstarts/kafka-streams-exception-handler-dlq)                                | Kafka Streams | Use the native DLQ support (KIP-1034)                     | `errors.dead.letter.queue.topic.name` |
+| [Processing Exception Handler DSL](/kafka-streams-quickstarts/kafka-streams-exception-handler-processing-dsl)            | Kafka Streams | Handle processing exceptions in DSL operations (KIP-1033) | `processing.exception.handler`        |
+| [Processing Exception Handler Processor API](/kafka-streams-quickstarts/kafka-streams-exception-handler-processing-papi) | Kafka Streams | Handle processing exceptions in Processor API (KIP-1033)  | `processing.exception.handler`        |
+| [Production Exception Handler](/kafka-streams-quickstarts/kafka-streams-exception-handler-production)                    | Kafka Streams | Handle production and serialization exceptions            | `production.exception.handler`        |
 
 ## Credits
 

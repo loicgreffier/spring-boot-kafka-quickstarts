@@ -1,11 +1,11 @@
 kafka:
   properties:
     acks: "all"
-    application.id: "streams-production-exception-handler"
+    application.id: "streams-exception-handler-production"
     auto.offset.reset: "earliest"
     avro.remove.java.properties: true
     bootstrap.servers: "localhost:9092"
-    client.id: "streams-production-exception-handler"
+    client.id: "streams-exception-handler-production"
     production.exception.handler: "io.github.loicgreffier.streams.exception.handler.production.error.CustomProductionExceptionHandler"
     min.insync.replicas: 1
     num.stream.threads: 1

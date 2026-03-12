@@ -1,11 +1,10 @@
-# Kafka Streams Processing Exception Handler PAPI
+# Kafka Streams Exception Handler DLQ
 
-This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and handles processing exceptions in the Processor API.
+This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and routes exceptions to a Dead Letter Queue (DLQ) topic using the Kafka Streams native DLQ support.
 
 It demonstrates the following:
 
-- How to use the Kafka Streams configuration `processing.exception.handler` to handle processing exceptions in the Processor API, as introduced by [KIP-1033](https://cwiki.apache.org/confluence/display/KAFKA/KIP-1033%3A+Add+Kafka+Streams+exception+handler+for+exceptions+occurring+during+processing).
-- How to implement a custom processing exception handler.
+- How to use the Kafka Streams configuration `errors.dead.letter.queue.topic.name` o make the default deserialization, processing, and production exception handlers route exceptions to the configured DLQ topic, as introduced by [KIP-1034](https://cwiki.apache.org/confluence/display/KAFKA/KIP-1034%3A+Dead+letter+queue+in+Kafka+Streams).
 - Unit testing using the Topology Test Driver.
 
 ![topology.png](topology.png)
@@ -38,4 +37,4 @@ This will start the following services in Docker:
 - Schema Registry
 - Control Center
 - Producer User
-- Kafka Streams Exception Handler Processing PAPI
+- Kafka Streams Exception Handler DLQ

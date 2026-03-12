@@ -38,4 +38,4 @@ This will start the following services in Docker:
 - Schema Registry
 - Control Center
 - Producer User
-- Kafka Streams Exception Handler Processing
+- Kafka Streams Exception Handler Processing DSL
