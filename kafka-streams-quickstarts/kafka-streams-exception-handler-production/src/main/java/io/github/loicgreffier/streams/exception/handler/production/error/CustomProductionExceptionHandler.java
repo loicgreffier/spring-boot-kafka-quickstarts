@@ -30,7 +30,7 @@ import org.apache.kafka.streams.errors.ProductionExceptionHandler;
 public class CustomProductionExceptionHandler implements ProductionExceptionHandler {
 
     @Override
-    public ProductionExceptionHandlerResponse handle(
+    public Response handleError(
             ErrorHandlerContext context, ProducerRecord<byte[], byte[]> message, Exception exception) {
         if (exception instanceof RecordTooLargeException) {
             log.warn(
@@ -41,7 +41,7 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
                     context.offset(),
                     exception);
 
-            return ProductionExceptionHandlerResponse.CONTINUE;
+            return Response.resume();
         }
 
         log.warn(
@@ -52,11 +52,11 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
                 context.offset(),
                 exception);
 
-        return ProductionExceptionHandlerResponse.FAIL;
+        return Response.fail();
     }
 
     @Override
-    public ProductionExceptionHandlerResponse handleSerializationException(
+    public Response handleSerializationError(
             ErrorHandlerContext context,
             ProducerRecord message,
             Exception exception,
@@ -72,7 +72,7 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
                 message.value(),
                 exception);
 
-        return ProductionExceptionHandlerResponse.CONTINUE;
+        return Response.resume();
     }
 
     @Override

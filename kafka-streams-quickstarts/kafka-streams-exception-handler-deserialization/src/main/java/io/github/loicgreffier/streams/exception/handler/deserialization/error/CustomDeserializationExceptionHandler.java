@@ -29,7 +29,7 @@ import org.apache.kafka.streams.errors.ErrorHandlerContext;
 public class CustomDeserializationExceptionHandler implements DeserializationExceptionHandler {
 
     @Override
-    public DeserializationHandlerResponse handle(
+    public Response handleError(
             ErrorHandlerContext context, ConsumerRecord<byte[], byte[]> message, Exception exception) {
         log.warn(
                 "Exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
@@ -39,7 +39,7 @@ public class CustomDeserializationExceptionHandler implements DeserializationExc
                 context.offset(),
                 exception);
 
-        return DeserializationHandlerResponse.CONTINUE;
+        return Response.resume();
     }
 
     @Override
