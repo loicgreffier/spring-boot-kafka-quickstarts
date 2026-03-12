@@ -28,7 +28,7 @@ import org.apache.kafka.streams.processor.api.Record;
 @Slf4j
 public class CustomProcessingExceptionHandler implements ProcessingExceptionHandler {
     @Override
-    public ProcessingHandlerResponse handle(ErrorHandlerContext context, Record<?, ?> message, Exception exception) {
+    public Response handleError(ErrorHandlerContext context, Record<?, ?> message, Exception exception) {
         log.warn(
                 "Exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}, key = {}, value = {}",
                 context.processorNodeId(),
@@ -40,10 +40,10 @@ public class CustomProcessingExceptionHandler implements ProcessingExceptionHand
                 exception);
 
         if (exception instanceof IllegalArgumentException) {
-            return ProcessingHandlerResponse.CONTINUE;
+            return Response.resume();
         }
 
-        return ProcessingHandlerResponse.FAIL;
+        return Response.fail();
     }
 
     @Override
