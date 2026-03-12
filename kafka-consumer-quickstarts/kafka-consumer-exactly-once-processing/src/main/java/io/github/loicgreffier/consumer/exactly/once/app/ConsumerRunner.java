@@ -26,6 +26,7 @@ import java.time.Duration;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.Producer;
@@ -92,40 +93,41 @@ public class ConsumerRunner {
                     log.info("Begin transaction");
                     producer.beginTransaction();
 
-                    List<ProducerRecord<String, KafkaUser>> transformedMessages = messages.partitions().stream()
-                            .flatMap(partition -> messages.records(partition).stream()
-                                    .map(message -> {
-                                        log.info(
-                                                "Received offset = {}, partition = {}, key = {}, value = {}",
-                                                message.offset(),
-                                                message.partition(),
-                                                message.key(),
-                                                message.value());
+                    for (ConsumerRecord<String, KafkaUser> message : messages) {
+                        log.info(
+                                "Received offset = {}, partition = {}, key = {}, value = {}",
+                                message.offset(),
+                                message.partition(),
+                                message.key(),
+                                message.value());
 
-                                        KafkaUser kafkaUser = message.value();
-                                        kafkaUser.setFirstName(
-                                                kafkaUser.getFirstName().toUpperCase());
-                                        kafkaUser.setLastName(
-                                                kafkaUser.getLastName().toUpperCase());
-                                        return new ProducerRecord<>(
-                                                EXACTLY_ONCE_PROCESSING_TOPIC, message.key(), kafkaUser);
-                                    }))
-                            .toList();
+                        // Any processing (like an external system call here).
+                        // Here the processing is simply converting the message to uppercase.
+                        // If any error occurs in the middle of the batch processing, then all
+                        // messages sent are aborted. Without transactions, we would have no way
+                        // to identify a processing failure and abort, so when restarting the same events would be
+                        // delivered twice.
+                        KafkaUser kafkaUser = message.value();
+                        kafkaUser.setFirstName(kafkaUser.getFirstName().toUpperCase());
+                        kafkaUser.setLastName(kafkaUser.getLastName().toUpperCase());
 
-                    transformedMessages.forEach(
-                            transformedMessage -> producer.send(transformedMessage, (recordMetadata, e) -> {
-                                if (e != null) {
-                                    log.error(e.getMessage());
-                                } else {
-                                    log.info(
-                                            "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
-                                            recordMetadata.topic(),
-                                            recordMetadata.partition(),
-                                            recordMetadata.offset(),
-                                            transformedMessage.key(),
-                                            transformedMessage.value());
-                                }
-                            }));
+                        ProducerRecord<String, KafkaUser> transformedMessage =
+                                new ProducerRecord<>(EXACTLY_ONCE_PROCESSING_TOPIC, message.key(), kafkaUser);
+
+                        producer.send(transformedMessage, (recordMetadata, e) -> {
+                            if (e != null) {
+                                log.error(e.getMessage());
+                            } else {
+                                log.info(
+                                        "Success: topic = {}, partition = {}, offset = {}, key = {}, value = {}",
+                                        recordMetadata.topic(),
+                                        recordMetadata.partition(),
+                                        recordMetadata.offset(),
+                                        transformedMessage.key(),
+                                        transformedMessage.value());
+                            }
+                        });
+                    }
 
                     producer.sendOffsetsToTransaction(offsetsToCommit(), consumer.groupMetadata());
 
