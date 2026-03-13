@@ -1,11 +1,11 @@
 kafka:
   properties:
     acks: "all"
-    application.id: "streams-processing-exception-handler-dsl"
+    application.id: "streams-exception-handler-processing-dsl"
     auto.offset.reset: "earliest"
     avro.remove.java.properties: true
     bootstrap.servers: "localhost:9092"
-    client.id: "streams-processing-exception-handler-dsl"
+    client.id: "streams-exception-handler-processing-dsl"
     min.insync.replicas: 1
     num.stream.threads: 1
     processing.exception.handler: "io.github.loicgreffier.streams.exception.handler.processing.dsl.error.CustomProcessingExceptionHandler"

@@ -68,7 +68,7 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
     void setUp() {
         // Dummy properties required for test driver
         Properties properties = new Properties();
-        properties.setProperty(APPLICATION_ID_CONFIG, "streams-deserialization-exception-handler-test");
+        properties.setProperty(APPLICATION_ID_CONFIG, "streams-exception-handler-deserialization-test");
         properties.setProperty(BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         properties.setProperty(STATE_DIR_CONFIG, STATE_DIR);
         properties.setProperty(

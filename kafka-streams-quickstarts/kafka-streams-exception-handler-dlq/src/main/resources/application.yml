@@ -1,0 +1,17 @@
+kafka:
+  properties:
+    acks: "all"
+    application.id: "streams-processing-exception-handler-dsl"
+    auto.offset.reset: "earliest"
+    avro.remove.java.properties: true
+    bootstrap.servers: "localhost:9092"
+    client.id: "streams-processing-exception-handler-dsl"
+    deserialization.exception.handler: "org.apache.kafka.streams.errors.LogAndContinueExceptionHandler"
+    errors.dead.letter.queue.topic.name: "DLQ_TOPIC"
+    min.insync.replicas: 1
+    num.stream.threads: 1
+    processing.exception.handler: "org.apache.kafka.streams.errors.LogAndContinueProcessingExceptionHandler"
+    production.exception.handler: "org.apache.kafka.streams.errors.DefaultProductionExceptionHandler"
+    replication.factor: 1
+    schema.registry.url: "http://localhost:8081"
+    state.dir: "/tmp/kafka-streams-quickstarts"

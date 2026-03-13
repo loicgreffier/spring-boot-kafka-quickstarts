@@ -21,6 +21,7 @@
         <module>kafka-streams-cogroup</module>
         <module>kafka-streams-count</module>
         <module>kafka-streams-exception-handler-deserialization</module>
+        <module>kafka-streams-exception-handler-dlq</module>
         <module>kafka-streams-exception-handler-processing-dsl</module>
         <module>kafka-streams-exception-handler-processing-papi</module>
         <module>kafka-streams-exception-handler-production</module>
