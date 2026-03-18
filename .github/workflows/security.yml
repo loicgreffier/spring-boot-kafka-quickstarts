@@ -26,6 +26,7 @@ jobs:
           output: trivy-results.sarif
           ignore-unfixed: true
           limit-severities-for-sarif: true
+          timeout: 15m
 
       - name: Upload Trivy source code report
         if: always()
