@@ -30,7 +30,7 @@
         <kafka-avro-serializer.version>8.2.0</kafka-avro-serializer.version>
         <kafka-streams-avro-serde.version>8.2.0</kafka-streams-avro-serde.version>
         <kafka.version>4.2.0</kafka.version>
-        <lombok.version>1.18.44</lombok.version>
+        <lombok.version>1.18.46</lombok.version>
         <palantir.version>2.82.0</palantir.version>
         <sonar-maven-plugin.version>5.5.0.6356</sonar-maven-plugin.version>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
