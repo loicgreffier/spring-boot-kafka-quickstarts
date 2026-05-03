@@ -19,7 +19,7 @@ To compile and run this demo, you'll need:
 
 To run the application manually:
 
-- Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
+- Start a [Confluent Platform](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
 - Produce records of type `<String, String>` to the `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`. You can use the [Producer Transaction](../../kafka-producer-quickstarts/kafka-producer-transaction) for this.
 - Start the consumer.
 
