@@ -43,9 +43,7 @@ jobs:
         run: mvn spotless:check
 
       - name: Build
-        run: |
-          mvn -v
-          mvn clean package
+        run: mvn clean package
 
       - name: Publish test report
         if: always()
