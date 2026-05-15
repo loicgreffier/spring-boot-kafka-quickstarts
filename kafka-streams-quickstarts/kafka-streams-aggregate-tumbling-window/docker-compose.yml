@@ -1,7 +1,7 @@
 ---
 services:
   broker:
-    image: confluentinc/cp-kafka:8.0.0
+    image: confluentinc/cp-kafka:8.2.0
     hostname: broker
     container_name: broker
     networks:
@@ -28,7 +28,7 @@ services:
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:8.0.0
+    image: confluentinc/cp-schema-registry:8.2.0
     hostname: schema-registry
     container_name: schema-registry
     networks:
@@ -43,7 +43,7 @@ services:
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
 
   control-center:
-    image: confluentinc/cp-enterprise-control-center-next-gen:2.2.2
+    image: confluentinc/cp-enterprise-control-center-next-gen:2.5.0
     hostname: control-center
     container_name: control-center
     networks:
