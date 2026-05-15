@@ -38,7 +38,6 @@
         <sonar.projectKey>loicgreffier_spring-boot-kafka-quickstarts</sonar.projectKey>
         <spotless-maven-plugin.version>3.4.0</spotless-maven-plugin.version>
     </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
