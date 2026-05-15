@@ -9,6 +9,7 @@ kafka:
       fetch.min.bytes: 1
       group.id: "consumer-exactly-once-processing"
       heartbeat.interval.ms: 3000
+      isolation.level: "read_committed"
       key.deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
       max.poll.interval.ms: 300000
       max.poll.records: 500

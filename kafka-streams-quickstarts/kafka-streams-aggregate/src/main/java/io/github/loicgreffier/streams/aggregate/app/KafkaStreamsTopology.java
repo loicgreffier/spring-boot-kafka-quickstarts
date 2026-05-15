@@ -54,7 +54,7 @@ public class KafkaStreamsTopology {
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
                 .selectKey((_, user) -> user.getLastName())
                 .groupByKey(Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .aggregate(

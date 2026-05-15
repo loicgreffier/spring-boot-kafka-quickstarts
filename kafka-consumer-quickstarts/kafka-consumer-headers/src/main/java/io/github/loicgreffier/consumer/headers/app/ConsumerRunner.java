@@ -71,6 +71,8 @@ public class ConsumerRunner {
                 ConsumerRecords<String, String> messages = consumer.poll(Duration.ofMillis(1000));
                 log.info("Pulled {} records", messages.count());
 
+                long startTime = System.currentTimeMillis();
+
                 for (ConsumerRecord<String, String> message : messages) {
                     Header headerId = message.headers().lastHeader("id");
                     String headerIdValue = headerId != null ? new String(headerId.value(), StandardCharsets.UTF_8) : "";
@@ -80,7 +82,7 @@ public class ConsumerRunner {
                             headerMessage != null ? new String(headerMessage.value(), StandardCharsets.UTF_8) : "";
 
                     log.info(
-                            "Received offset = {}, partition = {}, key = {}, value = {}, header id = {}, "
+                            "Processing offset = {}, partition = {}, key = {}, value = {}, header id = {}, "
                                     + "header message = {}",
                             message.offset(),
                             message.partition(),
@@ -89,6 +91,9 @@ public class ConsumerRunner {
                             headerIdValue,
                             headerMessageValue);
                 }
+
+                long processingTimeMs = System.currentTimeMillis() - startTime;
+                log.info("Processing {} records took {} ms", messages.count(), processingTimeMs);
 
                 if (!messages.isEmpty()) {
                     doCommitSync();

@@ -45,11 +45,11 @@ public class KafkaStreamsTopology {
     public static void topology(StreamsBuilder streamsBuilder) {
         KStream<String, KafkaUser> streamOne = streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user));
+                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user));
 
         KStream<String, KafkaUser> streamTwo = streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user));
+                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user));
 
         streamOne.merge(streamTwo).to(USER_MERGE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }

@@ -44,7 +44,7 @@ public class KafkaStreamsTopology {
     public static void topology(StreamsBuilder streamsBuilder, String filePath) {
         streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
                 .print(Printed.<String, KafkaUser>toFile(filePath)
                         .withKeyValueMapper(KafkaStreamsTopology::toOutput)
                         .withLabel(USER_TOPIC));
@@ -64,7 +64,7 @@ public class KafkaStreamsTopology {
      * @return The formatted string.
      */
     private static String toOutput(String key, KafkaUser kafkaUser) {
-        return "Received key = %s, value = %s".formatted(key, kafkaUser);
+        return "Processing key = %s, value = %s".formatted(key, kafkaUser);
     }
 
     /** Private constructor. */

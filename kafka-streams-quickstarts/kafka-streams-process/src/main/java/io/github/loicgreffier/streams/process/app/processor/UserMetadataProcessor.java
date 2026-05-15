@@ -38,7 +38,7 @@ public class UserMetadataProcessor extends ContextualProcessor<String, KafkaUser
      */
     @Override
     public void process(Record<String, KafkaUser> message) {
-        log.info("Received key = {}, value = {}", message.key(), message.value());
+        log.info("Processing key = {}, value = {}", message.key(), message.value());
 
         Optional<RecordMetadata> recordMetadata = context().recordMetadata();
         KafkaUserMetadata newValue = KafkaUserMetadata.newBuilder()

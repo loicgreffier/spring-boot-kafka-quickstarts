@@ -40,7 +40,7 @@ public class KafkaStreamsTopology {
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .foreach((key, user) -> log.info("Received key = {}, value = {}", key, user));
+                .foreach((key, user) -> log.info("Processing key = {}, value = {}", key, user));
     }
 
     /** Private constructor. */

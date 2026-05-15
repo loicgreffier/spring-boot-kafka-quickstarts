@@ -61,7 +61,7 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
      */
     @Override
     public void process(Record<String, KafkaUser> message) {
-        log.info("Received key = {}, value = {}", message.key(), message.value());
+        log.info("Processing key = {}, value = {}", message.key(), message.value());
 
         String key = message.value().getNationality().toString();
         Long count = countNationalityStore.putIfAbsent(key, 1L);

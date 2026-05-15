@@ -63,7 +63,7 @@ public class KafkaStreamsTopology {
     public static void topology(StreamsBuilder streamsBuilder) {
         Map<String, KStream<String, KafkaUser>> branches = streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
                 .split(Named.as("BRANCH_"))
                 .branch(
                         (_, value) -> value.getLastName().startsWith("S"),

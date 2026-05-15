@@ -70,15 +70,20 @@ public class ConsumerRunner {
                 ConsumerRecords<String, GenericRecord> messages = consumer.poll(Duration.ofMillis(1000));
                 log.info("Pulled {} records", messages.count());
 
+                long startTime = System.currentTimeMillis();
+
                 for (ConsumerRecord<String, GenericRecord> message : messages) {
                     log.info(
-                            "Received offset = {}, partition = {}, key = {}, firstName = {}, lastName = {}",
+                            "Processing offset = {}, partition = {}, key = {}, firstName = {}, lastName = {}",
                             message.offset(),
                             message.partition(),
                             message.key(),
                             message.value().get("firstName"),
                             message.value().get("lastName"));
                 }
+
+                long processingTimeMs = System.currentTimeMillis() - startTime;
+                log.info("Processing {} records took {} ms", messages.count(), processingTimeMs);
 
                 if (!messages.isEmpty()) {
                     doCommitSync();

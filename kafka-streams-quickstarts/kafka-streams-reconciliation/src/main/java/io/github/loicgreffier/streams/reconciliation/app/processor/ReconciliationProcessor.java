@@ -79,7 +79,7 @@ public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, S
      */
     @Override
     public void process(Record<String, T> message) {
-        log.info("Received record {}", message.value().getClass().getSimpleName());
+        log.info("Processing record {}", message.value().getClass().getSimpleName());
 
         String customerId = message.key();
         KafkaReconciliation reconciliation = reconciliationStore.get(customerId);

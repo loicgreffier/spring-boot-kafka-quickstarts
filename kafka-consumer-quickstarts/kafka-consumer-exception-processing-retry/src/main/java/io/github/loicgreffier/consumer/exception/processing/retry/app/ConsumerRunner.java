@@ -102,9 +102,11 @@ public class ConsumerRunner {
                     consumer.resume(consumer.assignment());
                 }
 
+                long startTime = System.currentTimeMillis();
+
                 for (ConsumerRecord<String, String> message : messages) {
                     log.info(
-                            "Received offset = {}, partition = {}, key = {}, value = {}",
+                            "Processing offset = {}, partition = {}, key = {}, value = {}",
                             message.offset(),
                             message.partition(),
                             message.key(),
@@ -124,6 +126,9 @@ public class ConsumerRunner {
 
                     updateOffsetsPosition(message);
                 }
+
+                long processingTimeMs = System.currentTimeMillis() - startTime;
+                log.info("Processing {} records took {} ms", messages.count(), processingTimeMs);
 
                 if (!messages.isEmpty() && !isPaused()) {
                     doCommitSync();

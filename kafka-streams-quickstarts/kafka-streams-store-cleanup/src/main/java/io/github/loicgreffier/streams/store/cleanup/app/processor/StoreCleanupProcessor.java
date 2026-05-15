@@ -64,7 +64,7 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaUser
             return;
         }
 
-        log.info("Received key = {}, value = {}", message.key(), message.value());
+        log.info("Processing key = {}, value = {}", message.key(), message.value());
         userStore.put(message.key(), message.value());
     }
 

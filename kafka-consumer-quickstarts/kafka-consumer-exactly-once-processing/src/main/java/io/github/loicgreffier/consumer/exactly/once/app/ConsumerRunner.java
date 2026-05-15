@@ -93,20 +93,22 @@ public class ConsumerRunner {
                     log.info("Begin transaction");
                     producer.beginTransaction();
 
+                    long startTime = System.currentTimeMillis();
+
                     for (ConsumerRecord<String, KafkaUser> message : messages) {
                         log.info(
-                                "Received offset = {}, partition = {}, key = {}, value = {}",
+                                "Processing offset = {}, partition = {}, key = {}, value = {}",
                                 message.offset(),
                                 message.partition(),
                                 message.key(),
                                 message.value());
 
-                        // Any processing (like an external system call here).
-                        // Here the processing is simply converting the message to uppercase.
-                        // If any error occurs in the middle of the batch processing, then all
-                        // messages sent are aborted. Without transactions, we would have no way
-                        // to identify a processing failure and abort, so when restarting the same events would be
-                        // delivered twice.
+                        // This is where any processing (e.g., an external system call) would take place.
+                        // In this example, the processing simply converts the message to uppercase.
+                        // If an error occurs during batch processing, all sent messages are aborted.
+                        // Without transactions, there would be no way to detect a processing failure
+                        // and abort, so upon restart the same events would be delivered again
+                        // (resulting in at-least-once delivery).
                         KafkaUser kafkaUser = message.value();
                         kafkaUser.setFirstName(kafkaUser.getFirstName().toUpperCase());
                         kafkaUser.setLastName(kafkaUser.getLastName().toUpperCase());
@@ -128,6 +130,9 @@ public class ConsumerRunner {
                             }
                         });
                     }
+
+                    long processingTimeMs = System.currentTimeMillis() - startTime;
+                    log.info("Processing {} records took {} ms", messages.count(), processingTimeMs);
 
                     producer.sendOffsetsToTransaction(offsetsToCommit(), consumer.groupMetadata());
 

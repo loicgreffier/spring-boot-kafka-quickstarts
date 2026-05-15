@@ -69,14 +69,19 @@ public class ConsumerRunner {
                 ConsumerRecords<String, KafkaUser> messages = consumer.poll(Duration.ofMillis(1000));
                 log.info("Pulled {} records", messages.count());
 
+                long startTime = System.currentTimeMillis();
+
                 for (ConsumerRecord<String, KafkaUser> message : messages) {
                     log.info(
-                            "Received offset = {}, partition = {}, key = {}, value = {}",
+                            "Processing offset = {}, partition = {}, key = {}, value = {}",
                             message.offset(),
                             message.partition(),
                             message.key(),
                             message.value());
                 }
+
+                long processingTimeMs = System.currentTimeMillis() - startTime;
+                log.info("Processing {} records took {} ms", messages.count(), processingTimeMs);
 
                 if (!messages.isEmpty()) {
                     doCommitSync();

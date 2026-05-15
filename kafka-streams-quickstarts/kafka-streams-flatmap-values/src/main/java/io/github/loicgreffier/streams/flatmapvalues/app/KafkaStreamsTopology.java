@@ -44,7 +44,7 @@ public class KafkaStreamsTopology {
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, KafkaUser>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Received key = {}, value = {}", key, user))
+                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
                 .flatMapValues(user -> Arrays.asList(user.getFirstName(), user.getLastName()))
                 .to(USER_FLATMAP_VALUES_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
     }
