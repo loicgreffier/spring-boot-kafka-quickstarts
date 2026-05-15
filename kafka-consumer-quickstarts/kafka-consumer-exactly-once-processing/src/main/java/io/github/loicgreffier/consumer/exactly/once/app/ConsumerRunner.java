@@ -143,7 +143,7 @@ public class ConsumerRunner {
         } catch (WakeupException _) {
             log.info("Wake up signal received");
         } catch (Exception e) {
-            log.info("Abort transaction", e);
+            log.error("Abort transaction", e);
             producer.abortTransaction();
         } finally {
             log.info("Closing consumer");
