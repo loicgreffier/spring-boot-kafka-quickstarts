@@ -18,9 +18,6 @@
  */
 package io.github.loicgreffier.streams.producer.order.constant;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 /** This abstract class represents name constants for Kafka records. */
 public abstract class Name {
     public static final Item[] ITEMS = new Item[] {
@@ -76,12 +73,13 @@ public abstract class Name {
         new Item("Bottled Water", 0.99)
     };
 
-    @Getter
-    @AllArgsConstructor
-    public static class Item {
-        private String name;
-        private double price;
-    }
+    /**
+     * This record represents an item with a name and a price.
+     *
+     * @param name The item name.
+     * @param price The item price.
+     */
+    public record Item(String name, double price) {}
 
     /** Private constructor. */
     private Name() {}

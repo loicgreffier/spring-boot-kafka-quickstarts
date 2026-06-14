@@ -28,7 +28,6 @@ import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.producer.avro.specific.app.ProducerRunner;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.Serializer;
@@ -38,10 +37,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 @ExtendWith(MockitoExtension.class)
 class KafkaProducerAvroSpecificApplicationTest {
+    private static final Logger log = LoggerFactory.getLogger(KafkaProducerAvroSpecificApplicationTest.class);
+
     private final Serializer<KafkaUser> serializer = (topic, kafkaUser) -> {
         KafkaAvroSerializer inner = new KafkaAvroSerializer();
         inner.configure(Map.of(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://"), false);

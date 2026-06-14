@@ -24,7 +24,6 @@ import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.USER_T
 import io.github.loicgreffier.avro.KafkaUser;
 import java.time.Duration;
 import java.util.*;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -33,6 +32,8 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -42,9 +43,10 @@ import org.springframework.stereotype.Component;
  * This class represents a Kafka consumer runner that subscribes to a specific topic, processes Kafka records, and sends
  * the transformed records back to a topic.
  */
-@Slf4j
 @Component
 public class ConsumerRunner {
+    private static final Logger log = LoggerFactory.getLogger(ConsumerRunner.class);
+
     private final Consumer<String, KafkaUser> consumer;
     private final Producer<String, KafkaUser> producer;
 

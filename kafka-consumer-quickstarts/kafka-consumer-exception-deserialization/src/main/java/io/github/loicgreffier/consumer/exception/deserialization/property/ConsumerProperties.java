@@ -21,12 +21,10 @@ package io.github.loicgreffier.consumer.exception.deserialization.property;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /** This class represents Kafka consumer properties configuration. */
-@Getter
 @Configuration
 @ConfigurationProperties(prefix = "kafka")
 public class ConsumerProperties {
@@ -41,5 +39,14 @@ public class ConsumerProperties {
         Properties config = new Properties();
         config.putAll(properties);
         return config;
+    }
+
+    /**
+     * Get the Kafka properties.
+     *
+     * @return The Kafka properties.
+     */
+    public Map<String, String> getProperties() {
+        return properties;
     }
 }

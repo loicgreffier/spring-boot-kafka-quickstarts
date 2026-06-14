@@ -21,21 +21,23 @@ package io.github.loicgreffier.streams.mapvalues.app;
 import io.github.loicgreffier.streams.mapvalues.property.KafkaStreamsProperties;
 import io.github.loicgreffier.streams.mapvalues.serdes.SerdesUtils;
 import jakarta.annotation.PreDestroy;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 /** This class represents a Kafka Streams runner that runs a topology. */
-@Slf4j
 @Component
 public class KafkaStreamsRunner {
+    private static final Logger log = LoggerFactory.getLogger(KafkaStreamsRunner.class);
+
     private final ConfigurableApplicationContext applicationContext;
     private final KafkaStreamsProperties properties;
     private KafkaStreams kafkaStreams;

@@ -19,15 +19,17 @@
 package io.github.loicgreffier.streams.store.keyvalue.app.processor;
 
 import io.github.loicgreffier.avro.KafkaUser;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** This class represents a processor that puts the messages in a key-value store. */
-@Slf4j
 public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUser> {
+    private static final Logger log = LoggerFactory.getLogger(PutInStoreProcessor.class);
+
     private final String storeName;
     private KeyValueStore<String, KafkaUser> keyValueStore;
 

@@ -19,14 +19,15 @@
 package io.github.loicgreffier.streams.exception.handler.deserialization.error;
 
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.streams.errors.DeserializationExceptionHandler;
 import org.apache.kafka.streams.errors.ErrorHandlerContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Custom deserialization exception handler. */
-@Slf4j
 public class CustomDeserializationExceptionHandler implements DeserializationExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(CustomDeserializationExceptionHandler.class);
 
     @Override
     public Response handleError(

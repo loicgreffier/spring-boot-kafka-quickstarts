@@ -28,7 +28,6 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -37,15 +36,18 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /** This class represents a Kafka consumer runner that subscribes to a specific topic and processes Kafka records. */
-@Slf4j
 @Component
 public class ConsumerRunner {
+    private static final Logger log = LoggerFactory.getLogger(ConsumerRunner.class);
+
     private final Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
     private final Consumer<String, String> consumer;
     private final ExternalService externalService;

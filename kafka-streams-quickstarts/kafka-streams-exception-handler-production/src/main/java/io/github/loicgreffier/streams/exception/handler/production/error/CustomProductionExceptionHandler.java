@@ -19,15 +19,16 @@
 package io.github.loicgreffier.streams.exception.handler.production.error;
 
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.RecordTooLargeException;
 import org.apache.kafka.streams.errors.ErrorHandlerContext;
 import org.apache.kafka.streams.errors.ProductionExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Custom production exception handler. */
-@Slf4j
 public class CustomProductionExceptionHandler implements ProductionExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(CustomProductionExceptionHandler.class);
 
     @Override
     public Response handleError(

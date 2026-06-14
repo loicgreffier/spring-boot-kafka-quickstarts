@@ -24,7 +24,6 @@ import io.github.loicgreffier.avro.KafkaUser;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
@@ -32,10 +31,13 @@ import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** This class represents a processor that counts the number of users by nationality. */
-@Slf4j
 public class CountNationalityProcessor extends ContextualProcessor<String, KafkaUser, String, Long> {
+    private static final Logger log = LoggerFactory.getLogger(CountNationalityProcessor.class);
+
     private KeyValueStore<String, Long> countNationalityStore;
 
     /**

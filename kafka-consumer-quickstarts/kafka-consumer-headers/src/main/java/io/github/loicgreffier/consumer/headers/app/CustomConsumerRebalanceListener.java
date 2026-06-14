@@ -19,16 +19,18 @@
 package io.github.loicgreffier.consumer.headers.app;
 
 import java.util.Collection;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.common.TopicPartition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a custom Kafka consumer rebalance listener that handles partition revocation, assignment, and
  * loss events.
  */
-@Slf4j
 public class CustomConsumerRebalanceListener implements ConsumerRebalanceListener {
+    private static final Logger log = LoggerFactory.getLogger(CustomConsumerRebalanceListener.class);
+
     /**
      * Called when partitions are revoked from the consumer.
      *

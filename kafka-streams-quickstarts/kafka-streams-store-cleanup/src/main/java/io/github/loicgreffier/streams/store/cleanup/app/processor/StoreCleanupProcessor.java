@@ -22,7 +22,6 @@ import static io.github.loicgreffier.streams.store.cleanup.constant.StateStore.U
 
 import io.github.loicgreffier.avro.KafkaUser;
 import java.time.Duration;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
@@ -30,10 +29,13 @@ import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.KeyValueStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** This class represents a processor that fills and cleans a state store. */
-@Slf4j
 public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUser> {
+    private static final Logger log = LoggerFactory.getLogger(StoreCleanupProcessor.class);
+
     private KeyValueStore<String, KafkaUser> userStore;
 
     /**

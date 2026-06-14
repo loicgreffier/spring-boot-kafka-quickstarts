@@ -27,7 +27,6 @@ import io.github.loicgreffier.streams.store.keyvalue.timestamped.app.processor.P
 import io.github.loicgreffier.streams.store.keyvalue.timestamped.serdes.SerdesUtils;
 import java.util.Collections;
 import java.util.Set;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
@@ -36,10 +35,12 @@ import org.apache.kafka.streams.processor.api.ProcessorSupplier;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
 import org.apache.kafka.streams.state.TimestampedKeyValueStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Kafka Streams topology. */
-@Slf4j
 public class KafkaStreamsTopology {
+    private static final Logger log = LoggerFactory.getLogger(KafkaStreamsTopology.class);
 
     /**
      * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} and processes the records using

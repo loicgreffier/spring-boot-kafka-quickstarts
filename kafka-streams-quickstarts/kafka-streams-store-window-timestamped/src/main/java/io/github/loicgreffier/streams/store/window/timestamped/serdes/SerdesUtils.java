@@ -20,12 +20,10 @@ package io.github.loicgreffier.streams.store.window.timestamped.serdes;
 
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import java.util.Map;
-import lombok.Setter;
 import org.apache.avro.specific.SpecificRecord;
 
 /** Utility class for Serdes. */
 public class SerdesUtils {
-    @Setter
     private static Map<String, String> serdesConfig;
 
     /**
@@ -38,6 +36,15 @@ public class SerdesUtils {
         SpecificAvroSerde<T> serdes = new SpecificAvroSerde<>();
         serdes.configure(serdesConfig, false);
         return serdes;
+    }
+
+    /**
+     * Set the Serdes configuration.
+     *
+     * @param serdesConfig The Serdes configuration.
+     */
+    public static void setSerdesConfig(Map<String, String> serdesConfig) {
+        SerdesUtils.serdesConfig = serdesConfig;
     }
 
     /** Private constructor. */

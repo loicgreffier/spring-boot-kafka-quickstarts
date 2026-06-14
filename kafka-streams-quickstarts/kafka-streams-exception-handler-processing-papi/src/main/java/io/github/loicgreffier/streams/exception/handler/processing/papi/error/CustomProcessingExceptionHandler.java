@@ -19,14 +19,16 @@
 package io.github.loicgreffier.streams.exception.handler.processing.papi.error;
 
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.errors.ErrorHandlerContext;
 import org.apache.kafka.streams.errors.ProcessingExceptionHandler;
 import org.apache.kafka.streams.processor.api.Record;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Custom processing exception handler. */
-@Slf4j
 public class CustomProcessingExceptionHandler implements ProcessingExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(CustomProcessingExceptionHandler.class);
+
     @Override
     public Response handleError(ErrorHandlerContext context, Record<?, ?> message, Exception exception) {
         log.warn(

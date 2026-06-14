@@ -23,25 +23,25 @@ import static io.github.loicgreffier.producer.transaction.constant.Topic.SECOND_
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.AuthorizationException;
 import org.apache.kafka.common.errors.OutOfOrderSequenceException;
 import org.apache.kafka.common.errors.ProducerFencedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /** This class represents a Kafka producer runner that sends records to a specific topic. */
-@Slf4j
 @Component
 public class ProducerRunner {
+    private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
+
     private final Producer<String, String> producer;
 
-    @Setter
     private boolean stopped = false;
 
     /**
@@ -117,5 +117,14 @@ public class ProducerRunner {
 
             i++;
         }
+    }
+
+    /**
+     * Set whether the runner is stopped.
+     *
+     * @param stopped {@code true} to stop the runner; {@code false} otherwise.
+     */
+    public void setStopped(boolean stopped) {
+        this.stopped = stopped;
     }
 }

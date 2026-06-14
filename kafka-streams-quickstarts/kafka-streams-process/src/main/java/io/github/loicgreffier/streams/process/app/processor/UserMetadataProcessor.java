@@ -22,14 +22,15 @@ import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.avro.KafkaUserMetadata;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
 import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.processor.api.RecordMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** This class represents a processor that adds metadata to the message and changes the key. */
-@Slf4j
 public class UserMetadataProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUserMetadata> {
+    private static final Logger log = LoggerFactory.getLogger(UserMetadataProcessor.class);
 
     /**
      * Process the message by adding metadata to the message and changing the key. The message is then forwarded.

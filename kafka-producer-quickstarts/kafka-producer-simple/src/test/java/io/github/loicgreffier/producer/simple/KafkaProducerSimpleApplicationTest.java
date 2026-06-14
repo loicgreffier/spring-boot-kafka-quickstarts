@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.github.loicgreffier.producer.simple.app.ProducerRunner;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -32,10 +31,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 @ExtendWith(MockitoExtension.class)
 class KafkaProducerSimpleApplicationTest {
+    private static final Logger log = LoggerFactory.getLogger(KafkaProducerSimpleApplicationTest.class);
+
     @Spy
     private MockProducer<String, String> mockProducer =
             new MockProducer<>(true, null, new StringSerializer(), new StringSerializer());

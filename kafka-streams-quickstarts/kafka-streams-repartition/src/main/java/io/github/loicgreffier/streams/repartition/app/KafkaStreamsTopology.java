@@ -22,15 +22,16 @@ import static io.github.loicgreffier.streams.repartition.constant.Topic.USER_TOP
 
 import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.streams.repartition.serdes.SerdesUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Repartitioned;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Kafka Streams topology. */
-@Slf4j
 public class KafkaStreamsTopology {
+    private static final Logger log = LoggerFactory.getLogger(KafkaStreamsTopology.class);
 
     /**
      * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} and repartitions the stream

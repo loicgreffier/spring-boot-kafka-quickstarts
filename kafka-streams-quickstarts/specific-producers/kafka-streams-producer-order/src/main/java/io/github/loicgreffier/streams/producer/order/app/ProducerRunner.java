@@ -27,18 +27,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /** This class represents a Kafka producer runner that sends records to a specific topic. */
-@Slf4j
 @Component
 public class ProducerRunner {
+    private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
+
     private final Random random = new Random();
     private final Producer<String, KafkaOrder> producer;
 
@@ -102,8 +104,8 @@ public class ProducerRunner {
 
         for (int i = 0; i < itemCount; i++) {
             Name.Item item = ITEMS[random.nextInt(ITEMS.length)];
-            selectedItems.add(item.getName());
-            totalAmount += item.getPrice();
+            selectedItems.add(item.name());
+            totalAmount += item.price();
         }
 
         return KafkaOrder.newBuilder()

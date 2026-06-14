@@ -22,18 +22,20 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a custom Kafka consumer rebalance listener that handles partition revocation, assignment, and
  * loss events.
  */
-@Slf4j
 public class CustomConsumerRebalanceListener implements ConsumerRebalanceListener {
+    private static final Logger log = LoggerFactory.getLogger(CustomConsumerRebalanceListener.class);
+
     private final Consumer<String, String> consumer;
     private final Map<TopicPartition, OffsetAndMetadata> offsets;
 

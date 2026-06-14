@@ -19,16 +19,18 @@
 package io.github.loicgreffier.streams.store.window.timestamped.app.processor;
 
 import io.github.loicgreffier.avro.KafkaUser;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
 import org.apache.kafka.streams.state.TimestampedWindowStore;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** This class represents a processor that puts the messages in a timestamped window store. */
-@Slf4j
 public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUser> {
+    private static final Logger log = LoggerFactory.getLogger(PutInStoreProcessor.class);
+
     private final String storeName;
     private TimestampedWindowStore<String, KafkaUser> timestampedWindowStore;
 

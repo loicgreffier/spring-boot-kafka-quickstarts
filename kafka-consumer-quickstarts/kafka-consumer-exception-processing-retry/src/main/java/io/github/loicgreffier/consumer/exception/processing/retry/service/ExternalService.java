@@ -20,15 +20,17 @@ package io.github.loicgreffier.consumer.exception.processing.retry.service;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /** This class represents an external service that is simulated to be called from the Kafka consumer. */
-@Slf4j
 @Service
 public class ExternalService {
+    private static final Logger log = LoggerFactory.getLogger(ExternalService.class);
+
     private final Random random = new Random();
 
     @Value("${failureRate}")
