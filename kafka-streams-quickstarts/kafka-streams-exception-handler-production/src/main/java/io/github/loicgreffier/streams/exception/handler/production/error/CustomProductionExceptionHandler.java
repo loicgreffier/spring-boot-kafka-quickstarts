@@ -30,6 +30,14 @@ import org.slf4j.LoggerFactory;
 public class CustomProductionExceptionHandler implements ProductionExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(CustomProductionExceptionHandler.class);
 
+    /**
+     * Handles a production exception.
+     *
+     * @param context The error handler context.
+     * @param message The record that failed to be produced.
+     * @param exception The exception that occurred.
+     * @return The response indicating whether to continue or fail processing.
+     */
     @Override
     public Response handleError(
             ErrorHandlerContext context, ProducerRecord<byte[], byte[]> message, Exception exception) {
@@ -56,6 +64,15 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
         return Response.fail();
     }
 
+    /**
+     * Handles a serialization exception by resuming processing.
+     *
+     * @param context The error handler context.
+     * @param message The record that failed to be serialized.
+     * @param exception The exception that occurred.
+     * @param origin The origin of the serialization exception.
+     * @return The response indicating whether to continue or fail processing.
+     */
     @Override
     public Response handleSerializationError(
             ErrorHandlerContext context,
@@ -76,6 +93,11 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
         return Response.resume();
     }
 
+    /**
+     * Configures the handler.
+     *
+     * @param configs The configuration properties.
+     */
     @Override
     public void configure(Map<String, ?> configs) {
         // Do nothing

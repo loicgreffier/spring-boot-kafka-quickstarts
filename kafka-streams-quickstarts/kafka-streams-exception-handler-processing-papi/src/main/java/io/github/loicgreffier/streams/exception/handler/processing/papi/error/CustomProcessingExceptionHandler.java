@@ -29,6 +29,14 @@ import org.slf4j.LoggerFactory;
 public class CustomProcessingExceptionHandler implements ProcessingExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(CustomProcessingExceptionHandler.class);
 
+    /**
+     * Handles a processing exception.
+     *
+     * @param context The error handler context.
+     * @param message The record being processed when the exception occurred.
+     * @param exception The exception that occurred.
+     * @return The response indicating whether to continue or fail processing.
+     */
     @Override
     public Response handleError(ErrorHandlerContext context, Record<?, ?> message, Exception exception) {
         log.warn(
@@ -48,6 +56,11 @@ public class CustomProcessingExceptionHandler implements ProcessingExceptionHand
         return Response.fail();
     }
 
+    /**
+     * Configures the handler.
+     *
+     * @param map The configuration properties.
+     */
     @Override
     public void configure(Map<String, ?> map) {
         // Do nothing

@@ -29,6 +29,14 @@ import org.slf4j.LoggerFactory;
 public class CustomDeserializationExceptionHandler implements DeserializationExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(CustomDeserializationExceptionHandler.class);
 
+    /**
+     * Handles a deserialization exception by resuming processing.
+     *
+     * @param context The error handler context.
+     * @param message The record that failed to be deserialized.
+     * @param exception The exception that occurred.
+     * @return The response indicating whether to continue or fail processing.
+     */
     @Override
     public Response handleError(
             ErrorHandlerContext context, ConsumerRecord<byte[], byte[]> message, Exception exception) {
@@ -43,6 +51,11 @@ public class CustomDeserializationExceptionHandler implements DeserializationExc
         return Response.resume();
     }
 
+    /**
+     * Configures the handler.
+     *
+     * @param configs The configuration properties.
+     */
     @Override
     public void configure(Map<String, ?> configs) {
         // Do nothing
