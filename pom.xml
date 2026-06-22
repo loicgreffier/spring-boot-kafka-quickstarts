@@ -27,7 +27,7 @@
         <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
         <java.version>25</java.version>
         <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
-        <kafka-avro-serializer.version>8.2.1</kafka-avro-serializer.version>
+        <kafka-avro-serializer.version>8.3.0</kafka-avro-serializer.version>
         <kafka-streams-avro-serde.version>8.2.1</kafka-streams-avro-serde.version>
         <kafka.version>4.3.0</kafka.version>
         <palantir.version>2.90.0</palantir.version>
