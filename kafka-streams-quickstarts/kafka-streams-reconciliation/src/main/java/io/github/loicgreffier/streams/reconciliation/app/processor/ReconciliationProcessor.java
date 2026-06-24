@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, String, KafkaReconciliation> {
     private static final Logger log = LoggerFactory.getLogger(ReconciliationProcessor.class);
-
     private KeyValueStore<String, KafkaReconciliation> reconciliationStore;
 
     /**

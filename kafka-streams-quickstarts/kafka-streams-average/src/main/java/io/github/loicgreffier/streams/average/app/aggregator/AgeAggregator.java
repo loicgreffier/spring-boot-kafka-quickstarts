@@ -22,6 +22,7 @@ import io.github.loicgreffier.avro.KafkaUser;
 import io.github.loicgreffier.avro.KafkaUserAverageAge;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import org.apache.kafka.streams.kstream.Aggregator;
 
@@ -39,7 +40,7 @@ public class AgeAggregator implements Aggregator<String, KafkaUser, KafkaUserAve
     public KafkaUserAverageAge apply(String key, KafkaUser kafkaUser, KafkaUserAverageAge aggregate) {
         aggregate.setCount(aggregate.getCount() + 1);
 
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = LocalDate.now(ZoneId.systemDefault());
         LocalDate birthDate = LocalDate.ofInstant(kafkaUser.getBirthDate(), ZoneOffset.UTC);
         aggregate.setAgeSum(
                 aggregate.getAgeSum() + Period.between(birthDate, currentDate).getYears());

@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 /** This class represents a processor that puts the messages in a key-value store. */
 public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUser> {
     private static final Logger log = LoggerFactory.getLogger(PutInStoreProcessor.class);
-
     private final String storeName;
     private KeyValueStore<String, KafkaUser> keyValueStore;
 

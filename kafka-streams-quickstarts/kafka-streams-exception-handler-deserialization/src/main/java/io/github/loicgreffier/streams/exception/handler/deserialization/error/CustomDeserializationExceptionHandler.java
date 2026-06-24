@@ -40,13 +40,13 @@ public class CustomDeserializationExceptionHandler implements DeserializationExc
     @Override
     public Response handleError(
             ErrorHandlerContext context, ConsumerRecord<byte[], byte[]> message, Exception exception) {
-        log.warn(
-                "Exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
-                context.processorNodeId(),
-                context.topic(),
-                context.partition(),
-                context.offset(),
-                exception);
+        log.atWarn()
+                .addArgument(context.processorNodeId())
+                .addArgument(context.topic())
+                .addArgument(context.partition())
+                .addArgument(context.offset())
+                .setCause(exception)
+                .log("Exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}");
 
         return Response.resume();
     }

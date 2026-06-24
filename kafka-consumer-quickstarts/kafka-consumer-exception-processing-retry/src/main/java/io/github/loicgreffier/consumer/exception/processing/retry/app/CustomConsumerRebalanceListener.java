@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
  */
 public class CustomConsumerRebalanceListener implements ConsumerRebalanceListener {
     private static final Logger log = LoggerFactory.getLogger(CustomConsumerRebalanceListener.class);
-
     private final Consumer<String, String> consumer;
     private final Map<TopicPartition, OffsetAndMetadata> offsets;
 

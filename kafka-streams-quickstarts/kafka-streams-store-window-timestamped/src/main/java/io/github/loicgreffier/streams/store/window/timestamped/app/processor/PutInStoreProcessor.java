@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 /** This class represents a processor that puts the messages in a timestamped window store. */
 public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUser> {
     private static final Logger log = LoggerFactory.getLogger(PutInStoreProcessor.class);
-
     private final String storeName;
     private TimestampedWindowStore<String, KafkaUser> timestampedWindowStore;
 

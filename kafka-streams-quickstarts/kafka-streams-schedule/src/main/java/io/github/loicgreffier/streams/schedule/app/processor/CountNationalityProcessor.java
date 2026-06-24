@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
 /** This class represents a processor that counts the number of users by nationality. */
 public class CountNationalityProcessor extends ContextualProcessor<String, KafkaUser, String, Long> {
     private static final Logger log = LoggerFactory.getLogger(CountNationalityProcessor.class);
-
     private KeyValueStore<String, Long> countNationalityStore;
 
     /**

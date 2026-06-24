@@ -42,24 +42,26 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
     public Response handleError(
             ErrorHandlerContext context, ProducerRecord<byte[], byte[]> message, Exception exception) {
         if (exception instanceof RecordTooLargeException) {
-            log.warn(
-                    "Record too large exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
-                    context.processorNodeId(),
-                    context.topic(),
-                    context.partition(),
-                    context.offset(),
-                    exception);
+            log.atWarn()
+                    .addArgument(context.processorNodeId())
+                    .addArgument(context.topic())
+                    .addArgument(context.partition())
+                    .addArgument(context.offset())
+                    .setCause(exception)
+                    .log(
+                            "Record too large exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}");
 
             return Response.resume();
         }
 
-        log.warn(
-                "Exception caught during production for processorNodeId = {}, topic = {}, partition = {}, offset = {}",
-                context.processorNodeId(),
-                context.topic(),
-                context.partition(),
-                context.offset(),
-                exception);
+        log.atWarn()
+                .addArgument(context.processorNodeId())
+                .addArgument(context.topic())
+                .addArgument(context.partition())
+                .addArgument(context.offset())
+                .setCause(exception)
+                .log(
+                        "Exception caught during production for processorNodeId = {}, topic = {}, partition = {}, offset = {}");
 
         return Response.fail();
     }

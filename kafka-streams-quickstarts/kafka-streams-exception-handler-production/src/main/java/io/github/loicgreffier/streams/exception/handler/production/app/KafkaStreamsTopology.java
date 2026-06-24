@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 /** Kafka Streams topology. */
 public class KafkaStreamsTopology {
     private static final Logger log = LoggerFactory.getLogger(KafkaStreamsTopology.class);
-
     private static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ";
     private static final int ONE_MEBIBYTE = 1048576;
 

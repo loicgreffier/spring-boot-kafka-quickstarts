@@ -46,7 +46,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConsumerRunner {
     private static final Logger log = LoggerFactory.getLogger(ConsumerRunner.class);
-
     private final Consumer<String, KafkaUser> consumer;
     private final Producer<String, KafkaUser> producer;
 

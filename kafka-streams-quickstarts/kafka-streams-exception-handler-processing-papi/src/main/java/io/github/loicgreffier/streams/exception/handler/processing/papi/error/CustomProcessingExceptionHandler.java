@@ -39,15 +39,16 @@ public class CustomProcessingExceptionHandler implements ProcessingExceptionHand
      */
     @Override
     public Response handleError(ErrorHandlerContext context, Record<?, ?> message, Exception exception) {
-        log.warn(
-                "Exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}, key = {}, value = {}",
-                context.processorNodeId(),
-                context.topic(),
-                context.partition(),
-                context.offset(),
-                message != null ? message.key() : null,
-                message != null ? message.value() : null,
-                exception);
+        log.atWarn()
+                .addArgument(context.processorNodeId())
+                .addArgument(context.topic())
+                .addArgument(context.partition())
+                .addArgument(context.offset())
+                .addArgument(message != null ? message.key() : null)
+                .addArgument(message != null ? message.value() : null)
+                .setCause(exception)
+                .log(
+                        "Exception caught for processorNodeId = {}, topic = {}, partition = {}, offset = {}, key = {}, value = {}");
 
         if (exception instanceof IllegalArgumentException) {
             return Response.resume();

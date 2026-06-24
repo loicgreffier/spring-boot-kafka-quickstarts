@@ -41,7 +41,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaStreamsRunner {
     private static final Logger log = LoggerFactory.getLogger(KafkaStreamsRunner.class);
-
     private final ConfigurableApplicationContext applicationContext;
     private final KafkaStreamsProperties kafkaStreamsProperties;
     private final ApplicationProperties applicationProperties;

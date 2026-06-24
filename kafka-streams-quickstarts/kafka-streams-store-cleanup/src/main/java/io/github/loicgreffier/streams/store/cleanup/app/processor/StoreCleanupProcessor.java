@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 /** This class represents a processor that fills and cleans a state store. */
 public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUser> {
     private static final Logger log = LoggerFactory.getLogger(StoreCleanupProcessor.class);
-
     private KeyValueStore<String, KafkaUser> userStore;
 
     /**
