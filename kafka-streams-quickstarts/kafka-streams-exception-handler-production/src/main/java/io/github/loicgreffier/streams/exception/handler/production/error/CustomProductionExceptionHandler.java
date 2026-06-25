@@ -81,16 +81,16 @@ public class CustomProductionExceptionHandler implements ProductionExceptionHand
             ProducerRecord message,
             Exception exception,
             SerializationExceptionOrigin origin) {
-        log.warn(
-                "Exception caught during serialization for topic = {}, partition = {},"
-                        + " offset = {}, origin = {}, key = {}, value = {}",
-                context.topic(),
-                context.partition(),
-                context.offset(),
-                origin,
-                message.key(),
-                message.value(),
-                exception);
+        log.atWarn()
+                .addArgument(context.topic())
+                .addArgument(context.partition())
+                .addArgument(context.offset())
+                .addArgument(origin)
+                .addArgument(message.key())
+                .addArgument(message.value())
+                .setCause(exception)
+                .log("Exception caught during serialization for topic = {}, partition = {},"
+                        + " offset = {}, origin = {}, key = {}, value = {}");
 
         return Response.resume();
     }

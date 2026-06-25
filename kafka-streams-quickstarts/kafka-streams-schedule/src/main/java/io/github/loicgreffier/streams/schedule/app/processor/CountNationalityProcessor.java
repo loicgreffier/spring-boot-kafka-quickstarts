@@ -21,9 +21,10 @@ package io.github.loicgreffier.streams.schedule.app.processor;
 import static io.github.loicgreffier.streams.schedule.constant.StateStore.USER_SCHEDULE_STORE;
 
 import io.github.loicgreffier.avro.KafkaUser;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
@@ -62,7 +63,7 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
      */
     @Override
     public void process(Record<String, KafkaUser> message) {
-        log.info("Processing key = {}, value = {}", message.key(), message.value());
+        log.atInfo().addArgument(message.key()).addArgument(message.value()).log("Processing key = {}, value = {}");
 
         String key = message.value().getNationality().toString();
         Long count = countNationalityStore.putIfAbsent(key, 1L);
@@ -85,7 +86,11 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
             }
         }
 
-        log.info("All counters reset at {}", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(timestamp)));
+        log.atInfo()
+                .addArgument(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                        .withZone(ZoneId.systemDefault())
+                        .format(Instant.ofEpochMilli(timestamp)))
+                .log("All counters reset at {}");
     }
 
     /**
@@ -98,11 +103,13 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
             while (iterator.hasNext()) {
                 KeyValue<String, Long> keyValue = iterator.next();
                 context().forward(new Record<>(keyValue.key, keyValue.value, timestamp));
-                log.info(
-                        "{} users of {} nationality at {}",
-                        keyValue.value,
-                        keyValue.key,
-                        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(timestamp)));
+                log.atInfo()
+                        .addArgument(keyValue.value)
+                        .addArgument(keyValue.key)
+                        .addArgument(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                                .withZone(ZoneId.systemDefault())
+                                .format(Instant.ofEpochMilli(timestamp)))
+                        .log("{} users of {} nationality at {}");
             }
         }
     }
