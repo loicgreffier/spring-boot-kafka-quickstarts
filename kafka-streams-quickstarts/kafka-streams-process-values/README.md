@@ -6,7 +6,7 @@ It demonstrates the following:
 
 - How to use the Kafka Streams Processor API, including `processValues()`.
 - How to access and enrich records with metadata using the processor context.
-- Unit testing with the Topology Test Driver.
+- How to write unit tests with Topology Test Driver.
 
 ![topology.png](topology.png)
 

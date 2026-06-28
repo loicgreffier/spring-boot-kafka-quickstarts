@@ -5,7 +5,7 @@ This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` 
 It demonstrates the following:
 
 - How to reconcile data from two different topics, regardless of the order in which records arrive or how much time passes between them.
-- Unit testing using the Topology Test Driver.
+- How to write unit tests with Topology Test Driver.
 
 ![topology.png](topology.png)
 

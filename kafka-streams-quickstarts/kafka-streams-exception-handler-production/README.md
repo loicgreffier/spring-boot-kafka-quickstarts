@@ -6,7 +6,7 @@ It demonstrates the following:
 
 - How to use the Kafka Streams configuration `production.exception.handler` to handle production and serialization exceptions.
 - How to implement a custom production exception handler that handles a production exception by producing a record that is too large, and a serialization exception by producing a record with a new schema that breaks compatibility.
-- Unit testing using the Topology Test Driver.
+- How to write unit tests with Topology Test Driver.
 
 ![topology.png](topology.png)
 

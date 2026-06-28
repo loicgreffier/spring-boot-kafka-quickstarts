@@ -6,7 +6,7 @@ It groups all streams and aggregates users by last name.
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL, including `cogroup()`, `groupBy()`, `aggregate()`, `toStream()` and `peek()`.
-- Unit testing using the Topology Test Driver.
+- How to write unit tests with Topology Test Driver.
 
 ![topology.png](topology.png)
 

@@ -5,7 +5,7 @@ This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` 
 It demonstrates the following:
 
 - How to use the Kafka Streams configuration `errors.dead.letter.queue.topic.name` to make the default deserialization, processing, and production exception handlers route exceptions to the configured DLQ topic, as introduced by [KIP-1034](https://cwiki.apache.org/confluence/display/KAFKA/KIP-1034%3A+Dead+letter+queue+in+Kafka+Streams).
-- Unit testing using the Topology Test Driver.
+- How to write unit tests with Topology Test Driver.
 
 ![topology.png](topology.png)
 

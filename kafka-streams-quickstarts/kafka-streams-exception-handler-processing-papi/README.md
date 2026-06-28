@@ -6,7 +6,7 @@ It demonstrates the following:
 
 - How to use the Kafka Streams configuration `processing.exception.handler` to handle processing exceptions in the Processor API, as introduced by [KIP-1033](https://cwiki.apache.org/confluence/display/KAFKA/KIP-1033%3A+Add+Kafka+Streams+exception+handler+for+exceptions+occurring+during+processing).
 - How to implement a custom processing exception handler.
-- Unit testing using the Topology Test Driver.
+- How to write unit tests with Topology Test Driver.
 
 ![topology.png](topology.png)
 

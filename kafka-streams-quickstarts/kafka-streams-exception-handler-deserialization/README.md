@@ -6,7 +6,7 @@ It demonstrates the following:
 
 - How to use the Kafka Streams configuration `deserialization.exception.handler` to handle deserialization exceptions.
 - How to implement a custom deserialization exception handler.
-- Unit testing using the Topology Test Driver.
+- How to write unit tests with Topology Test Driver.
 
 ![topology.png](topology.png)
 

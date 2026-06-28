@@ -6,7 +6,7 @@ and joins them by last name within a 5-minute window, allowing a 1-minute grace 
 It demonstrates the following:
 
 - How to use the Kafka Streams DSL to join two `KStream` using `leftJoin()`, `selectKey()` and `peek()`.
-- Unit testing using the Topology Test Driver.
+- How to write unit tests with Topology Test Driver.
 
 ![topology.png](topology.png)
 

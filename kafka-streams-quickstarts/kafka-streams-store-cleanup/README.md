@@ -7,7 +7,7 @@ It demonstrates the following:
 - How to use the Kafka Streams Processor API, including `process()`, `addStateStore()` and `schedule()`.
 - How to use the processor context and schedule tasks based on stream time.
 - How to create and clean up a key-value store.
-- Unit testing using the Topology Test Driver.
+- How to write unit tests with Topology Test Driver.
 
 ![topology.png](topology.png)
 

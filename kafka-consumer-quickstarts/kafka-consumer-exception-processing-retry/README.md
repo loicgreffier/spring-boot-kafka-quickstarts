@@ -5,7 +5,7 @@ This module consumes records of type `<String, String>` from the `STRING_TOPIC` 
 It demonstrates the following:
 
 - How to use the Kafka Clients consumer API.
-- Unit testing with a mock consumer.
+- How to write unit tests with a mock consumer.
 
 ## Prerequisites
 

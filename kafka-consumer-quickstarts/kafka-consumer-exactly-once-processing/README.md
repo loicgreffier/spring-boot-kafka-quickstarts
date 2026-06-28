@@ -6,7 +6,7 @@ It demonstrates the following:
 
 - How to use the Kafka Clients consumer and producer APIs.
 - How to use Kafka transactions to achieve exactly-once processing.
-- Unit testing with a mock consumer.
+- How to write unit tests with a mock consumer.
 
 ## Prerequisites
 

@@ -6,7 +6,7 @@ It demonstrates the following:
 
 - How to use the Kafka Streams Processor API, including `process()` and `addStateStore()`.
 - How to create window stores and attach them to the topology.
-- Unit testing using the Topology Test Driver.
+- How to write unit tests with Topology Test Driver.
 
 ![topology.png](topology.png)
 

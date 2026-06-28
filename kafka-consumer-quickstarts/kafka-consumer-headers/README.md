@@ -6,7 +6,7 @@ It demonstrates the following:
 
 - How to use the Kafka Clients consumer API.
 - How to use headers in Kafka records.
-- Unit testing with a mock consumer.
+- How to write unit tests with a mock consumer.
 
 ## Prerequisites
 

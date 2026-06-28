@@ -7,7 +7,7 @@ It demonstrates the following:
 
 - How to use the Kafka Clients producer API.
 - How to use Kafka transactions.
-- Unit testing with a mock producer.
+- How to write unit tests with a mock producer.
 
 ## Prerequisites
 
