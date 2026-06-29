@@ -29,7 +29,7 @@
         <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
         <kafka-avro-serializer.version>8.3.0</kafka-avro-serializer.version>
         <kafka-streams-avro-serde.version>8.3.0</kafka-streams-avro-serde.version>
-        <kafka.version>4.3.0</kafka.version>
+        <kafka.version>4.3.1</kafka.version>
         <palantir.version>2.90.0</palantir.version>
         <sonar-maven-plugin.version>5.7.0.6970</sonar-maven-plugin.version>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
