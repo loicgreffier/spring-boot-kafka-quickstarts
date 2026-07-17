@@ -72,9 +72,9 @@ public class ConsumerRunner {
      *
      * <p>Transactions ensure that processed records are sent to the output topic along with the offsets of the
      * partitions that were processed. This guarantees exactly-once processing, meaning that for each record received,
-     * its processed results will be reflected once, even in the event of failures. Without transactions, processing
-     * could lead to duplicate records in the output topic if a failure occurs after sending the records but before
-     * committing the offsets.
+     * its processed results will be reflected once, even in the event of failures. Without transactions, a failure
+     * occurring after some records have been sent but before the offsets are committed could lead to duplicate
+     * records in the output topic, as the entire batch would be re-processed on restart.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
