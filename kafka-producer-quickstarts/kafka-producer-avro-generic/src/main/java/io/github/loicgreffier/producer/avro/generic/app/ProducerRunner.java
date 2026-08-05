@@ -43,10 +43,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
-
     private final Random random = new Random();
     private final Producer<String, GenericRecord> producer;
-
     private boolean stopped = false;
 
     /**
@@ -61,9 +59,10 @@ public class ProducerRunner {
     /**
      * Asynchronously starts the Kafka producer when the application is ready.
      *
-     * <p>The asynchronous annotation is used to run the producer in a separate thread and not block the main thread.
+     * <p>The {@code @Async} annotation is used to run the producer in a separate thread, ensuring it does not block the
+     * main thread.
      *
-     * <p>The Kafka producer produces generic Avro records to the USER_TOPIC topic.
+     * <p>The Kafka producer sends generic Avro records to the {@code USER_TOPIC} topic.
      *
      * @throws IOException if the schema file cannot be read
      * @throws InterruptedException if the thread is interrupted while sleeping

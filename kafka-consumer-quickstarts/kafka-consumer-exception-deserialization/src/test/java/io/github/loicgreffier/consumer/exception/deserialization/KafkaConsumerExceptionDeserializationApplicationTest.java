@@ -83,7 +83,7 @@ class KafkaConsumerExceptionDeserializationApplicationTest {
     }
 
     @Test
-    void shouldBreakCircuitOnDeserializationException() {
+    void shouldSkipRecordOnDeserializationException() {
         ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
                 USER_TOPIC,
                 0,

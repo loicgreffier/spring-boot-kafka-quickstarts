@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExternalService {
     private static final Logger log = LoggerFactory.getLogger(ExternalService.class);
-
     private final Random random = new Random();
 
     @Value("${failureRate}")
@@ -46,7 +45,9 @@ public class ExternalService {
         int duration = random.nextInt(1000);
 
         log.info(
-                "Simulating a call to an external system that will take {} for message {}", duration, message.offset());
+                "Simulating a call to an external system that will take {} ms for message {}",
+                duration,
+                message.offset());
 
         TimeUnit.MILLISECONDS.sleep(duration);
         if (random.nextInt(100) < failureRate) {

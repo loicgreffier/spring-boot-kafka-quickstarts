@@ -35,9 +35,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
-
     private final Producer<String, String> producer;
-
     private boolean stopped = false;
 
     /**

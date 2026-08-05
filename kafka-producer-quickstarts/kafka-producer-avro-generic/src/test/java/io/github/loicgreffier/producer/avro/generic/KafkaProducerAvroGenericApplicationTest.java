@@ -21,6 +21,7 @@ package io.github.loicgreffier.producer.avro.generic;
 import static io.github.loicgreffier.producer.avro.generic.constant.Topic.USER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
@@ -63,7 +64,9 @@ class KafkaProducerAvroGenericApplicationTest {
         Thread producerThread = new Thread(() -> {
             try {
                 producerRunner.run();
-            } catch (IOException | InterruptedException _) {
+            } catch (IOException e) {
+                fail(e);
+            } catch (InterruptedException _) {
                 Thread.currentThread().interrupt();
             }
         });

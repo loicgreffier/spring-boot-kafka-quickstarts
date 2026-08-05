@@ -41,7 +41,6 @@ public abstract class Name {
         "William",
         "David",
         "Joseph",
-        "Ella",
         "Sophia",
         "Isabella",
         "Mia",

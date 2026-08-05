@@ -47,7 +47,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConsumerRunner {
     private static final Logger log = LoggerFactory.getLogger(ConsumerRunner.class);
-
     private final Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
     private final Consumer<String, String> consumer;
     private final ExternalService externalService;
@@ -79,7 +78,7 @@ public class ConsumerRunner {
      * <ul>
      *   <li>Pause the affected topic-partitions.
      *   <li>Rewind to the offset of the failed record, since {@code poll()} automatically advances the offsets.
-     *   <li>Exit the loop without updating the offset position
+     *   <li>Exit the loop without updating the offset position.
      *   <li>Avoid committing offsets while paused, ensuring the failed record can be retried.
      * </ul>
      *
@@ -153,7 +152,7 @@ public class ConsumerRunner {
         return !consumer.paused().isEmpty();
     }
 
-    /** Rewinds the consumer the last saved offsets for each topic-partition. */
+    /** Rewinds the consumer to the last saved offsets for each topic-partition. */
     private void rewind() {
         if (offsets.isEmpty()) {
             String autoOffsetReset = properties

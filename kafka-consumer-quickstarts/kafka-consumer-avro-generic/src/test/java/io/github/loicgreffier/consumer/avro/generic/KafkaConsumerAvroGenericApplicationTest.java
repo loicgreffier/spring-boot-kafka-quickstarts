@@ -21,7 +21,7 @@ package io.github.loicgreffier.consumer.avro.generic;
 import static io.github.loicgreffier.consumer.avro.generic.constant.Topic.USER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 

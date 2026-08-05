@@ -49,9 +49,9 @@ public class KafkaStreamsTopology {
      * Builds the Kafka Streams topology.
      *
      * <p>This topology reads records from the {@code USER_TOPIC} topic, selects the last name of the user as the key,
-     * groups the records by key, and aggregates users by last name using 5-minute tumbling windows with a 1-minute
-     * grace period. A new key is generated with the window's start and end times. The aggregated results are written to
-     * the {@code USER_AGGREGATE_SLIDING_WINDOW_TOPIC} topic.
+     * groups the records by key, and aggregates users by last name using 5-minute sliding windows with a 1-minute grace
+     * period. A new key is generated with the window's start and end times. The aggregated results are written to the
+     * {@code USER_AGGREGATE_SLIDING_WINDOW_TOPIC} topic.
      *
      * <p>{@link org.apache.kafka.streams.kstream.SlidingWindows} are aligned to the record's timestamp. Each time a
      * record is processed, a new window is created. The window is bounded as follows:

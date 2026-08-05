@@ -10,13 +10,13 @@
     <artifactId>kafka-consumer-avro-generic</artifactId>
 
     <build>
-        <resources>
-            <resource>
+        <testResources>
+            <testResource>
                 <directory>src/test/avro</directory>
-            </resource>
-            <resource>
+            </testResource>
+            <testResource>
                 <directory>src/main/resources</directory>
-            </resource>
-        </resources>
+            </testResource>
+        </testResources>
     </build>
 </project>

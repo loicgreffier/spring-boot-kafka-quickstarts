@@ -34,4 +34,3 @@ This will start the following services in Docker:
 - Kafka Broker
 - Control Center
 - Producer Headers
-

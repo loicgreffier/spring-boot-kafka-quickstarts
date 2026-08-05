@@ -19,6 +19,7 @@
 package io.github.loicgreffier.producer.transaction;
 
 import static io.github.loicgreffier.producer.transaction.constant.Topic.FIRST_STRING_TOPIC;
+import static io.github.loicgreffier.producer.transaction.constant.Topic.SECOND_STRING_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -66,9 +67,9 @@ class KafkaProducerTransactionApplicationTest {
         assertEquals("1", firstSentRecord.key());
         assertEquals("Message 1", firstSentRecord.value());
 
-        ProducerRecord<String, String> secondSentRecord = mockProducer.history().getFirst();
+        ProducerRecord<String, String> secondSentRecord = mockProducer.history().getLast();
 
-        assertEquals(FIRST_STRING_TOPIC, secondSentRecord.topic());
+        assertEquals(SECOND_STRING_TOPIC, secondSentRecord.topic());
         assertEquals("1", secondSentRecord.key());
         assertEquals("Message 1", secondSentRecord.value());
 

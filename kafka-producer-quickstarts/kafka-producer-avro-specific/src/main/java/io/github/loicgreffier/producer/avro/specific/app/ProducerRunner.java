@@ -39,10 +39,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
-
     private final Random random = new Random();
     private final Producer<String, KafkaUser> producer;
-
     private boolean stopped = false;
 
     /**

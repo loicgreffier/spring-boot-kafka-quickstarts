@@ -39,9 +39,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
-
     private final Producer<String, String> producer;
-
     private boolean stopped = false;
 
     /**
@@ -108,8 +106,9 @@ public class ProducerRunner {
             } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException _) {
                 log.info("Closing producer");
                 producer.close();
+                stopped = true;
             } catch (Exception e) {
-                log.info("Abort transaction", e);
+                log.error("Abort transaction", e);
                 producer.abortTransaction();
             }
 

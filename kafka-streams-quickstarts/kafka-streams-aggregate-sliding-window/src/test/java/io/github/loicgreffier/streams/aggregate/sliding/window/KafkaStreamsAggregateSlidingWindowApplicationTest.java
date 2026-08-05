@@ -244,8 +244,9 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
         inputTopic.pipeInput("3", marge, Instant.parse("2000-01-01T01:05:30Z"));
 
         // At this point, the stream time is 01:05:30. It exceeds by 30 seconds
-        // the upper bound of the Homer's window [01:00:00.001Z->01:05:00.001Z] where Bart should be included.
-        // However, the following delayed record "Bart" will be aggregated into the window
+        // the upper bound of the forward sliding window introduced by Homer's event
+        // [01:00:00.001Z->01:05:00.001Z], where Bart should be included.
+        // However, the following delayed record "Bart" will still be aggregated into this window
         // because the grace period is 1 minute.
 
         KafkaUser bart = buildKafkaUser("Bart");
@@ -265,7 +266,8 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
         assertEquals("Simpson@2000-01-01T01:00:30Z->2000-01-01T01:05:30Z", results.get(2).key);
         assertIterableEquals(List.of(marge, bart), results.get(2).value.getUsers());
 
-        // Even if the stream time is 01:05:30, the Homer's window [01:00:00.001Z->01:05:00.001Z] is
+        // Even if the stream time is 01:05:30, the window introduced by Homer's event
+        // [01:00:00.001Z->01:05:00.001Z] is
         // not yet closed thanks to the grace period of 1 minute.
         // Bart whose timestamp is 01:03:00 is included in the window.
         assertEquals("Simpson@2000-01-01T01:00:00.001Z->2000-01-01T01:05:00.001Z", results.get(3).key);

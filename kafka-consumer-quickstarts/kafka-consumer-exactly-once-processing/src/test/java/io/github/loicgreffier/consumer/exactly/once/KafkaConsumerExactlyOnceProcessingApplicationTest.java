@@ -20,9 +20,14 @@ package io.github.loicgreffier.consumer.exactly.once;
 
 import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.EXACTLY_ONCE_PROCESSING_TOPIC;
 import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.USER_TOPIC;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
@@ -99,8 +104,8 @@ class KafkaConsumerExactlyOnceProcessingApplicationTest {
         assertEquals(EXACTLY_ONCE_PROCESSING_TOPIC, sentRecord.topic());
         assertEquals("1", sentRecord.key());
         assertNotNull(sentRecord.value().getId());
-        assertNotNull(sentRecord.value().getFirstName());
-        assertNotNull(sentRecord.value().getLastName());
+        assertEquals("HOMER", sentRecord.value().getFirstName());
+        assertEquals("SIMPSON", sentRecord.value().getLastName());
         assertNotNull(sentRecord.value().getBirthDate());
         assertTrue(mockProducer.transactionInitialized());
         assertTrue(mockProducer.transactionCommitted());

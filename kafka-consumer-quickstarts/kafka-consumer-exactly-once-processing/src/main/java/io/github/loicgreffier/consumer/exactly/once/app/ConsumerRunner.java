@@ -23,7 +23,9 @@ import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.USER_T
 
 import io.github.loicgreffier.avro.KafkaUser;
 import java.time.Duration;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
