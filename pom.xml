@@ -23,7 +23,7 @@
     </modules>
 
     <properties>
-        <avro.version>1.12.1</avro.version>
+        <avro.version>1.12.2</avro.version>
         <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
         <java.version>25</java.version>
         <jib-maven-plugin.version>3.5.2</jib-maven-plugin.version>
