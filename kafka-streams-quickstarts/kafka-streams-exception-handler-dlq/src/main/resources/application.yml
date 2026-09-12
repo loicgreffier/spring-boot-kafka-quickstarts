@@ -1,9 +1,9 @@
 kafka:
   properties:
-    application.id: "streams-processing-exception-handler-dsl"
+    application.id: "streams-exception-handler-dlq"
     avro.remove.java.properties: true
     bootstrap.servers: "localhost:9092"
-    client.id: "streams-processing-exception-handler-dsl"
+    client.id: "streams-exception-handler-dlq"
     deserialization.exception.handler: "org.apache.kafka.streams.errors.LogAndContinueExceptionHandler"
     errors.dead.letter.queue.topic.name: "DLQ_TOPIC"
     processing.exception.handler: "org.apache.kafka.streams.errors.LogAndContinueProcessingExceptionHandler"

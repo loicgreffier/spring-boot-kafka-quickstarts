@@ -67,7 +67,7 @@ class KafkaStreamsExceptionHandlerProcessingDslApplicationTest {
     void setUp() {
         // Dummy properties required for test driver
         Properties properties = new Properties();
-        properties.setProperty(APPLICATION_ID_CONFIG, "streams-processing-exception-handler-dsl-test");
+        properties.setProperty(APPLICATION_ID_CONFIG, "streams-exception-handler-processing-dsl-test");
         properties.setProperty(BOOTSTRAP_SERVERS_CONFIG, "dummy:1234");
         properties.setProperty(STATE_DIR_CONFIG, STATE_DIR);
         properties.setProperty(
