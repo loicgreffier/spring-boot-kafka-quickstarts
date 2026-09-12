@@ -4,7 +4,7 @@
 
 - `kafka-consumer-quickstarts`: Kafka consumer code samples.
 - `kafka-producer-quickstarts`: Kafka producer code samples.
-- `kafka-streams-quickstarts`: Kafka Streams code samples.
+- `kafka-streams-quickstarts`: Kafka Streams code samples, plus the `specific-producers` feeding them.
 
 Each quickstart is an independent Spring Boot module. 
 A module typically contains an `app` (runner/topology), `config`, `property`, `constant`, and `serdes` package under `io.github.loicgreffier`.
@@ -19,6 +19,7 @@ A module typically contains an `app` (runner/topology), `config`, `property`, `c
 
 - Target Java 25.
 - Never use `var`. Always declare variables with their explicit type.
+- Never use Lombok. Use constructor injection, explicit getters, explicit setters and explicit loggers.
 - Prefer guard clauses (early returns) over `if ... else ...`.
 - Code follows Palantir Java Format.
 - Add minimal Javadoc to every method in production code (`src/main`), including `@Override` methods, with descriptions for parameters and return values. Start each description with an uppercase letter.
