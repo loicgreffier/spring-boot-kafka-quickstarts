@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.github.loicgreffier.streams.exception.handle.dlq;
+package io.github.loicgreffier.streams.exception.handler.dlq;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static io.github.loicgreffier.streams.exception.handler.dlq.constant.Topic.USER_EXCEPTION_HANDLER_OUTPUT_TOPIC;
