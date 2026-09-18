@@ -108,8 +108,8 @@ public class ProducerRunner {
     private KafkaUser buildKafkaUser(int id) {
         return KafkaUser.newBuilder()
                 .setId((long) id)
-                .setFirstName(FIRST_NAMES[random.nextInt(FIRST_NAMES.length)])
-                .setLastName(LAST_NAMES[random.nextInt(LAST_NAMES.length)])
+                .setFirstName(FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())))
+                .setLastName(LAST_NAMES.get(random.nextInt(LAST_NAMES.size())))
                 .setBirthDate(Instant.now())
                 .build();
     }

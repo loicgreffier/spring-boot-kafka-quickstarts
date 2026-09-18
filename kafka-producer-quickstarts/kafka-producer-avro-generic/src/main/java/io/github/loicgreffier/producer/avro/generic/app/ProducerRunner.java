@@ -117,8 +117,8 @@ public class ProducerRunner {
     private GenericRecord buildGenericRecord(Schema schema, int id) {
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", (long) id);
-        genericRecord.put("firstName", FIRST_NAMES[random.nextInt(FIRST_NAMES.length)]);
-        genericRecord.put("lastName", LAST_NAMES[random.nextInt(LAST_NAMES.length)]);
+        genericRecord.put("firstName", FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())));
+        genericRecord.put("lastName", LAST_NAMES.get(random.nextInt(LAST_NAMES.size())));
         genericRecord.put("birthDate", System.currentTimeMillis());
         return genericRecord;
     }

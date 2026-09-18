@@ -102,7 +102,7 @@ public class ProducerRunner {
         double totalAmount = 0.0;
 
         for (int i = 0; i < itemCount; i++) {
-            Name.Item item = ITEMS[random.nextInt(ITEMS.length)];
+            Name.Item item = ITEMS.get(random.nextInt(ITEMS.size()));
             selectedItems.add(item.name());
             totalAmount += item.price();
         }

@@ -98,7 +98,7 @@ public class ProducerRunner {
                 }));
 
                 if (Integer.parseInt(messages.getFirst().key()) % 3 == 0) {
-                    throw new Exception("Error during transaction...");
+                    throw new IllegalStateException("Error during transaction...");
                 }
 
                 log.info("Commit transaction");
