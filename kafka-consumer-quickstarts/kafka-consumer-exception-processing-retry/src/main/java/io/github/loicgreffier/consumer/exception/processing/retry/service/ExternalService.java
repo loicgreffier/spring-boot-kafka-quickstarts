@@ -39,9 +39,10 @@ public class ExternalService {
      * Simulates a call to an external system.
      *
      * @param message The Kafka record that triggered the call.
-     * @throws Exception if the external system call fails.
+     * @throws InterruptedException if the thread is interrupted while simulating the call duration
+     * @throws IllegalStateException if the external system call fails
      */
-    public void call(ConsumerRecord<String, String> message) throws Exception {
+    public void call(ConsumerRecord<String, String> message) throws InterruptedException {
         int duration = random.nextInt(1000);
 
         log.info(
@@ -50,8 +51,9 @@ public class ExternalService {
                 message.offset());
 
         TimeUnit.MILLISECONDS.sleep(duration);
+
         if (random.nextInt(100) < failureRate) {
-            throw new Exception("Call to external system failed");
+            throw new IllegalStateException("Call to external system failed");
         }
     }
 }

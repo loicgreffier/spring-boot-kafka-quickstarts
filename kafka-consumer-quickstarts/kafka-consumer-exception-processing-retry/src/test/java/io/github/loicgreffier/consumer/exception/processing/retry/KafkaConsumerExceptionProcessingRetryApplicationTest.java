@@ -106,7 +106,7 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
         // Throw exception for message 2, otherwise do nothing
         // Should read from message 2 on second poll loop
         doNothing().when(externalService).call(argThat(arg -> !arg.equals(message2)));
-        doThrow(new Exception("Call to external system failed"))
+        doThrow(new IllegalStateException("Call to external system failed"))
                 .when(externalService)
                 .call(message2);
 
@@ -127,7 +127,7 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
         }
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
 
-        doThrow(new Exception("Call to external system failed"))
+        doThrow(new IllegalStateException("Call to external system failed"))
                 .when(externalService)
                 .call(message);
 
@@ -150,7 +150,7 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
 
         when(properties.getProperties())
                 .thenReturn(Map.of(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, AutoOffsetResetStrategy.LATEST.name()));
-        doThrow(new Exception("Call to external system failed"))
+        doThrow(new IllegalStateException("Call to external system failed"))
                 .when(externalService)
                 .call(message);
 
