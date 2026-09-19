@@ -34,7 +34,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 | [Avro Generic](/kafka-producer-quickstarts/kafka-producer-avro-generic)   | Kafka Clients | Produce generic Avro records                            |
 | [Avro Specific](/kafka-producer-quickstarts/kafka-producer-avro-specific) | Kafka Clients | Produce specific Avro records                           |
 | [Headers](/kafka-producer-quickstarts/kafka-producer-headers)             | Kafka Clients | Produce records with headers                            |
-| [Simple](/kafka-producer-quickstarts/kafka-producer-simple)               | Kafka Clients | Produce String records                                  |
+| [String](/kafka-producer-quickstarts/kafka-producer-string)               | Kafka Clients | Produce String records                                  |
 | [Transaction](/kafka-producer-quickstarts/kafka-producer-transaction)     | Kafka Clients | Produce to multiple topics while guaranteeing atomicity |
 
 ### Consumer
@@ -47,7 +47,7 @@ Code samples around Kafka Clients and Kafka Streams leveraging Spring Boot to si
 | [Exception Deserialization](/kafka-consumer-quickstarts/kafka-consumer-exception-deserialization)   | Kafka Clients | Consume records while handling deserialization exceptions  |
 | [Exception Processing Retry](/kafka-consumer-quickstarts/kafka-consumer-exception-processing-retry) | Kafka Clients | Consume records with retry logic for processing exceptions |
 | [Headers](/kafka-consumer-quickstarts/kafka-consumer-headers)                                       | Kafka Clients | Consume records with headers                               |
-| [Simple](/kafka-consumer-quickstarts/kafka-consumer-simple)                                         | Kafka Clients | Consume String records                                     |
+| [String](/kafka-consumer-quickstarts/kafka-consumer-string)                                         | Kafka Clients | Consume String records                                     |
 | [Transaction](/kafka-consumer-quickstarts/kafka-consumer-transaction)                               | Kafka Clients | Consume records from committed transactions                |
 
 ### Kafka Streams

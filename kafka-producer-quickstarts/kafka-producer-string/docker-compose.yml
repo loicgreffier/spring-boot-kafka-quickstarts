@@ -66,27 +66,6 @@ services:
           }
         }
 
-  kafka-consumer-exception-processing-retry:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-consumer-exception-processing-retry-1.0.0
-    hostname: kafka-consumer-exception-processing-retry
-    container_name: kafka-consumer-exception-processing-retry
-    networks:
-      - spring-boot-kafka-quickstarts
-    depends_on:
-      - kafka-producer-string
-    ports:
-      - "8083:8080"
-    restart: unless-stopped
-    environment:
-      SPRING_APPLICATION_JSON: |
-        {
-          "kafka": {
-            "properties": {
-              "bootstrap.servers": "broker:29092"
-            }
-          }
-        }
-
 networks:
   spring-boot-kafka-quickstarts:
     driver: bridge

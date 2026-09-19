@@ -18,7 +18,7 @@
         <module>kafka-consumer-exception-deserialization</module>
         <module>kafka-consumer-exception-processing-retry</module>
         <module>kafka-consumer-headers</module>
-        <module>kafka-consumer-simple</module>
+        <module>kafka-consumer-string</module>
         <module>kafka-consumer-transaction</module>
     </modules>
 

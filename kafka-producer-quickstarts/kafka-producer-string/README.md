@@ -1,11 +1,11 @@
-# Consumer Exception Processing Retry
+# Producer String
 
-This module consumes records of type `<String, String>` from the `STRING_TOPIC` and implements a retry mechanism to handle exceptions that occur while processing records.
+This module produces records of type `<String, String>` to the `STRING_TOPIC`.
 
 It demonstrates the following:
 
-- How to use the Kafka Clients consumer API.
-- How to write unit tests with a mock consumer.
+- How to use the Kafka Clients producer API.
+- How to write unit tests with a mock producer.
 
 ## Prerequisites
 
@@ -20,8 +20,7 @@ To compile and run this demo, you'll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, String>` to the `STRING_TOPIC`. You can use the [Producer String](../../kafka-producer-quickstarts/kafka-producer-string) for this.
-- Start the consumer.
+- Start the producer.
 
 Alternatively, to run everything at once using Docker, run:
 
@@ -34,4 +33,3 @@ This will start the following services in Docker:
 - Kafka Broker
 - Control Center
 - Producer String
-- Consumer Exception Processing Retry

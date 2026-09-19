@@ -66,10 +66,10 @@ services:
           }
         }
 
-  kafka-consumer-exception-processing-retry:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-consumer-exception-processing-retry-1.0.0
-    hostname: kafka-consumer-exception-processing-retry
-    container_name: kafka-consumer-exception-processing-retry
+  kafka-consumer-string:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-consumer-string-1.0.0
+    hostname: kafka-consumer-string
+    container_name: kafka-consumer-string
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:

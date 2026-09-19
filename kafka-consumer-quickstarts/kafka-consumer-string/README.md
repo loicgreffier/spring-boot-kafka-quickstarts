@@ -1,6 +1,6 @@
-# Consumer Exception Processing Retry
+# Consumer String
 
-This module consumes records of type `<String, String>` from the `STRING_TOPIC` and implements a retry mechanism to handle exceptions that occur while processing records.
+This module consumes records of type `<String, String>` from the `STRING_TOPIC`.
 
 It demonstrates the following:
 
@@ -34,4 +34,4 @@ This will start the following services in Docker:
 - Kafka Broker
 - Control Center
 - Producer String
-- Consumer Exception Processing Retry
+- Consumer String

@@ -1,0 +1,9 @@
+kafka:
+  properties:
+    auto.offset.reset: "earliest"
+    bootstrap.servers: "localhost:9092"
+    client.id: "consumer-string"
+    enable.auto.commit: false
+    group.id: "consumer-string"
+    key.deserializer: "org.apache.kafka.common.serialization.StringDeserializer"
+    value.deserializer: "org.apache.kafka.common.serialization.StringDeserializer"

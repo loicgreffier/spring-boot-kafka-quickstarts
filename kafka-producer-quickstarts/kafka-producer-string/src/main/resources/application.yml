@@ -1,0 +1,6 @@
+kafka:
+  properties:
+    bootstrap.servers: "localhost:9092"
+    client.id: "producer-string"
+    key.serializer: "org.apache.kafka.common.serialization.StringSerializer"
+    value.serializer: "org.apache.kafka.common.serialization.StringSerializer"
