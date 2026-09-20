@@ -38,7 +38,9 @@ public class KafkaStreamsTopology {
     private static final int ONE_MEBIBYTE = 1048576;
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic and either:
+     * Builds the Kafka Streams topology.
+     *
+     * <p>This topology reads from the {@code USER_TOPIC} topic and either:
      *
      * <ul>
      *   <li>Populates the email field, changing the record type from {@link KafkaUser} to {@link KafkaUserWithEmail}.

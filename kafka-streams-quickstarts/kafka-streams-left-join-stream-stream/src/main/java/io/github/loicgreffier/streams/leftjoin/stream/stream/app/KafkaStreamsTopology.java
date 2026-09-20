@@ -43,10 +43,11 @@ public class KafkaStreamsTopology {
     private static final Logger log = LoggerFactory.getLogger(KafkaStreamsTopology.class);
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic and the
-     * {@code USER_TOPIC_TWO} topic. The stream is joined to the other stream by last name using a left join and
-     * 5-minute symmetric join windows with a 1-minute grace period. The result is written to the
-     * {@code USER_LEFT_JOIN_STREAM_STREAM_TOPIC} topic.
+     * Builds the Kafka Streams topology.
+     *
+     * <p>This topology reads from the {@code USER_TOPIC} topic and the {@code USER_TOPIC_TWO} topic. The stream is
+     * joined to the other stream by last name using a left join and 5-minute symmetric join windows with a 1-minute
+     * grace period. The result is written to the {@code USER_LEFT_JOIN_STREAM_STREAM_TOPIC} topic.
      *
      * <p>A left join emits an output for each record in the primary stream. If there is no matching record in the
      * secondary stream, a {@code null} value is returned at the end of the join window plus the grace period. A new

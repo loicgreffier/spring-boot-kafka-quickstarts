@@ -49,9 +49,9 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads records from the {@code USER_TOPIC} and {@code USER_TOPIC_TWO} topics. Both topics are
-     * grouped by last name and cogrouped to combine the data from both streams. After cogrouping, the stream aggregates
-     * the users by last name. The result of the aggregation is written to the {@code USER_COGROUP_TOPIC} topic.
+     * <p>This topology reads from the {@code USER_TOPIC} and {@code USER_TOPIC_TWO} topics, groups both streams by last
+     * name and cogroups them so a single aggregate per last name is built out of both sources. The result is written to
+     * the {@code USER_COGROUP_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */

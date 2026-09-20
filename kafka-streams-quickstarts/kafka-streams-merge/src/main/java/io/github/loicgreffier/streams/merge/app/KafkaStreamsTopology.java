@@ -37,9 +37,10 @@ public class KafkaStreamsTopology {
     private static final Logger log = LoggerFactory.getLogger(KafkaStreamsTopology.class);
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic and the
-     * {@code USER_TOPIC_TWO} topic, then merges the two streams into a single stream and writes the result to the
-     * {@code USER_MERGE_TOPIC} topic.
+     * Builds the Kafka Streams topology.
+     *
+     * <p>This topology reads from the {@code USER_TOPIC} topic and the {@code USER_TOPIC_TWO} topic, then merges the
+     * two streams into a single stream and writes the result to the {@code USER_MERGE_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */

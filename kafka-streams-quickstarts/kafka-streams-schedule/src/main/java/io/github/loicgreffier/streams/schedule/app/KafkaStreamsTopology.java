@@ -41,9 +41,11 @@ import org.apache.kafka.streams.state.Stores;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic and processes the records
-     * with the {@link CountNationalityProcessor} processor. The processor supplier registers a {@link KeyValueStore}
-     * state store when it is built. The result is written to the {@code USER_SCHEDULE_TOPIC} topic.
+     * Builds the Kafka Streams topology.
+     *
+     * <p>This topology reads from the {@code USER_TOPIC} topic and processes the records with the
+     * {@link CountNationalityProcessor} processor. The processor supplier registers a {@link KeyValueStore} state store
+     * when it is built. The result is written to the {@code USER_SCHEDULE_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */

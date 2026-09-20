@@ -34,8 +34,10 @@ public class KafkaStreamsTopology {
     private static final Logger log = LoggerFactory.getLogger(KafkaStreamsTopology.class);
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} and repartitions the stream
-     * into 3 partitions. The result is written to the {@code USER_TOPIC} repartition topic.
+     * Builds the Kafka Streams topology.
+     *
+     * <p>This topology reads from the {@code USER_TOPIC} and repartitions the stream into 3 partitions. The result is
+     * written to the {@code USER_TOPIC} repartition topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */

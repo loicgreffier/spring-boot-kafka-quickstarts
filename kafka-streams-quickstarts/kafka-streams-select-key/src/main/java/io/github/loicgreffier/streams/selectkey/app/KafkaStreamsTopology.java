@@ -35,8 +35,10 @@ public class KafkaStreamsTopology {
     private static final Logger log = LoggerFactory.getLogger(KafkaStreamsTopology.class);
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} and changes the key to the last
-     * name. The result is written to the {@code USER_SELECT_KEY_TOPIC}.
+     * Builds the Kafka Streams topology.
+     *
+     * <p>This topology reads from the {@code USER_TOPIC} and changes the key to the last name. The result is written to
+     * the {@code USER_SELECT_KEY_TOPIC}.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */

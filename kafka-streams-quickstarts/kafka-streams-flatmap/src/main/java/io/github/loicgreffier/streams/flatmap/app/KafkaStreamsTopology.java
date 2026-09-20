@@ -37,9 +37,11 @@ public class KafkaStreamsTopology {
     private static final Logger log = LoggerFactory.getLogger(KafkaStreamsTopology.class);
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic, maps the value to a list
-     * of key-value pairs where the first name becomes the key and the last name becomes the value. The key is then
-     * transformed to uppercase. The resulting key-value pairs are written to the {@code USER_FLATMAP_TOPIC} topic.
+     * Builds the Kafka Streams topology.
+     *
+     * <p>This topology reads from the {@code USER_TOPIC} topic, maps the value to a list of key-value pairs where the
+     * first name becomes the key and the last name becomes the value. The key is then transformed to uppercase. The
+     * resulting key-value pairs are written to the {@code USER_FLATMAP_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */

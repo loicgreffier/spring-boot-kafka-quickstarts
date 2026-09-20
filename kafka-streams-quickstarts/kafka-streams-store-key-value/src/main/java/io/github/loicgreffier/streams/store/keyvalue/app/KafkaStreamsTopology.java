@@ -40,8 +40,10 @@ import org.apache.kafka.streams.state.Stores;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} and processes the records using
-     * the {@link PutInStoreProcessor} processor, which writes the records to a {@link KeyValueStore} state store. It
+     * Builds the Kafka Streams topology.
+     *
+     * <p>This topology reads from the {@code USER_TOPIC} and processes the records using the
+     * {@link PutInStoreProcessor} processor, which writes the records to a {@link KeyValueStore} state store. It
      * demonstrates two strategies for using a state store in a processor:
      *
      * <ul>

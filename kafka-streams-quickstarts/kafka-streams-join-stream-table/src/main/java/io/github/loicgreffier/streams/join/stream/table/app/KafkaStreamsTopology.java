@@ -45,9 +45,11 @@ public class KafkaStreamsTopology {
     private static final Logger log = LoggerFactory.getLogger(KafkaStreamsTopology.class);
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic and the
-     * {@code COUNTRY_TOPIC} topic as a table. The stream is joined to the table by nationality using an inner join. The
-     * result is written to the {@code USER_COUNTRY_JOIN_STREAM_TABLE_TOPIC} topic.
+     * Builds the Kafka Streams topology.
+     *
+     * <p>This topology reads from the {@code USER_TOPIC} topic and the {@code COUNTRY_TOPIC} topic as a table. The
+     * stream is joined to the table by nationality using an inner join. The result is written to the
+     * {@code USER_COUNTRY_JOIN_STREAM_TABLE_TOPIC} topic.
      *
      * <p>An inner join emits an output when both the stream and the table have records with the same key.
      *

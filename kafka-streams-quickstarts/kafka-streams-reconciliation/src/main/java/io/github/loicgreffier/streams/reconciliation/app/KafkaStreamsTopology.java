@@ -41,10 +41,12 @@ import org.apache.kafka.streams.state.Stores;
 public class KafkaStreamsTopology {
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} and {@code ORDER_TOPIC} topics.
-     * It reconciles a customer and an order, regardless of which record arrives first or how much time passes between
-     * the two. The {@code ORDER_TOPIC} is repartitioned before entering the processor to prevent records with a new key
-     * from being processed by the wrong task. The result is written to the {@code RECONCILIATION_TOPIC}.
+     * Builds the Kafka Streams topology.
+     *
+     * <p>This topology reads from the {@code USER_TOPIC} and {@code ORDER_TOPIC} topics. It reconciles a customer and
+     * an order, regardless of which record arrives first or how much time passes between the two. The
+     * {@code ORDER_TOPIC} is repartitioned before entering the processor to prevent records with a new key from being
+     * processed by the wrong task. The result is written to the {@code RECONCILIATION_TOPIC}.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */

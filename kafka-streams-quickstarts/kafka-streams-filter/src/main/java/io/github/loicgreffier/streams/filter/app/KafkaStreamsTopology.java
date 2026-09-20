@@ -35,9 +35,10 @@ public class KafkaStreamsTopology {
     private static final Logger log = LoggerFactory.getLogger(KafkaStreamsTopology.class);
 
     /**
-     * Builds the Kafka Streams topology. The topology reads from the {@code USER_TOPIC} topic, filters records where
-     * the last name starts with "S" and the first name starts with "H". The filtered records are then written to the
-     * {@code USER_FILTER_TOPIC} topic.
+     * Builds the Kafka Streams topology.
+     *
+     * <p>This topology reads from the {@code USER_TOPIC} topic, filters records where the last name starts with "S" and
+     * the first name starts with "H". The filtered records are then written to the {@code USER_FILTER_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
