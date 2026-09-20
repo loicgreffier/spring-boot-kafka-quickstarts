@@ -19,14 +19,13 @@
 package io.github.loicgreffier.producer.avro.generic;
 
 import static io.github.loicgreffier.producer.avro.generic.constant.Topic.USER_TOPIC;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import io.github.loicgreffier.producer.avro.generic.app.ProducerRunner;
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.apache.avro.generic.GenericRecord;
@@ -61,15 +60,7 @@ class KafkaProducerAvroGenericApplicationTest {
 
     @Test
     void shouldSendAutomaticallyWithSuccess() throws InterruptedException {
-        Thread producerThread = new Thread(() -> {
-            try {
-                producerRunner.run();
-            } catch (IOException e) {
-                fail(e);
-            } catch (InterruptedException _) {
-                Thread.currentThread().interrupt();
-            }
-        });
+        Thread producerThread = new Thread(() -> assertDoesNotThrow(() -> producerRunner.run()));
 
         producerThread.start();
 
