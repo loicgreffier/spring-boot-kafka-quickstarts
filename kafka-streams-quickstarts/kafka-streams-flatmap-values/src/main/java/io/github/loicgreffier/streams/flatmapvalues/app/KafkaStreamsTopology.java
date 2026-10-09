@@ -23,7 +23,7 @@ import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.USER_T
 
 import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.flatmapvalues.serdes.SerdesUtils;
-import java.util.Arrays;
+import java.util.List;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
@@ -47,7 +47,7 @@ public class KafkaStreamsTopology {
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .flatMapValues(user -> Arrays.asList(user.getFirstName(), user.getLastName()))
+                .flatMapValues(user -> List.of(user.getFirstName(), user.getLastName()))
                 .to(USER_FLATMAP_VALUES_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
     }
 
