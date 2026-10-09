@@ -30,10 +30,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
+import io.github.loicgreffier.avro.Country;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaCountry;
-import io.github.loicgreffier.avro.KafkaJoinUserCountry;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.JoinUserCountry;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.leftjoin.stream.table.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.leftjoin.stream.table.serdes.SerdesUtils;
 import java.io.IOException;
@@ -60,10 +60,10 @@ class KafkaStreamsLeftJoinStreamTableApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> userInputTopic;
-    private TestInputTopic<String, KafkaCountry> countryInputTopic;
-    private TestOutputTopic<String, KafkaUser> rekeyUserOutputTopic;
-    private TestOutputTopic<String, KafkaJoinUserCountry> joinOutputTopic;
+    private TestInputTopic<String, User> userInputTopic;
+    private TestInputTopic<String, Country> countryInputTopic;
+    private TestOutputTopic<String, User> rekeyUserOutputTopic;
+    private TestOutputTopic<String, JoinUserCountry> joinOutputTopic;
 
     @BeforeEach
     void setUp() {
@@ -86,19 +86,19 @@ class KafkaStreamsLeftJoinStreamTableApplicationTest {
         userInputTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         countryInputTopic = testDriver.createInputTopic(
                 COUNTRY_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaCountry>getValueSerdes().serializer());
+                SerdesUtils.<Country>getValueSerdes().serializer());
         rekeyUserOutputTopic = testDriver.createOutputTopic(
                 "streams-left-join-stream-table-test-" + USER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC + "-repartition",
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
+                SerdesUtils.<User>getValueSerdes().deserializer());
         joinOutputTopic = testDriver.createOutputTopic(
                 USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaJoinUserCountry>getValueSerdes().deserializer());
+                SerdesUtils.<JoinUserCountry>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -110,23 +110,23 @@ class KafkaStreamsLeftJoinStreamTableApplicationTest {
 
     @Test
     void shouldRekey() {
-        KafkaUser user = buildKafkaUser();
+        User user = buildKafkaUser();
         userInputTopic.pipeInput("1", user);
 
-        List<KeyValue<String, KafkaUser>> results = rekeyUserOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, User>> results = rekeyUserOutputTopic.readKeyValuesToList();
 
         assertEquals(KeyValue.pair("US", user), results.getFirst());
     }
 
     @Test
     void shouldJoinUserToCountry() {
-        KafkaCountry country = buildKafkaCountry();
+        Country country = buildKafkaCountry();
         countryInputTopic.pipeInput("US", country);
 
-        KafkaUser user = buildKafkaUser();
+        User user = buildKafkaUser();
         userInputTopic.pipeInput("1", user);
 
-        List<KeyValue<String, KafkaJoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
 
         assertEquals("US", results.getFirst().key);
         assertEquals(user, results.getFirst().value.getUser());
@@ -135,18 +135,18 @@ class KafkaStreamsLeftJoinStreamTableApplicationTest {
 
     @Test
     void shouldEmitValueEvenIfNoCountry() {
-        KafkaUser user = buildKafkaUser();
+        User user = buildKafkaUser();
         userInputTopic.pipeInput("1", user);
 
-        List<KeyValue<String, KafkaJoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
 
         assertEquals("US", results.getFirst().key);
         assertEquals(user, results.getFirst().value.getUser());
         assertNull(results.getFirst().value.getCountry());
     }
 
-    private KafkaUser buildKafkaUser() {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser() {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")
                 .setLastName("Simpson")
@@ -155,8 +155,8 @@ class KafkaStreamsLeftJoinStreamTableApplicationTest {
                 .build();
     }
 
-    private KafkaCountry buildKafkaCountry() {
-        return KafkaCountry.newBuilder()
+    private Country buildKafkaCountry() {
+        return Country.newBuilder()
                 .setCode(CountryCode.US)
                 .setName("United States")
                 .setCapital("Washington")

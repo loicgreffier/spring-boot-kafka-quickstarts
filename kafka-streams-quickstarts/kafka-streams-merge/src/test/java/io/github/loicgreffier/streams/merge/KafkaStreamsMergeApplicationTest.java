@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.merge.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.merge.serdes.SerdesUtils;
 import java.io.IOException;
@@ -56,9 +56,9 @@ class KafkaStreamsMergeApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
 
-    private TestInputTopic<String, KafkaUser> inputTopicOne;
-    private TestInputTopic<String, KafkaUser> inputTopicTwo;
-    private TestOutputTopic<String, KafkaUser> outputTopic;
+    private TestInputTopic<String, User> inputTopicOne;
+    private TestInputTopic<String, User> inputTopicTwo;
+    private TestOutputTopic<String, User> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -80,15 +80,15 @@ class KafkaStreamsMergeApplicationTest {
         inputTopicOne = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         inputTopicTwo = testDriver.createInputTopic(
                 USER_TOPIC_TWO,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
                 USER_MERGE_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
+                SerdesUtils.<User>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -100,20 +100,20 @@ class KafkaStreamsMergeApplicationTest {
 
     @Test
     void shouldMergeBothStreams() {
-        KafkaUser firstUser = buildKafkaUser("Homer");
-        KafkaUser secondUser = buildKafkaUser("Marge");
+        User firstUser = buildKafkaUser("Homer");
+        User secondUser = buildKafkaUser("Marge");
 
         inputTopicOne.pipeInput("1", firstUser);
         inputTopicTwo.pipeInput("2", secondUser);
 
-        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
         assertEquals(KeyValue.pair("1", firstUser), results.getFirst());
         assertEquals(KeyValue.pair("2", secondUser), results.get(1));
     }
 
-    private KafkaUser buildKafkaUser(String firstName) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(String firstName) {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)
                 .setLastName("Simpson")

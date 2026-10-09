@@ -1,6 +1,6 @@
 # Kafka Streams Exception Handler DLQ
 
-This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and routes exceptions to a Dead Letter Queue (DLQ) topic using the Kafka Streams native DLQ support.
+This module streams records of type `<String, User>` from the `USER_TOPIC` and routes exceptions to a Dead Letter Queue (DLQ) topic using the Kafka Streams native DLQ support.
 
 It demonstrates the following:
 
@@ -22,7 +22,7 @@ To compile and run this demo, you'll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/quickstart/ce-docker-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaUser>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
+- Produce records of type `<String, User>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
 - Start the Kafka Streams application.
 
 Alternatively, to run everything at once using Docker, run:

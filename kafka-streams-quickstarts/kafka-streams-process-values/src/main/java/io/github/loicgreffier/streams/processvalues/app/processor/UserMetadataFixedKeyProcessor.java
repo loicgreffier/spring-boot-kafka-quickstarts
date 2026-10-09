@@ -18,8 +18,8 @@
  */
 package io.github.loicgreffier.streams.processvalues.app.processor;
 
-import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserMetadata;
+import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.UserMetadata;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import org.apache.kafka.streams.processor.api.ContextualFixedKeyProcessor;
@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** This class represents a processor that adds metadata to the message. */
-public class UserMetadataFixedKeyProcessor extends ContextualFixedKeyProcessor<String, KafkaUser, KafkaUserMetadata> {
+public class UserMetadataFixedKeyProcessor extends ContextualFixedKeyProcessor<String, User, UserMetadata> {
     private static final Logger log = LoggerFactory.getLogger(UserMetadataFixedKeyProcessor.class);
 
     /**
@@ -38,11 +38,11 @@ public class UserMetadataFixedKeyProcessor extends ContextualFixedKeyProcessor<S
      * @param message the message to process.
      */
     @Override
-    public void process(FixedKeyRecord<String, KafkaUser> message) {
+    public void process(FixedKeyRecord<String, User> message) {
         log.info("Processing key = {}, value = {}", message.key(), message.value());
 
         Optional<RecordMetadata> recordMetadata = context().recordMetadata();
-        KafkaUserMetadata newValue = KafkaUserMetadata.newBuilder()
+        UserMetadata newValue = UserMetadata.newBuilder()
                 .setUser(message.value())
                 .setTopic(recordMetadata.map(RecordMetadata::topic).orElse(null))
                 .setPartition(recordMetadata.map(RecordMetadata::partition).orElse(null))

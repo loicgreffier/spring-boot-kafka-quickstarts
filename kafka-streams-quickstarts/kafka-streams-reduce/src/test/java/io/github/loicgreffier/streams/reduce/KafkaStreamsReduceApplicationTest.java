@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.reduce.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.reduce.serdes.SerdesUtils;
 import java.io.IOException;
@@ -57,8 +57,8 @@ class KafkaStreamsReduceApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputTopic;
-    private TestOutputTopic<String, KafkaUser> outputTopic;
+    private TestInputTopic<String, User> inputTopic;
+    private TestOutputTopic<String, User> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -81,11 +81,11 @@ class KafkaStreamsReduceApplicationTest {
         inputTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
                 USER_REDUCE_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
+                SerdesUtils.<User>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -97,36 +97,35 @@ class KafkaStreamsReduceApplicationTest {
 
     @Test
     void shouldReduceByNationalityAndKeepOldest() {
-        KafkaUser oldestUs = buildKafkaUser("Homer", "Simpson", Instant.parse("1956-08-29T18:35:24Z"), CountryCode.US);
+        User oldestUs = buildKafkaUser("Homer", "Simpson", Instant.parse("1956-08-29T18:35:24Z"), CountryCode.US);
 
-        KafkaUser youngestUs = buildKafkaUser("Bart", "Simpson", Instant.parse("1994-11-09T08:08:50Z"), CountryCode.US);
+        User youngestUs = buildKafkaUser("Bart", "Simpson", Instant.parse("1994-11-09T08:08:50Z"), CountryCode.US);
 
-        KafkaUser youngestBe =
+        User youngestBe =
                 buildKafkaUser("Milhouse", "Van Houten", Instant.parse("1996-02-02T04:58:01Z"), CountryCode.BE);
 
-        KafkaUser oldestBe =
-                buildKafkaUser("Kirk", "Van Houten", Instant.parse("1976-05-26T04:52:06Z"), CountryCode.BE);
+        User oldestBe = buildKafkaUser("Kirk", "Van Houten", Instant.parse("1976-05-26T04:52:06Z"), CountryCode.BE);
 
         inputTopic.pipeInput("1", oldestUs);
         inputTopic.pipeInput("2", youngestUs);
         inputTopic.pipeInput("3", youngestBe);
         inputTopic.pipeInput("4", oldestBe);
 
-        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
         assertEquals(KeyValue.pair(CountryCode.US.toString(), oldestUs), results.getFirst());
         assertEquals(KeyValue.pair(CountryCode.US.toString(), oldestUs), results.get(1));
         assertEquals(KeyValue.pair(CountryCode.BE.toString(), youngestBe), results.get(2));
         assertEquals(KeyValue.pair(CountryCode.BE.toString(), oldestBe), results.get(3));
 
-        KeyValueStore<String, KafkaUser> stateStore = testDriver.getKeyValueStore(USER_REDUCE_STORE);
+        KeyValueStore<String, User> stateStore = testDriver.getKeyValueStore(USER_REDUCE_STORE);
 
         assertEquals(oldestUs, stateStore.get(CountryCode.US.toString()));
         assertEquals(oldestBe, stateStore.get(CountryCode.BE.toString()));
     }
 
-    private KafkaUser buildKafkaUser(String firstName, String lastName, Instant birthDate, CountryCode nationality) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(String firstName, String lastName, Instant birthDate, CountryCode nationality) {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)
                 .setLastName(lastName)

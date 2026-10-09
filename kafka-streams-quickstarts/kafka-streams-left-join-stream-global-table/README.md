@@ -1,6 +1,6 @@
 # Kafka Streams Left Join Stream Global Table
 
-This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and joins them by nationality with records of type `<String, KafkaCountry>` from the `COUNTRY_TOPIC`.
+This module streams records of type `<String, User>` from the `USER_TOPIC` and joins them by nationality with records of type `<String, Country>` from the `COUNTRY_TOPIC`.
 
 It demonstrates the following:
 
@@ -22,8 +22,8 @@ To compile and run this demo, you'll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaCountry>` to the `COUNTRY_TOPIC`. You can use the [Producer Country](../specific-producers/kafka-streams-producer-country) for this.
-- Produce records of type `<String, KafkaUser>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
+- Produce records of type `<String, Country>` to the `COUNTRY_TOPIC`. You can use the [Producer Country](../specific-producers/kafka-streams-producer-country) for this.
+- Produce records of type `<String, User>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
 - Start the Kafka Streams application.
 
 Alternatively, to run everything at once using Docker, run:

@@ -1,6 +1,6 @@
 # Producer Avro Specific
 
-This module produces records of type `<String, KafkaUser>` to the `USER_TOPIC`.
+This module produces records of type `<String, User>` to the `USER_TOPIC`.
 
 It demonstrates the following:
 

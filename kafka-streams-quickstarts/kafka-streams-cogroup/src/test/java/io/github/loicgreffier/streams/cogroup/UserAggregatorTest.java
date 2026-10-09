@@ -20,8 +20,8 @@ package io.github.loicgreffier.streams.cogroup;
 
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
-import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserAggregate;
+import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.UserAggregate;
 import io.github.loicgreffier.streams.cogroup.app.aggregator.UserAggregator;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -32,19 +32,19 @@ class UserAggregatorTest {
     @Test
     void shouldAggregateFirstNamesByLastName() {
         UserAggregator aggregator = new UserAggregator();
-        KafkaUserAggregate group = new KafkaUserAggregate(new ArrayList<>());
+        UserAggregate group = new UserAggregate(new ArrayList<>());
 
-        KafkaUser homer = buildKafkaUser("Homer");
+        User homer = buildKafkaUser("Homer");
         aggregator.apply("Simpson", homer, group);
 
-        KafkaUser marge = buildKafkaUser("Marge");
+        User marge = buildKafkaUser("Marge");
         aggregator.apply("Simpson", marge, group);
 
         assertIterableEquals(List.of(homer, marge), group.getUsers());
     }
 
-    private KafkaUser buildKafkaUser(String firstName) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(String firstName) {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)
                 .setLastName("Simpson")

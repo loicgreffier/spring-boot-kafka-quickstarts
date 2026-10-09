@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.exception.handler.production.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.exception.handler.production.error.CustomProductionExceptionHandler;
 import io.github.loicgreffier.streams.exception.handler.production.serdes.SerdesUtils;
@@ -63,8 +63,8 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputTopic;
-    private TestOutputTopic<String, KafkaUser> outputTopic;
+    private TestInputTopic<String, User> inputTopic;
+    private TestOutputTopic<String, User> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -90,7 +90,7 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
         // Create SerDes for input and output topics only
         Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
 
-        SpecificAvroSerde<KafkaUser> serDes = new SpecificAvroSerde<>();
+        SpecificAvroSerde<User> serDes = new SpecificAvroSerde<>();
         serDes.configure(config, false);
 
         inputTopic = testDriver.createInputTopic(USER_TOPIC, new StringSerializer(), serDes.serializer());
@@ -109,7 +109,7 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
     void shouldHandleSerializationExceptionsAndContinueProcessing() {
         inputTopic.pipeInput("10", buildKafkaUser());
 
-        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
         assertTrue(results.isEmpty());
 
@@ -119,8 +119,8 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
-    private KafkaUser buildKafkaUser() {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser() {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")
                 .setLastName("Simpson")

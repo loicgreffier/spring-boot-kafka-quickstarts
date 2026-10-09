@@ -18,13 +18,13 @@
  */
 package io.github.loicgreffier.streams.reduce.app.reducer;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import org.apache.kafka.streams.kstream.Reducer;
 
 /** This class represents a reducer that reduces the input values to the one with the maximum age. */
-public class MaxAgeReducer implements Reducer<KafkaUser> {
+public class MaxAgeReducer implements Reducer<User> {
     /**
      * Reduces the input values to the one with the maximum age. The age is calculated from the birth date.
      *
@@ -33,7 +33,7 @@ public class MaxAgeReducer implements Reducer<KafkaUser> {
      * @return The reduced value.
      */
     @Override
-    public KafkaUser apply(KafkaUser reduced, KafkaUser toReduce) {
+    public User apply(User reduced, User toReduce) {
         LocalDate reducedBirthDate = LocalDate.ofInstant(reduced.getBirthDate(), ZoneOffset.UTC);
         LocalDate toReduceBirthDate = LocalDate.ofInstant(toReduce.getBirthDate(), ZoneOffset.UTC);
         return toReduceBirthDate.isBefore(reducedBirthDate) ? toReduce : reduced;

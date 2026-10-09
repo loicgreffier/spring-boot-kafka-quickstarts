@@ -21,7 +21,7 @@ package io.github.loicgreffier.streams.producer.order.app;
 import static io.github.loicgreffier.streams.producer.order.constant.Name.ITEMS;
 import static io.github.loicgreffier.streams.producer.order.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaOrder;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.producer.order.constant.Name;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,14 +41,14 @@ import org.springframework.stereotype.Component;
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
     private final Random random = new Random();
-    private final Producer<String, KafkaOrder> producer;
+    private final Producer<String, Order> producer;
 
     /**
      * Constructor.
      *
      * @param producer The Kafka producer
      */
-    public ProducerRunner(Producer<String, KafkaOrder> producer) {
+    public ProducerRunner(Producer<String, Order> producer) {
         this.producer = producer;
     }
 
@@ -67,7 +67,7 @@ public class ProducerRunner {
     public void run() throws InterruptedException {
         long i = 0;
         while (true) {
-            ProducerRecord<String, KafkaOrder> message =
+            ProducerRecord<String, Order> message =
                     new ProducerRecord<>(ORDER_TOPIC, String.valueOf(i), buildKafkaOrder(i));
 
             producer.send(message, (recordMetadata, e) -> {
@@ -96,7 +96,7 @@ public class ProducerRunner {
      * @param id The order id.
      * @return The Kafka order.
      */
-    private KafkaOrder buildKafkaOrder(long id) {
+    private Order buildKafkaOrder(long id) {
         List<String> selectedItems = new ArrayList<>();
         int itemCount = random.nextInt(10) + 1;
         double totalAmount = 0.0;
@@ -107,7 +107,7 @@ public class ProducerRunner {
             totalAmount += item.price();
         }
 
-        return KafkaOrder.newBuilder()
+        return Order.newBuilder()
                 .setId(id)
                 .setItems(selectedItems)
                 .setTotalAmount(totalAmount)

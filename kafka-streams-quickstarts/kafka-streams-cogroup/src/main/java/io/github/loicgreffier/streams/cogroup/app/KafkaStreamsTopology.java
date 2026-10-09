@@ -25,8 +25,8 @@ import static io.github.loicgreffier.streams.cogroup.constant.Topic.USER_COGROUP
 import static io.github.loicgreffier.streams.cogroup.constant.Topic.USER_TOPIC;
 import static io.github.loicgreffier.streams.cogroup.constant.Topic.USER_TOPIC_TWO;
 
-import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserAggregate;
+import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.UserAggregate;
 import io.github.loicgreffier.streams.cogroup.app.aggregator.UserAggregator;
 import io.github.loicgreffier.streams.cogroup.serdes.SerdesUtils;
 import java.util.ArrayList;
@@ -58,14 +58,14 @@ public class KafkaStreamsTopology {
     public static void topology(StreamsBuilder streamsBuilder) {
         final UserAggregator aggregator = new UserAggregator();
 
-        final KGroupedStream<String, KafkaUser> groupedStreamOne = streamsBuilder.<String, KafkaUser>stream(
+        final KGroupedStream<String, User> groupedStreamOne = streamsBuilder.<String, User>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
                 .groupBy(
                         (_, user) -> user.getLastName(),
                         Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()));
 
-        final KGroupedStream<String, KafkaUser> groupedStreamTwo = streamsBuilder.<String, KafkaUser>stream(
+        final KGroupedStream<String, User> groupedStreamTwo = streamsBuilder.<String, User>stream(
                         USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
                 .groupBy(
@@ -76,8 +76,8 @@ public class KafkaStreamsTopology {
                 .cogroup(aggregator)
                 .cogroup(groupedStreamTwo, aggregator)
                 .aggregate(
-                        () -> new KafkaUserAggregate(new ArrayList<>()),
-                        Materialized.<String, KafkaUserAggregate, KeyValueStore<Bytes, byte[]>>as(
+                        () -> new UserAggregate(new ArrayList<>()),
+                        Materialized.<String, UserAggregate, KeyValueStore<Bytes, byte[]>>as(
                                         USER_COGROUP_AGGREGATE_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))

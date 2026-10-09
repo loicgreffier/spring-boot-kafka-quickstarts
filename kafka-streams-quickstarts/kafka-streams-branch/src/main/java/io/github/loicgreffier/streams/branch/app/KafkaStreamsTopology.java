@@ -23,7 +23,7 @@ import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_B
 import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_DEFAULT_TOPIC;
 import static io.github.loicgreffier.streams.branch.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.branch.serdes.SerdesUtils;
 import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes;
@@ -62,7 +62,7 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        Map<String, KStream<String, KafkaUser>> branches = streamsBuilder.<String, KafkaUser>stream(
+        Map<String, KStream<String, User>> branches = streamsBuilder.<String, User>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
                 .split(Named.as("BRANCH_"))
@@ -84,7 +84,7 @@ public class KafkaStreamsTopology {
      * @param streamUser The stream of users.
      * @return The stream of users with uppercase first and last name.
      */
-    private static KStream<String, KafkaUser> toUppercase(KStream<String, KafkaUser> streamUser) {
+    private static KStream<String, User> toUppercase(KStream<String, User> streamUser) {
         return streamUser.mapValues(user -> {
             user.setFirstName(user.getFirstName().toUpperCase());
             user.setLastName(user.getLastName().toUpperCase());

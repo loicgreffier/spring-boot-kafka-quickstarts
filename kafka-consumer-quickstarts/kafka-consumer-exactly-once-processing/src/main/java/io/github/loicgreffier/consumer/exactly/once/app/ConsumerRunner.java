@@ -21,7 +21,7 @@ package io.github.loicgreffier.consumer.exactly.once.app;
 import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.EXACTLY_ONCE_PROCESSING_TOPIC;
 import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,8 +48,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConsumerRunner {
     private static final Logger log = LoggerFactory.getLogger(ConsumerRunner.class);
-    private final Consumer<String, KafkaUser> consumer;
-    private final Producer<String, KafkaUser> producer;
+    private final Consumer<String, User> consumer;
+    private final Producer<String, User> producer;
 
     /**
      * Constructor.
@@ -57,7 +57,7 @@ public class ConsumerRunner {
      * @param consumer The Kafka consumer.
      * @param producer The Kafka producer.
      */
-    public ConsumerRunner(Consumer<String, KafkaUser> consumer, Producer<String, KafkaUser> producer) {
+    public ConsumerRunner(Consumer<String, User> consumer, Producer<String, User> producer) {
         this.consumer = consumer;
         this.producer = producer;
     }
@@ -89,7 +89,7 @@ public class ConsumerRunner {
             producer.initTransactions();
 
             while (true) {
-                ConsumerRecords<String, KafkaUser> messages = consumer.poll(Duration.ofMillis(1000));
+                ConsumerRecords<String, User> messages = consumer.poll(Duration.ofMillis(1000));
                 log.info("Pulled {} records", messages.count());
 
                 if (!messages.isEmpty()) {
@@ -98,7 +98,7 @@ public class ConsumerRunner {
 
                     long startTime = System.currentTimeMillis();
 
-                    for (ConsumerRecord<String, KafkaUser> message : messages) {
+                    for (ConsumerRecord<String, User> message : messages) {
                         log.info(
                                 "Processing offset = {}, partition = {}, key = {}, value = {}",
                                 message.offset(),
@@ -112,11 +112,11 @@ public class ConsumerRunner {
                         // Without transactions, there would be no way to detect a processing failure
                         // and abort, so upon restart the same events would be delivered again
                         // (resulting in at-least-once delivery).
-                        KafkaUser kafkaUser = message.value();
+                        User kafkaUser = message.value();
                         kafkaUser.setFirstName(kafkaUser.getFirstName().toUpperCase());
                         kafkaUser.setLastName(kafkaUser.getLastName().toUpperCase());
 
-                        ProducerRecord<String, KafkaUser> transformedMessage =
+                        ProducerRecord<String, User> transformedMessage =
                                 new ProducerRecord<>(EXACTLY_ONCE_PROCESSING_TOPIC, message.key(), kafkaUser);
 
                         producer.send(transformedMessage, (recordMetadata, e) -> {

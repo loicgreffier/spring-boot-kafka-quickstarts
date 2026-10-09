@@ -24,8 +24,8 @@ import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Top
 import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.USER_TOPIC;
 import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.USER_TOPIC_TWO;
 
-import io.github.loicgreffier.avro.KafkaJoinUsers;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.JoinUsers;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.leftjoin.stream.stream.serdes.SerdesUtils;
 import java.time.Duration;
 import org.apache.kafka.common.serialization.Serdes;
@@ -66,13 +66,12 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        KStream<String, KafkaUser> streamTwo = streamsBuilder.<String, KafkaUser>stream(
+        KStream<String, User> streamTwo = streamsBuilder.<String, User>stream(
                         USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
                 .selectKey((_, user) -> user.getLastName());
 
-        streamsBuilder.<String, KafkaUser>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
                 .selectKey((_, user) -> user.getLastName())
                 .leftJoin(
@@ -92,13 +91,13 @@ public class KafkaStreamsTopology {
                                         userLeft.getLastName());
                             }
 
-                            return KafkaJoinUsers.newBuilder()
+                            return JoinUsers.newBuilder()
                                     .setUserOne(userLeft)
                                     .setUserTwo(userRight)
                                     .build();
                         },
                         JoinWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)),
-                        StreamJoined.<String, KafkaUser, KafkaUser>with(
+                        StreamJoined.<String, User, User>with(
                                         Serdes.String(), SerdesUtils.getValueSerdes(), SerdesUtils.getValueSerdes())
                                 .withName(USER_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC)
                                 .withStoreName(USER_LEFT_JOIN_STREAM_STREAM_STORE))

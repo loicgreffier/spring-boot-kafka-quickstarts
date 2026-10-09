@@ -1,13 +1,13 @@
 {
   "namespace": "io.github.loicgreffier.avro",
   "type": "record",
-  "name": "KafkaJoinUsers",
+  "name": "JoinUsers",
   "fields": [
     {
       "name": "userOne",
       "type": [
         "null",
-        "KafkaUser"
+        "User"
       ],
       "default": null,
       "doc": "First user"
@@ -16,7 +16,7 @@
       "name": "userTwo",
       "type": [
         "null",
-        "KafkaUser"
+        "User"
       ],
       "default": null,
       "doc": "Second user"

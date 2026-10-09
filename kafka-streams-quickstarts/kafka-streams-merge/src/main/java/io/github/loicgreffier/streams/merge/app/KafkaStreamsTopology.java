@@ -22,7 +22,7 @@ import static io.github.loicgreffier.streams.merge.constant.Topic.USER_MERGE_TOP
 import static io.github.loicgreffier.streams.merge.constant.Topic.USER_TOPIC;
 import static io.github.loicgreffier.streams.merge.constant.Topic.USER_TOPIC_TWO;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.merge.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -45,11 +45,11 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        KStream<String, KafkaUser> streamOne = streamsBuilder.<String, KafkaUser>stream(
+        KStream<String, User> streamOne = streamsBuilder.<String, User>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user));
 
-        KStream<String, KafkaUser> streamTwo = streamsBuilder.<String, KafkaUser>stream(
+        KStream<String, User> streamTwo = streamsBuilder.<String, User>stream(
                         USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user));
 

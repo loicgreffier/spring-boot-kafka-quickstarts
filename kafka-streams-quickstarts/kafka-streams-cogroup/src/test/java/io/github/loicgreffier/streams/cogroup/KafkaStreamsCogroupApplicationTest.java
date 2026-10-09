@@ -30,8 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserAggregate;
+import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.UserAggregate;
 import io.github.loicgreffier.streams.cogroup.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.cogroup.serdes.SerdesUtils;
 import java.io.IOException;
@@ -59,9 +59,9 @@ class KafkaStreamsCogroupApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputTopicOne;
-    private TestInputTopic<String, KafkaUser> inputTopicTwo;
-    private TestOutputTopic<String, KafkaUserAggregate> outputTopic;
+    private TestInputTopic<String, User> inputTopicOne;
+    private TestInputTopic<String, User> inputTopicTwo;
+    private TestOutputTopic<String, UserAggregate> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -84,15 +84,15 @@ class KafkaStreamsCogroupApplicationTest {
         inputTopicOne = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         inputTopicTwo = testDriver.createInputTopic(
                 USER_TOPIC_TWO,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
                 USER_COGROUP_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUserAggregate>getValueSerdes().deserializer());
+                SerdesUtils.<UserAggregate>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -104,13 +104,13 @@ class KafkaStreamsCogroupApplicationTest {
 
     @Test
     void shouldAggregateFirstNamesByLastNameStreamOne() {
-        KafkaUser homer = buildKafkaUser("Homer");
+        User homer = buildKafkaUser("Homer");
         inputTopicOne.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
 
-        KafkaUser marge = buildKafkaUser("Marge");
+        User marge = buildKafkaUser("Marge");
         inputTopicOne.pipeInput("2", marge, Instant.parse("2000-01-01T01:00:00Z"));
 
-        List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.getFirst().key);
         assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
@@ -118,21 +118,20 @@ class KafkaStreamsCogroupApplicationTest {
         assertEquals("Simpson", results.get(1).key);
         assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
 
-        KeyValueStore<String, KafkaUserAggregate> stateStore =
-                testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
+        KeyValueStore<String, UserAggregate> stateStore = testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
 
         assertIterableEquals(List.of(homer, marge), stateStore.get("Simpson").getUsers());
     }
 
     @Test
     void shouldAggregateFirstNamesByLastNameStreamTwo() {
-        KafkaUser homer = buildKafkaUser("Homer");
+        User homer = buildKafkaUser("Homer");
         inputTopicTwo.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
 
-        KafkaUser marge = buildKafkaUser("Marge");
+        User marge = buildKafkaUser("Marge");
         inputTopicTwo.pipeInput("2", marge, Instant.parse("2000-01-01T01:00:00Z"));
 
-        List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.getFirst().key);
         assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
@@ -140,24 +139,23 @@ class KafkaStreamsCogroupApplicationTest {
         assertEquals("Simpson", results.get(1).key);
         assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
 
-        KeyValueStore<String, KafkaUserAggregate> stateStore =
-                testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
+        KeyValueStore<String, UserAggregate> stateStore = testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
 
         assertIterableEquals(List.of(homer, marge), stateStore.get("Simpson").getUsers());
     }
 
     @Test
     void shouldAggregateFirstNamesByLastNameBothCogroupedStreams() {
-        KafkaUser homer = buildKafkaUser("Homer");
+        User homer = buildKafkaUser("Homer");
         inputTopicOne.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
 
-        KafkaUser marge = buildKafkaUser("Marge");
+        User marge = buildKafkaUser("Marge");
         inputTopicOne.pipeInput("2", marge, Instant.parse("2000-01-01T01:00:00Z"));
 
-        KafkaUser bart = buildKafkaUser("Bart");
+        User bart = buildKafkaUser("Bart");
         inputTopicTwo.pipeInput("3", bart, Instant.parse("2000-01-01T01:00:00Z"));
 
-        List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson", results.getFirst().key);
         assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
@@ -168,15 +166,14 @@ class KafkaStreamsCogroupApplicationTest {
         assertEquals("Simpson", results.get(2).key);
         assertIterableEquals(List.of(homer, marge, bart), results.get(2).value.getUsers());
 
-        KeyValueStore<String, KafkaUserAggregate> stateStore =
-                testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
+        KeyValueStore<String, UserAggregate> stateStore = testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
 
         assertIterableEquals(
                 List.of(homer, marge, bart), stateStore.get("Simpson").getUsers());
     }
 
-    private KafkaUser buildKafkaUser(String firstName) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(String firstName) {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)
                 .setLastName("Simpson")

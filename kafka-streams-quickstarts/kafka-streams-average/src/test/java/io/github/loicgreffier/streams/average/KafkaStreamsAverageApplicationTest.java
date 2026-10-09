@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserAverageAge;
+import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.UserAverageAge;
 import io.github.loicgreffier.streams.average.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.average.serdes.SerdesUtils;
 import java.io.IOException;
@@ -61,7 +61,7 @@ class KafkaStreamsAverageApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestInputTopic<String, User> inputTopic;
     private TestOutputTopic<String, Long> outputTopic;
 
     @BeforeEach
@@ -85,7 +85,7 @@ class KafkaStreamsAverageApplicationTest {
         inputTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         outputTopic =
                 testDriver.createOutputTopic(USER_AVERAGE_TOPIC, new StringDeserializer(), new LongDeserializer());
     }
@@ -101,9 +101,9 @@ class KafkaStreamsAverageApplicationTest {
     void shouldComputeAverageAgeByNationality() {
         LocalDate currentDate = LocalDate.now();
 
-        KafkaUser yearsOld25 = buildKafkaUser(
+        User yearsOld25 = buildKafkaUser(
                 "Homer", currentDate.minusYears(25).atStartOfDay().toInstant(ZoneOffset.UTC));
-        KafkaUser yearsOld75 = buildKafkaUser(
+        User yearsOld75 = buildKafkaUser(
                 "Marge", currentDate.minusYears(75).atStartOfDay().toInstant(ZoneOffset.UTC));
 
         inputTopic.pipeInput("1", yearsOld25);
@@ -114,14 +114,14 @@ class KafkaStreamsAverageApplicationTest {
         assertEquals(KeyValue.pair("US", 25L), results.getFirst());
         assertEquals(KeyValue.pair("US", 50L), results.get(1));
 
-        KeyValueStore<String, KafkaUserAverageAge> stateStore = testDriver.getKeyValueStore(USER_AVERAGE_STORE);
+        KeyValueStore<String, UserAverageAge> stateStore = testDriver.getKeyValueStore(USER_AVERAGE_STORE);
 
         assertEquals(2L, stateStore.get("US").getCount());
         assertEquals(100L, stateStore.get("US").getAgeSum());
     }
 
-    private KafkaUser buildKafkaUser(String firstName, Instant birthDate) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(String firstName, Instant birthDate) {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)
                 .setLastName("Simpson")

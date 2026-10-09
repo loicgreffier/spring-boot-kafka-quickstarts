@@ -1,13 +1,13 @@
 {
   "namespace": "io.github.loicgreffier.avro",
   "type": "record",
-  "name": "KafkaUserMetadata",
+  "name": "UserMetadata",
   "fields": [
     {
       "name": "user",
       "type": [
         "null",
-        "KafkaUser"
+        "User"
       ],
       "default": null,
       "doc": "User"

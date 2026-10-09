@@ -1,13 +1,13 @@
 {
   "namespace": "io.github.loicgreffier.avro",
   "type": "record",
-  "name": "KafkaReconciliation",
+  "name": "Reconciliation",
   "fields": [
     {
       "name": "customer",
       "type": [
         "null",
-        "KafkaUser"
+        "User"
       ],
       "default": null,
       "doc": "Customer"
@@ -16,7 +16,7 @@
       "name": "order",
       "type": [
         "null",
-        "KafkaOrder"
+        "Order"
       ],
       "default": null,
       "doc": "Order"

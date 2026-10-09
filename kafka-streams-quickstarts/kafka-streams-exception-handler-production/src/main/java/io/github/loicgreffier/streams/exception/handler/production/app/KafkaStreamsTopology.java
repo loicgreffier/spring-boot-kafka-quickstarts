@@ -21,8 +21,8 @@ package io.github.loicgreffier.streams.exception.handler.production.app;
 import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC;
 import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserWithEmail;
+import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.UserWithEmail;
 import io.github.loicgreffier.streams.exception.handler.production.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -43,9 +43,9 @@ public class KafkaStreamsTopology {
      * <p>This topology reads from the {@code USER_TOPIC} topic and either:
      *
      * <ul>
-     *   <li>Populates the email field, changing the record type from {@link KafkaUser} to {@link KafkaUserWithEmail}.
-     *       Since the email field is non-nullable, this breaks schema backward compatibility, triggering a
-     *       serialization exception when registering the schema in the Schema Registry automatically.
+     *   <li>Populates the email field, changing the record type from {@link User} to {@link UserWithEmail}. Since the
+     *       email field is non-nullable, this breaks schema backward compatibility, triggering a serialization
+     *       exception when registering the schema in the Schema Registry automatically.
      *   <li>Populates the biography field with a large text that exceeds the maximum record size allowed by Kafka (1
      *       MiB), triggering a production exception due to the record being too large.
      * </ul>
@@ -62,12 +62,11 @@ public class KafkaStreamsTopology {
             stringBuilder.append(LOREM_IPSUM);
         }
 
-        streamsBuilder.<String, KafkaUser>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
                 .mapValues(user -> {
                     if (user.getId() % 15 == 10) {
-                        return KafkaUserWithEmail.newBuilder()
+                        return UserWithEmail.newBuilder()
                                 .setId(user.getId())
                                 .setFirstName(user.getFirstName())
                                 .setLastName(user.getLastName())

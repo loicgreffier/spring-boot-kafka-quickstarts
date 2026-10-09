@@ -20,7 +20,7 @@ package io.github.loicgreffier.streams.store.cleanup.app.processor;
 
 import static io.github.loicgreffier.streams.store.cleanup.constant.StateStore.USER_SCHEDULE_STORE_CLEANUP_STORE;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import java.time.Duration;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.processor.PunctuationType;
@@ -33,9 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** This class represents a processor that fills and cleans a state store. */
-public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUser> {
+public class StoreCleanupProcessor extends ContextualProcessor<String, User, String, User> {
     private static final Logger log = LoggerFactory.getLogger(StoreCleanupProcessor.class);
-    private KeyValueStore<String, KafkaUser> userStore;
+    private KeyValueStore<String, User> userStore;
 
     /**
      * Initialize the processor. Opens the state store and schedules the punctuation. The punctuation is scheduled on
@@ -45,7 +45,7 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaUser
      * @param context The processor context.
      */
     @Override
-    public void init(ProcessorContext<String, KafkaUser> context) {
+    public void init(ProcessorContext<String, User> context) {
         super.init(context);
         userStore = context.getStateStore(USER_SCHEDULE_STORE_CLEANUP_STORE);
         context.schedule(Duration.ofMinutes(1), PunctuationType.STREAM_TIME, this::forwardTombstones);
@@ -58,7 +58,7 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaUser
      * @param message The message to process.
      */
     @Override
-    public void process(Record<String, KafkaUser> message) {
+    public void process(Record<String, User> message) {
         if (message.value() == null) {
             log.info("Received tombstone for key = {}", message.key());
             userStore.delete(message.key());
@@ -78,9 +78,9 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, KafkaUser
     private void forwardTombstones(long timestamp) {
         log.info("Resetting {} store ", USER_SCHEDULE_STORE_CLEANUP_STORE);
 
-        try (KeyValueIterator<String, KafkaUser> iterator = userStore.all()) {
+        try (KeyValueIterator<String, User> iterator = userStore.all()) {
             while (iterator.hasNext()) {
-                KeyValue<String, KafkaUser> keyValue = iterator.next();
+                KeyValue<String, User> keyValue = iterator.next();
                 context().forward(new Record<>(keyValue.key, null, timestamp));
             }
         }

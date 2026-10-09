@@ -1,6 +1,6 @@
 # Consumer Exception Deserialization
 
-This module consumes records of type `<String, KafkaUser>` from the `USER_TOPIC` and gracefully handles deserialization exceptions by skipping the problematic record.
+This module consumes records of type `<String, User>` from the `USER_TOPIC` and gracefully handles deserialization exceptions by skipping the problematic record.
 
 It demonstrates the following:
 
@@ -21,7 +21,7 @@ To compile and run this demo, you'll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaUser>` to the `USER_TOPIC`. You can use the [Producer Avro Specific](../../kafka-producer-quickstarts/kafka-producer-avro-specific) for this.
+- Produce records of type `<String, User>` to the `USER_TOPIC`. You can use the [Producer Avro Specific](../../kafka-producer-quickstarts/kafka-producer-avro-specific) for this.
 - Intentionally trigger a deserialization exception by either:
     - Deleting the Avro schema from the schema registry.
     - Producing a non-Avro message (e.g., a plain String) to the `USER_TOPIC`.

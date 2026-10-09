@@ -21,8 +21,8 @@ package io.github.loicgreffier.streams.average;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserAverageAge;
+import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.UserAverageAge;
 import io.github.loicgreffier.streams.average.app.aggregator.AgeAggregator;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -32,11 +32,11 @@ class AgeAggregatorTest {
     @Test
     void shouldAggregateAgeByNationality() {
         AgeAggregator aggregator = new AgeAggregator();
-        KafkaUserAverageAge averageAge = new KafkaUserAverageAge(0L, 0L);
+        UserAverageAge averageAge = new UserAverageAge(0L, 0L);
 
         LocalDate currentDate = LocalDate.now();
 
-        KafkaUser userOne = KafkaUser.newBuilder()
+        User userOne = User.newBuilder()
                 .setId(1L)
                 .setFirstName("Bart")
                 .setLastName("Simpson")
@@ -45,7 +45,7 @@ class AgeAggregatorTest {
                 .build();
         aggregator.apply(CountryCode.US.toString(), userOne, averageAge);
 
-        KafkaUser userTwo = KafkaUser.newBuilder()
+        User userTwo = User.newBuilder()
                 .setId(2L)
                 .setFirstName("Homer")
                 .setLastName("Simpson")
@@ -54,7 +54,7 @@ class AgeAggregatorTest {
                 .build();
         aggregator.apply(CountryCode.US.toString(), userTwo, averageAge);
 
-        KafkaUser userThree = KafkaUser.newBuilder()
+        User userThree = User.newBuilder()
                 .setId(3L)
                 .setFirstName("Abraham")
                 .setLastName("Simpson")

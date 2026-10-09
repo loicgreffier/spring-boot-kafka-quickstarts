@@ -23,8 +23,8 @@ import static io.github.loicgreffier.streams.average.constant.Topic.GROUP_USER_B
 import static io.github.loicgreffier.streams.average.constant.Topic.USER_AVERAGE_TOPIC;
 import static io.github.loicgreffier.streams.average.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserAverageAge;
+import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.UserAverageAge;
 import io.github.loicgreffier.streams.average.app.aggregator.AgeAggregator;
 import io.github.loicgreffier.streams.average.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
@@ -53,16 +53,15 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, KafkaUser>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
                 .groupBy(
                         (_, user) -> user.getNationality().toString(),
                         Grouped.with(GROUP_USER_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .aggregate(
-                        () -> new KafkaUserAverageAge(0L, 0L),
+                        () -> new UserAverageAge(0L, 0L),
                         new AgeAggregator(),
-                        Materialized.<String, KafkaUserAverageAge, KeyValueStore<Bytes, byte[]>>as(USER_AVERAGE_STORE)
+                        Materialized.<String, UserAverageAge, KeyValueStore<Bytes, byte[]>>as(USER_AVERAGE_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))
                 .mapValues(value -> value.getAgeSum() / value.getCount())

@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.exception.handler.processing.papi.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.exception.handler.processing.papi.error.CustomProcessingExceptionHandler;
 import io.github.loicgreffier.streams.exception.handler.processing.papi.serdes.SerdesUtils;
@@ -61,8 +61,8 @@ class KafkaStreamsExceptionHandlerProcessingPapiApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputTopic;
-    private TestOutputTopic<String, KafkaUser> outputTopic;
+    private TestInputTopic<String, User> inputTopic;
+    private TestOutputTopic<String, User> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -87,11 +87,11 @@ class KafkaStreamsExceptionHandlerProcessingPapiApplicationTest {
         inputTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
                 USER_PROCESSING_EXCEPTION_HANDLER_PAPI_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
+                SerdesUtils.<User>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -105,12 +105,12 @@ class KafkaStreamsExceptionHandlerProcessingPapiApplicationTest {
     void shouldHandleIllegalArgumentExceptionAndContinueProcessing() {
         inputTopic.pipeInput("1", buildKafkaUser("Homer", Instant.parse("1949-01-01T01:00:00Z")));
 
-        KafkaUser bart = buildKafkaUser("Bart", Instant.parse("1980-01-01T01:00:00Z"));
+        User bart = buildKafkaUser("Bart", Instant.parse("1980-01-01T01:00:00Z"));
         inputTopic.pipeInput("2", bart);
 
         testDriver.advanceWallClockTime(Duration.ofMinutes(2));
 
-        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
         assertEquals(bart, results.getFirst().value);
 
@@ -120,8 +120,8 @@ class KafkaStreamsExceptionHandlerProcessingPapiApplicationTest {
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
-    private KafkaUser buildKafkaUser(String firstName, Instant birthDate) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(String firstName, Instant birthDate) {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)
                 .setLastName("Simpson")

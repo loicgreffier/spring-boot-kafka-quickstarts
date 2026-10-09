@@ -20,8 +20,8 @@ package io.github.loicgreffier.streams.producer.country.app;
 
 import static io.github.loicgreffier.streams.producer.country.constant.Topic.COUNTRY_TOPIC;
 
+import io.github.loicgreffier.avro.Country;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaCountry;
 import java.util.List;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -36,14 +36,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
-    private final Producer<String, KafkaCountry> producer;
+    private static final List<Country> COUNTRIES = List.of(
+            buildCountry(CountryCode.FR, "France", "Paris", "French"),
+            buildCountry(CountryCode.DE, "Germany", "Berlin", "German"),
+            buildCountry(CountryCode.ES, "Spain", "Madrid", "Spanish"),
+            buildCountry(CountryCode.IT, "Italy", "Rome", "Italian"),
+            buildCountry(CountryCode.GB, "United Kingdom", "London", "English"),
+            buildCountry(CountryCode.US, "United States", "Washington", "English"),
+            buildCountry(CountryCode.BE, "Belgium", "Brussels", "French"));
+    private final Producer<String, Country> producer;
 
     /**
      * Constructor.
      *
      * @param producer The Kafka producer
      */
-    public ProducerRunner(Producer<String, KafkaCountry> producer) {
+    public ProducerRunner(Producer<String, Country> producer) {
         this.producer = producer;
     }
 
@@ -58,8 +66,8 @@ public class ProducerRunner {
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
-        for (KafkaCountry country : buildKafkaCountries()) {
-            ProducerRecord<String, KafkaCountry> message =
+        for (Country country : COUNTRIES) {
+            ProducerRecord<String, Country> message =
                     new ProducerRecord<>(COUNTRY_TOPIC, country.getCode().toString(), country);
 
             send(message);
@@ -71,7 +79,7 @@ public class ProducerRunner {
      *
      * @param message The message to send.
      */
-    public void send(ProducerRecord<String, KafkaCountry> message) {
+    public void send(ProducerRecord<String, Country> message) {
         producer.send(message, (recordMetadata, e) -> {
             if (e != null) {
                 log.error(e.getMessage());
@@ -88,60 +96,20 @@ public class ProducerRunner {
     }
 
     /**
-     * Builds a list of Kafka countries.
+     * Builds a country of the referential.
      *
-     * @return The list of Kafka countries.
+     * @param code The country code.
+     * @param name The country name.
+     * @param capital The country capital.
+     * @param officialLanguage The country official language.
+     * @return A country.
      */
-    private List<KafkaCountry> buildKafkaCountries() {
-        KafkaCountry france = KafkaCountry.newBuilder()
-                .setCode(CountryCode.FR)
-                .setName("France")
-                .setCapital("Paris")
-                .setOfficialLanguage("French")
+    private static Country buildCountry(CountryCode code, String name, String capital, String officialLanguage) {
+        return Country.newBuilder()
+                .setCode(code)
+                .setName(name)
+                .setCapital(capital)
+                .setOfficialLanguage(officialLanguage)
                 .build();
-
-        KafkaCountry germany = KafkaCountry.newBuilder()
-                .setCode(CountryCode.DE)
-                .setName("Germany")
-                .setCapital("Berlin")
-                .setOfficialLanguage("German")
-                .build();
-
-        KafkaCountry spain = KafkaCountry.newBuilder()
-                .setCode(CountryCode.ES)
-                .setName("Spain")
-                .setCapital("Madrid")
-                .setOfficialLanguage("Spanish")
-                .build();
-
-        KafkaCountry italy = KafkaCountry.newBuilder()
-                .setCode(CountryCode.IT)
-                .setName("Italy")
-                .setCapital("Rome")
-                .setOfficialLanguage("Italian")
-                .build();
-
-        KafkaCountry unitedKingdom = KafkaCountry.newBuilder()
-                .setCode(CountryCode.GB)
-                .setName("United Kingdom")
-                .setCapital("London")
-                .setOfficialLanguage("English")
-                .build();
-
-        KafkaCountry unitedStates = KafkaCountry.newBuilder()
-                .setCode(CountryCode.US)
-                .setName("United States")
-                .setCapital("Washington")
-                .setOfficialLanguage("English")
-                .build();
-
-        KafkaCountry belgium = KafkaCountry.newBuilder()
-                .setCode(CountryCode.BE)
-                .setName("Belgium")
-                .setCapital("Brussels")
-                .setOfficialLanguage("French")
-                .build();
-
-        return List.of(france, germany, spain, italy, unitedKingdom, unitedStates, belgium);
     }
 }

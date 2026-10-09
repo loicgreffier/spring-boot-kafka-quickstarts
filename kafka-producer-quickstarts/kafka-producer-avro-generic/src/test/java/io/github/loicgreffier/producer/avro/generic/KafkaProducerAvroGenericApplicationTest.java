@@ -60,7 +60,7 @@ class KafkaProducerAvroGenericApplicationTest {
 
     @Test
     void shouldSendAutomaticallyWithSuccess() throws InterruptedException {
-        Thread producerThread = new Thread(() -> assertDoesNotThrow(() -> producerRunner.run()));
+        Thread producerThread = new Thread(() -> assertDoesNotThrow(producerRunner::run));
 
         producerThread.start();
 

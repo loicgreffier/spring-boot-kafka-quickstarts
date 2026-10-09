@@ -30,8 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserAggregate;
+import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.UserAggregate;
 import io.github.loicgreffier.streams.aggregate.sliding.window.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.aggregate.sliding.window.serdes.SerdesUtils;
 import java.io.IOException;
@@ -61,8 +61,8 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputTopic;
-    private TestOutputTopic<String, KafkaUserAggregate> outputTopic;
+    private TestInputTopic<String, User> inputTopic;
+    private TestOutputTopic<String, UserAggregate> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -85,11 +85,11 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
         inputTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
                 USER_AGGREGATE_SLIDING_WINDOW_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUserAggregate>getValueSerdes().deserializer());
+                SerdesUtils.<UserAggregate>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -101,16 +101,16 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
 
     @Test
     void shouldAggregateWhenTimeWindowIsRespected() {
-        KafkaUser homer = buildKafkaUser("Homer");
+        User homer = buildKafkaUser("Homer");
         inputTopic.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
 
-        KafkaUser marge = buildKafkaUser("Marge");
+        User marge = buildKafkaUser("Marge");
         inputTopic.pipeInput("2", marge, Instant.parse("2000-01-01T01:02:00Z"));
 
-        KafkaUser bart = buildKafkaUser("Bart");
+        User bart = buildKafkaUser("Bart");
         inputTopic.pipeInput("3", bart, Instant.parse("2000-01-01T01:04:00Z"));
 
-        List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
 
         // Homer arrives
         assertEquals("Simpson@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
@@ -133,11 +133,10 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
         assertEquals("Simpson@2000-01-01T00:59:00Z->2000-01-01T01:04:00Z", results.get(5).key);
         assertIterableEquals(List.of(homer, marge, bart), results.get(5).value.getUsers());
 
-        WindowStore<String, KafkaUserAggregate> stateStore =
-                testDriver.getWindowStore(USER_AGGREGATE_SLIDING_WINDOW_STORE);
+        WindowStore<String, UserAggregate> stateStore = testDriver.getWindowStore(USER_AGGREGATE_SLIDING_WINDOW_STORE);
 
-        try (KeyValueIterator<Windowed<String>, KafkaUserAggregate> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, KafkaUserAggregate> keyValueSimpson55To00 = iterator.next();
+        try (KeyValueIterator<Windowed<String>, UserAggregate> iterator = stateStore.all()) {
+            KeyValue<Windowed<String>, UserAggregate> keyValueSimpson55To00 = iterator.next();
             assertEquals("Simpson", keyValueSimpson55To00.key.key());
             assertEquals(
                     "2000-01-01T00:55:00Z",
@@ -147,7 +146,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
                     keyValueSimpson55To00.key.window().endTime().toString());
             assertIterableEquals(List.of(homer), keyValueSimpson55To00.value.getUsers());
 
-            KeyValue<Windowed<String>, KafkaUserAggregate> keyValueSimpson57To02 = iterator.next();
+            KeyValue<Windowed<String>, UserAggregate> keyValueSimpson57To02 = iterator.next();
             assertEquals("Simpson", keyValueSimpson57To02.key.key());
             assertEquals(
                     "2000-01-01T00:57:00Z",
@@ -157,7 +156,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
                     keyValueSimpson57To02.key.window().endTime().toString());
             assertIterableEquals(List.of(homer, marge), keyValueSimpson57To02.value.getUsers());
 
-            KeyValue<Windowed<String>, KafkaUserAggregate> keyValueSimpson59To04 = iterator.next();
+            KeyValue<Windowed<String>, UserAggregate> keyValueSimpson59To04 = iterator.next();
             assertEquals("Simpson", keyValueSimpson59To04.key.key());
             assertEquals(
                     "2000-01-01T00:59:00Z",
@@ -167,7 +166,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
                     keyValueSimpson59To04.key.window().endTime().toString());
             assertIterableEquals(List.of(homer, marge, bart), keyValueSimpson59To04.value.getUsers());
 
-            KeyValue<Windowed<String>, KafkaUserAggregate> keyValueSimpson00To05 = iterator.next();
+            KeyValue<Windowed<String>, UserAggregate> keyValueSimpson00To05 = iterator.next();
             assertEquals("Simpson", keyValueSimpson00To05.key.key());
             assertEquals(
                     "2000-01-01T01:00:00.001Z",
@@ -177,7 +176,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
                     keyValueSimpson00To05.key.window().endTime().toString());
             assertIterableEquals(List.of(marge, bart), keyValueSimpson00To05.value.getUsers());
 
-            KeyValue<Windowed<String>, KafkaUserAggregate> keyValueSimpson02To07 = iterator.next();
+            KeyValue<Windowed<String>, UserAggregate> keyValueSimpson02To07 = iterator.next();
             assertEquals("Simpson", keyValueSimpson02To07.key.key());
             assertEquals(
                     "2000-01-01T01:02:00.001Z",
@@ -193,13 +192,13 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
 
     @Test
     void shouldNotAggregateWhenTimeWindowIsNotRespected() {
-        KafkaUser homer = buildKafkaUser("Homer");
+        User homer = buildKafkaUser("Homer");
         inputTopic.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
 
-        KafkaUser marge = buildKafkaUser("Marge");
+        User marge = buildKafkaUser("Marge");
         inputTopic.pipeInput("2", marge, Instant.parse("2000-01-01T01:05:01Z"));
 
-        List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("Simpson@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
         assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
@@ -207,11 +206,10 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
         assertEquals("Simpson@2000-01-01T01:00:01Z->2000-01-01T01:05:01Z", results.get(1).key);
         assertIterableEquals(List.of(marge), results.get(1).value.getUsers());
 
-        WindowStore<String, KafkaUserAggregate> stateStore =
-                testDriver.getWindowStore(USER_AGGREGATE_SLIDING_WINDOW_STORE);
+        WindowStore<String, UserAggregate> stateStore = testDriver.getWindowStore(USER_AGGREGATE_SLIDING_WINDOW_STORE);
 
-        try (KeyValueIterator<Windowed<String>, KafkaUserAggregate> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, KafkaUserAggregate> keyValue00To05 = iterator.next();
+        try (KeyValueIterator<Windowed<String>, UserAggregate> iterator = stateStore.all()) {
+            KeyValue<Windowed<String>, UserAggregate> keyValue00To05 = iterator.next();
             assertEquals("Simpson", keyValue00To05.key.key());
             assertEquals(
                     "2000-01-01T00:55:00Z",
@@ -221,7 +219,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
                     keyValue00To05.key.window().endTime().toString());
             assertIterableEquals(List.of(homer), keyValue00To05.value.getUsers());
 
-            KeyValue<Windowed<String>, KafkaUserAggregate> keyValue01To06 = iterator.next();
+            KeyValue<Windowed<String>, UserAggregate> keyValue01To06 = iterator.next();
             assertEquals("Simpson", keyValue01To06.key.key());
             assertEquals(
                     "2000-01-01T01:00:01Z",
@@ -237,10 +235,10 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
 
     @Test
     void shouldHonorGracePeriod() {
-        KafkaUser homer = buildKafkaUser("Homer");
+        User homer = buildKafkaUser("Homer");
         inputTopic.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
 
-        KafkaUser marge = buildKafkaUser("Marge");
+        User marge = buildKafkaUser("Marge");
         inputTopic.pipeInput("3", marge, Instant.parse("2000-01-01T01:05:30Z"));
 
         // At this point, the stream time is 01:05:30. It exceeds by 30 seconds
@@ -249,10 +247,10 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
         // However, the following delayed record "Bart" will still be aggregated into this window
         // because the grace period is 1 minute.
 
-        KafkaUser bart = buildKafkaUser("Bart");
+        User bart = buildKafkaUser("Bart");
         inputTopic.pipeInput("2", bart, Instant.parse("2000-01-01T01:03:00Z"));
 
-        List<KeyValue<String, KafkaUserAggregate>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
 
         // Homer arrives
         assertEquals("Simpson@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
@@ -276,11 +274,10 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
         assertEquals("Simpson@2000-01-01T01:03:00.001Z->2000-01-01T01:08:00.001Z", results.get(4).key);
         assertIterableEquals(List.of(marge, bart), results.get(4).value.getUsers());
 
-        WindowStore<String, KafkaUserAggregate> stateStore =
-                testDriver.getWindowStore(USER_AGGREGATE_SLIDING_WINDOW_STORE);
+        WindowStore<String, UserAggregate> stateStore = testDriver.getWindowStore(USER_AGGREGATE_SLIDING_WINDOW_STORE);
 
-        try (KeyValueIterator<Windowed<String>, KafkaUserAggregate> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, KafkaUserAggregate> keyValue55To00 = iterator.next();
+        try (KeyValueIterator<Windowed<String>, UserAggregate> iterator = stateStore.all()) {
+            KeyValue<Windowed<String>, UserAggregate> keyValue55To00 = iterator.next();
             assertEquals("Simpson", keyValue55To00.key.key());
             assertEquals(
                     "2000-01-01T00:55:00Z",
@@ -290,7 +287,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
                     keyValue55To00.key.window().endTime().toString());
             assertIterableEquals(List.of(homer), keyValue55To00.value.getUsers());
 
-            KeyValue<Windowed<String>, KafkaUserAggregate> keyValue00To05 = iterator.next();
+            KeyValue<Windowed<String>, UserAggregate> keyValue00To05 = iterator.next();
             assertEquals("Simpson", keyValue00To05.key.key());
             assertEquals(
                     "2000-01-01T01:00:00.001Z",
@@ -300,7 +297,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
                     keyValue00To05.key.window().endTime().toString());
             assertIterableEquals(List.of(bart), keyValue00To05.value.getUsers());
 
-            KeyValue<Windowed<String>, KafkaUserAggregate> keyValue00m30To05m30 = iterator.next();
+            KeyValue<Windowed<String>, UserAggregate> keyValue00m30To05m30 = iterator.next();
             assertEquals("Simpson", keyValue00m30To05m30.key.key());
             assertEquals(
                     "2000-01-01T01:00:30Z",
@@ -310,7 +307,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
                     keyValue00m30To05m30.key.window().endTime().toString());
             assertIterableEquals(List.of(marge, bart), keyValue00m30To05m30.value.getUsers());
 
-            KeyValue<Windowed<String>, KafkaUserAggregate> keyValue03To08 = iterator.next();
+            KeyValue<Windowed<String>, UserAggregate> keyValue03To08 = iterator.next();
             assertEquals("Simpson", keyValue03To08.key.key());
             assertEquals(
                     "2000-01-01T01:03:00.001Z",
@@ -324,8 +321,8 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
         }
     }
 
-    private KafkaUser buildKafkaUser(String firstName) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(String firstName) {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)
                 .setLastName("Simpson")

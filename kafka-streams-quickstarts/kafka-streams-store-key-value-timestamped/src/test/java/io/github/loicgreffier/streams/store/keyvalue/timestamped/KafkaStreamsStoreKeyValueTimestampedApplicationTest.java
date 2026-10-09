@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.store.keyvalue.timestamped.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.store.keyvalue.timestamped.serdes.SerdesUtils;
 import java.io.IOException;
@@ -55,7 +55,7 @@ class KafkaStreamsStoreKeyValueTimestampedApplicationTest {
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestInputTopic<String, User> inputTopic;
 
     @BeforeEach
     void setUp() {
@@ -78,7 +78,7 @@ class KafkaStreamsStoreKeyValueTimestampedApplicationTest {
         inputTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
     }
 
     @AfterEach
@@ -91,13 +91,13 @@ class KafkaStreamsStoreKeyValueTimestampedApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {USER_TIMESTAMPED_KEY_VALUE_STORE, USER_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE})
     void shouldPutAndGetFromKeyValueStores(String storeName) {
-        KafkaUser homer = buildKafkaUser("Homer");
+        User homer = buildKafkaUser("Homer");
         inputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        KafkaUser marge = buildKafkaUser("Marge");
+        User marge = buildKafkaUser("Marge");
         inputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:00:30Z")));
 
-        KeyValueStore<String, ValueAndTimestamp<KafkaUser>> timestampedKeyValueStore =
+        KeyValueStore<String, ValueAndTimestamp<User>> timestampedKeyValueStore =
                 testDriver.getTimestampedKeyValueStore(storeName);
 
         assertEquals(homer, timestampedKeyValueStore.get("1").value());
@@ -112,8 +112,8 @@ class KafkaStreamsStoreKeyValueTimestampedApplicationTest {
                         .toString());
     }
 
-    private KafkaUser buildKafkaUser(String firstName) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(String firstName) {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)
                 .setLastName("Simpson")

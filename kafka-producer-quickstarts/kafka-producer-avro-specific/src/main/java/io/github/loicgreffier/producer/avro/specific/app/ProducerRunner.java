@@ -22,7 +22,7 @@ import static io.github.loicgreffier.producer.avro.specific.constant.Name.FIRST_
 import static io.github.loicgreffier.producer.avro.specific.constant.Name.LAST_NAMES;
 import static io.github.loicgreffier.producer.avro.specific.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import java.time.Instant;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component;
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
     private final Random random = new Random();
-    private final Producer<String, KafkaUser> producer;
+    private final Producer<String, User> producer;
     private boolean stopped = false;
 
     /**
@@ -48,7 +48,7 @@ public class ProducerRunner {
      *
      * @param producer The Kafka producer
      */
-    public ProducerRunner(Producer<String, KafkaUser> producer) {
+    public ProducerRunner(Producer<String, User> producer) {
         this.producer = producer;
     }
 
@@ -67,7 +67,7 @@ public class ProducerRunner {
     public void run() throws InterruptedException {
         int i = 0;
         while (!stopped) {
-            ProducerRecord<String, KafkaUser> message =
+            ProducerRecord<String, User> message =
                     new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildKafkaUser(i));
 
             producer.send(message, (recordMetadata, e) -> {
@@ -105,8 +105,8 @@ public class ProducerRunner {
      * @param id The record id.
      * @return The specific Avro record.
      */
-    private KafkaUser buildKafkaUser(int id) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(int id) {
+        return User.newBuilder()
                 .setId((long) id)
                 .setFirstName(FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())))
                 .setLastName(LAST_NAMES.get(random.nextInt(LAST_NAMES.size())))

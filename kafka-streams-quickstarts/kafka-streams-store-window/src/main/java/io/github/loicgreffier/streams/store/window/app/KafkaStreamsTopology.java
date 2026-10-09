@@ -22,7 +22,7 @@ import static io.github.loicgreffier.streams.store.window.constant.StateStore.US
 import static io.github.loicgreffier.streams.store.window.constant.StateStore.USER_WINDOW_SUPPLIER_STORE;
 import static io.github.loicgreffier.streams.store.window.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.store.window.app.processor.PutInStoreProcessor;
 import io.github.loicgreffier.streams.store.window.serdes.SerdesUtils;
 import java.time.Duration;
@@ -57,21 +57,20 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        final StoreBuilder<WindowStore<String, KafkaUser>> storeBuilder = Stores.windowStoreBuilder(
+        final StoreBuilder<WindowStore<String, User>> storeBuilder = Stores.windowStoreBuilder(
                 Stores.persistentWindowStore(USER_WINDOW_STORE, Duration.ofMinutes(10), Duration.ofMinutes(5), false),
                 Serdes.String(),
                 SerdesUtils.getValueSerdes());
 
-        streamsBuilder.addStateStore(storeBuilder).<String, KafkaUser>stream(
+        streamsBuilder.addStateStore(storeBuilder).<String, User>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .process(() -> new PutInStoreProcessor(storeBuilder.name()), storeBuilder.name());
 
-        streamsBuilder.<String, KafkaUser>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .process(new ProcessorSupplier<String, KafkaUser, String, KafkaUser>() {
+        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .process(new ProcessorSupplier<String, User, String, User>() {
                     @Override
                     public Set<StoreBuilder<?>> stores() {
-                        StoreBuilder<WindowStore<String, KafkaUser>> supplierStoreBuilder = Stores.windowStoreBuilder(
+                        StoreBuilder<WindowStore<String, User>> supplierStoreBuilder = Stores.windowStoreBuilder(
                                 Stores.persistentWindowStore(
                                         USER_WINDOW_SUPPLIER_STORE,
                                         Duration.ofMinutes(10),
@@ -84,7 +83,7 @@ public class KafkaStreamsTopology {
                     }
 
                     @Override
-                    public Processor<String, KafkaUser, String, KafkaUser> get() {
+                    public Processor<String, User, String, User> get() {
                         return new PutInStoreProcessor(USER_WINDOW_SUPPLIER_STORE);
                     }
                 });

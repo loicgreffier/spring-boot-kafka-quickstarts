@@ -1,6 +1,6 @@
 # Kafka Streams Deserialization Exception Handler
 
-This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and handles deserialization exceptions.
+This module streams records of type `<String, User>` from the `USER_TOPIC` and handles deserialization exceptions.
 
 It demonstrates the following:
 
@@ -23,9 +23,9 @@ To compile and run this demo, you'll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaUser>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
+- Produce records of type `<String, User>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
 - Start the Kafka Streams application.
-- To activate the custom deserialization exception handler, produce a record with a value that cannot be deserialized to the `KafkaUser` type (e.g., a value that is not in Avro format) to the `USER_TOPIC`. You can use the Control Center for this.
+- To activate the custom deserialization exception handler, produce a record with a value that cannot be deserialized to the `User` type (e.g., a value that is not in Avro format) to the `USER_TOPIC`. You can use the Control Center for this.
 
 Alternatively, to run everything at once using Docker, run:
 

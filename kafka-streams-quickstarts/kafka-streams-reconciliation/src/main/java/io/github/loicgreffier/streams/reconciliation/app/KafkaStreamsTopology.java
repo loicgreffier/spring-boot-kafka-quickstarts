@@ -23,9 +23,9 @@ import static io.github.loicgreffier.streams.reconciliation.constant.Topic.ORDER
 import static io.github.loicgreffier.streams.reconciliation.constant.Topic.RECONCILIATION_TOPIC;
 import static io.github.loicgreffier.streams.reconciliation.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaOrder;
-import io.github.loicgreffier.avro.KafkaReconciliation;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.Reconciliation;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.reconciliation.app.processor.ReconciliationProcessor;
 import io.github.loicgreffier.streams.reconciliation.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
@@ -51,20 +51,18 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        StoreBuilder<KeyValueStore<String, KafkaReconciliation>> storeBuilder = Stores.keyValueStoreBuilder(
+        StoreBuilder<KeyValueStore<String, Reconciliation>> storeBuilder = Stores.keyValueStoreBuilder(
                 Stores.persistentKeyValueStore(RECONCILIATION_STORE), Serdes.String(), SerdesUtils.getValueSerdes());
 
         streamsBuilder.addStateStore(storeBuilder);
 
-        streamsBuilder.<String, KafkaUser>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .process(() -> new ReconciliationProcessor<>(), RECONCILIATION_STORE)
                 .to(RECONCILIATION_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
 
-        streamsBuilder.<String, KafkaOrder>stream(
-                        ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .selectKey((_, value) -> String.valueOf(value.getCustomerId()))
-                .repartition(Repartitioned.<String, KafkaOrder>with(Serdes.String(), SerdesUtils.getValueSerdes())
+                .repartition(Repartitioned.<String, Order>with(Serdes.String(), SerdesUtils.getValueSerdes())
                         .withName(ORDER_TOPIC))
                 .process(() -> new ReconciliationProcessor<>(), RECONCILIATION_STORE)
                 .to(RECONCILIATION_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));

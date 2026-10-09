@@ -21,7 +21,7 @@ package io.github.loicgreffier.streams.store.cleanup.app;
 import static io.github.loicgreffier.streams.store.cleanup.constant.StateStore.USER_SCHEDULE_STORE_CLEANUP_STORE;
 import static io.github.loicgreffier.streams.store.cleanup.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.store.cleanup.app.processor.StoreCleanupProcessor;
 import io.github.loicgreffier.streams.store.cleanup.serdes.SerdesUtils;
 import java.util.Collections;
@@ -49,12 +49,11 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, KafkaUser>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .process(new ProcessorSupplier<String, KafkaUser, String, KafkaUser>() {
+        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .process(new ProcessorSupplier<String, User, String, User>() {
                     @Override
                     public Set<StoreBuilder<?>> stores() {
-                        StoreBuilder<KeyValueStore<String, KafkaUser>> storeBuilder = Stores.keyValueStoreBuilder(
+                        StoreBuilder<KeyValueStore<String, User>> storeBuilder = Stores.keyValueStoreBuilder(
                                 Stores.persistentKeyValueStore(USER_SCHEDULE_STORE_CLEANUP_STORE),
                                 Serdes.String(),
                                 SerdesUtils.getValueSerdes());
@@ -63,7 +62,7 @@ public class KafkaStreamsTopology {
                     }
 
                     @Override
-                    public Processor<String, KafkaUser, String, KafkaUser> get() {
+                    public Processor<String, User, String, User> get() {
                         return new StoreCleanupProcessor();
                     }
                 })

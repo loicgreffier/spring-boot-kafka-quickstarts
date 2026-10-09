@@ -18,12 +18,12 @@
  */
 package io.github.loicgreffier.streams.cogroup.app.aggregator;
 
-import io.github.loicgreffier.avro.KafkaUser;
-import io.github.loicgreffier.avro.KafkaUserAggregate;
+import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.UserAggregate;
 import org.apache.kafka.streams.kstream.Aggregator;
 
 /** This class represents an aggregator that aggregates users. */
-public class UserAggregator implements Aggregator<String, KafkaUser, KafkaUserAggregate> {
+public class UserAggregator implements Aggregator<String, User, UserAggregate> {
 
     /**
      * Aggregates users.
@@ -34,7 +34,7 @@ public class UserAggregator implements Aggregator<String, KafkaUser, KafkaUserAg
      * @return The updated aggregate.
      */
     @Override
-    public KafkaUserAggregate apply(String key, KafkaUser kafkaUser, KafkaUserAggregate aggregate) {
+    public UserAggregate apply(String key, User kafkaUser, UserAggregate aggregate) {
         aggregate.getUsers().add(kafkaUser);
         return aggregate;
     }

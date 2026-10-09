@@ -20,7 +20,7 @@ package io.github.loicgreffier.streams.reduce;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.reduce.app.reducer.MaxAgeReducer;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
@@ -30,21 +30,21 @@ class MaxAgeReducerTest {
     void shouldKeepOldestUser() {
         MaxAgeReducer reducer = new MaxAgeReducer();
 
-        KafkaUser oldest = KafkaUser.newBuilder()
+        User oldest = User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")
                 .setLastName("Simpson")
                 .setBirthDate(Instant.parse("1956-08-29T18:35:24Z"))
                 .build();
 
-        KafkaUser oldestSameYear = KafkaUser.newBuilder()
+        User oldestSameYear = User.newBuilder()
                 .setId(2L)
                 .setFirstName("Kirk")
                 .setLastName("Van Houten")
                 .setBirthDate(Instant.parse("1956-02-18T12:00:46Z"))
                 .build();
 
-        KafkaUser youngest = KafkaUser.newBuilder()
+        User youngest = User.newBuilder()
                 .setId(3L)
                 .setFirstName("Bart")
                 .setLastName("Simpson")

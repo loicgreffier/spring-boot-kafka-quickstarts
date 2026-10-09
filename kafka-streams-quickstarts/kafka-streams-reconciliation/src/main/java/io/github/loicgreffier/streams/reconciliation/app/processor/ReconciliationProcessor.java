@@ -20,9 +20,9 @@ package io.github.loicgreffier.streams.reconciliation.app.processor;
 
 import static io.github.loicgreffier.streams.reconciliation.constant.StateStore.RECONCILIATION_STORE;
 
-import io.github.loicgreffier.avro.KafkaOrder;
-import io.github.loicgreffier.avro.KafkaReconciliation;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.Reconciliation;
+import io.github.loicgreffier.avro.User;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
@@ -35,9 +35,9 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T> The type of the value in the record being processed.
  */
-public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, String, KafkaReconciliation> {
+public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, String, Reconciliation> {
     private static final Logger log = LoggerFactory.getLogger(ReconciliationProcessor.class);
-    private KeyValueStore<String, KafkaReconciliation> reconciliationStore;
+    private KeyValueStore<String, Reconciliation> reconciliationStore;
 
     /**
      * Initialize the processor.
@@ -45,17 +45,17 @@ public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, S
      * @param context The processor context.
      */
     @Override
-    public void init(ProcessorContext<String, KafkaReconciliation> context) {
+    public void init(ProcessorContext<String, Reconciliation> context) {
         super.init(context);
         reconciliationStore = context.getStateStore(RECONCILIATION_STORE);
     }
 
     /**
      * Process a record and perform reconciliation. Checks whether a reconciliation record exists for the given key. If
-     * it does not exist, a new reconciliation record is created. If the record is a {@code KafkaUser}, the customer is
-     * set in the reconciliation record. If the record is a {@code KafkaOrder}, the order is set in the reconciliation
-     * record. If both customer and order are present in the reconciliation record, the record is emitted and removed
-     * from the store. Otherwise, the current state of the reconciliation record is logged.
+     * it does not exist, a new reconciliation record is created. If the record is a {@code User}, the customer is set
+     * in the reconciliation record. If the record is a {@code Order}, the order is set in the reconciliation record. If
+     * both customer and order are present in the reconciliation record, the record is emitted and removed from the
+     * store. Otherwise, the current state of the reconciliation record is logged.
      *
      * @param message The message to process.
      */
@@ -64,16 +64,16 @@ public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, S
         log.info("Processing record {}", message.value().getClass().getSimpleName());
 
         String customerId = message.key();
-        KafkaReconciliation reconciliation = reconciliationStore.get(customerId);
+        Reconciliation reconciliation = reconciliationStore.get(customerId);
 
         if (reconciliation == null) {
             log.info("No reconciliation record found for key = {}. Storing record in the store", customerId);
-            reconciliation = new KafkaReconciliation();
+            reconciliation = new Reconciliation();
         }
 
-        if (message.value() instanceof KafkaUser kafkaUser) {
+        if (message.value() instanceof User kafkaUser) {
             reconciliation.setCustomer(kafkaUser);
-        } else if (message.value() instanceof KafkaOrder kafkaOrder) {
+        } else if (message.value() instanceof Order kafkaOrder) {
             reconciliation.setOrder(kafkaOrder);
         }
 

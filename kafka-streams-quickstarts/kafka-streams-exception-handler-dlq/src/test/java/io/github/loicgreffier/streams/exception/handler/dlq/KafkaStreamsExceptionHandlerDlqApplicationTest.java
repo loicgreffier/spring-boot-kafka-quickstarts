@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.exception.handler.dlq.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.exception.handler.dlq.serdes.SerdesUtils;
 import java.io.IOException;
@@ -62,9 +62,9 @@ class KafkaStreamsExceptionHandlerDlqApplicationTest {
     private static final String DLQ_TOPIC = "DLQ_TOPIC";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputTopic;
-    private TestOutputTopic<String, KafkaUser> outputTopic;
-    private TestOutputTopic<String, KafkaUser> dlqTopic;
+    private TestInputTopic<String, User> inputTopic;
+    private TestOutputTopic<String, User> outputTopic;
+    private TestOutputTopic<String, User> dlqTopic;
 
     @BeforeEach
     void setUp() {
@@ -90,15 +90,15 @@ class KafkaStreamsExceptionHandlerDlqApplicationTest {
         inputTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
                 USER_EXCEPTION_HANDLER_OUTPUT_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
+                SerdesUtils.<User>getValueSerdes().deserializer());
         dlqTopic = testDriver.createOutputTopic(
                 DLQ_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
+                SerdesUtils.<User>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -110,13 +110,13 @@ class KafkaStreamsExceptionHandlerDlqApplicationTest {
 
     @Test
     void shouldRouteIllegalArgumentExceptionToDlqAndContinueProcessing() {
-        KafkaUser homer = buildKafkaUser("Homer", Instant.parse("1949-01-01T01:00:00Z"));
+        User homer = buildKafkaUser("Homer", Instant.parse("1949-01-01T01:00:00Z"));
         inputTopic.pipeInput("1", homer);
 
-        KafkaUser bart = buildKafkaUser("Bart", Instant.parse("1980-01-01T01:00:00Z"));
+        User bart = buildKafkaUser("Bart", Instant.parse("1980-01-01T01:00:00Z"));
         inputTopic.pipeInput("2", bart);
 
-        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
         assertEquals(bart, results.getFirst().value);
 
@@ -125,13 +125,13 @@ class KafkaStreamsExceptionHandlerDlqApplicationTest {
                 0.03333333333333333,
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
 
-        List<KeyValue<String, KafkaUser>> dlqResults = dlqTopic.readKeyValuesToList();
+        List<KeyValue<String, User>> dlqResults = dlqTopic.readKeyValuesToList();
 
         assertEquals(homer, dlqResults.getFirst().value);
     }
 
-    private KafkaUser buildKafkaUser(String firstName, Instant birthDate) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(String firstName, Instant birthDate) {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)
                 .setLastName("Simpson")

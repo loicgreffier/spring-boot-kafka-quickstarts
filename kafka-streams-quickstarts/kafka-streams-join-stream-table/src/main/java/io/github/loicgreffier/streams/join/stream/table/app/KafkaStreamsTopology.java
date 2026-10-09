@@ -24,9 +24,9 @@ import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.US
 import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.USER_JOIN_STREAM_TABLE_REKEY_TOPIC;
 import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaCountry;
-import io.github.loicgreffier.avro.KafkaJoinUserCountry;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.Country;
+import io.github.loicgreffier.avro.JoinUserCountry;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.join.stream.table.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -56,14 +56,13 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        KTable<String, KafkaCountry> countryTable = streamsBuilder.table(
+        KTable<String, Country> countryTable = streamsBuilder.table(
                 COUNTRY_TOPIC,
-                Materialized.<String, KafkaCountry, KeyValueStore<Bytes, byte[]>>as(COUNTRY_STORE)
+                Materialized.<String, Country, KeyValueStore<Bytes, byte[]>>as(COUNTRY_STORE)
                         .withKeySerde(Serdes.String())
                         .withValueSerde(SerdesUtils.getValueSerdes()));
 
-        streamsBuilder.<String, KafkaUser>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
                 .selectKey((_, user) -> user.getNationality().toString())
                 .join(
@@ -76,7 +75,7 @@ public class KafkaStreamsTopology {
                                     user.getLastName(),
                                     country.getName(),
                                     key);
-                            return KafkaJoinUserCountry.newBuilder()
+                            return JoinUserCountry.newBuilder()
                                     .setUser(user)
                                     .setCountry(country)
                                     .build();

@@ -21,7 +21,7 @@ package io.github.loicgreffier.streams.print.app;
 import static io.github.loicgreffier.streams.print.constant.Topic.USER_TOPIC;
 import static io.github.loicgreffier.streams.print.constant.Topic.USER_TOPIC_TWO;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.print.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -44,16 +44,15 @@ public class KafkaStreamsTopology {
      * @param filePath The file path.
      */
     public static void topology(StreamsBuilder streamsBuilder, String filePath) {
-        streamsBuilder.<String, KafkaUser>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .print(Printed.<String, KafkaUser>toFile(filePath)
+                .print(Printed.<String, User>toFile(filePath)
                         .withKeyValueMapper(KafkaStreamsTopology::toOutput)
                         .withLabel(USER_TOPIC));
 
-        streamsBuilder.<String, KafkaUser>stream(
+        streamsBuilder.<String, User>stream(
                         USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .print(Printed.<String, KafkaUser>toSysOut()
+                .print(Printed.<String, User>toSysOut()
                         .withKeyValueMapper(KafkaStreamsTopology::toOutput)
                         .withLabel(USER_TOPIC_TWO));
     }
@@ -65,7 +64,7 @@ public class KafkaStreamsTopology {
      * @param kafkaUser The value.
      * @return The formatted string.
      */
-    private static String toOutput(String key, KafkaUser kafkaUser) {
+    private static String toOutput(String key, User kafkaUser) {
         return "Processing key = %s, value = %s".formatted(key, kafkaUser);
     }
 

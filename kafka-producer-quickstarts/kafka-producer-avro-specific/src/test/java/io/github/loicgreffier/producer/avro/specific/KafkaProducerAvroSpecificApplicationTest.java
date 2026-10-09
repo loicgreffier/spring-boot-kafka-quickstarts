@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.producer.avro.specific.app.ProducerRunner;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -44,14 +44,14 @@ import org.slf4j.LoggerFactory;
 class KafkaProducerAvroSpecificApplicationTest {
     private static final Logger log = LoggerFactory.getLogger(KafkaProducerAvroSpecificApplicationTest.class);
 
-    private final Serializer<KafkaUser> serializer = (topic, kafkaUser) -> {
+    private final Serializer<User> serializer = (topic, kafkaUser) -> {
         KafkaAvroSerializer inner = new KafkaAvroSerializer();
         inner.configure(Map.of(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://"), false);
         return inner.serialize(topic, kafkaUser);
     };
 
     @Spy
-    private MockProducer<String, KafkaUser> mockProducer =
+    private MockProducer<String, User> mockProducer =
             new MockProducer<>(true, null, new StringSerializer(), serializer);
 
     @InjectMocks
@@ -71,7 +71,7 @@ class KafkaProducerAvroSpecificApplicationTest {
 
         waitForProducer();
 
-        ProducerRecord<String, KafkaUser> sentRecord = mockProducer.history().getFirst();
+        ProducerRecord<String, User> sentRecord = mockProducer.history().getFirst();
 
         assertEquals(USER_TOPIC, sentRecord.topic());
         assertEquals("0", sentRecord.key());

@@ -22,7 +22,7 @@ import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.
 import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.USER_KEY_VALUE_SUPPLIER_STORE;
 import static io.github.loicgreffier.streams.store.keyvalue.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.store.keyvalue.app.processor.PutInStoreProcessor;
 import io.github.loicgreffier.streams.store.keyvalue.serdes.SerdesUtils;
 import java.util.Collections;
@@ -56,29 +56,27 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        final StoreBuilder<KeyValueStore<String, KafkaUser>> storeBuilder = Stores.keyValueStoreBuilder(
+        final StoreBuilder<KeyValueStore<String, User>> storeBuilder = Stores.keyValueStoreBuilder(
                 Stores.persistentKeyValueStore(USER_KEY_VALUE_STORE), Serdes.String(), SerdesUtils.getValueSerdes());
 
-        streamsBuilder.addStateStore(storeBuilder).<String, KafkaUser>stream(
+        streamsBuilder.addStateStore(storeBuilder).<String, User>stream(
                         USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .process(() -> new PutInStoreProcessor(storeBuilder.name()), storeBuilder.name());
 
-        streamsBuilder.<String, KafkaUser>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .process(new ProcessorSupplier<String, KafkaUser, String, KafkaUser>() {
+        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .process(new ProcessorSupplier<String, User, String, User>() {
                     @Override
                     public Set<StoreBuilder<?>> stores() {
-                        StoreBuilder<KeyValueStore<String, KafkaUser>> supplierStoreBuilder =
-                                Stores.keyValueStoreBuilder(
-                                        Stores.persistentKeyValueStore(USER_KEY_VALUE_SUPPLIER_STORE),
-                                        Serdes.String(),
-                                        SerdesUtils.getValueSerdes());
+                        StoreBuilder<KeyValueStore<String, User>> supplierStoreBuilder = Stores.keyValueStoreBuilder(
+                                Stores.persistentKeyValueStore(USER_KEY_VALUE_SUPPLIER_STORE),
+                                Serdes.String(),
+                                SerdesUtils.getValueSerdes());
 
                         return Collections.singleton(supplierStoreBuilder);
                     }
 
                     @Override
-                    public Processor<String, KafkaUser, String, KafkaUser> get() {
+                    public Processor<String, User, String, User> get() {
                         return new PutInStoreProcessor(USER_KEY_VALUE_SUPPLIER_STORE);
                     }
                 });

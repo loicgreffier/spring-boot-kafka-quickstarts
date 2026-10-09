@@ -23,7 +23,7 @@ import static io.github.loicgreffier.streams.reduce.constant.Topic.GROUP_USER_BY
 import static io.github.loicgreffier.streams.reduce.constant.Topic.USER_REDUCE_TOPIC;
 import static io.github.loicgreffier.streams.reduce.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.reduce.app.reducer.MaxAgeReducer;
 import io.github.loicgreffier.streams.reduce.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
@@ -50,15 +50,14 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, KafkaUser>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
                 .groupBy(
                         (_, user) -> user.getNationality().toString(),
                         Grouped.with(GROUP_USER_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .reduce(
                         new MaxAgeReducer(),
-                        Materialized.<String, KafkaUser, KeyValueStore<Bytes, byte[]>>as(USER_REDUCE_STORE)
+                        Materialized.<String, User, KeyValueStore<Bytes, byte[]>>as(USER_REDUCE_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))
                 .toStream()

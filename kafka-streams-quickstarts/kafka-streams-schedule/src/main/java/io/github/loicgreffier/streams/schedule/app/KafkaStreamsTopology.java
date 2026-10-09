@@ -22,7 +22,7 @@ import static io.github.loicgreffier.streams.schedule.constant.StateStore.USER_S
 import static io.github.loicgreffier.streams.schedule.constant.Topic.USER_SCHEDULE_TOPIC;
 import static io.github.loicgreffier.streams.schedule.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.schedule.app.processor.CountNationalityProcessor;
 import io.github.loicgreffier.streams.schedule.serdes.SerdesUtils;
 import java.util.Collections;
@@ -50,9 +50,8 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, KafkaUser>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .process(new ProcessorSupplier<String, KafkaUser, String, Long>() {
+        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .process(new ProcessorSupplier<String, User, String, Long>() {
                     @Override
                     public Set<StoreBuilder<?>> stores() {
                         StoreBuilder<KeyValueStore<String, Long>> storeBuilder = Stores.keyValueStoreBuilder(
@@ -62,7 +61,7 @@ public class KafkaStreamsTopology {
                     }
 
                     @Override
-                    public Processor<String, KafkaUser, String, Long> get() {
+                    public Processor<String, User, String, Long> get() {
                         return new CountNationalityProcessor();
                     }
                 })

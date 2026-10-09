@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.schedule.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.schedule.serdes.SerdesUtils;
 import java.io.IOException;
@@ -60,7 +60,7 @@ class KafkaStreamsScheduleApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestInputTopic<String, User> inputTopic;
     private TestOutputTopic<String, Long> outputTopic;
 
     @BeforeEach
@@ -84,7 +84,7 @@ class KafkaStreamsScheduleApplicationTest {
         inputTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         outputTopic =
                 testDriver.createOutputTopic(USER_SCHEDULE_TOPIC, new StringDeserializer(), new LongDeserializer());
     }
@@ -154,8 +154,8 @@ class KafkaStreamsScheduleApplicationTest {
         assertEquals(0, stateStore.get("IT"));
     }
 
-    private KafkaUser buildKafkaUser(String firstName, String lastName, CountryCode nationality) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(String firstName, String lastName, CountryCode nationality) {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)
                 .setLastName(lastName)

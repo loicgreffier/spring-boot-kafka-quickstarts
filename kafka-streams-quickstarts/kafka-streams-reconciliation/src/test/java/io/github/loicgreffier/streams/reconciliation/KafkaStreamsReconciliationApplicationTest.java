@@ -47,9 +47,9 @@ import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaOrder;
-import io.github.loicgreffier.avro.KafkaReconciliation;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.Reconciliation;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.reconciliation.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.reconciliation.serdes.SerdesUtils;
 import java.io.IOException;
@@ -76,9 +76,9 @@ class KafkaStreamsReconciliationApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputUserTopic;
-    private TestInputTopic<String, KafkaOrder> inputOrderTopic;
-    private TestOutputTopic<String, KafkaReconciliation> outputTopic;
+    private TestInputTopic<String, User> inputUserTopic;
+    private TestInputTopic<String, Order> inputOrderTopic;
+    private TestOutputTopic<String, Reconciliation> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -101,15 +101,15 @@ class KafkaStreamsReconciliationApplicationTest {
         inputUserTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         inputOrderTopic = testDriver.createInputTopic(
                 ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaOrder>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
                 RECONCILIATION_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaReconciliation>getValueSerdes().deserializer());
+                SerdesUtils.<Reconciliation>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -121,21 +121,21 @@ class KafkaStreamsReconciliationApplicationTest {
 
     @Test
     void shouldReconcile() {
-        KafkaUser homer = buildKafkaUser();
-        KafkaOrder order = buildKafkaOrder();
+        User homer = buildKafkaUser();
+        Order order = buildKafkaOrder();
 
         inputUserTopic.pipeInput("1", homer);
         inputOrderTopic.pipeInput("1", order);
 
-        List<KeyValue<String, KafkaReconciliation>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, Reconciliation>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("1", results.getFirst().key);
         assertEquals(homer, results.getFirst().value.getCustomer());
         assertEquals(order, results.getFirst().value.getOrder());
     }
 
-    private KafkaUser buildKafkaUser() {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser() {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")
                 .setLastName("Simpson")
@@ -143,8 +143,8 @@ class KafkaStreamsReconciliationApplicationTest {
                 .build();
     }
 
-    private KafkaOrder buildKafkaOrder() {
-        return KafkaOrder.newBuilder()
+    private Order buildKafkaOrder() {
+        return Order.newBuilder()
                 .setId(1L)
                 .setItems(List.of("Duff Beer", "Donuts"))
                 .setTotalAmount(10.99)

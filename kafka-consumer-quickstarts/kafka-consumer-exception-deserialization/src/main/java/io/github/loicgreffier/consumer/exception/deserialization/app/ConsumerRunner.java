@@ -20,7 +20,7 @@ package io.github.loicgreffier.consumer.exception.deserialization.app;
 
 import static io.github.loicgreffier.consumer.exception.deserialization.constant.Topic.USER_TOPIC;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import java.time.Duration;
 import java.util.Collections;
 import org.apache.kafka.clients.consumer.CommitFailedException;
@@ -40,14 +40,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConsumerRunner {
     private static final Logger log = LoggerFactory.getLogger(ConsumerRunner.class);
-    private final Consumer<String, KafkaUser> consumer;
+    private final Consumer<String, User> consumer;
 
     /**
      * Constructor.
      *
      * @param consumer The Kafka consumer.
      */
-    public ConsumerRunner(Consumer<String, KafkaUser> consumer) {
+    public ConsumerRunner(Consumer<String, User> consumer) {
         this.consumer = consumer;
     }
 
@@ -75,12 +75,12 @@ public class ConsumerRunner {
 
             while (true) {
                 try {
-                    ConsumerRecords<String, KafkaUser> messages = consumer.poll(Duration.ofMillis(1000));
+                    ConsumerRecords<String, User> messages = consumer.poll(Duration.ofMillis(1000));
                     log.info("Pulled {} records", messages.count());
 
                     long startTime = System.currentTimeMillis();
 
-                    for (ConsumerRecord<String, KafkaUser> message : messages) {
+                    for (ConsumerRecord<String, User> message : messages) {
                         log.info(
                                 "Processing offset = {}, partition = {}, key = {}, value = {}",
                                 message.offset(),

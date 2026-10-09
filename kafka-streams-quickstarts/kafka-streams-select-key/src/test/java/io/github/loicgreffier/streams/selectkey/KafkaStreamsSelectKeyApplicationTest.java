@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.selectkey.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.selectkey.serdes.SerdesUtils;
 import java.io.IOException;
@@ -55,8 +55,8 @@ class KafkaStreamsSelectKeyApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputTopic;
-    private TestOutputTopic<String, KafkaUser> outputTopic;
+    private TestInputTopic<String, User> inputTopic;
+    private TestOutputTopic<String, User> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -79,11 +79,11 @@ class KafkaStreamsSelectKeyApplicationTest {
         inputTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
                 USER_SELECT_KEY_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
+                SerdesUtils.<User>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -95,15 +95,15 @@ class KafkaStreamsSelectKeyApplicationTest {
 
     @Test
     void shouldSelectLastNameAsNewKey() {
-        KafkaUser user = buildKafkaUser();
+        User user = buildKafkaUser();
         inputTopic.pipeInput("1", user);
-        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
         assertEquals(KeyValue.pair("Simpson", user), results.getFirst());
     }
 
-    private KafkaUser buildKafkaUser() {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser() {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")
                 .setLastName("Simpson")

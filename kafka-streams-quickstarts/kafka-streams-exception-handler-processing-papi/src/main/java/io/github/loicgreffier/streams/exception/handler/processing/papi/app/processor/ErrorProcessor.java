@@ -18,7 +18,7 @@
  */
 package io.github.loicgreffier.streams.exception.handler.processing.papi.app.processor;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import java.time.Duration;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.processor.api.ContextualFixedKeyProcessor;
@@ -26,7 +26,7 @@ import org.apache.kafka.streams.processor.api.FixedKeyProcessorContext;
 import org.apache.kafka.streams.processor.api.FixedKeyRecord;
 
 /** This class represents a processor that throws an exception during processing and punctuation. */
-public class ErrorProcessor extends ContextualFixedKeyProcessor<String, KafkaUser, KafkaUser> {
+public class ErrorProcessor extends ContextualFixedKeyProcessor<String, User, User> {
 
     /**
      * Initialize the processor.
@@ -34,7 +34,7 @@ public class ErrorProcessor extends ContextualFixedKeyProcessor<String, KafkaUse
      * @param context The processor context.
      */
     @Override
-    public void init(FixedKeyProcessorContext<String, KafkaUser> context) {
+    public void init(FixedKeyProcessorContext<String, User> context) {
         super.init(context);
         context.schedule(Duration.ofMinutes(1), PunctuationType.WALL_CLOCK_TIME, _ -> {
             throw new IllegalArgumentException("Forced processing exception during punctuation");
@@ -47,7 +47,7 @@ public class ErrorProcessor extends ContextualFixedKeyProcessor<String, KafkaUse
      * @param message The record to process
      */
     @Override
-    public void process(FixedKeyRecord<String, KafkaUser> message) {
+    public void process(FixedKeyRecord<String, User> message) {
         if (message.value().getBirthDate().toEpochMilli() < 0) {
             throw new IllegalArgumentException("Age must be positive");
         }

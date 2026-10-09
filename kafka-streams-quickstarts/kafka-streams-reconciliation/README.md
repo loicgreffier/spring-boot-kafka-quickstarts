@@ -1,6 +1,6 @@
 # Kafka Streams Reconciliation
 
-This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and `<String, KafkaOrder>` from the `ORDER_TOPIC`, and reconciles an order with its customer.
+This module streams records of type `<String, User>` from the `USER_TOPIC` and `<String, Order>` from the `ORDER_TOPIC`, and reconciles an order with its customer.
 
 It demonstrates the following:
 
@@ -22,8 +22,8 @@ To compile and run this demo, you'll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaUser>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
-- Produce records of type `<String, KafkaOrder>` to the `ORDER_TOPIC`. You can use the [Producer Order](../specific-producers/kafka-streams-producer-order) for this.
+- Produce records of type `<String, User>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
+- Produce records of type `<String, Order>` to the `ORDER_TOPIC`. You can use the [Producer Order](../specific-producers/kafka-streams-producer-order) for this.
 - Start the Kafka Streams application.
 
 Alternatively, to run everything at once using Docker, run:

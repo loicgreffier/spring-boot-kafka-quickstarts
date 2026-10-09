@@ -24,7 +24,7 @@ import static io.github.loicgreffier.streams.producer.user.constant.Topic.USER_T
 import static io.github.loicgreffier.streams.producer.user.constant.Topic.USER_TOPIC_TWO;
 
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import java.time.Instant;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -42,14 +42,14 @@ import org.springframework.stereotype.Component;
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
     private final Random random = new Random();
-    private final Producer<String, KafkaUser> producer;
+    private final Producer<String, User> producer;
 
     /**
      * Constructor.
      *
      * @param producer The Kafka producer
      */
-    public ProducerRunner(Producer<String, KafkaUser> producer) {
+    public ProducerRunner(Producer<String, User> producer) {
         this.producer = producer;
     }
 
@@ -68,10 +68,10 @@ public class ProducerRunner {
     public void run() throws InterruptedException {
         int i = 0;
         while (true) {
-            ProducerRecord<String, KafkaUser> messageOne =
+            ProducerRecord<String, User> messageOne =
                     new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildKafkaUser(i));
 
-            ProducerRecord<String, KafkaUser> messageTwo =
+            ProducerRecord<String, User> messageTwo =
                     new ProducerRecord<>(USER_TOPIC_TWO, String.valueOf(i), buildKafkaUser(i));
 
             send(messageOne);
@@ -88,7 +88,7 @@ public class ProducerRunner {
      *
      * @param message The message to send.
      */
-    public void send(ProducerRecord<String, KafkaUser> message) {
+    public void send(ProducerRecord<String, User> message) {
         producer.send(message, (recordMetadata, e) -> {
             if (e != null) {
                 log.error(e.getMessage());
@@ -110,8 +110,8 @@ public class ProducerRunner {
      * @param id The user id.
      * @return The Kafka user.
      */
-    private KafkaUser buildKafkaUser(int id) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(int id) {
+        return User.newBuilder()
                 .setId((long) id)
                 .setFirstName(FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())))
                 .setLastName(LAST_NAMES.get(random.nextInt(LAST_NAMES.size())))

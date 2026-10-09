@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verify;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.consumer.exactly.once.app.ConsumerRunner;
 import java.time.Instant;
 import java.util.Collections;
@@ -54,18 +54,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerExactlyOnceProcessingApplicationTest {
-    private final Serializer<KafkaUser> serializer = (topic, kafkaUser) -> {
+    private final Serializer<User> serializer = (topic, kafkaUser) -> {
         KafkaAvroSerializer inner = new KafkaAvroSerializer();
         inner.configure(Map.of(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://"), false);
         return inner.serialize(topic, kafkaUser);
     };
 
     @Spy
-    private MockProducer<String, KafkaUser> mockProducer =
+    private MockProducer<String, User> mockProducer =
             new MockProducer<>(true, null, new StringSerializer(), serializer);
 
     @Spy
-    private MockConsumer<String, KafkaUser> mockConsumer = new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
+    private MockConsumer<String, User> mockConsumer = new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
 
     @InjectMocks
     private ConsumerRunner consumerRunner;
@@ -82,12 +82,12 @@ class KafkaConsumerExactlyOnceProcessingApplicationTest {
 
     @Test
     void shouldCommitTransaction() {
-        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+        ConsumerRecord<String, User> message = new ConsumerRecord<>(
                 USER_TOPIC,
                 0,
                 0,
                 "1",
-                KafkaUser.newBuilder()
+                User.newBuilder()
                         .setId(1L)
                         .setFirstName("Homer")
                         .setLastName("Simpson")
@@ -99,7 +99,7 @@ class KafkaConsumerExactlyOnceProcessingApplicationTest {
 
         consumerRunner.run();
 
-        ProducerRecord<String, KafkaUser> sentRecord = mockProducer.history().getFirst();
+        ProducerRecord<String, User> sentRecord = mockProducer.history().getFirst();
 
         assertEquals(EXACTLY_ONCE_PROCESSING_TOPIC, sentRecord.topic());
         assertEquals("1", sentRecord.key());
@@ -119,12 +119,12 @@ class KafkaConsumerExactlyOnceProcessingApplicationTest {
 
     @Test
     void shouldAbortTransaction() {
-        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+        ConsumerRecord<String, User> message = new ConsumerRecord<>(
                 USER_TOPIC,
                 0,
                 0,
                 "1",
-                KafkaUser.newBuilder()
+                User.newBuilder()
                         .setId(1L)
                         // Null first name to trigger an exception
                         .setLastName("Simpson")

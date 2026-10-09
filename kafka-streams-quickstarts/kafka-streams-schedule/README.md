@@ -1,6 +1,6 @@
 # Kafka Streams Schedule
 
-This module streams records of type `<String, KafkaUser>` from the `USER_TOPIC` and uses the Processor API to count users by nationality. 
+This module streams records of type `<String, User>` from the `USER_TOPIC` and uses the Processor API to count users by nationality. 
 It then schedules the emission of these counts to the downstream processor based on wall clock time and stream time.
 
 It demonstrates the following:
@@ -25,7 +25,7 @@ To compile and run this demo, you'll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, KafkaUser>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
+- Produce records of type `<String, User>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
 - Start the Kafka Streams application.
 
 Alternatively, to run everything at once using Docker, run:

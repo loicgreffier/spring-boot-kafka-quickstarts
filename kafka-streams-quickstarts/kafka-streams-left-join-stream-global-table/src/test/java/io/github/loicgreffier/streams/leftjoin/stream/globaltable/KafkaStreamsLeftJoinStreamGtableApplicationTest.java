@@ -29,10 +29,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
+import io.github.loicgreffier.avro.Country;
 import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.KafkaCountry;
-import io.github.loicgreffier.avro.KafkaJoinUserCountry;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.JoinUserCountry;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.leftjoin.stream.globaltable.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.leftjoin.stream.globaltable.serdes.SerdesUtils;
 import java.io.IOException;
@@ -59,9 +59,9 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> userInputTopic;
-    private TestInputTopic<String, KafkaCountry> countryInputTopic;
-    private TestOutputTopic<String, KafkaJoinUserCountry> joinOutputTopic;
+    private TestInputTopic<String, User> userInputTopic;
+    private TestInputTopic<String, Country> countryInputTopic;
+    private TestOutputTopic<String, JoinUserCountry> joinOutputTopic;
 
     @BeforeEach
     void setUp() {
@@ -84,15 +84,15 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
         userInputTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         countryInputTopic = testDriver.createInputTopic(
                 COUNTRY_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaCountry>getValueSerdes().serializer());
+                SerdesUtils.<Country>getValueSerdes().serializer());
         joinOutputTopic = testDriver.createOutputTopic(
                 USER_COUNTRY_LEFT_JOIN_STREAM_GLOBAL_TABLE_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaJoinUserCountry>getValueSerdes().deserializer());
+                SerdesUtils.<JoinUserCountry>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -104,13 +104,13 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
 
     @Test
     void shouldJoinUserToCountry() {
-        KafkaCountry country = buildKafkaCountry();
+        Country country = buildKafkaCountry();
         countryInputTopic.pipeInput("US", country);
 
-        KafkaUser user = buildKafkaUser();
+        User user = buildKafkaUser();
         userInputTopic.pipeInput("1", user);
 
-        List<KeyValue<String, KafkaJoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
 
         assertEquals("1", results.getFirst().key);
         assertEquals(user, results.getFirst().value.getUser());
@@ -119,18 +119,18 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
 
     @Test
     void shouldEmitValueEvenIfNoCountry() {
-        KafkaUser user = buildKafkaUser();
+        User user = buildKafkaUser();
         userInputTopic.pipeInput("1", user);
 
-        List<KeyValue<String, KafkaJoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
 
         assertEquals("1", results.getFirst().key);
         assertEquals(user, results.getFirst().value.getUser());
         assertNull(results.getFirst().value.getCountry());
     }
 
-    private KafkaUser buildKafkaUser() {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser() {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")
                 .setLastName("Simpson")
@@ -139,8 +139,8 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
                 .build();
     }
 
-    private KafkaCountry buildKafkaCountry() {
-        return KafkaCountry.newBuilder()
+    private Country buildKafkaCountry() {
+        return Country.newBuilder()
                 .setCode(CountryCode.US)
                 .setName("United States")
                 .setCapital("Washington")

@@ -25,7 +25,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.consumer.avro.specific.app.ConsumerRunner;
 import java.time.Instant;
 import java.util.Collections;
@@ -45,7 +45,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerAvroSpecificApplicationTest {
     @Spy
-    private MockConsumer<String, KafkaUser> mockConsumer = new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
+    private MockConsumer<String, User> mockConsumer = new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
 
     @InjectMocks
     private ConsumerRunner consumerRunner;
@@ -62,12 +62,12 @@ class KafkaConsumerAvroSpecificApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+        ConsumerRecord<String, User> message = new ConsumerRecord<>(
                 USER_TOPIC,
                 0,
                 0,
                 "1",
-                KafkaUser.newBuilder()
+                User.newBuilder()
                         .setId(1L)
                         .setFirstName("Homer")
                         .setLastName("Simpson")
@@ -85,12 +85,12 @@ class KafkaConsumerAvroSpecificApplicationTest {
 
     @Test
     void shouldFailOnPoisonPill() {
-        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+        ConsumerRecord<String, User> message = new ConsumerRecord<>(
                 USER_TOPIC,
                 0,
                 0,
                 "1",
-                KafkaUser.newBuilder()
+                User.newBuilder()
                         .setId(1L)
                         .setFirstName("Homer")
                         .setLastName("Simpson")

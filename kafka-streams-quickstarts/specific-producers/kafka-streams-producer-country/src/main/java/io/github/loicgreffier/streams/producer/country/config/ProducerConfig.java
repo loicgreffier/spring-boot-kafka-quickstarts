@@ -18,7 +18,7 @@
  */
 package io.github.loicgreffier.streams.producer.country.config;
 
-import io.github.loicgreffier.avro.KafkaCountry;
+import io.github.loicgreffier.avro.Country;
 import io.github.loicgreffier.streams.producer.country.property.ProducerProperties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -36,7 +36,7 @@ public class ProducerConfig {
      * @return A Kafka producer instance.
      */
     @Bean
-    public Producer<String, KafkaCountry> kafkaProducer(ProducerProperties properties) {
+    public Producer<String, Country> kafkaProducer(ProducerProperties properties) {
         return new KafkaProducer<>(properties.asProperties());
     }
 }

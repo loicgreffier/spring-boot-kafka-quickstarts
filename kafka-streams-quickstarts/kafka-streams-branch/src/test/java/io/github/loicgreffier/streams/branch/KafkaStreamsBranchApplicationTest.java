@@ -29,7 +29,7 @@ import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.branch.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.branch.serdes.SerdesUtils;
 import java.io.IOException;
@@ -56,10 +56,10 @@ class KafkaStreamsBranchApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputTopic;
-    private TestOutputTopic<String, KafkaUser> outputTopicA;
-    private TestOutputTopic<String, KafkaUser> outputTopicB;
-    private TestOutputTopic<String, KafkaUser> outputTopicDefault;
+    private TestInputTopic<String, User> inputTopic;
+    private TestOutputTopic<String, User> outputTopicA;
+    private TestOutputTopic<String, User> outputTopicB;
+    private TestOutputTopic<String, User> outputTopicDefault;
 
     @BeforeEach
     void setUp() {
@@ -82,19 +82,19 @@ class KafkaStreamsBranchApplicationTest {
         inputTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         outputTopicA = testDriver.createOutputTopic(
                 USER_BRANCH_A_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
+                SerdesUtils.<User>getValueSerdes().deserializer());
         outputTopicB = testDriver.createOutputTopic(
                 USER_BRANCH_B_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
+                SerdesUtils.<User>getValueSerdes().deserializer());
         outputTopicDefault = testDriver.createOutputTopic(
                 USER_BRANCH_DEFAULT_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
+                SerdesUtils.<User>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -108,7 +108,7 @@ class KafkaStreamsBranchApplicationTest {
     void shouldBranchToTopicA() {
         inputTopic.pipeInput("1", buildKafkaUser("Homer", "Simpson"));
 
-        List<KeyValue<String, KafkaUser>> results = outputTopicA.readKeyValuesToList();
+        List<KeyValue<String, User>> results = outputTopicA.readKeyValuesToList();
 
         assertEquals("HOMER", results.getFirst().value.getFirstName());
         assertEquals("SIMPSON", results.getFirst().value.getLastName());
@@ -116,26 +116,26 @@ class KafkaStreamsBranchApplicationTest {
 
     @Test
     void shouldBranchToTopicB() {
-        KafkaUser user = buildKafkaUser("Ned", "Flanders");
+        User user = buildKafkaUser("Ned", "Flanders");
         inputTopic.pipeInput("1", user);
 
-        List<KeyValue<String, KafkaUser>> results = outputTopicB.readKeyValuesToList();
+        List<KeyValue<String, User>> results = outputTopicB.readKeyValuesToList();
 
         assertEquals(KeyValue.pair("1", user), results.getFirst());
     }
 
     @Test
     void shouldBranchToDefaultTopic() {
-        KafkaUser user = buildKafkaUser("Milhouse", "Van Houten");
+        User user = buildKafkaUser("Milhouse", "Van Houten");
         inputTopic.pipeInput("1", user);
 
-        List<KeyValue<String, KafkaUser>> results = outputTopicDefault.readKeyValuesToList();
+        List<KeyValue<String, User>> results = outputTopicDefault.readKeyValuesToList();
 
         assertEquals(KeyValue.pair("1", user), results.getFirst());
     }
 
-    private KafkaUser buildKafkaUser(String firstName, String lastName) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(String firstName, String lastName) {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)
                 .setLastName(lastName)

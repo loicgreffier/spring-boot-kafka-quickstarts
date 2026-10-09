@@ -24,7 +24,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.consumer.exception.deserialization.app.ConsumerRunner;
 import java.time.Instant;
 import java.util.Collections;
@@ -44,7 +44,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerExceptionDeserializationApplicationTest {
     @Spy
-    private MockConsumer<String, KafkaUser> mockConsumer = new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
+    private MockConsumer<String, User> mockConsumer = new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
 
     @InjectMocks
     private ConsumerRunner consumerRunner;
@@ -61,12 +61,12 @@ class KafkaConsumerExceptionDeserializationApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+        ConsumerRecord<String, User> message = new ConsumerRecord<>(
                 USER_TOPIC,
                 0,
                 0,
                 "1",
-                KafkaUser.newBuilder()
+                User.newBuilder()
                         .setId(1L)
                         .setFirstName("Homer")
                         .setLastName("Simpson")
@@ -84,24 +84,24 @@ class KafkaConsumerExceptionDeserializationApplicationTest {
 
     @Test
     void shouldSkipRecordOnDeserializationException() {
-        ConsumerRecord<String, KafkaUser> message = new ConsumerRecord<>(
+        ConsumerRecord<String, User> message = new ConsumerRecord<>(
                 USER_TOPIC,
                 0,
                 0,
                 "1",
-                KafkaUser.newBuilder()
+                User.newBuilder()
                         .setId(1L)
                         .setFirstName("Homer")
                         .setLastName("Simpson")
                         .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
                         .build());
 
-        ConsumerRecord<String, KafkaUser> message2 = new ConsumerRecord<>(
+        ConsumerRecord<String, User> message2 = new ConsumerRecord<>(
                 USER_TOPIC,
                 0,
                 2,
                 "2",
-                KafkaUser.newBuilder()
+                User.newBuilder()
                         .setId(2L)
                         .setFirstName("Homer")
                         .setLastName("Simpson")

@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.filter.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.filter.serdes.SerdesUtils;
 import java.io.IOException;
@@ -55,8 +55,8 @@ class KafkaStreamsFilterApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputTopic;
-    private TestOutputTopic<String, KafkaUser> outputTopic;
+    private TestInputTopic<String, User> inputTopic;
+    private TestOutputTopic<String, User> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -79,11 +79,11 @@ class KafkaStreamsFilterApplicationTest {
         inputTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
                 USER_FILTER_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().deserializer());
+                SerdesUtils.<User>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -97,7 +97,7 @@ class KafkaStreamsFilterApplicationTest {
     void shouldFilterBadLastName() {
         inputTopic.pipeInput("1", buildKafkaUser("Ned", "Flanders"));
 
-        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
         assertTrue(results.isEmpty());
     }
@@ -106,23 +106,23 @@ class KafkaStreamsFilterApplicationTest {
     void shouldFilterBadFirstName() {
         inputTopic.pipeInput("1", buildKafkaUser("Marge", "Simpson"));
 
-        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
         assertTrue(results.isEmpty());
     }
 
     @Test
     void shouldNotFilter() {
-        KafkaUser user = buildKafkaUser("Homer", "Simpson");
+        User user = buildKafkaUser("Homer", "Simpson");
         inputTopic.pipeInput("1", user);
 
-        List<KeyValue<String, KafkaUser>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
         assertEquals(KeyValue.pair("1", user), results.getFirst());
     }
 
-    private KafkaUser buildKafkaUser(String firstName, String lastName) {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser(String firstName, String lastName) {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)
                 .setLastName(lastName)

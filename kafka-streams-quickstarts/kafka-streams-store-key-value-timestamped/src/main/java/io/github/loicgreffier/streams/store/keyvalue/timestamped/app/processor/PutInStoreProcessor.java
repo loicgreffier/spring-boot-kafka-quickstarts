@@ -18,7 +18,7 @@
  */
 package io.github.loicgreffier.streams.store.keyvalue.timestamped.app.processor;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
@@ -28,11 +28,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** This class represents a processor that puts the messages in a timestamped key-value store. */
-public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, String, KafkaUser> {
+public class PutInStoreProcessor extends ContextualProcessor<String, User, String, User> {
     private static final Logger log = LoggerFactory.getLogger(PutInStoreProcessor.class);
 
     private final String storeName;
-    private TimestampedKeyValueStore<String, KafkaUser> timestampedKeyValueStore;
+    private TimestampedKeyValueStore<String, User> timestampedKeyValueStore;
 
     /**
      * Constructor.
@@ -49,7 +49,7 @@ public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, 
      * @param context the processor context.
      */
     @Override
-    public void init(ProcessorContext<String, KafkaUser> context) {
+    public void init(ProcessorContext<String, User> context) {
         super.init(context);
         timestampedKeyValueStore = context.getStateStore(storeName);
     }
@@ -60,7 +60,7 @@ public class PutInStoreProcessor extends ContextualProcessor<String, KafkaUser, 
      * @param message the message to process.
      */
     @Override
-    public void process(Record<String, KafkaUser> message) {
+    public void process(Record<String, User> message) {
         log.info("Put key = {}, value = {} in store {}", message.key(), message.value(), storeName);
         timestampedKeyValueStore.put(message.key(), ValueAndTimestamp.make(message.value(), message.timestamp()));
     }

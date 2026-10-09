@@ -20,7 +20,7 @@ package io.github.loicgreffier.streams.schedule.app.processor;
 
 import static io.github.loicgreffier.streams.schedule.constant.StateStore.USER_SCHEDULE_STORE;
 
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** This class represents a processor that counts the number of users by nationality. */
-public class CountNationalityProcessor extends ContextualProcessor<String, KafkaUser, String, Long> {
+public class CountNationalityProcessor extends ContextualProcessor<String, User, String, Long> {
     private static final Logger log = LoggerFactory.getLogger(CountNationalityProcessor.class);
     private KeyValueStore<String, Long> countNationalityStore;
 
@@ -62,7 +62,7 @@ public class CountNationalityProcessor extends ContextualProcessor<String, Kafka
      * @param message The message to process.
      */
     @Override
-    public void process(Record<String, KafkaUser> message) {
+    public void process(Record<String, User> message) {
         log.atInfo().addArgument(message.key()).addArgument(message.value()).log("Processing key = {}, value = {}");
 
         String key = message.value().getNationality().toString();

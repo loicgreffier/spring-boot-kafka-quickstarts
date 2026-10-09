@@ -27,7 +27,7 @@ import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.KafkaUser;
+import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.flatmap.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.flatmap.serdes.SerdesUtils;
 import java.io.IOException;
@@ -54,7 +54,7 @@ class KafkaStreamsFlatMapApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, KafkaUser> inputTopic;
+    private TestInputTopic<String, User> inputTopic;
     private TestOutputTopic<String, String> outputTopic;
 
     @BeforeEach
@@ -78,7 +78,7 @@ class KafkaStreamsFlatMapApplicationTest {
         inputTopic = testDriver.createInputTopic(
                 USER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<KafkaUser>getValueSerdes().serializer());
+                SerdesUtils.<User>getValueSerdes().serializer());
         outputTopic =
                 testDriver.createOutputTopic(USER_FLATMAP_TOPIC, new StringDeserializer(), new StringDeserializer());
     }
@@ -100,8 +100,8 @@ class KafkaStreamsFlatMapApplicationTest {
         assertEquals(KeyValue.pair("SIMPSON", "Simpson"), results.get(1));
     }
 
-    private KafkaUser buildKafkaUser() {
-        return KafkaUser.newBuilder()
+    private User buildKafkaUser() {
+        return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")
                 .setLastName("Simpson")
