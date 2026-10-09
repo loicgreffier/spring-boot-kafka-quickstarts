@@ -110,10 +110,10 @@ class KafkaStreamsExceptionHandlerDlqApplicationTest {
 
     @Test
     void shouldRouteIllegalArgumentExceptionToDlqAndContinueProcessing() {
-        User homer = buildKafkaUser("Homer", Instant.parse("1949-01-01T01:00:00Z"));
+        User homer = buildUser("Homer", Instant.parse("1949-01-01T01:00:00Z"));
         inputTopic.pipeInput("1", homer);
 
-        User bart = buildKafkaUser("Bart", Instant.parse("1980-01-01T01:00:00Z"));
+        User bart = buildUser("Bart", Instant.parse("1980-01-01T01:00:00Z"));
         inputTopic.pipeInput("2", bart);
 
         List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
@@ -130,7 +130,7 @@ class KafkaStreamsExceptionHandlerDlqApplicationTest {
         assertEquals(homer, dlqResults.getFirst().value);
     }
 
-    private User buildKafkaUser(String firstName, Instant birthDate) {
+    private User buildUser(String firstName, Instant birthDate) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

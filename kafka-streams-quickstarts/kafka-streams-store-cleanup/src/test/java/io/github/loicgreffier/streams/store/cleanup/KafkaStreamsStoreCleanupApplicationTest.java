@@ -88,13 +88,13 @@ class KafkaStreamsStoreCleanupApplicationTest {
 
     @Test
     void shouldFillAndCleanupStore() {
-        User homer = buildKafkaUser("Homer", "Simpson");
+        User homer = buildUser("Homer", "Simpson");
         inputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        User marge = buildKafkaUser("Marge", "Simpson");
+        User marge = buildUser("Marge", "Simpson");
         inputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:00:20Z")));
 
-        User milhouse = buildKafkaUser("Milhouse", "Van Houten");
+        User milhouse = buildUser("Milhouse", "Van Houten");
         inputTopic.pipeInput(new TestRecord<>("3", milhouse, Instant.parse("2000-01-01T01:00:40Z")));
 
         KeyValueStore<String, User> stateStore = testDriver.getKeyValueStore(USER_SCHEDULE_STORE_CLEANUP_STORE);
@@ -105,10 +105,10 @@ class KafkaStreamsStoreCleanupApplicationTest {
         assertEquals(marge, stateStore.get("2"));
         assertEquals(milhouse, stateStore.get("3"));
 
-        User bart = buildKafkaUser("Bart", "Simpson");
+        User bart = buildUser("Bart", "Simpson");
         inputTopic.pipeInput(new TestRecord<>("4", bart, Instant.parse("2000-01-01T01:02:00Z")));
 
-        User lisa = buildKafkaUser("Lisa", "Simpson");
+        User lisa = buildUser("Lisa", "Simpson");
         inputTopic.pipeInput(new TestRecord<>("5", lisa, Instant.parse("2000-01-01T01:02:30Z")));
 
         // 2nd stream time punctuate
@@ -118,7 +118,7 @@ class KafkaStreamsStoreCleanupApplicationTest {
         assertEquals(lisa, stateStore.get("5"));
     }
 
-    private User buildKafkaUser(String firstName, String lastName) {
+    private User buildUser(String firstName, String lastName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

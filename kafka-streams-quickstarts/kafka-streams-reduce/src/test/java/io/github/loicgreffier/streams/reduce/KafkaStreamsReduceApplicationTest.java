@@ -97,14 +97,13 @@ class KafkaStreamsReduceApplicationTest {
 
     @Test
     void shouldReduceByNationalityAndKeepOldest() {
-        User oldestUs = buildKafkaUser("Homer", "Simpson", Instant.parse("1956-08-29T18:35:24Z"), CountryCode.US);
+        User oldestUs = buildUser("Homer", "Simpson", Instant.parse("1956-08-29T18:35:24Z"), CountryCode.US);
 
-        User youngestUs = buildKafkaUser("Bart", "Simpson", Instant.parse("1994-11-09T08:08:50Z"), CountryCode.US);
+        User youngestUs = buildUser("Bart", "Simpson", Instant.parse("1994-11-09T08:08:50Z"), CountryCode.US);
 
-        User youngestBe =
-                buildKafkaUser("Milhouse", "Van Houten", Instant.parse("1996-02-02T04:58:01Z"), CountryCode.BE);
+        User youngestBe = buildUser("Milhouse", "Van Houten", Instant.parse("1996-02-02T04:58:01Z"), CountryCode.BE);
 
-        User oldestBe = buildKafkaUser("Kirk", "Van Houten", Instant.parse("1976-05-26T04:52:06Z"), CountryCode.BE);
+        User oldestBe = buildUser("Kirk", "Van Houten", Instant.parse("1976-05-26T04:52:06Z"), CountryCode.BE);
 
         inputTopic.pipeInput("1", oldestUs);
         inputTopic.pipeInput("2", youngestUs);
@@ -124,7 +123,7 @@ class KafkaStreamsReduceApplicationTest {
         assertEquals(oldestBe, stateStore.get(CountryCode.BE.toString()));
     }
 
-    private User buildKafkaUser(String firstName, String lastName, Instant birthDate, CountryCode nationality) {
+    private User buildUser(String firstName, String lastName, Instant birthDate, CountryCode nationality) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

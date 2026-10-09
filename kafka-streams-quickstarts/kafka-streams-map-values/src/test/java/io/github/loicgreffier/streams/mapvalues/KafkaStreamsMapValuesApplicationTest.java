@@ -95,7 +95,7 @@ class KafkaStreamsMapValuesApplicationTest {
 
     @Test
     void shouldUpperCase() {
-        inputTopic.pipeInput("1", buildKafkaUser());
+        inputTopic.pipeInput("1", buildUser());
         List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("1", results.getFirst().key);
@@ -103,7 +103,7 @@ class KafkaStreamsMapValuesApplicationTest {
         assertEquals("SIMPSON", results.getFirst().value.getLastName());
     }
 
-    private User buildKafkaUser() {
+    private User buildUser() {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")

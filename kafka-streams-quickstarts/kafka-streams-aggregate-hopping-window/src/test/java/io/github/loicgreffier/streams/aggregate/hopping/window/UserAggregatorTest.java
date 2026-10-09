@@ -34,16 +34,16 @@ class UserAggregatorTest {
         UserAggregator aggregator = new UserAggregator();
         UserAggregate group = new UserAggregate(new ArrayList<>());
 
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         aggregator.apply("Simpson", homer, group);
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         aggregator.apply("Simpson", marge, group);
 
         assertIterableEquals(List.of(homer, marge), group.getUsers());
     }
 
-    private User buildKafkaUser(String firstName) {
+    private User buildUser(String firstName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

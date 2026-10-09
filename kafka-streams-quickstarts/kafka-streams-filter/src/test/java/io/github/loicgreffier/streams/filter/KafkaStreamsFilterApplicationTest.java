@@ -95,7 +95,7 @@ class KafkaStreamsFilterApplicationTest {
 
     @Test
     void shouldFilterBadLastName() {
-        inputTopic.pipeInput("1", buildKafkaUser("Ned", "Flanders"));
+        inputTopic.pipeInput("1", buildUser("Ned", "Flanders"));
 
         List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
@@ -104,7 +104,7 @@ class KafkaStreamsFilterApplicationTest {
 
     @Test
     void shouldFilterBadFirstName() {
-        inputTopic.pipeInput("1", buildKafkaUser("Marge", "Simpson"));
+        inputTopic.pipeInput("1", buildUser("Marge", "Simpson"));
 
         List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
@@ -113,7 +113,7 @@ class KafkaStreamsFilterApplicationTest {
 
     @Test
     void shouldNotFilter() {
-        User user = buildKafkaUser("Homer", "Simpson");
+        User user = buildUser("Homer", "Simpson");
         inputTopic.pipeInput("1", user);
 
         List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
@@ -121,7 +121,7 @@ class KafkaStreamsFilterApplicationTest {
         assertEquals(KeyValue.pair("1", user), results.getFirst());
     }
 
-    private User buildKafkaUser(String firstName, String lastName) {
+    private User buildUser(String firstName, String lastName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

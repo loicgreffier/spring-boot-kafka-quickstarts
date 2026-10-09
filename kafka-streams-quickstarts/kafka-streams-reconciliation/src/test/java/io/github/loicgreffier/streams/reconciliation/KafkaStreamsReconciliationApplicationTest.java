@@ -121,8 +121,8 @@ class KafkaStreamsReconciliationApplicationTest {
 
     @Test
     void shouldReconcile() {
-        User homer = buildKafkaUser();
-        Order order = buildKafkaOrder();
+        User homer = buildUser();
+        Order order = buildOrder();
 
         inputUserTopic.pipeInput("1", homer);
         inputOrderTopic.pipeInput("1", order);
@@ -134,7 +134,7 @@ class KafkaStreamsReconciliationApplicationTest {
         assertEquals(order, results.getFirst().value.getOrder());
     }
 
-    private User buildKafkaUser() {
+    private User buildUser() {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")
@@ -143,7 +143,7 @@ class KafkaStreamsReconciliationApplicationTest {
                 .build();
     }
 
-    private Order buildKafkaOrder() {
+    private Order buildOrder() {
         return Order.newBuilder()
                 .setId(1L)
                 .setItems(List.of("Duff Beer", "Donuts"))

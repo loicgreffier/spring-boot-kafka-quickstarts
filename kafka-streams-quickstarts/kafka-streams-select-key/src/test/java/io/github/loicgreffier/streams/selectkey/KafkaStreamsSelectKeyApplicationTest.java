@@ -95,14 +95,14 @@ class KafkaStreamsSelectKeyApplicationTest {
 
     @Test
     void shouldSelectLastNameAsNewKey() {
-        User user = buildKafkaUser();
+        User user = buildUser();
         inputTopic.pipeInput("1", user);
         List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
         assertEquals(KeyValue.pair("Simpson", user), results.getFirst());
     }
 
-    private User buildKafkaUser() {
+    private User buildUser() {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")

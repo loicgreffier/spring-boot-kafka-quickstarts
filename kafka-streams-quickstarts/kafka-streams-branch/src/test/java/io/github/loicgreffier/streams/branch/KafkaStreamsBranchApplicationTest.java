@@ -106,7 +106,7 @@ class KafkaStreamsBranchApplicationTest {
 
     @Test
     void shouldBranchToTopicA() {
-        inputTopic.pipeInput("1", buildKafkaUser("Homer", "Simpson"));
+        inputTopic.pipeInput("1", buildUser("Homer", "Simpson"));
 
         List<KeyValue<String, User>> results = outputTopicA.readKeyValuesToList();
 
@@ -116,7 +116,7 @@ class KafkaStreamsBranchApplicationTest {
 
     @Test
     void shouldBranchToTopicB() {
-        User user = buildKafkaUser("Ned", "Flanders");
+        User user = buildUser("Ned", "Flanders");
         inputTopic.pipeInput("1", user);
 
         List<KeyValue<String, User>> results = outputTopicB.readKeyValuesToList();
@@ -126,7 +126,7 @@ class KafkaStreamsBranchApplicationTest {
 
     @Test
     void shouldBranchToDefaultTopic() {
-        User user = buildKafkaUser("Milhouse", "Van Houten");
+        User user = buildUser("Milhouse", "Van Houten");
         inputTopic.pipeInput("1", user);
 
         List<KeyValue<String, User>> results = outputTopicDefault.readKeyValuesToList();
@@ -134,7 +134,7 @@ class KafkaStreamsBranchApplicationTest {
         assertEquals(KeyValue.pair("1", user), results.getFirst());
     }
 
-    private User buildKafkaUser(String firstName, String lastName) {
+    private User buildUser(String firstName, String lastName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

@@ -95,10 +95,10 @@ class KafkaStreamsCountApplicationTest {
 
     @Test
     void shouldCountByNationality() {
-        inputTopic.pipeInput("1", buildKafkaUser("Homer", "Simpson", CountryCode.US));
-        inputTopic.pipeInput("2", buildKafkaUser("Milhouse", "Van Houten", CountryCode.BE));
-        inputTopic.pipeInput("3", buildKafkaUser("Marge", "Simpson", CountryCode.US));
-        inputTopic.pipeInput("4", buildKafkaUser("Kirk", "Van Houten", CountryCode.BE));
+        inputTopic.pipeInput("1", buildUser("Homer", "Simpson", CountryCode.US));
+        inputTopic.pipeInput("2", buildUser("Milhouse", "Van Houten", CountryCode.BE));
+        inputTopic.pipeInput("3", buildUser("Marge", "Simpson", CountryCode.US));
+        inputTopic.pipeInput("4", buildUser("Kirk", "Van Houten", CountryCode.BE));
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
@@ -113,7 +113,7 @@ class KafkaStreamsCountApplicationTest {
         assertEquals(2, stateStore.get(CountryCode.BE.toString()));
     }
 
-    private User buildKafkaUser(String firstName, String lastName, CountryCode nationality) {
+    private User buildUser(String firstName, String lastName, CountryCode nationality) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

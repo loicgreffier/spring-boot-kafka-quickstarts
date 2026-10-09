@@ -92,7 +92,7 @@ class KafkaStreamsFlatMapValuesApplicationTest {
 
     @Test
     void shouldFlatMapFirstNameAndLastName() {
-        inputTopic.pipeInput("1", buildKafkaUser());
+        inputTopic.pipeInput("1", buildUser());
 
         List<KeyValue<String, String>> results = outputTopic.readKeyValuesToList();
 
@@ -100,7 +100,7 @@ class KafkaStreamsFlatMapValuesApplicationTest {
         assertEquals(KeyValue.pair("1", "Simpson"), results.get(1));
     }
 
-    private User buildKafkaUser() {
+    private User buildUser() {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")

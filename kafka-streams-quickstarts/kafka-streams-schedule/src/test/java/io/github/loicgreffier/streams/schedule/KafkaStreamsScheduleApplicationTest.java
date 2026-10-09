@@ -99,21 +99,21 @@ class KafkaStreamsScheduleApplicationTest {
     @Test
     void shouldCountUserByNationality() {
         inputTopic.pipeInput(new TestRecord<>(
-                "1", buildKafkaUser("Homer", "Simpson", CountryCode.US), Instant.parse("2000-01-01T01:00:00Z")));
+                "1", buildUser("Homer", "Simpson", CountryCode.US), Instant.parse("2000-01-01T01:00:00Z")));
 
         inputTopic.pipeInput(new TestRecord<>(
-                "2", buildKafkaUser("Marge", "Simpson", CountryCode.US), Instant.parse("2000-01-01T01:01:00Z")));
+                "2", buildUser("Marge", "Simpson", CountryCode.US), Instant.parse("2000-01-01T01:01:00Z")));
 
         inputTopic.pipeInput(new TestRecord<>(
-                "3", buildKafkaUser("Milhouse", "Van Houten", CountryCode.BE), Instant.parse("2000-01-01T01:01:30Z")));
+                "3", buildUser("Milhouse", "Van Houten", CountryCode.BE), Instant.parse("2000-01-01T01:01:30Z")));
 
         inputTopic.pipeInput(new TestRecord<>(
-                "4", buildKafkaUser("Luigi", "Risotto", CountryCode.IT), Instant.parse("2000-01-01T01:02:00Z")));
+                "4", buildUser("Luigi", "Risotto", CountryCode.IT), Instant.parse("2000-01-01T01:02:00Z")));
 
         testDriver.advanceWallClockTime(Duration.ofMinutes(2));
 
         inputTopic.pipeInput(new TestRecord<>(
-                "5", buildKafkaUser("Bart", "Simpson", CountryCode.US), Instant.parse("2000-01-01T01:04:00Z")));
+                "5", buildUser("Bart", "Simpson", CountryCode.US), Instant.parse("2000-01-01T01:04:00Z")));
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
@@ -154,7 +154,7 @@ class KafkaStreamsScheduleApplicationTest {
         assertEquals(0, stateStore.get("IT"));
     }
 
-    private User buildKafkaUser(String firstName, String lastName, CountryCode nationality) {
+    private User buildUser(String firstName, String lastName, CountryCode nationality) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

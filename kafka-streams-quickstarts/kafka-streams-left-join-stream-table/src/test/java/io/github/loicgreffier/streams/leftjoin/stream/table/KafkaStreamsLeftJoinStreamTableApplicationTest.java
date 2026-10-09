@@ -110,7 +110,7 @@ class KafkaStreamsLeftJoinStreamTableApplicationTest {
 
     @Test
     void shouldRekey() {
-        User user = buildKafkaUser();
+        User user = buildUser();
         userInputTopic.pipeInput("1", user);
 
         List<KeyValue<String, User>> results = rekeyUserOutputTopic.readKeyValuesToList();
@@ -120,10 +120,10 @@ class KafkaStreamsLeftJoinStreamTableApplicationTest {
 
     @Test
     void shouldJoinUserToCountry() {
-        Country country = buildKafkaCountry();
+        Country country = buildCountry();
         countryInputTopic.pipeInput("US", country);
 
-        User user = buildKafkaUser();
+        User user = buildUser();
         userInputTopic.pipeInput("1", user);
 
         List<KeyValue<String, JoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
@@ -135,7 +135,7 @@ class KafkaStreamsLeftJoinStreamTableApplicationTest {
 
     @Test
     void shouldEmitValueEvenIfNoCountry() {
-        User user = buildKafkaUser();
+        User user = buildUser();
         userInputTopic.pipeInput("1", user);
 
         List<KeyValue<String, JoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
@@ -145,7 +145,7 @@ class KafkaStreamsLeftJoinStreamTableApplicationTest {
         assertNull(results.getFirst().value.getCountry());
     }
 
-    private User buildKafkaUser() {
+    private User buildUser() {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")
@@ -155,7 +155,7 @@ class KafkaStreamsLeftJoinStreamTableApplicationTest {
                 .build();
     }
 
-    private Country buildKafkaCountry() {
+    private Country buildCountry() {
         return Country.newBuilder()
                 .setCode(CountryCode.US)
                 .setName("United States")

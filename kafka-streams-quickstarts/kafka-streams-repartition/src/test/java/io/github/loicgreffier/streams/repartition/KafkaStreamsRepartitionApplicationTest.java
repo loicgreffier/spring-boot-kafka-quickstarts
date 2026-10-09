@@ -94,7 +94,7 @@ class KafkaStreamsRepartitionApplicationTest {
 
     @Test
     void shouldRepartitionRecordsInNewTopic() {
-        User user = buildKafkaUser();
+        User user = buildUser();
         inputTopic.pipeInput("1", user);
 
         List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
@@ -102,7 +102,7 @@ class KafkaStreamsRepartitionApplicationTest {
         assertEquals(KeyValue.pair("1", user), results.getFirst());
     }
 
-    private User buildKafkaUser() {
+    private User buildUser() {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")

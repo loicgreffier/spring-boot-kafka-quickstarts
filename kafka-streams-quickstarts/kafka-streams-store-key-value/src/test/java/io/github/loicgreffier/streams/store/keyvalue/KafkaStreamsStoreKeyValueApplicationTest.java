@@ -90,10 +90,10 @@ class KafkaStreamsStoreKeyValueApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {USER_KEY_VALUE_STORE, USER_KEY_VALUE_SUPPLIER_STORE})
     void shouldPutAndGetFromKeyValueStores(String storeName) {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         inputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         inputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:00:30Z")));
 
         KeyValueStore<String, User> keyValueStore = testDriver.getKeyValueStore(storeName);
@@ -102,7 +102,7 @@ class KafkaStreamsStoreKeyValueApplicationTest {
         assertEquals(marge, keyValueStore.get("2"));
     }
 
-    private User buildKafkaUser(String firstName) {
+    private User buildUser(String firstName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

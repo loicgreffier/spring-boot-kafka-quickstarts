@@ -104,10 +104,10 @@ class KafkaStreamsCogroupApplicationTest {
 
     @Test
     void shouldAggregateFirstNamesByLastNameStreamOne() {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         inputTopicOne.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         inputTopicOne.pipeInput("2", marge, Instant.parse("2000-01-01T01:00:00Z"));
 
         List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
@@ -125,10 +125,10 @@ class KafkaStreamsCogroupApplicationTest {
 
     @Test
     void shouldAggregateFirstNamesByLastNameStreamTwo() {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         inputTopicTwo.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         inputTopicTwo.pipeInput("2", marge, Instant.parse("2000-01-01T01:00:00Z"));
 
         List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
@@ -146,13 +146,13 @@ class KafkaStreamsCogroupApplicationTest {
 
     @Test
     void shouldAggregateFirstNamesByLastNameBothCogroupedStreams() {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         inputTopicOne.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         inputTopicOne.pipeInput("2", marge, Instant.parse("2000-01-01T01:00:00Z"));
 
-        User bart = buildKafkaUser("Bart");
+        User bart = buildUser("Bart");
         inputTopicTwo.pipeInput("3", bart, Instant.parse("2000-01-01T01:00:00Z"));
 
         List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
@@ -172,7 +172,7 @@ class KafkaStreamsCogroupApplicationTest {
                 List.of(homer, marge, bart), stateStore.get("Simpson").getUsers());
     }
 
-    private User buildKafkaUser(String firstName) {
+    private User buildUser(String firstName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

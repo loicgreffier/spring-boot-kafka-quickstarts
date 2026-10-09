@@ -95,8 +95,8 @@ class KafkaStreamsProcessValuesApplicationTest {
 
     @Test
     void shouldProcessValues() {
-        User homer = buildKafkaUser("Homer");
-        User marge = buildKafkaUser("Marge");
+        User homer = buildUser("Homer");
+        User marge = buildUser("Marge");
 
         inputTopic.pipeInput("1", homer);
         inputTopic.pipeInput("2", marge);
@@ -114,7 +114,7 @@ class KafkaStreamsProcessValuesApplicationTest {
         assertEquals(1, results.get(1).value.getOffset());
     }
 
-    private User buildKafkaUser(String firstName) {
+    private User buildUser(String firstName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

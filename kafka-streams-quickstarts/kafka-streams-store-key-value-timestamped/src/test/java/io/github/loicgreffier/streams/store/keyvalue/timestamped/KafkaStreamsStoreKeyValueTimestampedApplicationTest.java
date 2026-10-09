@@ -91,10 +91,10 @@ class KafkaStreamsStoreKeyValueTimestampedApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {USER_TIMESTAMPED_KEY_VALUE_STORE, USER_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE})
     void shouldPutAndGetFromKeyValueStores(String storeName) {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         inputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         inputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:00:30Z")));
 
         KeyValueStore<String, ValueAndTimestamp<User>> timestampedKeyValueStore =
@@ -112,7 +112,7 @@ class KafkaStreamsStoreKeyValueTimestampedApplicationTest {
                         .toString());
     }
 
-    private User buildKafkaUser(String firstName) {
+    private User buildUser(String firstName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

@@ -67,8 +67,7 @@ public class ProducerRunner {
     public void run() throws InterruptedException {
         long i = 0;
         while (true) {
-            ProducerRecord<String, Order> message =
-                    new ProducerRecord<>(ORDER_TOPIC, String.valueOf(i), buildKafkaOrder(i));
+            ProducerRecord<String, Order> message = new ProducerRecord<>(ORDER_TOPIC, String.valueOf(i), buildOrder(i));
 
             producer.send(message, (recordMetadata, e) -> {
                 if (e != null) {
@@ -96,7 +95,7 @@ public class ProducerRunner {
      * @param id The order id.
      * @return The Kafka order.
      */
-    private Order buildKafkaOrder(long id) {
+    private Order buildOrder(long id) {
         List<String> selectedItems = new ArrayList<>();
         int itemCount = random.nextInt(10) + 1;
         double totalAmount = 0.0;

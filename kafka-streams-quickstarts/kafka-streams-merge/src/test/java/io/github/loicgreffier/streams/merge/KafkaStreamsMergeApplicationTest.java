@@ -100,8 +100,8 @@ class KafkaStreamsMergeApplicationTest {
 
     @Test
     void shouldMergeBothStreams() {
-        User firstUser = buildKafkaUser("Homer");
-        User secondUser = buildKafkaUser("Marge");
+        User firstUser = buildUser("Homer");
+        User secondUser = buildUser("Marge");
 
         inputTopicOne.pipeInput("1", firstUser);
         inputTopicTwo.pipeInput("2", secondUser);
@@ -112,7 +112,7 @@ class KafkaStreamsMergeApplicationTest {
         assertEquals(KeyValue.pair("2", secondUser), results.get(1));
     }
 
-    private User buildKafkaUser(String firstName) {
+    private User buildUser(String firstName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

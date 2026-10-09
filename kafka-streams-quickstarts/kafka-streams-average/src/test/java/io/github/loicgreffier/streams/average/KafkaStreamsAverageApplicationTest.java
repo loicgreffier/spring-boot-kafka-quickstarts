@@ -101,10 +101,10 @@ class KafkaStreamsAverageApplicationTest {
     void shouldComputeAverageAgeByNationality() {
         LocalDate currentDate = LocalDate.now();
 
-        User yearsOld25 = buildKafkaUser(
-                "Homer", currentDate.minusYears(25).atStartOfDay().toInstant(ZoneOffset.UTC));
-        User yearsOld75 = buildKafkaUser(
-                "Marge", currentDate.minusYears(75).atStartOfDay().toInstant(ZoneOffset.UTC));
+        User yearsOld25 =
+                buildUser("Homer", currentDate.minusYears(25).atStartOfDay().toInstant(ZoneOffset.UTC));
+        User yearsOld75 =
+                buildUser("Marge", currentDate.minusYears(75).atStartOfDay().toInstant(ZoneOffset.UTC));
 
         inputTopic.pipeInput("1", yearsOld25);
         inputTopic.pipeInput("2", yearsOld75);
@@ -120,7 +120,7 @@ class KafkaStreamsAverageApplicationTest {
         assertEquals(100L, stateStore.get("US").getAgeSum());
     }
 
-    private User buildKafkaUser(String firstName, Instant birthDate) {
+    private User buildUser(String firstName, Instant birthDate) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

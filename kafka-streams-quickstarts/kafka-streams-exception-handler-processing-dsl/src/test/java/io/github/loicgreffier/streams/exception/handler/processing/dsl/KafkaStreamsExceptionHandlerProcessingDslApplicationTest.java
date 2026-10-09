@@ -102,9 +102,9 @@ class KafkaStreamsExceptionHandlerProcessingDslApplicationTest {
 
     @Test
     void shouldHandleIllegalArgumentExceptionAndContinueProcessing() {
-        inputTopic.pipeInput("1", buildKafkaUser("Homer", Instant.parse("1949-01-01T01:00:00Z")));
+        inputTopic.pipeInput("1", buildUser("Homer", Instant.parse("1949-01-01T01:00:00Z")));
 
-        User bart = buildKafkaUser("Bart", Instant.parse("1980-01-01T01:00:00Z"));
+        User bart = buildUser("Bart", Instant.parse("1980-01-01T01:00:00Z"));
         inputTopic.pipeInput("2", bart);
 
         List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
@@ -117,7 +117,7 @@ class KafkaStreamsExceptionHandlerProcessingDslApplicationTest {
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
-    private User buildKafkaUser(String firstName, Instant birthDate) {
+    private User buildUser(String firstName, Instant birthDate) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

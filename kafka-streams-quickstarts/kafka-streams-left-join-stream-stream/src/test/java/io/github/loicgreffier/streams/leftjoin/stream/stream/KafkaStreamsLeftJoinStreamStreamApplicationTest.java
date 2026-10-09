@@ -121,8 +121,8 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
 
     @Test
     void shouldRekey() {
-        User leftUser = buildKafkaUser("Homer");
-        User rightUser = buildKafkaUser("Marge");
+        User leftUser = buildUser("Homer");
+        User rightUser = buildUser("Marge");
 
         leftInputTopic.pipeInput("1", leftUser);
         rightInputTopic.pipeInput("2", rightUser);
@@ -136,13 +136,13 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
 
     @Test
     void shouldJoinWhenTimeWindowIsRespected() {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         leftInputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         rightInputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:02:00Z")));
 
-        User bart = buildKafkaUser("Bart");
+        User bart = buildUser("Bart");
         leftInputTopic.pipeInput(new TestRecord<>("3", bart, Instant.parse("2000-01-01T01:03:00Z")));
 
         List<KeyValue<String, JoinUsers>> results = joinOutputTopic.readKeyValuesToList();
@@ -205,13 +205,13 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
 
     @Test
     void shouldEmitLeftUserWhenTimeWindowIsNotRespected() {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         leftInputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         rightInputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:06:00Z")));
 
-        User bart = buildKafkaUser("Bart");
+        User bart = buildUser("Bart");
         leftInputTopic.pipeInput(new TestRecord<>("3", bart, Instant.parse("2000-01-01T01:13:00Z")));
 
         List<KeyValue<String, JoinUsers>> results = joinOutputTopic.readKeyValuesToList();
@@ -260,10 +260,10 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
 
     @Test
     void shouldHonorGracePeriod() {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         leftInputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         leftInputTopic.pipeInput(new TestRecord<>("3", marge, Instant.parse("2000-01-01T01:10:30Z")));
 
         // At this point, the stream time is 01:10:30. It exceeds by 30 seconds
@@ -271,7 +271,7 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
         // However, the following delayed record "Bart" will be joined with the first record
         // thanks to the grace period of 1 minute.
 
-        User bart = buildKafkaUser("Bart");
+        User bart = buildUser("Bart");
         rightInputTopic.pipeInput(new TestRecord<>("2", bart, Instant.parse("2000-01-01T01:05:00Z")));
 
         List<KeyValue<String, JoinUsers>> results = joinOutputTopic.readKeyValuesToList();
@@ -332,7 +332,7 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
         }
     }
 
-    private User buildKafkaUser(String firstName) {
+    private User buildUser(String firstName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

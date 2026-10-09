@@ -104,10 +104,10 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
 
     @Test
     void shouldJoinUserToCountry() {
-        Country country = buildKafkaCountry();
+        Country country = buildCountry();
         countryInputTopic.pipeInput("US", country);
 
-        User user = buildKafkaUser();
+        User user = buildUser();
         userInputTopic.pipeInput("1", user);
 
         List<KeyValue<String, JoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
@@ -119,7 +119,7 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
 
     @Test
     void shouldEmitValueEvenIfNoCountry() {
-        User user = buildKafkaUser();
+        User user = buildUser();
         userInputTopic.pipeInput("1", user);
 
         List<KeyValue<String, JoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
@@ -129,7 +129,7 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
         assertNull(results.getFirst().value.getCountry());
     }
 
-    private User buildKafkaUser() {
+    private User buildUser() {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")
@@ -139,7 +139,7 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
                 .build();
     }
 
-    private Country buildKafkaCountry() {
+    private Country buildCountry() {
         return Country.newBuilder()
                 .setCode(CountryCode.US)
                 .setName("United States")

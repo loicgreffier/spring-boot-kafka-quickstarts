@@ -101,13 +101,13 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
 
     @Test
     void shouldAggregateWhenTimeWindowIsRespected() {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         inputTopic.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         inputTopic.pipeInput("2", marge, Instant.parse("2000-01-01T01:02:00Z"));
 
-        User bart = buildKafkaUser("Bart");
+        User bart = buildUser("Bart");
         inputTopic.pipeInput("3", bart, Instant.parse("2000-01-01T01:04:00Z"));
 
         List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
@@ -201,10 +201,10 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
 
     @Test
     void shouldNotAggregateWhenTimeWindowIsNotRespected() {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         inputTopic.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         inputTopic.pipeInput("2", marge, Instant.parse("2000-01-01T01:05:00Z"));
 
         List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
@@ -287,10 +287,10 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
 
     @Test
     void shouldHonorGracePeriod() {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         inputTopic.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         inputTopic.pipeInput("3", marge, Instant.parse("2000-01-01T01:05:30Z"));
 
         // At this point, the stream time is 01:05:30. It exceeds by 30 seconds
@@ -298,7 +298,7 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
         // However, the following delayed record "Bart" will be aggregated into the window
         // because the grace period is 1 minute.
 
-        User bart = buildKafkaUser("Bart");
+        User bart = buildUser("Bart");
         inputTopic.pipeInput("2", bart, Instant.parse("2000-01-01T01:03:00Z"));
 
         List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
@@ -387,7 +387,7 @@ class KafkaStreamsAggregateHoppingWindowApplicationTest {
         }
     }
 
-    private User buildKafkaUser(String firstName) {
+    private User buildUser(String firstName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

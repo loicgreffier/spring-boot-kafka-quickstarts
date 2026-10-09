@@ -105,17 +105,17 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
 
     @Test
     void shouldHandleDeserializationExceptionsAndContinueProcessing() {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         inputTopic.pipeInput("1", homer);
 
         inputTopicForDeserializationException.pipeInput("2", "invalid");
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         inputTopic.pipeInput("3", marge);
 
         inputTopicForDeserializationException.pipeInput("4", "invalid");
 
-        User bart = buildKafkaUser("Bart");
+        User bart = buildUser("Bart");
         inputTopic.pipeInput("5", bart);
 
         List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
@@ -130,7 +130,7 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
-    private User buildKafkaUser(String firstName) {
+    private User buildUser(String firstName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

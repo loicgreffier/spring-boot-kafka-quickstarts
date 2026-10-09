@@ -98,13 +98,13 @@ class KafkaStreamsAggregateApplicationTest {
 
     @Test
     void shouldAggregate() {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         inputTopic.pipeInput("1", homer);
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         inputTopic.pipeInput("2", marge);
 
-        User bart = buildKafkaUser("Homer");
+        User bart = buildUser("Homer");
         inputTopic.pipeInput("3", bart);
 
         List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
@@ -124,7 +124,7 @@ class KafkaStreamsAggregateApplicationTest {
                 List.of(homer, marge, bart), stateStore.get("Simpson").getUsers());
     }
 
-    private User buildKafkaUser(String firstName) {
+    private User buildUser(String firstName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)

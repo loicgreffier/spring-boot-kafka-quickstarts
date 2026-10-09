@@ -68,11 +68,10 @@ public class ProducerRunner {
     public void run() throws InterruptedException {
         int i = 0;
         while (true) {
-            ProducerRecord<String, User> messageOne =
-                    new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildKafkaUser(i));
+            ProducerRecord<String, User> messageOne = new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildUser(i));
 
             ProducerRecord<String, User> messageTwo =
-                    new ProducerRecord<>(USER_TOPIC_TWO, String.valueOf(i), buildKafkaUser(i));
+                    new ProducerRecord<>(USER_TOPIC_TWO, String.valueOf(i), buildUser(i));
 
             send(messageOne);
             send(messageTwo);
@@ -110,7 +109,7 @@ public class ProducerRunner {
      * @param id The user id.
      * @return The Kafka user.
      */
-    private User buildKafkaUser(int id) {
+    private User buildUser(int id) {
         return User.newBuilder()
                 .setId((long) id)
                 .setFirstName(FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())))

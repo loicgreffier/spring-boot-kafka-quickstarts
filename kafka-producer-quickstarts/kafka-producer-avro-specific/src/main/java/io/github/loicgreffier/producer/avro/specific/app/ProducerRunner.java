@@ -67,8 +67,7 @@ public class ProducerRunner {
     public void run() throws InterruptedException {
         int i = 0;
         while (!stopped) {
-            ProducerRecord<String, User> message =
-                    new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildKafkaUser(i));
+            ProducerRecord<String, User> message = new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildUser(i));
 
             producer.send(message, (recordMetadata, e) -> {
                 if (e != null) {
@@ -105,7 +104,7 @@ public class ProducerRunner {
      * @param id The record id.
      * @return The specific Avro record.
      */
-    private User buildKafkaUser(int id) {
+    private User buildUser(int id) {
         return User.newBuilder()
                 .setId((long) id)
                 .setFirstName(FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())))

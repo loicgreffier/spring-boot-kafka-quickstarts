@@ -107,7 +107,7 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
 
     @Test
     void shouldHandleSerializationExceptionsAndContinueProcessing() {
-        inputTopic.pipeInput("10", buildKafkaUser());
+        inputTopic.pipeInput("10", buildUser());
 
         List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
 
@@ -119,7 +119,7 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
-    private User buildKafkaUser() {
+    private User buildUser() {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName("Homer")

@@ -93,12 +93,12 @@ class KafkaStreamsStoreWindowApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {USER_WINDOW_STORE, USER_WINDOW_SUPPLIER_STORE})
     void shouldPutAndGetFromWindowStores(String storeName) {
-        User homer = buildKafkaUser("Homer");
+        User homer = buildUser("Homer");
         Instant homerTimestamp = Instant.parse("2000-01-01T01:00:00Z");
         inputTopic.pipeInput(new TestRecord<>("1", homer, homerTimestamp));
         inputTopic.pipeInput(new TestRecord<>("1", homer, homerTimestamp.plusSeconds(10)));
 
-        User marge = buildKafkaUser("Marge");
+        User marge = buildUser("Marge");
         Instant margeTimestamp = Instant.parse("2000-01-01T01:00:30Z");
         inputTopic.pipeInput(new TestRecord<>("2", marge, margeTimestamp));
         inputTopic.pipeInput(new TestRecord<>("2", marge, margeTimestamp.plusSeconds(10)));
@@ -141,7 +141,7 @@ class KafkaStreamsStoreWindowApplicationTest {
         }
     }
 
-    private User buildKafkaUser(String firstName) {
+    private User buildUser(String firstName) {
         return User.newBuilder()
                 .setId(1L)
                 .setFirstName(firstName)
