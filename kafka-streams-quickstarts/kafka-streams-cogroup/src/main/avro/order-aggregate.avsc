@@ -9,6 +9,7 @@
         "type": "array",
         "items": "Order"
       },
+      "default": [],
       "doc": "Aggregated orders"
     }
   ]
