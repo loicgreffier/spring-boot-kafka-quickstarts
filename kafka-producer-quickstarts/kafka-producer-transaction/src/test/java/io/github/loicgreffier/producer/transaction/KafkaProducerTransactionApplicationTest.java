@@ -64,15 +64,15 @@ class KafkaProducerTransactionApplicationTest {
         ProducerRecord<String, String> orderSentRecord = mockProducer.history().getFirst();
 
         assertEquals(ORDER_JSON_TOPIC, orderSentRecord.topic());
-        assertEquals("1", orderSentRecord.key());
-        assertTrue(orderSentRecord.value().startsWith("{\"id\":1,\"customerId\":"));
+        assertEquals("ORD2", orderSentRecord.key());
+        assertTrue(orderSentRecord.value().startsWith("{\"id\":\"ORD2\",\"customerId\":\"CUS"));
 
         ProducerRecord<String, String> deliverySentRecord =
                 mockProducer.history().getLast();
 
         assertEquals(DELIVERY_JSON_TOPIC, deliverySentRecord.topic());
-        assertEquals("1", deliverySentRecord.key());
-        assertTrue(deliverySentRecord.value().startsWith("{\"id\":1,\"orderId\":1,\"destination\":"));
+        assertEquals("DEL2", deliverySentRecord.key());
+        assertTrue(deliverySentRecord.value().startsWith("{\"id\":\"DEL2\",\"orderId\":\"ORD2\",\"destination\":"));
 
         assertTrue(mockProducer.transactionInitialized());
         assertTrue(mockProducer.transactionCommitted());

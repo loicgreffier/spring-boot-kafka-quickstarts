@@ -81,11 +81,11 @@ public class KafkaStreamsTopology {
     /**
      * Applies a 10% discount to the order amount.
      *
-     * @param streamOrder The stream of orders.
+     * @param stream The stream of orders.
      * @return The stream of orders with the discounted amount.
      */
-    private static KStream<String, Order> applyDiscount(KStream<String, Order> streamOrder) {
-        return streamOrder.mapValues(order -> {
+    private static KStream<String, Order> applyDiscount(KStream<String, Order> stream) {
+        return stream.mapValues(order -> {
             order.setAmount(Math.round(order.getAmount() * 0.9 * 100) / 100.0);
             return order;
         });

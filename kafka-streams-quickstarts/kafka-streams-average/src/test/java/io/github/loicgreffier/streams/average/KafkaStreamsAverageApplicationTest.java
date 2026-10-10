@@ -96,24 +96,24 @@ class KafkaStreamsAverageApplicationTest {
 
     @Test
     void shouldComputeAverageAmountByCustomer() {
-        inputTopic.pipeInput("1", buildOrder(1L, 25.0));
-        inputTopic.pipeInput("2", buildOrder(2L, 75.5));
+        inputTopic.pipeInput("ORD1", buildOrder("ORD1", 25.0));
+        inputTopic.pipeInput("ORD2", buildOrder("ORD2", 75.5));
 
         List<KeyValue<String, Double>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", 25.0), results.getFirst());
-        assertEquals(KeyValue.pair("1", 50.25), results.get(1));
+        assertEquals(KeyValue.pair("CUS1", 25.0), results.getFirst());
+        assertEquals(KeyValue.pair("CUS1", 50.25), results.get(1));
 
         KeyValueStore<String, OrderAverageAmount> stateStore = testDriver.getKeyValueStore(ORDER_AVERAGE_STORE);
 
-        assertEquals(2L, stateStore.get("1").getCount());
-        assertEquals(100.5, stateStore.get("1").getAmountSum());
+        assertEquals(2L, stateStore.get("CUS1").getCount());
+        assertEquals(100.5, stateStore.get("CUS1").getAmountSum());
     }
 
-    private Order buildOrder(long id, double amount) {
+    private Order buildOrder(String id, double amount) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId(1L)
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(amount)
                 .build();

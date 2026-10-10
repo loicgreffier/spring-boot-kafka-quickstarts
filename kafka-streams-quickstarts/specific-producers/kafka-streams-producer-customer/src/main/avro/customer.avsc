@@ -7,7 +7,7 @@
       "name": "id",
       "type": [
         "null",
-        "long"
+        "string"
       ],
       "default": null,
       "doc": "Customer id"

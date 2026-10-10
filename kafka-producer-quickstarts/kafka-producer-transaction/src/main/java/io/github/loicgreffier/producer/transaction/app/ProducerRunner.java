@@ -51,7 +51,7 @@ public class ProducerRunner {
     /**
      * Constructor.
      *
-     * @param producer The Kafka producer
+     * @param producer The Kafka producer.
      */
     public ProducerRunner(Producer<String, String> producer) {
         this.producer = producer;
@@ -75,16 +75,17 @@ public class ProducerRunner {
         log.info("Init transactions");
         producer.initTransactions();
 
-        int i = 0;
+        int i = 1;
         while (!stopped) {
             Order order = buildOrder(i);
-            Delivery delivery = new Delivery(i, order.id(), DESTINATIONS.get(random.nextInt(DESTINATIONS.size())));
+            Delivery delivery = new Delivery(
+                    "DEL%d".formatted(i), order.id(), DESTINATIONS.get(random.nextInt(DESTINATIONS.size())));
 
             ProducerRecord<String, String> orderMessage =
-                    new ProducerRecord<>(ORDER_JSON_TOPIC, String.valueOf(order.id()), order.toJson());
+                    new ProducerRecord<>(ORDER_JSON_TOPIC, order.id(), order.toJson());
 
             ProducerRecord<String, String> deliveryMessage =
-                    new ProducerRecord<>(DELIVERY_JSON_TOPIC, String.valueOf(delivery.orderId()), delivery.toJson());
+                    new ProducerRecord<>(DELIVERY_JSON_TOPIC, delivery.id(), delivery.toJson());
 
             List<ProducerRecord<String, String>> messages = List.of(orderMessage, deliveryMessage);
 
@@ -106,7 +107,7 @@ public class ProducerRunner {
                     }
                 }));
 
-                if (order.id() % 3 == 0) {
+                if (i % 3 == 1) {
                     throw new IllegalStateException("Error during transaction...");
                 }
 
@@ -144,8 +145,8 @@ public class ProducerRunner {
      */
     private Order buildOrder(int id) {
         return new Order(
-                id,
-                random.nextInt(10),
+                "ORD%d".formatted(id),
+                "CUS%d".formatted(random.nextInt(1, 11)),
                 random.ints(random.nextInt(1, 9), 0, ITEMS.size())
                         .mapToObj(ITEMS::get)
                         .toList(),

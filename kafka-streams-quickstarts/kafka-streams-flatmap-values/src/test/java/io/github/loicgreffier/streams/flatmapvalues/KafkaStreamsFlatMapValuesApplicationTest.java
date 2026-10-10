@@ -92,15 +92,15 @@ class KafkaStreamsFlatMapValuesApplicationTest {
 
     @Test
     void shouldFlatMapItems() {
-        inputTopic.pipeInput("1", buildOrder(1L, 3L, List.of("Laptop", "Mouse"), 1249.90));
+        inputTopic.pipeInput("ORD1", buildOrder("ORD1", "CUS3", List.of("Laptop", "Mouse"), 1249.90));
 
         List<KeyValue<String, String>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", "Laptop"), results.getFirst());
-        assertEquals(KeyValue.pair("1", "Mouse"), results.get(1));
+        assertEquals(KeyValue.pair("ORD1", "Laptop"), results.getFirst());
+        assertEquals(KeyValue.pair("ORD1", "Mouse"), results.get(1));
     }
 
-    private Order buildOrder(long id, long customerId, List<String> items, double amount) {
+    private Order buildOrder(String id, String customerId, List<String> items, double amount) {
         return Order.newBuilder()
                 .setId(id)
                 .setCustomerId(customerId)

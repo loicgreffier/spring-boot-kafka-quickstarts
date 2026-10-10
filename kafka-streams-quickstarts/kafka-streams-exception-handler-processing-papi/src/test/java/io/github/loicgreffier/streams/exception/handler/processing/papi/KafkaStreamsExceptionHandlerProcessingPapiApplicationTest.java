@@ -102,10 +102,10 @@ class KafkaStreamsExceptionHandlerProcessingPapiApplicationTest {
 
     @Test
     void shouldHandleIllegalArgumentExceptionAndContinueProcessing() {
-        inputTopic.pipeInput("1", buildOrder(1L, -100.0));
+        inputTopic.pipeInput("ORD1", buildOrder("ORD1", -100.0));
 
-        Order validOrder = buildOrder(2L, 100.0);
-        inputTopic.pipeInput("2", validOrder);
+        Order validOrder = buildOrder("ORD2", 100.0);
+        inputTopic.pipeInput("ORD2", validOrder);
 
         testDriver.advanceWallClockTime(Duration.ofMinutes(2));
 
@@ -119,10 +119,10 @@ class KafkaStreamsExceptionHandlerProcessingPapiApplicationTest {
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
-    private Order buildOrder(long id, double amount) {
+    private Order buildOrder(String id, double amount) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId(1L)
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(amount)
                 .build();

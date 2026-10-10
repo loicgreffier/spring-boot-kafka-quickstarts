@@ -53,7 +53,7 @@ public class KafkaStreamsTopology {
         streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .groupBy(
-                        (_, order) -> String.valueOf(order.getCustomerId()),
+                        (_, order) -> order.getCustomerId(),
                         Grouped.with(GROUP_ORDER_BY_CUSTOMER_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .reduce(
                         new MaxAmountReducer(),

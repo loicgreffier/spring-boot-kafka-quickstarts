@@ -94,15 +94,15 @@ class KafkaStreamsMapValuesApplicationTest {
 
     @Test
     void shouldApplyVat() {
-        inputTopic.pipeInput("1", buildOrder(1L, 3L, List.of("Laptop", "Mouse"), 1249.90));
+        inputTopic.pipeInput("ORD1", buildOrder("ORD1", "CUS3", List.of("Laptop", "Mouse"), 1249.90));
 
         List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("1", results.getFirst().key);
+        assertEquals("ORD1", results.getFirst().key);
         assertEquals(1499.88, results.getFirst().value.getAmount());
     }
 
-    private Order buildOrder(long id, long customerId, List<String> items, double amount) {
+    private Order buildOrder(String id, String customerId, List<String> items, double amount) {
         return Order.newBuilder()
                 .setId(id)
                 .setCustomerId(customerId)

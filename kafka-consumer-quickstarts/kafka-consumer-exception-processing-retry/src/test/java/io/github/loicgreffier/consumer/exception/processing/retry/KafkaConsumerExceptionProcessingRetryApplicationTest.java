@@ -76,8 +76,8 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
                 ORDER_JSON_TOPIC,
                 0,
                 0,
-                "1",
-                "{\"id\":1,\"customerId\":3,\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
+                "ORD1",
+                "{\"id\":\"ORD1\",\"customerId\":\"CUS3\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -97,12 +97,20 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
                 ORDER_JSON_TOPIC,
                 0,
                 0,
-                "1",
-                "{\"id\":1,\"customerId\":3,\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
+                "ORD1",
+                "{\"id\":\"ORD1\",\"customerId\":\"CUS3\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
         ConsumerRecord<String, String> message2 = new ConsumerRecord<>(
-                ORDER_JSON_TOPIC, 0, 1, "2", "{\"id\":2,\"customerId\":5,\"items\":[\"Keyboard\"],\"amount\":89.99}");
+                ORDER_JSON_TOPIC,
+                0,
+                1,
+                "ORD2",
+                "{\"id\":\"ORD2\",\"customerId\":\"CUS5\",\"items\":[\"Keyboard\"],\"amount\":89.99}");
         ConsumerRecord<String, String> message3 = new ConsumerRecord<>(
-                ORDER_JSON_TOPIC, 0, 2, "3", "{\"id\":3,\"customerId\":7,\"items\":[\"Monitor\"],\"amount\":219.00}");
+                ORDER_JSON_TOPIC,
+                0,
+                2,
+                "ORD3",
+                "{\"id\":\"ORD3\",\"customerId\":\"CUS7\",\"items\":[\"Monitor\"],\"amount\":219.00}");
 
         // First poll to rewind, second poll to resume
         for (int i = 0; i < 2; i++) {
@@ -136,8 +144,8 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
                 ORDER_JSON_TOPIC,
                 0,
                 0,
-                "1",
-                "{\"id\":1,\"customerId\":3,\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
+                "ORD1",
+                "{\"id\":\"ORD1\",\"customerId\":\"CUS3\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
 
         for (int i = 0; i < 2; i++) {
             mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -159,7 +167,11 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
     @Test
     void shouldRewindToLatestOnExternalSystemError() throws Exception {
         ConsumerRecord<String, String> message = new ConsumerRecord<>(
-                ORDER_JSON_TOPIC, 0, 0, "1", "{\"id\":2,\"customerId\":5,\"items\":[\"Keyboard\"],\"amount\":89.99}");
+                ORDER_JSON_TOPIC,
+                0,
+                0,
+                "ORD2",
+                "{\"id\":\"ORD2\",\"customerId\":\"CUS5\",\"items\":[\"Keyboard\"],\"amount\":89.99}");
 
         for (int i = 0; i < 2; i++) {
             mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));

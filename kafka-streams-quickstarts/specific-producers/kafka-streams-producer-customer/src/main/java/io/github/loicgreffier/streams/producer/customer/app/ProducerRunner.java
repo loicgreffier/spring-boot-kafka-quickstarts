@@ -42,7 +42,7 @@ public class ProducerRunner {
     /**
      * Constructor.
      *
-     * @param producer The Kafka producer
+     * @param producer The Kafka producer.
      */
     public ProducerRunner(Producer<String, Customer> producer) {
         this.producer = producer;
@@ -60,10 +60,9 @@ public class ProducerRunner {
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
-        for (int i = 0; i < CUSTOMER_COUNT; i++) {
+        for (int i = 1; i <= CUSTOMER_COUNT; i++) {
             Customer customer = buildCustomer(i);
-            ProducerRecord<String, Customer> message =
-                    new ProducerRecord<>(CUSTOMER_TOPIC, String.valueOf(customer.getId()), customer);
+            ProducerRecord<String, Customer> message = new ProducerRecord<>(CUSTOMER_TOPIC, customer.getId(), customer);
 
             send(message);
         }
@@ -101,7 +100,7 @@ public class ProducerRunner {
         String lastName = LAST_NAMES.get(id % LAST_NAMES.size());
 
         return Customer.newBuilder()
-                .setId((long) id)
+                .setId("CUS%d".formatted(id))
                 .setFirstName(firstName)
                 .setLastName(lastName)
                 .setEmail("%s.%s@mail.com".formatted(firstName, lastName).toLowerCase())

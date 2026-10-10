@@ -32,6 +32,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.Repartitioned;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
@@ -43,9 +44,10 @@ public class KafkaStreamsTopology {
      * Builds the Kafka Streams topology.
      *
      * <p>This topology reads from the {@code ORDER_TOPIC} and {@code DELIVERY_TOPIC} topics. It reconciles an order and
-     * its delivery, regardless of which record arrives first or how much time passes between the two. Both topics are
-     * keyed by order id, so they are co-partitioned: an order and its delivery are processed by the same task and share
-     * the same reconciliation store. The result is written to the {@code RECONCILIATION_TOPIC}.
+     * its delivery, regardless of which record arrives first or how much time passes between the two. The
+     * {@code ORDER_TOPIC} is already keyed by order id. The {@code DELIVERY_TOPIC} is re-keyed by order id and
+     * repartitioned before entering the processor to prevent records with a new key from being processed by the wrong
+     * task. The result is written to the {@code RECONCILIATION_TOPIC}.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
@@ -61,6 +63,9 @@ public class KafkaStreamsTopology {
 
         streamsBuilder.<String, Delivery>stream(
                         DELIVERY_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .selectKey((_, delivery) -> delivery.getOrderId())
+                .repartition(Repartitioned.<String, Delivery>with(Serdes.String(), SerdesUtils.getValueSerdes())
+                        .withName(DELIVERY_TOPIC))
                 .process(() -> new ReconciliationProcessor<>(), RECONCILIATION_STORE)
                 .to(RECONCILIATION_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }

@@ -65,7 +65,7 @@ public class CountOrderProcessor extends ContextualProcessor<String, Order, Stri
     public void process(Record<String, Order> message) {
         log.atInfo().addArgument(message.key()).addArgument(message.value()).log("Processing key = {}, value = {}");
 
-        String key = String.valueOf(message.value().getCustomerId());
+        String key = message.value().getCustomerId();
         Long count = countOrderStore.putIfAbsent(key, 1L);
 
         if (count != null) {

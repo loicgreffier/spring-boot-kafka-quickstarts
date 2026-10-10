@@ -30,18 +30,18 @@ class MaxAmountReducerTest {
     void shouldKeepHighestAmountOrder() {
         MaxAmountReducer reducer = new MaxAmountReducer();
 
-        Order highest = buildOrder(1L, 1500.0);
-        Order middle = buildOrder(2L, 800.0);
-        Order lowest = buildOrder(3L, 50.0);
+        Order highest = buildOrder("ORD1", 1500.0);
+        Order middle = buildOrder("ORD2", 800.0);
+        Order lowest = buildOrder("ORD3", 50.0);
 
         assertEquals(highest, reducer.apply(lowest, highest));
         assertEquals(highest, reducer.apply(highest, middle));
     }
 
-    private Order buildOrder(long id, double amount) {
+    private Order buildOrder(String id, double amount) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId(1L)
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(amount)
                 .build();

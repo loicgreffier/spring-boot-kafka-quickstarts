@@ -60,10 +60,10 @@ public class CustomProcessingExceptionHandler implements ProcessingExceptionHand
     /**
      * Configures the handler.
      *
-     * @param map The configuration properties.
+     * @param configs The configuration properties.
      */
     @Override
-    public void configure(Map<String, ?> map) {
+    public void configure(Map<String, ?> configs) {
         // Do nothing
     }
 }

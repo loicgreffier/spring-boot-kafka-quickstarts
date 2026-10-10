@@ -94,25 +94,25 @@ class KafkaStreamsCountApplicationTest {
 
     @Test
     void shouldCountByCustomer() {
-        inputTopic.pipeInput("1", buildOrder(1L, 1L));
-        inputTopic.pipeInput("2", buildOrder(2L, 2L));
-        inputTopic.pipeInput("3", buildOrder(3L, 1L));
-        inputTopic.pipeInput("4", buildOrder(4L, 2L));
+        inputTopic.pipeInput("ORD1", buildOrder("ORD1", "CUS1"));
+        inputTopic.pipeInput("ORD2", buildOrder("ORD2", "CUS2"));
+        inputTopic.pipeInput("ORD3", buildOrder("ORD3", "CUS1"));
+        inputTopic.pipeInput("ORD4", buildOrder("ORD4", "CUS2"));
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", 1L), results.getFirst());
-        assertEquals(KeyValue.pair("2", 1L), results.get(1));
-        assertEquals(KeyValue.pair("1", 2L), results.get(2));
-        assertEquals(KeyValue.pair("2", 2L), results.get(3));
+        assertEquals(KeyValue.pair("CUS1", 1L), results.getFirst());
+        assertEquals(KeyValue.pair("CUS2", 1L), results.get(1));
+        assertEquals(KeyValue.pair("CUS1", 2L), results.get(2));
+        assertEquals(KeyValue.pair("CUS2", 2L), results.get(3));
 
         KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(ORDER_COUNT_STORE);
 
-        assertEquals(2, stateStore.get("1"));
-        assertEquals(2, stateStore.get("2"));
+        assertEquals(2, stateStore.get("CUS1"));
+        assertEquals(2, stateStore.get("CUS2"));
     }
 
-    private Order buildOrder(long id, long customerId) {
+    private Order buildOrder(String id, String customerId) {
         return Order.newBuilder()
                 .setId(id)
                 .setCustomerId(customerId)

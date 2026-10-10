@@ -21,6 +21,7 @@ package io.github.loicgreffier.streams.join.stream.stream;
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static io.github.loicgreffier.streams.join.stream.stream.constant.StateStore.ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE;
 import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.DELIVERY_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.ORDER_DELIVERY_JOIN_STREAM_STREAM_REKEY_TOPIC;
 import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.ORDER_DELIVERY_JOIN_STREAM_STREAM_TOPIC;
 import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -66,6 +67,7 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, Order> orderInputTopic;
     private TestInputTopic<String, Delivery> deliveryInputTopic;
+    private TestOutputTopic<String, Delivery> rekeyDeliveryOutputTopic;
     private TestOutputTopic<String, JoinOrderDelivery> joinOutputTopic;
 
     @BeforeEach
@@ -94,6 +96,11 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
                 DELIVERY_TOPIC,
                 new StringSerializer(),
                 SerdesUtils.<Delivery>getValueSerdes().serializer());
+        rekeyDeliveryOutputTopic = testDriver.createOutputTopic(
+                "streams-join-stream-stream-test-" + ORDER_DELIVERY_JOIN_STREAM_STREAM_REKEY_TOPIC
+                        + "-right-repartition",
+                new StringDeserializer(),
+                SerdesUtils.<Delivery>getValueSerdes().deserializer());
         joinOutputTopic = testDriver.createOutputTopic(
                 ORDER_DELIVERY_JOIN_STREAM_STREAM_TOPIC,
                 new StringDeserializer(),
@@ -108,26 +115,37 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
     }
 
     @Test
+    void shouldRekey() {
+        Delivery delivery = buildDelivery("DEL10", "ORD1");
+        deliveryInputTopic.pipeInput("DEL10", delivery);
+
+        List<KeyValue<String, Delivery>> results = rekeyDeliveryOutputTopic.readKeyValuesToList();
+
+        // Only the delivery stream is rekeyed, as the order stream is already keyed by order id.
+        assertEquals(KeyValue.pair("ORD1", delivery), results.getFirst());
+    }
+
+    @Test
     void shouldJoinWhenTimeWindowIsRespected() {
-        Order orderOne = buildOrder(1L);
-        orderInputTopic.pipeInput(new TestRecord<>("1", orderOne, Instant.parse("2000-01-01T01:00:00Z")));
+        Order orderOne = buildOrder("ORD1");
+        orderInputTopic.pipeInput(new TestRecord<>("ORD1", orderOne, Instant.parse("2000-01-01T01:00:00Z")));
 
-        Delivery deliveryOne = buildDelivery(1L);
-        deliveryInputTopic.pipeInput(new TestRecord<>("1", deliveryOne, Instant.parse("2000-01-01T01:02:00Z")));
+        Delivery deliveryOne = buildDelivery("DEL1", "ORD1");
+        deliveryInputTopic.pipeInput(new TestRecord<>("DEL1", deliveryOne, Instant.parse("2000-01-01T01:02:00Z")));
 
-        Order orderTwo = buildOrder(2L);
-        orderInputTopic.pipeInput(new TestRecord<>("2", orderTwo, Instant.parse("2000-01-01T01:03:00Z")));
+        Order orderTwo = buildOrder("ORD2");
+        orderInputTopic.pipeInput(new TestRecord<>("ORD2", orderTwo, Instant.parse("2000-01-01T01:03:00Z")));
 
-        Delivery deliveryTwo = buildDelivery(2L);
-        deliveryInputTopic.pipeInput(new TestRecord<>("2", deliveryTwo, Instant.parse("2000-01-01T01:04:00Z")));
+        Delivery deliveryTwo = buildDelivery("DEL2", "ORD2");
+        deliveryInputTopic.pipeInput(new TestRecord<>("DEL2", deliveryTwo, Instant.parse("2000-01-01T01:04:00Z")));
 
         List<KeyValue<String, JoinOrderDelivery>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertEquals("1", results.getFirst().key);
+        assertEquals("ORD1", results.getFirst().key);
         assertEquals(orderOne, results.getFirst().value.getOrder());
         assertEquals(deliveryOne, results.getFirst().value.getDelivery());
 
-        assertEquals("2", results.get(1).key);
+        assertEquals("ORD2", results.get(1).key);
         assertEquals(orderTwo, results.get(1).value.getOrder());
         assertEquals(deliveryTwo, results.get(1).value.getDelivery());
 
@@ -137,8 +155,8 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
                 testDriver.getWindowStore(ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
-            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", orderOne);
-            assertWindowedRecord(iterator.next(), "2", "2000-01-01T01:03:00Z", "2000-01-01T01:13:00Z", orderTwo);
+            assertWindowedRecord(iterator.next(), "ORD1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", orderOne);
+            assertWindowedRecord(iterator.next(), "ORD2", "2000-01-01T01:03:00Z", "2000-01-01T01:13:00Z", orderTwo);
             assertFalse(iterator.hasNext());
         }
 
@@ -146,19 +164,19 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
                 testDriver.getWindowStore(ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE + "-other-join-store");
 
         try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStateStore.all()) {
-            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:02:00Z", "2000-01-01T01:12:00Z", deliveryOne);
-            assertWindowedRecord(iterator.next(), "2", "2000-01-01T01:04:00Z", "2000-01-01T01:14:00Z", deliveryTwo);
+            assertWindowedRecord(iterator.next(), "ORD1", "2000-01-01T01:02:00Z", "2000-01-01T01:12:00Z", deliveryOne);
+            assertWindowedRecord(iterator.next(), "ORD2", "2000-01-01T01:04:00Z", "2000-01-01T01:14:00Z", deliveryTwo);
             assertFalse(iterator.hasNext());
         }
     }
 
     @Test
     void shouldNotJoinWhenTimeWindowIsNotRespected() {
-        Order order = buildOrder(1L);
-        orderInputTopic.pipeInput(new TestRecord<>("1", order, Instant.parse("2000-01-01T01:00:00Z")));
+        Order order = buildOrder("ORD1");
+        orderInputTopic.pipeInput(new TestRecord<>("ORD1", order, Instant.parse("2000-01-01T01:00:00Z")));
 
-        Delivery delivery = buildDelivery(1L);
-        deliveryInputTopic.pipeInput(new TestRecord<>("1", delivery, Instant.parse("2000-01-01T01:05:01Z")));
+        Delivery delivery = buildDelivery("DEL1", "ORD1");
+        deliveryInputTopic.pipeInput(new TestRecord<>("DEL1", delivery, Instant.parse("2000-01-01T01:05:01Z")));
 
         List<KeyValue<String, JoinOrderDelivery>> results = joinOutputTopic.readKeyValuesToList();
 
@@ -169,7 +187,7 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
                 testDriver.getWindowStore(ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
-            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", order);
+            assertWindowedRecord(iterator.next(), "ORD1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", order);
             assertFalse(iterator.hasNext());
         }
 
@@ -177,30 +195,30 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
                 testDriver.getWindowStore(ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE + "-other-join-store");
 
         try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStateStore.all()) {
-            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:05:01Z", "2000-01-01T01:15:01Z", delivery);
+            assertWindowedRecord(iterator.next(), "ORD1", "2000-01-01T01:05:01Z", "2000-01-01T01:15:01Z", delivery);
             assertFalse(iterator.hasNext());
         }
     }
 
     @Test
     void shouldHonorGracePeriod() {
-        Order orderOne = buildOrder(1L);
-        orderInputTopic.pipeInput(new TestRecord<>("1", orderOne, Instant.parse("2000-01-01T01:00:00Z")));
+        Order orderOne = buildOrder("ORD1");
+        orderInputTopic.pipeInput(new TestRecord<>("ORD1", orderOne, Instant.parse("2000-01-01T01:00:00Z")));
 
-        Order orderTwo = buildOrder(2L);
-        orderInputTopic.pipeInput(new TestRecord<>("2", orderTwo, Instant.parse("2000-01-01T01:10:30Z")));
+        Order orderTwo = buildOrder("ORD2");
+        orderInputTopic.pipeInput(new TestRecord<>("ORD2", orderTwo, Instant.parse("2000-01-01T01:10:30Z")));
 
         // At this point, the stream time is 01:10:30. It exceeds by 30 seconds
         // the upper bound of the first order's window [01:00:00.001Z->01:10:00Z] in the store.
         // However, the following delayed delivery will be joined with the first order
         // thanks to the grace period of 1 minute.
 
-        Delivery delivery = buildDelivery(1L);
-        deliveryInputTopic.pipeInput(new TestRecord<>("1", delivery, Instant.parse("2000-01-01T01:05:00Z")));
+        Delivery delivery = buildDelivery("DEL1", "ORD1");
+        deliveryInputTopic.pipeInput(new TestRecord<>("DEL1", delivery, Instant.parse("2000-01-01T01:05:00Z")));
 
         List<KeyValue<String, JoinOrderDelivery>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertEquals("1", results.getFirst().key);
+        assertEquals("ORD1", results.getFirst().key);
         assertEquals(orderOne, results.getFirst().value.getOrder());
         assertEquals(delivery, results.getFirst().value.getDelivery());
 
@@ -208,8 +226,8 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
                 testDriver.getWindowStore(ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
-            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", orderOne);
-            assertWindowedRecord(iterator.next(), "2", "2000-01-01T01:10:30Z", "2000-01-01T01:20:30Z", orderTwo);
+            assertWindowedRecord(iterator.next(), "ORD1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", orderOne);
+            assertWindowedRecord(iterator.next(), "ORD2", "2000-01-01T01:10:30Z", "2000-01-01T01:20:30Z", orderTwo);
             assertFalse(iterator.hasNext());
         }
 
@@ -217,7 +235,7 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
                 testDriver.getWindowStore(ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE + "-other-join-store");
 
         try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStateStore.all()) {
-            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:05:00Z", "2000-01-01T01:15:00Z", delivery);
+            assertWindowedRecord(iterator.next(), "ORD1", "2000-01-01T01:05:00Z", "2000-01-01T01:15:00Z", delivery);
             assertFalse(iterator.hasNext());
         }
     }
@@ -230,18 +248,18 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         assertEquals(value, keyValue.value);
     }
 
-    private Order buildOrder(Long id) {
+    private Order buildOrder(String id) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId(3L)
+                .setCustomerId("CUS3")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(1249.90)
                 .build();
     }
 
-    private Delivery buildDelivery(Long orderId) {
+    private Delivery buildDelivery(String id, String orderId) {
         return Delivery.newBuilder()
-                .setId(orderId)
+                .setId(id)
                 .setOrderId(orderId)
                 .setDestination("Lyon")
                 .build();

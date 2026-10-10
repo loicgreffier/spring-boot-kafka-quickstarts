@@ -29,7 +29,10 @@ import org.apache.kafka.streams.processor.api.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** This class represents a processor that adds metadata to the message and changes the key. */
+/**
+ * This class represents a processor that wraps the order with the metadata of its record, adds the
+ * {@code correlationId} and {@code eventType} headers and changes the key to the customer id.
+ */
 public class OrderMetadataProcessor extends ContextualProcessor<String, Order, String, OrderMetadata> {
     private static final Logger log = LoggerFactory.getLogger(OrderMetadataProcessor.class);
 
@@ -53,8 +56,6 @@ public class OrderMetadataProcessor extends ContextualProcessor<String, Order, S
 
         message.headers().add("correlationId", UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8));
         message.headers().add("eventType", "ORDER_CREATED".getBytes(StandardCharsets.UTF_8));
-        context()
-                .forward(message.withKey(String.valueOf(message.value().getCustomerId()))
-                        .withValue(newValue));
+        context().forward(message.withKey(message.value().getCustomerId()).withValue(newValue));
     }
 }

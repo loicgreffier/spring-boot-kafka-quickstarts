@@ -65,7 +65,7 @@ public class KafkaStreamsTopology {
 
         streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
-                .selectKey((_, order) -> String.valueOf(order.getCustomerId()))
+                .selectKey((_, order) -> order.getCustomerId())
                 .leftJoin(
                         customerTable,
                         (order, customer) -> {

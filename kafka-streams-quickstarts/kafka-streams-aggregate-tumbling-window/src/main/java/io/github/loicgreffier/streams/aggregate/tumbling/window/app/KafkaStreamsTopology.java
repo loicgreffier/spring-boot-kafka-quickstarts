@@ -62,7 +62,7 @@ public class KafkaStreamsTopology {
     public static void topology(StreamsBuilder streamsBuilder) {
         streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
-                .selectKey((_, order) -> String.valueOf(order.getCustomerId()))
+                .selectKey((_, order) -> order.getCustomerId())
                 .groupByKey(Grouped.with(GROUP_ORDER_BY_CUSTOMER_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)))
                 .aggregate(

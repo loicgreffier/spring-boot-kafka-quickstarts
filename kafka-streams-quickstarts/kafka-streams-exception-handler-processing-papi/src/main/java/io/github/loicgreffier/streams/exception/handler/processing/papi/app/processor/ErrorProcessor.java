@@ -44,7 +44,7 @@ public class ErrorProcessor extends ContextualFixedKeyProcessor<String, Order, O
     /**
      * Process the record by throwing an exception if the order amount is negative.
      *
-     * @param message The record to process
+     * @param message The record to process.
      */
     @Override
     public void process(FixedKeyRecord<String, Order> message) {

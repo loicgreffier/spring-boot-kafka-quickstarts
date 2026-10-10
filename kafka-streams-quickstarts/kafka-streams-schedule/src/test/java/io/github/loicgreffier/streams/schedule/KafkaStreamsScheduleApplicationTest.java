@@ -97,58 +97,63 @@ class KafkaStreamsScheduleApplicationTest {
 
     @Test
     void shouldCountOrdersByCustomer() {
-        inputTopic.pipeInput(new TestRecord<>("1", buildOrder(1L, 3L), Instant.parse("2000-01-01T01:00:00Z")));
+        inputTopic.pipeInput(
+                new TestRecord<>("ORD1", buildOrder("ORD1", "CUS3"), Instant.parse("2000-01-01T01:00:00Z")));
 
-        inputTopic.pipeInput(new TestRecord<>("2", buildOrder(2L, 3L), Instant.parse("2000-01-01T01:01:00Z")));
+        inputTopic.pipeInput(
+                new TestRecord<>("ORD2", buildOrder("ORD2", "CUS3"), Instant.parse("2000-01-01T01:01:00Z")));
 
-        inputTopic.pipeInput(new TestRecord<>("3", buildOrder(3L, 1L), Instant.parse("2000-01-01T01:01:30Z")));
+        inputTopic.pipeInput(
+                new TestRecord<>("ORD3", buildOrder("ORD3", "CUS1"), Instant.parse("2000-01-01T01:01:30Z")));
 
-        inputTopic.pipeInput(new TestRecord<>("4", buildOrder(4L, 2L), Instant.parse("2000-01-01T01:02:00Z")));
+        inputTopic.pipeInput(
+                new TestRecord<>("ORD4", buildOrder("ORD4", "CUS2"), Instant.parse("2000-01-01T01:02:00Z")));
 
         testDriver.advanceWallClockTime(Duration.ofMinutes(2));
 
-        inputTopic.pipeInput(new TestRecord<>("5", buildOrder(5L, 3L), Instant.parse("2000-01-01T01:04:00Z")));
+        inputTopic.pipeInput(
+                new TestRecord<>("ORD5", buildOrder("ORD5", "CUS3"), Instant.parse("2000-01-01T01:04:00Z")));
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
         // 1st stream time punctuate
-        assertEquals("3", results.getFirst().key);
+        assertEquals("CUS3", results.getFirst().key);
         assertEquals(1, results.getFirst().value);
 
         // 2nd stream time punctuate
-        assertEquals("3", results.get(1).key);
+        assertEquals("CUS3", results.get(1).key);
         assertEquals(2, results.get(1).value);
 
         // 3rd stream time punctuate
-        assertEquals("1", results.get(2).key);
+        assertEquals("CUS1", results.get(2).key);
         assertEquals(1, results.get(2).value);
 
-        assertEquals("2", results.get(3).key);
+        assertEquals("CUS2", results.get(3).key);
         assertEquals(1, results.get(3).value);
 
-        assertEquals("3", results.get(4).key);
+        assertEquals("CUS3", results.get(4).key);
         assertEquals(2, results.get(4).value);
 
         // 1st wall clock time punctuate now
 
         // 4th stream time punctuate
-        assertEquals("1", results.get(5).key);
+        assertEquals("CUS1", results.get(5).key);
         assertEquals(0, results.get(5).value);
 
-        assertEquals("2", results.get(6).key);
+        assertEquals("CUS2", results.get(6).key);
         assertEquals(0, results.get(6).value);
 
-        assertEquals("3", results.get(7).key);
+        assertEquals("CUS3", results.get(7).key);
         assertEquals(1, results.get(7).value);
 
         KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(ORDER_SCHEDULE_STORE);
 
-        assertEquals(1, stateStore.get("3"));
-        assertEquals(0, stateStore.get("1"));
-        assertEquals(0, stateStore.get("2"));
+        assertEquals(1, stateStore.get("CUS3"));
+        assertEquals(0, stateStore.get("CUS1"));
+        assertEquals(0, stateStore.get("CUS2"));
     }
 
-    private Order buildOrder(long id, long customerId) {
+    private Order buildOrder(String id, String customerId) {
         return Order.newBuilder()
                 .setId(id)
                 .setCustomerId(customerId)

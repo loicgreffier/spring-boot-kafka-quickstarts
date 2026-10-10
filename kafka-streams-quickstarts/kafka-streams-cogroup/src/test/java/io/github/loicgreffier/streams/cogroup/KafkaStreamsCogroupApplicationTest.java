@@ -104,71 +104,71 @@ class KafkaStreamsCogroupApplicationTest {
 
     @Test
     void shouldAggregateOrdersByCustomerStreamOne() {
-        Order firstOrder = buildOrder(1L);
-        inputTopicOne.pipeInput("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
+        Order firstOrder = buildOrder("ORD1");
+        inputTopicOne.pipeInput("ORD1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
-        Order secondOrder = buildOrder(2L);
-        inputTopicOne.pipeInput("2", secondOrder, Instant.parse("2000-01-01T01:00:00Z"));
+        Order secondOrder = buildOrder("ORD2");
+        inputTopicOne.pipeInput("ORD2", secondOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
         List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("1", results.getFirst().key);
+        assertEquals("CUS1", results.getFirst().key);
         assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
 
-        assertEquals("1", results.get(1).key);
+        assertEquals("CUS1", results.get(1).key);
         assertIterableEquals(
                 List.of(firstOrder, secondOrder), results.get(1).value.getOrders());
 
         KeyValueStore<String, OrderAggregate> stateStore = testDriver.getKeyValueStore(ORDER_COGROUP_AGGREGATE_STORE);
 
         assertIterableEquals(
-                List.of(firstOrder, secondOrder), stateStore.get("1").getOrders());
+                List.of(firstOrder, secondOrder), stateStore.get("CUS1").getOrders());
     }
 
     @Test
     void shouldAggregateOrdersByCustomerStreamTwo() {
-        Order firstOrder = buildOrder(1L);
-        inputTopicTwo.pipeInput("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
+        Order firstOrder = buildOrder("ORD1");
+        inputTopicTwo.pipeInput("ORD1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
-        Order secondOrder = buildOrder(2L);
-        inputTopicTwo.pipeInput("2", secondOrder, Instant.parse("2000-01-01T01:00:00Z"));
+        Order secondOrder = buildOrder("ORD2");
+        inputTopicTwo.pipeInput("ORD2", secondOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
         List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("1", results.getFirst().key);
+        assertEquals("CUS1", results.getFirst().key);
         assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
 
-        assertEquals("1", results.get(1).key);
+        assertEquals("CUS1", results.get(1).key);
         assertIterableEquals(
                 List.of(firstOrder, secondOrder), results.get(1).value.getOrders());
 
         KeyValueStore<String, OrderAggregate> stateStore = testDriver.getKeyValueStore(ORDER_COGROUP_AGGREGATE_STORE);
 
         assertIterableEquals(
-                List.of(firstOrder, secondOrder), stateStore.get("1").getOrders());
+                List.of(firstOrder, secondOrder), stateStore.get("CUS1").getOrders());
     }
 
     @Test
     void shouldAggregateOrdersByCustomerBothCogroupedStreams() {
-        Order firstOrder = buildOrder(1L);
-        inputTopicOne.pipeInput("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
+        Order firstOrder = buildOrder("ORD1");
+        inputTopicOne.pipeInput("ORD1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
-        Order secondOrder = buildOrder(2L);
-        inputTopicOne.pipeInput("2", secondOrder, Instant.parse("2000-01-01T01:00:00Z"));
+        Order secondOrder = buildOrder("ORD2");
+        inputTopicOne.pipeInput("ORD2", secondOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
-        Order thirdOrder = buildOrder(3L);
-        inputTopicTwo.pipeInput("3", thirdOrder, Instant.parse("2000-01-01T01:00:00Z"));
+        Order thirdOrder = buildOrder("ORD3");
+        inputTopicTwo.pipeInput("ORD3", thirdOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
         List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("1", results.getFirst().key);
+        assertEquals("CUS1", results.getFirst().key);
         assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
 
-        assertEquals("1", results.get(1).key);
+        assertEquals("CUS1", results.get(1).key);
         assertIterableEquals(
                 List.of(firstOrder, secondOrder), results.get(1).value.getOrders());
 
-        assertEquals("1", results.get(2).key);
+        assertEquals("CUS1", results.get(2).key);
         assertIterableEquals(
                 List.of(firstOrder, secondOrder, thirdOrder),
                 results.get(2).value.getOrders());
@@ -177,13 +177,13 @@ class KafkaStreamsCogroupApplicationTest {
 
         assertIterableEquals(
                 List.of(firstOrder, secondOrder, thirdOrder),
-                stateStore.get("1").getOrders());
+                stateStore.get("CUS1").getOrders());
     }
 
-    private Order buildOrder(long id) {
+    private Order buildOrder(String id) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId(1L)
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(100.0)
                 .build();

@@ -98,25 +98,25 @@ class KafkaStreamsAggregateApplicationTest {
 
     @Test
     void shouldAggregate() {
-        Order firstOrder = buildOrder(1L);
-        inputTopic.pipeInput("1", firstOrder);
+        Order firstOrder = buildOrder("ORD1");
+        inputTopic.pipeInput("ORD1", firstOrder);
 
-        Order secondOrder = buildOrder(2L);
-        inputTopic.pipeInput("2", secondOrder);
+        Order secondOrder = buildOrder("ORD2");
+        inputTopic.pipeInput("ORD2", secondOrder);
 
-        Order thirdOrder = buildOrder(3L);
-        inputTopic.pipeInput("3", thirdOrder);
+        Order thirdOrder = buildOrder("ORD3");
+        inputTopic.pipeInput("ORD3", thirdOrder);
 
         List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("1", results.getFirst().key);
+        assertEquals("CUS1", results.getFirst().key);
         assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
 
-        assertEquals("1", results.get(1).key);
+        assertEquals("CUS1", results.get(1).key);
         assertIterableEquals(
                 List.of(firstOrder, secondOrder), results.get(1).value.getOrders());
 
-        assertEquals("1", results.get(2).key);
+        assertEquals("CUS1", results.get(2).key);
         assertIterableEquals(
                 List.of(firstOrder, secondOrder, thirdOrder),
                 results.get(2).value.getOrders());
@@ -125,13 +125,13 @@ class KafkaStreamsAggregateApplicationTest {
 
         assertIterableEquals(
                 List.of(firstOrder, secondOrder, thirdOrder),
-                stateStore.get("1").getOrders());
+                stateStore.get("CUS1").getOrders());
     }
 
-    private Order buildOrder(long id) {
+    private Order buildOrder(String id) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId(1L)
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(100.0)
                 .build();

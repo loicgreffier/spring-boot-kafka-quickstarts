@@ -60,10 +60,10 @@ class KafkaConsumerTransactionApplicationTest {
                 ORDER_JSON_TOPIC,
                 0,
                 0,
-                "1",
-                "{\"id\":1,\"customerId\":3,\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
+                "ORD1",
+                "{\"id\":\"ORD1\",\"customerId\":\"CUS3\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
         ConsumerRecord<String, String> secondMessage = new ConsumerRecord<>(
-                DELIVERY_JSON_TOPIC, 0, 0, "1", "{\"id\":1,\"orderId\":1,\"destination\":\"Lyon\"}");
+                DELIVERY_JSON_TOPIC, 0, 0, "DEL1", "{\"id\":\"DEL1\",\"orderId\":\"ORD1\",\"destination\":\"Lyon\"}");
 
         mockConsumer.schedulePollTask(() -> {
             mockConsumer.addRecord(firstMessage);

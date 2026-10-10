@@ -72,12 +72,12 @@ class KafkaConsumerAvroGenericApplicationTest {
         Schema schema = new Schema.Parser().parse(schemaFile);
 
         GenericRecord genericRecord = new GenericData.Record(schema);
-        genericRecord.put("id", 1L);
-        genericRecord.put("customerId", 3L);
+        genericRecord.put("id", "ORD1");
+        genericRecord.put("customerId", "CUS3");
         genericRecord.put("items", List.of("Laptop", "Mouse"));
         genericRecord.put("amount", 1249.90);
 
-        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(ORDER_TOPIC, 0, 0, "1", genericRecord);
+        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(ORDER_TOPIC, 0, 0, "ORD1", genericRecord);
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -94,12 +94,12 @@ class KafkaConsumerAvroGenericApplicationTest {
         Schema schema = new Schema.Parser().parse(schemaFile);
 
         GenericRecord genericRecord = new GenericData.Record(schema);
-        genericRecord.put("id", 1L);
-        genericRecord.put("customerId", 3L);
+        genericRecord.put("id", "ORD1");
+        genericRecord.put("customerId", "CUS3");
         genericRecord.put("items", List.of("Laptop", "Mouse"));
         genericRecord.put("amount", 1249.90);
 
-        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(ORDER_TOPIC, 0, 0, "1", genericRecord);
+        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(ORDER_TOPIC, 0, 0, "ORD1", genericRecord);
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(() -> {

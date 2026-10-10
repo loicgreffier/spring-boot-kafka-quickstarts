@@ -86,10 +86,10 @@ class KafkaConsumerExactlyOnceProcessingApplicationTest {
                 ORDER_TOPIC,
                 0,
                 0,
-                "1",
+                "ORD1",
                 Order.newBuilder()
-                        .setId(1L)
-                        .setCustomerId(3L)
+                        .setId("ORD1")
+                        .setCustomerId("CUS3")
                         .setItems(List.of("Laptop", "Mouse"))
                         .setAmount(1249.90)
                         .build());
@@ -102,7 +102,7 @@ class KafkaConsumerExactlyOnceProcessingApplicationTest {
         ProducerRecord<String, Order> sentRecord = mockProducer.history().getFirst();
 
         assertEquals(EXACTLY_ONCE_PROCESSING_TOPIC, sentRecord.topic());
-        assertEquals("1", sentRecord.key());
+        assertEquals("ORD1", sentRecord.key());
         assertNotNull(sentRecord.value().getId());
         assertEquals(1499.88, sentRecord.value().getAmount());
         assertTrue(mockProducer.transactionInitialized());
@@ -121,10 +121,10 @@ class KafkaConsumerExactlyOnceProcessingApplicationTest {
                 ORDER_TOPIC,
                 0,
                 0,
-                "1",
+                "ORD1",
                 Order.newBuilder()
-                        .setId(1L)
-                        .setCustomerId(3L)
+                        .setId("ORD1")
+                        .setCustomerId("CUS3")
                         .setItems(List.of("Laptop", "Mouse"))
                         // Null amount to trigger an exception
                         .build());

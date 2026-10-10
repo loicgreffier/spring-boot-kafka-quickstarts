@@ -66,10 +66,10 @@ class KafkaConsumerAvroSpecificApplicationTest {
                 ORDER_TOPIC,
                 0,
                 0,
-                "1",
+                "ORD1",
                 Order.newBuilder()
-                        .setId(1L)
-                        .setCustomerId(3L)
+                        .setId("ORD1")
+                        .setCustomerId("CUS3")
                         .setItems(List.of("Laptop", "Mouse"))
                         .setAmount(1249.90)
                         .build());
@@ -89,10 +89,10 @@ class KafkaConsumerAvroSpecificApplicationTest {
                 ORDER_TOPIC,
                 0,
                 0,
-                "1",
+                "ORD1",
                 Order.newBuilder()
-                        .setId(1L)
-                        .setCustomerId(3L)
+                        .setId("ORD1")
+                        .setCustomerId("CUS3")
                         .setItems(List.of("Laptop", "Mouse"))
                         .setAmount(1249.90)
                         .build());

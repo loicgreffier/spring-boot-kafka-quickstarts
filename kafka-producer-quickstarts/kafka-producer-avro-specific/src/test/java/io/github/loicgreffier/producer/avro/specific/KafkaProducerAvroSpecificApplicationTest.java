@@ -75,7 +75,7 @@ class KafkaProducerAvroSpecificApplicationTest {
         ProducerRecord<String, Order> sentRecord = mockProducer.history().getFirst();
 
         assertEquals(ORDER_TOPIC, sentRecord.topic());
-        assertEquals("0", sentRecord.key());
+        assertEquals("ORD1", sentRecord.key());
         assertNotNull(sentRecord.value().getId());
         assertNotNull(sentRecord.value().getCustomerId());
         assertFalse(sentRecord.value().getItems().isEmpty());

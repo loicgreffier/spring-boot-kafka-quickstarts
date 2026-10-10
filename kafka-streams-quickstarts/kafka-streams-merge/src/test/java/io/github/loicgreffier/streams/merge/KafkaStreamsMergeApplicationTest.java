@@ -99,18 +99,18 @@ class KafkaStreamsMergeApplicationTest {
 
     @Test
     void shouldMergeBothStreams() {
-        Order firstOrder = buildOrder(1L, 3L, List.of("Laptop", "Mouse"), 1249.90);
-        Order secondOrder = buildOrder(2L, 5L, List.of("Keyboard"), 89.99);
-        inputTopicOne.pipeInput("1", firstOrder);
-        inputTopicTwo.pipeInput("2", secondOrder);
+        Order firstOrder = buildOrder("ORD1", "CUS3", List.of("Laptop", "Mouse"), 1249.90);
+        Order secondOrder = buildOrder("ORD2", "CUS5", List.of("Keyboard"), 89.99);
+        inputTopicOne.pipeInput("ORD1", firstOrder);
+        inputTopicTwo.pipeInput("ORD2", secondOrder);
 
         List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", firstOrder), results.getFirst());
-        assertEquals(KeyValue.pair("2", secondOrder), results.get(1));
+        assertEquals(KeyValue.pair("ORD1", firstOrder), results.getFirst());
+        assertEquals(KeyValue.pair("ORD2", secondOrder), results.get(1));
     }
 
-    private Order buildOrder(long id, long customerId, List<String> items, double amount) {
+    private Order buildOrder(String id, String customerId, List<String> items, double amount) {
         return Order.newBuilder()
                 .setId(id)
                 .setCustomerId(customerId)

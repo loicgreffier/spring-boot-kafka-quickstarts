@@ -50,8 +50,8 @@ public class KafkaStreamsTopology {
      * Builds the Kafka Streams topology.
      *
      * <p>This topology reads from the {@code ORDER_TOPIC} and {@code ORDER_TOPIC_TWO} topics, groups both streams by
-     * last id and cogroups them so a single aggregate per customer is built out of both sources. The result is written
-     * to the {@code ORDER_COGROUP_TOPIC} topic.
+     * customer id and cogroups them so a single aggregate per customer is built out of both sources. The result is
+     * written to the {@code ORDER_COGROUP_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
@@ -62,14 +62,14 @@ public class KafkaStreamsTopology {
                         ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .groupBy(
-                        (_, order) -> String.valueOf(order.getCustomerId()),
+                        (_, order) -> order.getCustomerId(),
                         Grouped.with(GROUP_ORDER_BY_CUSTOMER_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()));
 
         final KGroupedStream<String, Order> groupedStreamTwo = streamsBuilder.<String, Order>stream(
                         ORDER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .groupBy(
-                        (_, order) -> String.valueOf(order.getCustomerId()),
+                        (_, order) -> order.getCustomerId(),
                         Grouped.with(GROUP_ORDER_BY_CUSTOMER_TOPIC_TWO, Serdes.String(), SerdesUtils.getValueSerdes()));
 
         groupedStreamOne

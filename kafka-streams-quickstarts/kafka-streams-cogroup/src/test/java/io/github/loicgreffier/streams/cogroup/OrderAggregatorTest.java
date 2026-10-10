@@ -33,19 +33,19 @@ class OrderAggregatorTest {
         OrderAggregator aggregator = new OrderAggregator();
         OrderAggregate group = new OrderAggregate(new ArrayList<>());
 
-        Order firstOrder = buildOrder(1L);
-        aggregator.apply("1", firstOrder, group);
+        Order firstOrder = buildOrder("ORD1");
+        aggregator.apply("CUS1", firstOrder, group);
 
-        Order secondOrder = buildOrder(2L);
-        aggregator.apply("1", secondOrder, group);
+        Order secondOrder = buildOrder("ORD2");
+        aggregator.apply("CUS1", secondOrder, group);
 
         assertIterableEquals(List.of(firstOrder, secondOrder), group.getOrders());
     }
 
-    private Order buildOrder(long id) {
+    private Order buildOrder(String id) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId(1L)
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(100.0)
                 .build();

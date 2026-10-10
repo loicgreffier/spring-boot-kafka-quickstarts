@@ -64,27 +64,26 @@ public class KafkaStreamsTopology {
 
         streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
-                .leftJoin(
-                        customerGlobalTable, (_, order) -> String.valueOf(order.getCustomerId()), (order, customer) -> {
-                            if (customer == null) {
-                                log.info(
-                                        "No matching customer for order {} with customer id {}",
-                                        order.getId(),
-                                        order.getCustomerId());
-                            } else {
-                                log.info(
-                                        "Joined order {} to customer {} {} by customer id {}",
-                                        order.getId(),
-                                        customer.getFirstName(),
-                                        customer.getLastName(),
-                                        order.getCustomerId());
-                            }
+                .leftJoin(customerGlobalTable, (_, order) -> order.getCustomerId(), (order, customer) -> {
+                    if (customer == null) {
+                        log.info(
+                                "No matching customer for order {} with customer id {}",
+                                order.getId(),
+                                order.getCustomerId());
+                    } else {
+                        log.info(
+                                "Joined order {} to customer {} {} by customer id {}",
+                                order.getId(),
+                                customer.getFirstName(),
+                                customer.getLastName(),
+                                order.getCustomerId());
+                    }
 
-                            return JoinOrderCustomer.newBuilder()
-                                    .setOrder(order)
-                                    .setCustomer(customer)
-                                    .build();
-                        })
+                    return JoinOrderCustomer.newBuilder()
+                            .setOrder(order)
+                            .setCustomer(customer)
+                            .build();
+                })
                 .to(
                         ORDER_CUSTOMER_LEFT_JOIN_STREAM_GLOBAL_TABLE_TOPIC,
                         Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));

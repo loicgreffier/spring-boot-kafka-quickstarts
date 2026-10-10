@@ -44,7 +44,7 @@ public class ProducerRunner {
     /**
      * Constructor.
      *
-     * @param producer The Kafka producer
+     * @param producer The Kafka producer.
      */
     public ProducerRunner(Producer<String, Order> producer) {
         this.producer = producer;
@@ -63,9 +63,11 @@ public class ProducerRunner {
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() throws InterruptedException {
-        int i = 0;
+        int i = 1;
         while (!stopped) {
-            ProducerRecord<String, Order> message = new ProducerRecord<>(ORDER_TOPIC, String.valueOf(i), buildOrder(i));
+            Order order = buildOrder(i);
+
+            ProducerRecord<String, Order> message = new ProducerRecord<>(ORDER_TOPIC, order.getId(), order);
 
             producer.send(message, (recordMetadata, e) -> {
                 if (e != null) {
@@ -104,8 +106,8 @@ public class ProducerRunner {
      */
     private Order buildOrder(int id) {
         return Order.newBuilder()
-                .setId((long) id)
-                .setCustomerId((long) random.nextInt(10))
+                .setId("ORD%d".formatted(id))
+                .setCustomerId("CUS%d".formatted(random.nextInt(1, 11)))
                 .setItems(random.ints(random.nextInt(1, 9), 0, ITEMS.size())
                         .mapToObj(ITEMS::get)
                         .toList())

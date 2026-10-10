@@ -44,7 +44,7 @@ public class ProducerRunner {
     /**
      * Constructor.
      *
-     * @param producer The Kafka producer
+     * @param producer The Kafka producer.
      */
     public ProducerRunner(Producer<String, Delivery> producer) {
         this.producer = producer;
@@ -56,17 +56,17 @@ public class ProducerRunner {
      * <p>The {@code @Async} annotation is used to run the producer in a separate thread, preventing it from blocking
      * the main thread.
      *
-     * <p>The Kafka producer sends delivery records to the {@code DELIVERY_TOPIC}, keyed by order id.
+     * <p>The Kafka producer sends delivery records to the {@code DELIVERY_TOPIC}, keyed by delivery id.
      *
      * @throws InterruptedException if the thread is interrupted while sleeping
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() throws InterruptedException {
-        int i = 0;
+        int i = 1;
         while (!stopped) {
             Delivery delivery = buildDelivery(i);
-            send(new ProducerRecord<>(DELIVERY_TOPIC, String.valueOf(delivery.getOrderId()), delivery));
+            send(new ProducerRecord<>(DELIVERY_TOPIC, delivery.getId(), delivery));
 
             TimeUnit.SECONDS.sleep(1);
 
@@ -112,8 +112,8 @@ public class ProducerRunner {
      */
     private Delivery buildDelivery(int id) {
         return Delivery.newBuilder()
-                .setId((long) id)
-                .setOrderId((long) id)
+                .setId("DEL%d".formatted(id))
+                .setOrderId("ORD%d".formatted(id))
                 .setDestination(DESTINATIONS.get(random.nextInt(DESTINATIONS.size())))
                 .build();
     }

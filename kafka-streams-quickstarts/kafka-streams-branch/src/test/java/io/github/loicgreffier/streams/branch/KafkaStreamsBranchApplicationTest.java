@@ -106,7 +106,7 @@ class KafkaStreamsBranchApplicationTest {
 
     @Test
     void shouldBranchToTopicA() {
-        inputTopic.pipeInput("1", buildOrder(1L, 3L, List.of("Laptop", "Mouse"), 1500.0));
+        inputTopic.pipeInput("ORD1", buildOrder("ORD1", "CUS3", List.of("Laptop", "Mouse"), 1500.0));
 
         List<KeyValue<String, Order>> results = outputTopicA.readKeyValuesToList();
 
@@ -115,25 +115,25 @@ class KafkaStreamsBranchApplicationTest {
 
     @Test
     void shouldBranchToTopicB() {
-        Order order = buildOrder(1L, 3L, List.of("Keyboard"), 500.0);
-        inputTopic.pipeInput("1", order);
+        Order order = buildOrder("ORD1", "CUS3", List.of("Keyboard"), 500.0);
+        inputTopic.pipeInput("ORD1", order);
 
         List<KeyValue<String, Order>> results = outputTopicB.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", order), results.getFirst());
+        assertEquals(KeyValue.pair("ORD1", order), results.getFirst());
     }
 
     @Test
     void shouldBranchToDefaultTopic() {
-        Order order = buildOrder(1L, 3L, List.of("Mouse Pad"), 50.0);
-        inputTopic.pipeInput("1", order);
+        Order order = buildOrder("ORD1", "CUS3", List.of("Mouse Pad"), 50.0);
+        inputTopic.pipeInput("ORD1", order);
 
         List<KeyValue<String, Order>> results = outputTopicDefault.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", order), results.getFirst());
+        assertEquals(KeyValue.pair("ORD1", order), results.getFirst());
     }
 
-    private Order buildOrder(long id, long customerId, List<String> items, double amount) {
+    private Order buildOrder(String id, String customerId, List<String> items, double amount) {
         return Order.newBuilder()
                 .setId(id)
                 .setCustomerId(customerId)

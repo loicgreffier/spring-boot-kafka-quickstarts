@@ -101,38 +101,38 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
 
     @Test
     void shouldAggregateWhenTimeWindowIsRespected() {
-        Order firstOrder = buildOrder(1L);
-        inputTopic.pipeInput("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
+        Order firstOrder = buildOrder("ORD1");
+        inputTopic.pipeInput("ORD1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
-        Order secondOrder = buildOrder(2L);
-        inputTopic.pipeInput("2", secondOrder, Instant.parse("2000-01-01T01:02:00Z"));
+        Order secondOrder = buildOrder("ORD2");
+        inputTopic.pipeInput("ORD2", secondOrder, Instant.parse("2000-01-01T01:02:00Z"));
 
-        Order thirdOrder = buildOrder(3L);
-        inputTopic.pipeInput("3", thirdOrder, Instant.parse("2000-01-01T01:04:00Z"));
+        Order thirdOrder = buildOrder("ORD3");
+        inputTopic.pipeInput("ORD3", thirdOrder, Instant.parse("2000-01-01T01:04:00Z"));
 
         List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
 
         // First order arrives
-        assertEquals("1@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
+        assertEquals("CUS1@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
         assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
 
-        // Second order arrives.
-        assertEquals("1@2000-01-01T01:00:00.001Z->2000-01-01T01:05:00.001Z", results.get(1).key);
+        // Second order arrives
+        assertEquals("CUS1@2000-01-01T01:00:00.001Z->2000-01-01T01:05:00.001Z", results.get(1).key);
         assertIterableEquals(List.of(secondOrder), results.get(1).value.getOrders());
 
-        assertEquals("1@2000-01-01T00:57:00Z->2000-01-01T01:02:00Z", results.get(2).key);
+        assertEquals("CUS1@2000-01-01T00:57:00Z->2000-01-01T01:02:00Z", results.get(2).key);
         assertIterableEquals(
                 List.of(firstOrder, secondOrder), results.get(2).value.getOrders());
 
         // Third order arrives
-        assertEquals("1@2000-01-01T01:00:00.001Z->2000-01-01T01:05:00.001Z", results.get(3).key);
+        assertEquals("CUS1@2000-01-01T01:00:00.001Z->2000-01-01T01:05:00.001Z", results.get(3).key);
         assertIterableEquals(
                 List.of(secondOrder, thirdOrder), results.get(3).value.getOrders());
 
-        assertEquals("1@2000-01-01T01:02:00.001Z->2000-01-01T01:07:00.001Z", results.get(4).key);
+        assertEquals("CUS1@2000-01-01T01:02:00.001Z->2000-01-01T01:07:00.001Z", results.get(4).key);
         assertIterableEquals(List.of(thirdOrder), results.get(4).value.getOrders());
 
-        assertEquals("1@2000-01-01T00:59:00Z->2000-01-01T01:04:00Z", results.get(5).key);
+        assertEquals("CUS1@2000-01-01T00:59:00Z->2000-01-01T01:04:00Z", results.get(5).key);
         assertIterableEquals(
                 List.of(firstOrder, secondOrder, thirdOrder),
                 results.get(5).value.getOrders());
@@ -142,7 +142,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
 
         try (KeyValueIterator<Windowed<String>, OrderAggregate> iterator = stateStore.all()) {
             KeyValue<Windowed<String>, OrderAggregate> keyValue55To00 = iterator.next();
-            assertEquals("1", keyValue55To00.key.key());
+            assertEquals("CUS1", keyValue55To00.key.key());
             assertEquals(
                     "2000-01-01T00:55:00Z",
                     keyValue55To00.key.window().startTime().toString());
@@ -152,7 +152,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
             assertIterableEquals(List.of(firstOrder), keyValue55To00.value.getOrders());
 
             KeyValue<Windowed<String>, OrderAggregate> keyValue57To02 = iterator.next();
-            assertEquals("1", keyValue57To02.key.key());
+            assertEquals("CUS1", keyValue57To02.key.key());
             assertEquals(
                     "2000-01-01T00:57:00Z",
                     keyValue57To02.key.window().startTime().toString());
@@ -162,7 +162,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
             assertIterableEquals(List.of(firstOrder, secondOrder), keyValue57To02.value.getOrders());
 
             KeyValue<Windowed<String>, OrderAggregate> keyValue59To04 = iterator.next();
-            assertEquals("1", keyValue59To04.key.key());
+            assertEquals("CUS1", keyValue59To04.key.key());
             assertEquals(
                     "2000-01-01T00:59:00Z",
                     keyValue59To04.key.window().startTime().toString());
@@ -172,7 +172,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
             assertIterableEquals(List.of(firstOrder, secondOrder, thirdOrder), keyValue59To04.value.getOrders());
 
             KeyValue<Windowed<String>, OrderAggregate> keyValue00To05 = iterator.next();
-            assertEquals("1", keyValue00To05.key.key());
+            assertEquals("CUS1", keyValue00To05.key.key());
             assertEquals(
                     "2000-01-01T01:00:00.001Z",
                     keyValue00To05.key.window().startTime().toString());
@@ -182,7 +182,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
             assertIterableEquals(List.of(secondOrder, thirdOrder), keyValue00To05.value.getOrders());
 
             KeyValue<Windowed<String>, OrderAggregate> keyValue02To07 = iterator.next();
-            assertEquals("1", keyValue02To07.key.key());
+            assertEquals("CUS1", keyValue02To07.key.key());
             assertEquals(
                     "2000-01-01T01:02:00.001Z",
                     keyValue02To07.key.window().startTime().toString());
@@ -197,18 +197,18 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
 
     @Test
     void shouldNotAggregateWhenTimeWindowIsNotRespected() {
-        Order firstOrder = buildOrder(1L);
-        inputTopic.pipeInput("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
+        Order firstOrder = buildOrder("ORD1");
+        inputTopic.pipeInput("ORD1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
-        Order secondOrder = buildOrder(2L);
-        inputTopic.pipeInput("2", secondOrder, Instant.parse("2000-01-01T01:05:01Z"));
+        Order secondOrder = buildOrder("ORD2");
+        inputTopic.pipeInput("ORD2", secondOrder, Instant.parse("2000-01-01T01:05:01Z"));
 
         List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("1@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
+        assertEquals("CUS1@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
         assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
 
-        assertEquals("1@2000-01-01T01:00:01Z->2000-01-01T01:05:01Z", results.get(1).key);
+        assertEquals("CUS1@2000-01-01T01:00:01Z->2000-01-01T01:05:01Z", results.get(1).key);
         assertIterableEquals(List.of(secondOrder), results.get(1).value.getOrders());
 
         WindowStore<String, OrderAggregate> stateStore =
@@ -216,7 +216,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
 
         try (KeyValueIterator<Windowed<String>, OrderAggregate> iterator = stateStore.all()) {
             KeyValue<Windowed<String>, OrderAggregate> keyValue00To05 = iterator.next();
-            assertEquals("1", keyValue00To05.key.key());
+            assertEquals("CUS1", keyValue00To05.key.key());
             assertEquals(
                     "2000-01-01T00:55:00Z",
                     keyValue00To05.key.window().startTime().toString());
@@ -226,7 +226,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
             assertIterableEquals(List.of(firstOrder), keyValue00To05.value.getOrders());
 
             KeyValue<Windowed<String>, OrderAggregate> keyValue01To06 = iterator.next();
-            assertEquals("1", keyValue01To06.key.key());
+            assertEquals("CUS1", keyValue01To06.key.key());
             assertEquals(
                     "2000-01-01T01:00:01Z",
                     keyValue01To06.key.window().startTime().toString());
@@ -241,11 +241,11 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
 
     @Test
     void shouldHonorGracePeriod() {
-        Order firstOrder = buildOrder(1L);
-        inputTopic.pipeInput("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
+        Order firstOrder = buildOrder("ORD1");
+        inputTopic.pipeInput("ORD1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
-        Order secondOrder = buildOrder(2L);
-        inputTopic.pipeInput("3", secondOrder, Instant.parse("2000-01-01T01:05:30Z"));
+        Order secondOrder = buildOrder("ORD2");
+        inputTopic.pipeInput("ORD2", secondOrder, Instant.parse("2000-01-01T01:05:30Z"));
 
         // At this point, the stream time is 01:05:30. It exceeds by 30 seconds
         // the upper bound of the forward sliding window introduced by the first order
@@ -253,21 +253,21 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
         // However, the following delayed third order will still be aggregated into this window
         // because the grace period is 1 minute.
 
-        Order thirdOrder = buildOrder(3L);
-        inputTopic.pipeInput("2", thirdOrder, Instant.parse("2000-01-01T01:03:00Z"));
+        Order thirdOrder = buildOrder("ORD3");
+        inputTopic.pipeInput("ORD3", thirdOrder, Instant.parse("2000-01-01T01:03:00Z"));
 
         List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
 
         // First order arrives
-        assertEquals("1@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
+        assertEquals("CUS1@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
         assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
 
         // Second order arrives
-        assertEquals("1@2000-01-01T01:00:30Z->2000-01-01T01:05:30Z", results.get(1).key);
+        assertEquals("CUS1@2000-01-01T01:00:30Z->2000-01-01T01:05:30Z", results.get(1).key);
         assertIterableEquals(List.of(secondOrder), results.get(1).value.getOrders());
 
         // Third order arrives
-        assertEquals("1@2000-01-01T01:00:30Z->2000-01-01T01:05:30Z", results.get(2).key);
+        assertEquals("CUS1@2000-01-01T01:00:30Z->2000-01-01T01:05:30Z", results.get(2).key);
         assertIterableEquals(
                 List.of(secondOrder, thirdOrder), results.get(2).value.getOrders());
 
@@ -275,10 +275,10 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
         // [01:00:00.001Z->01:05:00.001Z] is
         // not yet closed thanks to the grace period of 1 minute.
         // The third order whose timestamp is 01:03:00 is included in the window.
-        assertEquals("1@2000-01-01T01:00:00.001Z->2000-01-01T01:05:00.001Z", results.get(3).key);
+        assertEquals("CUS1@2000-01-01T01:00:00.001Z->2000-01-01T01:05:00.001Z", results.get(3).key);
         assertIterableEquals(List.of(thirdOrder), results.get(3).value.getOrders());
 
-        assertEquals("1@2000-01-01T01:03:00.001Z->2000-01-01T01:08:00.001Z", results.get(4).key);
+        assertEquals("CUS1@2000-01-01T01:03:00.001Z->2000-01-01T01:08:00.001Z", results.get(4).key);
         assertIterableEquals(
                 List.of(secondOrder, thirdOrder), results.get(4).value.getOrders());
 
@@ -287,7 +287,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
 
         try (KeyValueIterator<Windowed<String>, OrderAggregate> iterator = stateStore.all()) {
             KeyValue<Windowed<String>, OrderAggregate> keyValue55To00 = iterator.next();
-            assertEquals("1", keyValue55To00.key.key());
+            assertEquals("CUS1", keyValue55To00.key.key());
             assertEquals(
                     "2000-01-01T00:55:00Z",
                     keyValue55To00.key.window().startTime().toString());
@@ -297,7 +297,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
             assertIterableEquals(List.of(firstOrder), keyValue55To00.value.getOrders());
 
             KeyValue<Windowed<String>, OrderAggregate> keyValue00To05 = iterator.next();
-            assertEquals("1", keyValue00To05.key.key());
+            assertEquals("CUS1", keyValue00To05.key.key());
             assertEquals(
                     "2000-01-01T01:00:00.001Z",
                     keyValue00To05.key.window().startTime().toString());
@@ -307,7 +307,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
             assertIterableEquals(List.of(thirdOrder), keyValue00To05.value.getOrders());
 
             KeyValue<Windowed<String>, OrderAggregate> keyValue00m30To05m30 = iterator.next();
-            assertEquals("1", keyValue00m30To05m30.key.key());
+            assertEquals("CUS1", keyValue00m30To05m30.key.key());
             assertEquals(
                     "2000-01-01T01:00:30Z",
                     keyValue00m30To05m30.key.window().startTime().toString());
@@ -317,7 +317,7 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
             assertIterableEquals(List.of(secondOrder, thirdOrder), keyValue00m30To05m30.value.getOrders());
 
             KeyValue<Windowed<String>, OrderAggregate> keyValue03To08 = iterator.next();
-            assertEquals("1", keyValue03To08.key.key());
+            assertEquals("CUS1", keyValue03To08.key.key());
             assertEquals(
                     "2000-01-01T01:03:00.001Z",
                     keyValue03To08.key.window().startTime().toString());
@@ -330,10 +330,10 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
         }
     }
 
-    private Order buildOrder(long id) {
+    private Order buildOrder(String id) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId(1L)
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(100.0)
                 .build();

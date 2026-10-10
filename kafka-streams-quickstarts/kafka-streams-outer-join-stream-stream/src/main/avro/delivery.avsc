@@ -7,7 +7,7 @@
       "name": "id",
       "type": [
         "null",
-        "long"
+        "string"
       ],
       "default": null,
       "doc": "Delivery id"
@@ -16,7 +16,7 @@
       "name": "orderId",
       "type": [
         "null",
-        "long"
+        "string"
       ],
       "default": null,
       "doc": "Delivered order id"

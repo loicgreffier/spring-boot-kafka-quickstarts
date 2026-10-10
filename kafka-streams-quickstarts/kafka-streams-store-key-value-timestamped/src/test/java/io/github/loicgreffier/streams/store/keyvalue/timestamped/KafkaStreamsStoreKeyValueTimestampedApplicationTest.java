@@ -91,28 +91,28 @@ class KafkaStreamsStoreKeyValueTimestampedApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {ORDER_TIMESTAMPED_KEY_VALUE_STORE, ORDER_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE})
     void shouldPutAndGetFromKeyValueStores(String storeName) {
-        Order firstOrder = buildOrder(1L, 1L);
-        inputTopic.pipeInput(new TestRecord<>("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z")));
+        Order firstOrder = buildOrder("ORD1", "CUS1");
+        inputTopic.pipeInput(new TestRecord<>("ORD1", firstOrder, Instant.parse("2000-01-01T01:00:00Z")));
 
-        Order secondOrder = buildOrder(2L, 1L);
-        inputTopic.pipeInput(new TestRecord<>("2", secondOrder, Instant.parse("2000-01-01T01:00:30Z")));
+        Order secondOrder = buildOrder("ORD2", "CUS1");
+        inputTopic.pipeInput(new TestRecord<>("ORD2", secondOrder, Instant.parse("2000-01-01T01:00:30Z")));
 
         KeyValueStore<String, ValueAndTimestamp<Order>> timestampedKeyValueStore =
                 testDriver.getTimestampedKeyValueStore(storeName);
 
-        assertEquals(firstOrder, timestampedKeyValueStore.get("1").value());
+        assertEquals(firstOrder, timestampedKeyValueStore.get("ORD1").value());
         assertEquals(
                 "2000-01-01T01:00:00Z",
-                Instant.ofEpochMilli(timestampedKeyValueStore.get("1").timestamp())
+                Instant.ofEpochMilli(timestampedKeyValueStore.get("ORD1").timestamp())
                         .toString());
-        assertEquals(secondOrder, timestampedKeyValueStore.get("2").value());
+        assertEquals(secondOrder, timestampedKeyValueStore.get("ORD2").value());
         assertEquals(
                 "2000-01-01T01:00:30Z",
-                Instant.ofEpochMilli(timestampedKeyValueStore.get("2").timestamp())
+                Instant.ofEpochMilli(timestampedKeyValueStore.get("ORD2").timestamp())
                         .toString());
     }
 
-    private Order buildOrder(long id, long customerId) {
+    private Order buildOrder(String id, String customerId) {
         return Order.newBuilder()
                 .setId(id)
                 .setCustomerId(customerId)

@@ -47,8 +47,8 @@ public class KafkaStreamsTopology {
      *
      * <p>This topology reads records from the {@code ORDER_TOPIC} topic, groups the records by customer id, and
      * performs an aggregation of the total amount sum and count for each customer. Afterward, the average order amount
-     * for each group is computed by dividing the total amount sum by the count. The result, which includes the average
-     * order amount by customer, is written to the {@code ORDER_AVERAGE_TOPIC} topic.
+     * for each group is computed by dividing the total amount sum by the count, rounded to two decimals. The result,
+     * which includes the average order amount by customer, is written to the {@code ORDER_AVERAGE_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
@@ -56,7 +56,7 @@ public class KafkaStreamsTopology {
         streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .groupBy(
-                        (_, order) -> String.valueOf(order.getCustomerId()),
+                        (_, order) -> order.getCustomerId(),
                         Grouped.with(GROUP_ORDER_BY_CUSTOMER_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .aggregate(
                         () -> new OrderAverageAmount(0L, 0.0),

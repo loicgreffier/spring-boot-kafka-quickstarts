@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * @param items The ordered items.
  * @param amount The order amount.
  */
-public record Order(long id, long customerId, List<String> items, double amount) {
+public record Order(String id, String customerId, List<String> items, double amount) {
     /**
      * Converts the order to a JSON string.
      *
@@ -37,7 +37,7 @@ public record Order(long id, long customerId, List<String> items, double amount)
      */
     public String toJson() {
         String jsonItems = items.stream().map("\"%s\""::formatted).collect(Collectors.joining(","));
-        return "{\"id\":%d,\"customerId\":%d,\"items\":[%s],\"amount\":%s}"
+        return "{\"id\":\"%s\",\"customerId\":\"%s\",\"items\":[%s],\"amount\":%s}"
                 .formatted(id, customerId, jsonItems, amount);
     }
 }

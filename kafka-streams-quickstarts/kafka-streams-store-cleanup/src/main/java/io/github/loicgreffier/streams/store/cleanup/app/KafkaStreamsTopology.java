@@ -44,7 +44,7 @@ public class KafkaStreamsTopology {
      *
      * <p>This topology reads from the {@code ORDER_TOPIC} and processes the records using the
      * {@link StoreCleanupProcessor} processor. The processor supplier registers a {@link KeyValueStore} state store
-     * when it is built. The result is written to the {@code ORDER_TOPIC}.
+     * when it is built. The result (tombstones) is written back to the {@code ORDER_TOPIC}.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */

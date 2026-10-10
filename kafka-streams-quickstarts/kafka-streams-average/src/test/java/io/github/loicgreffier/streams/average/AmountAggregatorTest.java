@@ -32,18 +32,18 @@ class AmountAggregatorTest {
         AmountAggregator aggregator = new AmountAggregator();
         OrderAverageAmount averageAmount = new OrderAverageAmount(0L, 0.0);
 
-        aggregator.apply("1", buildOrder(1L, 25.0), averageAmount);
-        aggregator.apply("1", buildOrder(2L, 50.0), averageAmount);
-        aggregator.apply("1", buildOrder(3L, 75.0), averageAmount);
+        aggregator.apply("CUS1", buildOrder("ORD1", 25.0), averageAmount);
+        aggregator.apply("CUS1", buildOrder("ORD2", 50.0), averageAmount);
+        aggregator.apply("CUS1", buildOrder("ORD3", 75.0), averageAmount);
 
         assertEquals(3L, averageAmount.getCount());
         assertEquals(150.0, averageAmount.getAmountSum());
     }
 
-    private Order buildOrder(long id, double amount) {
+    private Order buildOrder(String id, double amount) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId(1L)
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(amount)
                 .build();

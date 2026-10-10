@@ -88,37 +88,37 @@ class KafkaStreamsStoreCleanupApplicationTest {
 
     @Test
     void shouldFillAndCleanupStore() {
-        Order firstOrder = buildOrder(1L, 1L);
-        inputTopic.pipeInput(new TestRecord<>("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z")));
+        Order firstOrder = buildOrder("ORD1", "CUS1");
+        inputTopic.pipeInput(new TestRecord<>("ORD1", firstOrder, Instant.parse("2000-01-01T01:00:00Z")));
 
-        Order secondOrder = buildOrder(2L, 1L);
-        inputTopic.pipeInput(new TestRecord<>("2", secondOrder, Instant.parse("2000-01-01T01:00:20Z")));
+        Order secondOrder = buildOrder("ORD2", "CUS1");
+        inputTopic.pipeInput(new TestRecord<>("ORD2", secondOrder, Instant.parse("2000-01-01T01:00:20Z")));
 
-        Order thirdOrder = buildOrder(3L, 1L);
-        inputTopic.pipeInput(new TestRecord<>("3", thirdOrder, Instant.parse("2000-01-01T01:00:40Z")));
+        Order thirdOrder = buildOrder("ORD3", "CUS1");
+        inputTopic.pipeInput(new TestRecord<>("ORD3", thirdOrder, Instant.parse("2000-01-01T01:00:40Z")));
 
         KeyValueStore<String, Order> stateStore = testDriver.getKeyValueStore(ORDER_STORE_CLEANUP_STORE);
 
         // The 1st stream time punctuate is triggered after the 1st record is pushed,
         // so the 1st record is not in the store anymore.
-        assertNull(stateStore.get("1"));
-        assertEquals(secondOrder, stateStore.get("2"));
-        assertEquals(thirdOrder, stateStore.get("3"));
+        assertNull(stateStore.get("ORD1"));
+        assertEquals(secondOrder, stateStore.get("ORD2"));
+        assertEquals(thirdOrder, stateStore.get("ORD3"));
 
-        Order fourthOrder = buildOrder(4L, 1L);
-        inputTopic.pipeInput(new TestRecord<>("4", fourthOrder, Instant.parse("2000-01-01T01:02:00Z")));
+        Order fourthOrder = buildOrder("ORD4", "CUS1");
+        inputTopic.pipeInput(new TestRecord<>("ORD4", fourthOrder, Instant.parse("2000-01-01T01:02:00Z")));
 
-        Order fifthOrder = buildOrder(5L, 1L);
-        inputTopic.pipeInput(new TestRecord<>("5", fifthOrder, Instant.parse("2000-01-01T01:02:30Z")));
+        Order fifthOrder = buildOrder("ORD5", "CUS1");
+        inputTopic.pipeInput(new TestRecord<>("ORD5", fifthOrder, Instant.parse("2000-01-01T01:02:30Z")));
 
         // 2nd stream time punctuate
-        assertNull(stateStore.get("2"));
-        assertNull(stateStore.get("3"));
-        assertNull(stateStore.get("4"));
-        assertEquals(fifthOrder, stateStore.get("5"));
+        assertNull(stateStore.get("ORD2"));
+        assertNull(stateStore.get("ORD3"));
+        assertNull(stateStore.get("ORD4"));
+        assertEquals(fifthOrder, stateStore.get("ORD5"));
     }
 
-    private Order buildOrder(long id, long customerId) {
+    private Order buildOrder(String id, String customerId) {
         return Order.newBuilder()
                 .setId(id)
                 .setCustomerId(customerId)

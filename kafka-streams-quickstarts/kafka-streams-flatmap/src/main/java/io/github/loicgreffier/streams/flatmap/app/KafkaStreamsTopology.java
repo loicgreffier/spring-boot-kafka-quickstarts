@@ -48,7 +48,7 @@ public class KafkaStreamsTopology {
         streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .flatMap((_, order) -> order.getItems().stream()
-                        .map(item -> KeyValue.pair(item, String.valueOf(order.getId())))
+                        .map(item -> KeyValue.pair(item, order.getId()))
                         .toList())
                 .to(ORDER_FLATMAP_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
     }

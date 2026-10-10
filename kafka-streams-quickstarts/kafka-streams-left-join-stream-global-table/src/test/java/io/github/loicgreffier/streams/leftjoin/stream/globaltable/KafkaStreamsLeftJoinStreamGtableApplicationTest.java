@@ -104,14 +104,14 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
     @Test
     void shouldJoinOrderToCustomer() {
         Customer customer = buildCustomer();
-        customerInputTopic.pipeInput("3", customer);
+        customerInputTopic.pipeInput("CUS3", customer);
 
         Order order = buildOrder();
-        orderInputTopic.pipeInput("1", order);
+        orderInputTopic.pipeInput("ORD1", order);
 
         List<KeyValue<String, JoinOrderCustomer>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertEquals("1", results.getFirst().key);
+        assertEquals("ORD1", results.getFirst().key);
         assertEquals(order, results.getFirst().value.getOrder());
         assertEquals(customer, results.getFirst().value.getCustomer());
     }
@@ -119,19 +119,19 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
     @Test
     void shouldEmitValueEvenIfNoCustomer() {
         Order order = buildOrder();
-        orderInputTopic.pipeInput("1", order);
+        orderInputTopic.pipeInput("ORD1", order);
 
         List<KeyValue<String, JoinOrderCustomer>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertEquals("1", results.getFirst().key);
+        assertEquals("ORD1", results.getFirst().key);
         assertEquals(order, results.getFirst().value.getOrder());
         assertNull(results.getFirst().value.getCustomer());
     }
 
     private Order buildOrder() {
         return Order.newBuilder()
-                .setId(1L)
-                .setCustomerId(3L)
+                .setId("ORD1")
+                .setCustomerId("CUS3")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(1249.90)
                 .build();
@@ -139,7 +139,7 @@ class KafkaStreamsLeftJoinStreamGtableApplicationTest {
 
     private Customer buildCustomer() {
         return Customer.newBuilder()
-                .setId(3L)
+                .setId("CUS3")
                 .setFirstName("Homer")
                 .setLastName("Simpson")
                 .setEmail("homer.simpson@mail.com")

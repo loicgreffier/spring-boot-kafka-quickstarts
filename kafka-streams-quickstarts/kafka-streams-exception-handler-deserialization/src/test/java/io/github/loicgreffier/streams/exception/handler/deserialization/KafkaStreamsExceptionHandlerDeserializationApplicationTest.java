@@ -104,24 +104,24 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
 
     @Test
     void shouldHandleDeserializationExceptionsAndContinueProcessing() {
-        Order firstOrder = buildOrder(1L, 100.0);
-        inputTopic.pipeInput("1", firstOrder);
+        Order firstOrder = buildOrder("ORD1", 100.0);
+        inputTopic.pipeInput("ORD1", firstOrder);
 
-        inputTopicForDeserializationException.pipeInput("2", "invalid");
+        inputTopicForDeserializationException.pipeInput("ORD2", "invalid");
 
-        Order secondOrder = buildOrder(3L, 200.0);
-        inputTopic.pipeInput("3", secondOrder);
+        Order secondOrder = buildOrder("ORD3", 200.0);
+        inputTopic.pipeInput("ORD3", secondOrder);
 
-        inputTopicForDeserializationException.pipeInput("4", "invalid");
+        inputTopicForDeserializationException.pipeInput("ORD4", "invalid");
 
-        Order thirdOrder = buildOrder(5L, 300.0);
-        inputTopic.pipeInput("5", thirdOrder);
+        Order thirdOrder = buildOrder("ORD5", 300.0);
+        inputTopic.pipeInput("ORD5", thirdOrder);
 
         List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", firstOrder), results.getFirst());
-        assertEquals(KeyValue.pair("3", secondOrder), results.get(1));
-        assertEquals(KeyValue.pair("5", thirdOrder), results.get(2));
+        assertEquals(KeyValue.pair("ORD1", firstOrder), results.getFirst());
+        assertEquals(KeyValue.pair("ORD3", secondOrder), results.get(1));
+        assertEquals(KeyValue.pair("ORD5", thirdOrder), results.get(2));
 
         assertEquals(2.0, testDriver.metrics().get(droppedRecordsTotalMetric()).metricValue());
         assertEquals(
@@ -129,10 +129,10 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
-    private Order buildOrder(long id, double amount) {
+    private Order buildOrder(String id, double amount) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId(1L)
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(amount)
                 .build();

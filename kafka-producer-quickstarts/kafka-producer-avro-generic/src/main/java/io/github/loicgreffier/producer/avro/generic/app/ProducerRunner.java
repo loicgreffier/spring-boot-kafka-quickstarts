@@ -49,7 +49,7 @@ public class ProducerRunner {
     /**
      * Constructor.
      *
-     * @param producer The Kafka producer
+     * @param producer The Kafka producer.
      */
     public ProducerRunner(Producer<String, GenericRecord> producer) {
         this.producer = producer;
@@ -72,10 +72,12 @@ public class ProducerRunner {
         File schemaFile = new ClassPathResource("order.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
-        int i = 0;
+        int i = 1;
         while (!stopped) {
+            GenericRecord genericRecord = buildGenericRecord(schema, i);
+
             ProducerRecord<String, GenericRecord> message =
-                    new ProducerRecord<>(ORDER_TOPIC, String.valueOf(i), buildGenericRecord(schema, i));
+                    new ProducerRecord<>(ORDER_TOPIC, genericRecord.get("id").toString(), genericRecord);
 
             producer.send(message, (recordMetadata, e) -> {
                 if (e != null) {
@@ -115,8 +117,8 @@ public class ProducerRunner {
      */
     private GenericRecord buildGenericRecord(Schema schema, int id) {
         GenericRecord genericRecord = new GenericData.Record(schema);
-        genericRecord.put("id", (long) id);
-        genericRecord.put("customerId", (long) random.nextInt(10));
+        genericRecord.put("id", "ORD%d".formatted(id));
+        genericRecord.put("customerId", "CUS%d".formatted(random.nextInt(1, 11)));
         genericRecord.put(
                 "items",
                 random.ints(random.nextInt(1, 9), 0, ITEMS.size())

@@ -96,15 +96,15 @@ class KafkaStreamsProcessApplicationTest {
 
     @Test
     void shouldProcess() {
-        Order firstOrder = buildOrder(1L, 10L);
-        Order secondOrder = buildOrder(2L, 10L);
+        Order firstOrder = buildOrder("ORD1", "CUS10");
+        Order secondOrder = buildOrder("ORD2", "CUS10");
 
-        inputTopic.pipeInput("1", firstOrder);
-        inputTopic.pipeInput("2", secondOrder);
+        inputTopic.pipeInput("ORD1", firstOrder);
+        inputTopic.pipeInput("ORD2", secondOrder);
 
         List<TestRecord<String, OrderMetadata>> results = outputTopic.readRecordsToList();
 
-        assertEquals("10", results.getFirst().key());
+        assertEquals("CUS10", results.getFirst().key());
         assertEquals(firstOrder, results.getFirst().value().getOrder());
         assertEquals(ORDER_TOPIC, results.getFirst().value().getTopic());
         assertEquals(0, results.getFirst().value().getPartition());
@@ -114,7 +114,7 @@ class KafkaStreamsProcessApplicationTest {
                 "ORDER_CREATED",
                 new String(results.getFirst().headers().lastHeader("eventType").value(), StandardCharsets.UTF_8));
 
-        assertEquals("10", results.get(1).key());
+        assertEquals("CUS10", results.get(1).key());
         assertEquals(secondOrder, results.get(1).value().getOrder());
         assertEquals(ORDER_TOPIC, results.get(1).value().getTopic());
         assertEquals(0, results.get(1).value().getPartition());
@@ -125,7 +125,7 @@ class KafkaStreamsProcessApplicationTest {
                 new String(results.get(1).headers().lastHeader("eventType").value(), StandardCharsets.UTF_8));
     }
 
-    private Order buildOrder(long id, long customerId) {
+    private Order buildOrder(String id, String customerId) {
         return Order.newBuilder()
                 .setId(id)
                 .setCustomerId(customerId)

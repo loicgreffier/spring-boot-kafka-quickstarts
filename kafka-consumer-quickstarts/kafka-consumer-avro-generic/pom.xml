@@ -14,9 +14,6 @@
             <testResource>
                 <directory>src/test/avro</directory>
             </testResource>
-            <testResource>
-                <directory>src/main/resources</directory>
-            </testResource>
         </testResources>
     </build>
 </project>

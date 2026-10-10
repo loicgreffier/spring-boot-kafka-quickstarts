@@ -94,15 +94,15 @@ class KafkaStreamsSelectKeyApplicationTest {
 
     @Test
     void shouldSelectCustomerIdAsNewKey() {
-        Order order = buildOrder(1L, 3L, List.of("Laptop", "Mouse"), 1249.90);
-        inputTopic.pipeInput("1", order);
+        Order order = buildOrder("ORD1", "CUS3", List.of("Laptop", "Mouse"), 1249.90);
+        inputTopic.pipeInput("ORD1", order);
 
         List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("3", order), results.getFirst());
+        assertEquals(KeyValue.pair("CUS3", order), results.getFirst());
     }
 
-    private Order buildOrder(long id, long customerId, List<String> items, double amount) {
+    private Order buildOrder(String id, String customerId, List<String> items, double amount) {
         return Order.newBuilder()
                 .setId(id)
                 .setCustomerId(customerId)

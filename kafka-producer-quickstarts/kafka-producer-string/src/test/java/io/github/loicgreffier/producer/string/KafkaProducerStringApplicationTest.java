@@ -63,8 +63,8 @@ class KafkaProducerStringApplicationTest {
         ProducerRecord<String, String> sentRecord = mockProducer.history().getFirst();
 
         assertEquals(ORDER_JSON_TOPIC, sentRecord.topic());
-        assertEquals("0", sentRecord.key());
-        assertTrue(sentRecord.value().startsWith("{\"id\":0,\"customerId\":"));
+        assertEquals("ORD1", sentRecord.key());
+        assertTrue(sentRecord.value().startsWith("{\"id\":\"ORD1\",\"customerId\":\"CUS"));
     }
 
     private void waitForProducer() throws InterruptedException {

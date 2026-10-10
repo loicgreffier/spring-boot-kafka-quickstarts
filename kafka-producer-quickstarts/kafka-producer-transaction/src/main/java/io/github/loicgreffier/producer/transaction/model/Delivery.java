@@ -25,13 +25,13 @@ package io.github.loicgreffier.producer.transaction.model;
  * @param orderId The delivered order id.
  * @param destination The delivery destination city.
  */
-public record Delivery(long id, long orderId, String destination) {
+public record Delivery(String id, String orderId, String destination) {
     /**
      * Converts the delivery to a JSON string.
      *
      * @return The JSON string.
      */
     public String toJson() {
-        return "{\"id\":%d,\"orderId\":%d,\"destination\":\"%s\"}".formatted(id, orderId, destination);
+        return "{\"id\":\"%s\",\"orderId\":\"%s\",\"destination\":\"%s\"}".formatted(id, orderId, destination);
     }
 }

@@ -1,5 +1,3 @@
-application:
-  filePath: "/tmp/kafka-streams-quickstarts/streams-print/streams-print-output.log"
 kafka:
   properties:
     application.id: "streams-print"
@@ -9,3 +7,5 @@ kafka:
     replication.factor: 1
     schema.registry.url: "http://localhost:8081"
     state.dir: "/tmp/kafka-streams-quickstarts"
+print:
+  file-path: "/tmp/kafka-streams-quickstarts/streams-print/streams-print-output.log"

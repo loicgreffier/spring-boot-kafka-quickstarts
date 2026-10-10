@@ -52,8 +52,8 @@ public class KafkaStreamsTopology {
      * </ul>
      *
      * The population of the currency and items fields is not applied to all records in order to avoid generating too
-     * many exceptions. Serialization and production exceptions are handled by the produce exception handler. The result
-     * is written to the {@code ORDER_PRODUCTION_EXCEPTION_HANDLER_TOPIC} topic.
+     * many exceptions. Serialization and production exceptions are handled by the production exception handler. The
+     * result is written to the {@code ORDER_PRODUCTION_EXCEPTION_HANDLER_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
@@ -66,7 +66,9 @@ public class KafkaStreamsTopology {
         streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .mapValues(order -> {
-                    if (order.getId() % 15 == 10) {
+                    int orderNumber = Integer.parseInt(order.getId().replace("ORD", ""));
+
+                    if (orderNumber % 15 == 10) {
                         return OrderWithCurrency.newBuilder()
                                 .setId(order.getId())
                                 .setCustomerId(order.getCustomerId())
@@ -76,7 +78,7 @@ public class KafkaStreamsTopology {
                                 .build();
                     }
 
-                    if (order.getId() % 15 == 1) {
+                    if (orderNumber % 15 == 1) {
                         order.setItems(List.of(stringBuilder.toString()));
                     }
 

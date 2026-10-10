@@ -70,7 +70,7 @@ class KafkaProducerAvroGenericApplicationTest {
                 mockProducer.history().getFirst();
 
         assertEquals(ORDER_TOPIC, sentRecord.topic());
-        assertEquals("0", sentRecord.key());
+        assertEquals("ORD1", sentRecord.key());
         assertNotNull(sentRecord.value().get("id"));
         assertNotNull(sentRecord.value().get("customerId"));
         assertNotNull(sentRecord.value().get("items"));

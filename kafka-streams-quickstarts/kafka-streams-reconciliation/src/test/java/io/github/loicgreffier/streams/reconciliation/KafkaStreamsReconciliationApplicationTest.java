@@ -105,20 +105,20 @@ class KafkaStreamsReconciliationApplicationTest {
         Order order = buildOrder();
         Delivery delivery = buildDelivery();
 
-        inputOrderTopic.pipeInput("1", order);
-        inputDeliveryTopic.pipeInput("1", delivery);
+        inputOrderTopic.pipeInput("ORD1", order);
+        inputDeliveryTopic.pipeInput("DEL1", delivery);
 
         List<KeyValue<String, Reconciliation>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("1", results.getFirst().key);
+        assertEquals("ORD1", results.getFirst().key);
         assertEquals(order, results.getFirst().value.getOrder());
         assertEquals(delivery, results.getFirst().value.getDelivery());
     }
 
     private Order buildOrder() {
         return Order.newBuilder()
-                .setId(1L)
-                .setCustomerId(3L)
+                .setId("ORD1")
+                .setCustomerId("CUS3")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(1249.90)
                 .build();
@@ -126,8 +126,8 @@ class KafkaStreamsReconciliationApplicationTest {
 
     private Delivery buildDelivery() {
         return Delivery.newBuilder()
-                .setId(1L)
-                .setOrderId(1L)
+                .setId("DEL1")
+                .setOrderId("ORD1")
                 .setDestination("Lyon")
                 .build();
     }

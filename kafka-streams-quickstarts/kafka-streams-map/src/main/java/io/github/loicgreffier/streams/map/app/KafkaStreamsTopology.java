@@ -49,7 +49,7 @@ public class KafkaStreamsTopology {
                 .map((_, order) -> {
                     order.setItems(
                             order.getItems().stream().map(String::toUpperCase).toList());
-                    return KeyValue.pair(String.valueOf(order.getCustomerId()), order);
+                    return KeyValue.pair(order.getCustomerId(), order);
                 })
                 .to(ORDER_MAP_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }

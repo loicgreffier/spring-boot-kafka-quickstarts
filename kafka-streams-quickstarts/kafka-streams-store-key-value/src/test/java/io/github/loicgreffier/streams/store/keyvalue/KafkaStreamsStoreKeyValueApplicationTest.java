@@ -90,19 +90,19 @@ class KafkaStreamsStoreKeyValueApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {ORDER_KEY_VALUE_STORE, ORDER_KEY_VALUE_SUPPLIER_STORE})
     void shouldPutAndGetFromKeyValueStores(String storeName) {
-        Order firstOrder = buildOrder(1L, 1L);
-        inputTopic.pipeInput(new TestRecord<>("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z")));
+        Order firstOrder = buildOrder("ORD1", "CUS1");
+        inputTopic.pipeInput(new TestRecord<>("ORD1", firstOrder, Instant.parse("2000-01-01T01:00:00Z")));
 
-        Order secondOrder = buildOrder(2L, 1L);
-        inputTopic.pipeInput(new TestRecord<>("2", secondOrder, Instant.parse("2000-01-01T01:00:30Z")));
+        Order secondOrder = buildOrder("ORD2", "CUS1");
+        inputTopic.pipeInput(new TestRecord<>("ORD2", secondOrder, Instant.parse("2000-01-01T01:00:30Z")));
 
         KeyValueStore<String, Order> keyValueStore = testDriver.getKeyValueStore(storeName);
 
-        assertEquals(firstOrder, keyValueStore.get("1"));
-        assertEquals(secondOrder, keyValueStore.get("2"));
+        assertEquals(firstOrder, keyValueStore.get("ORD1"));
+        assertEquals(secondOrder, keyValueStore.get("ORD2"));
     }
 
-    private Order buildOrder(long id, long customerId) {
+    private Order buildOrder(String id, String customerId) {
         return Order.newBuilder()
                 .setId(id)
                 .setCustomerId(customerId)

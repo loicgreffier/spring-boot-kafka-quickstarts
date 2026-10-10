@@ -18,7 +18,6 @@
  */
 package io.github.loicgreffier.streams.print.app;
 
-import io.github.loicgreffier.streams.print.property.ApplicationProperties;
 import io.github.loicgreffier.streams.print.property.KafkaStreamsProperties;
 import io.github.loicgreffier.streams.print.serdes.SerdesUtils;
 import jakarta.annotation.PreDestroy;
@@ -32,6 +31,7 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
@@ -43,7 +43,7 @@ public class KafkaStreamsRunner {
     private static final Logger log = LoggerFactory.getLogger(KafkaStreamsRunner.class);
     private final ConfigurableApplicationContext applicationContext;
     private final KafkaStreamsProperties kafkaStreamsProperties;
-    private final ApplicationProperties applicationProperties;
+    private final String filePath;
     private KafkaStreams kafkaStreams;
 
     /**
@@ -51,15 +51,15 @@ public class KafkaStreamsRunner {
      *
      * @param applicationContext The application context
      * @param kafkaStreamsProperties The Kafka Streams properties
-     * @param applicationProperties The application properties
+     * @param filePath The file path
      */
     public KafkaStreamsRunner(
             ConfigurableApplicationContext applicationContext,
             KafkaStreamsProperties kafkaStreamsProperties,
-            ApplicationProperties applicationProperties) {
+            @Value("${print.file-path}") String filePath) {
         this.applicationContext = applicationContext;
         this.kafkaStreamsProperties = kafkaStreamsProperties;
-        this.applicationProperties = applicationProperties;
+        this.filePath = filePath;
     }
 
     /**
@@ -70,15 +70,13 @@ public class KafkaStreamsRunner {
     public void run() throws IOException {
         SerdesUtils.setSerdesConfig(kafkaStreamsProperties.getProperties());
 
-        Path filePath = Path.of(applicationProperties
-                .getFilePath()
-                .substring(0, applicationProperties.getFilePath().lastIndexOf("/")));
-        if (!Files.exists(filePath)) {
-            Files.createDirectories(filePath);
+        Path directory = Path.of(filePath).getParent();
+        if (!Files.exists(directory)) {
+            Files.createDirectories(directory);
         }
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
-        KafkaStreamsTopology.topology(streamsBuilder, applicationProperties.getFilePath());
+        KafkaStreamsTopology.topology(streamsBuilder, filePath);
         Topology topology = streamsBuilder.build();
         log.info("Topology description:\n {}", topology.describe());
 

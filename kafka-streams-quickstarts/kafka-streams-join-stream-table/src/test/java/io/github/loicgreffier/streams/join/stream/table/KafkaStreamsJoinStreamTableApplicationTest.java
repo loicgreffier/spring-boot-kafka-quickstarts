@@ -110,31 +110,31 @@ class KafkaStreamsJoinStreamTableApplicationTest {
     @Test
     void shouldRekey() {
         Order order = buildOrder();
-        orderInputTopic.pipeInput("1", order);
+        orderInputTopic.pipeInput("ORD1", order);
 
         List<KeyValue<String, Order>> results = rekeyOrderOutputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("3", order), results.getFirst());
+        assertEquals(KeyValue.pair("CUS3", order), results.getFirst());
     }
 
     @Test
     void shouldJoinOrderToCustomer() {
         Customer customer = buildCustomer();
-        customerInputTopic.pipeInput("3", customer);
+        customerInputTopic.pipeInput("CUS3", customer);
 
         Order order = buildOrder();
-        orderInputTopic.pipeInput("1", order);
+        orderInputTopic.pipeInput("ORD1", order);
 
         List<KeyValue<String, JoinOrderCustomer>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertEquals("3", results.getFirst().key);
+        assertEquals("CUS3", results.getFirst().key);
         assertEquals(order, results.getFirst().value.getOrder());
         assertEquals(customer, results.getFirst().value.getCustomer());
     }
 
     @Test
     void shouldNotJoinWhenNoCustomer() {
-        orderInputTopic.pipeInput("1", buildOrder());
+        orderInputTopic.pipeInput("ORD1", buildOrder());
         List<KeyValue<String, JoinOrderCustomer>> results = joinOutputTopic.readKeyValuesToList();
 
         assertTrue(results.isEmpty());
@@ -142,8 +142,8 @@ class KafkaStreamsJoinStreamTableApplicationTest {
 
     private Order buildOrder() {
         return Order.newBuilder()
-                .setId(1L)
-                .setCustomerId(3L)
+                .setId("ORD1")
+                .setCustomerId("CUS3")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(1249.90)
                 .build();
@@ -151,7 +151,7 @@ class KafkaStreamsJoinStreamTableApplicationTest {
 
     private Customer buildCustomer() {
         return Customer.newBuilder()
-                .setId(3L)
+                .setId("CUS3")
                 .setFirstName("Homer")
                 .setLastName("Simpson")
                 .setEmail("homer.simpson@mail.com")

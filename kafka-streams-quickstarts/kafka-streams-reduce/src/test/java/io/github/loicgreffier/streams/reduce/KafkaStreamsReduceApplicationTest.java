@@ -96,30 +96,30 @@ class KafkaStreamsReduceApplicationTest {
 
     @Test
     void shouldReduceByCustomerAndKeepHighestAmount() {
-        Order highestCustomerOne = buildOrder(1L, 1L, 1500.0);
-        Order lowestCustomerOne = buildOrder(2L, 1L, 50.0);
-        Order lowestCustomerTwo = buildOrder(3L, 2L, 20.0);
-        Order highestCustomerTwo = buildOrder(4L, 2L, 800.0);
+        Order highestCustomerOne = buildOrder("ORD1", "CUS1", 1500.0);
+        Order lowestCustomerOne = buildOrder("ORD2", "CUS1", 50.0);
+        Order lowestCustomerTwo = buildOrder("ORD3", "CUS2", 20.0);
+        Order highestCustomerTwo = buildOrder("ORD4", "CUS2", 800.0);
 
-        inputTopic.pipeInput("1", highestCustomerOne);
-        inputTopic.pipeInput("2", lowestCustomerOne);
-        inputTopic.pipeInput("3", lowestCustomerTwo);
-        inputTopic.pipeInput("4", highestCustomerTwo);
+        inputTopic.pipeInput("ORD1", highestCustomerOne);
+        inputTopic.pipeInput("ORD2", lowestCustomerOne);
+        inputTopic.pipeInput("ORD3", lowestCustomerTwo);
+        inputTopic.pipeInput("ORD4", highestCustomerTwo);
 
         List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", highestCustomerOne), results.getFirst());
-        assertEquals(KeyValue.pair("1", highestCustomerOne), results.get(1));
-        assertEquals(KeyValue.pair("2", lowestCustomerTwo), results.get(2));
-        assertEquals(KeyValue.pair("2", highestCustomerTwo), results.get(3));
+        assertEquals(KeyValue.pair("CUS1", highestCustomerOne), results.getFirst());
+        assertEquals(KeyValue.pair("CUS1", highestCustomerOne), results.get(1));
+        assertEquals(KeyValue.pair("CUS2", lowestCustomerTwo), results.get(2));
+        assertEquals(KeyValue.pair("CUS2", highestCustomerTwo), results.get(3));
 
         KeyValueStore<String, Order> stateStore = testDriver.getKeyValueStore(ORDER_REDUCE_STORE);
 
-        assertEquals(highestCustomerOne, stateStore.get("1"));
-        assertEquals(highestCustomerTwo, stateStore.get("2"));
+        assertEquals(highestCustomerOne, stateStore.get("CUS1"));
+        assertEquals(highestCustomerTwo, stateStore.get("CUS2"));
     }
 
-    private Order buildOrder(long id, long customerId, double amount) {
+    private Order buildOrder(String id, String customerId, double amount) {
         return Order.newBuilder()
                 .setId(id)
                 .setCustomerId(customerId)

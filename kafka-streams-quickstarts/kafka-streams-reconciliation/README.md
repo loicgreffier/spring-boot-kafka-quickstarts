@@ -1,7 +1,7 @@
 # Kafka Streams Reconciliation
 
 This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and `<String, Delivery>` from the `DELIVERY_TOPIC`, and reconciles an order with its delivery.
-Both topics are keyed by order id, so an order and its delivery are processed by the same task.
+The deliveries are re-keyed by order id and repartitioned, so an order and its delivery are processed by the same task.
 
 It demonstrates the following:
 
