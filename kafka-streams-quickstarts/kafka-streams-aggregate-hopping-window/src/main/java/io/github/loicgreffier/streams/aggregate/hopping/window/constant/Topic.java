@@ -20,9 +20,9 @@ package io.github.loicgreffier.streams.aggregate.hopping.window.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String GROUP_USER_BY_LAST_NAME_TOPIC = "GROUP_USER_BY_LAST_NAME_TOPIC";
-    public static final String USER_AGGREGATE_HOPPING_WINDOW_TOPIC = "USER_AGGREGATE_HOPPING_WINDOW_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String GROUP_ORDER_BY_CUSTOMER_TOPIC = "GROUP_ORDER_BY_CUSTOMER_TOPIC";
+    public static final String ORDER_AGGREGATE_HOPPING_WINDOW_TOPIC = "ORDER_AGGREGATE_HOPPING_WINDOW_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

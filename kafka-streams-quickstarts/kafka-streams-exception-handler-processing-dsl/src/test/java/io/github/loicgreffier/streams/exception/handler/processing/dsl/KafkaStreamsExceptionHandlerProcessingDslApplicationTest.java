@@ -19,8 +19,8 @@
 package io.github.loicgreffier.streams.exception.handler.processing.dsl;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.exception.handler.processing.dsl.constant.Topic.USER_PROCESSING_EXCEPTION_HANDLER_DSL_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.processing.dsl.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.processing.dsl.constant.Topic.ORDER_PROCESSING_EXCEPTION_HANDLER_DSL_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.processing.dsl.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.common.utils.Utils.mkEntry;
 import static org.apache.kafka.common.utils.Utils.mkMap;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -30,8 +30,7 @@ import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.exception.handler.processing.dsl.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.exception.handler.processing.dsl.error.CustomProcessingExceptionHandler;
 import io.github.loicgreffier.streams.exception.handler.processing.dsl.serdes.SerdesUtils;
@@ -60,8 +59,8 @@ class KafkaStreamsExceptionHandlerProcessingDslApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
-    private TestOutputTopic<String, User> outputTopic;
+    private TestInputTopic<String, Order> inputTopic;
+    private TestOutputTopic<String, Order> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -84,13 +83,13 @@ class KafkaStreamsExceptionHandlerProcessingDslApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-                USER_PROCESSING_EXCEPTION_HANDLER_DSL_TOPIC,
+                ORDER_PROCESSING_EXCEPTION_HANDLER_DSL_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<User>getValueSerdes().deserializer());
+                SerdesUtils.<Order>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -102,14 +101,14 @@ class KafkaStreamsExceptionHandlerProcessingDslApplicationTest {
 
     @Test
     void shouldHandleIllegalArgumentExceptionAndContinueProcessing() {
-        inputTopic.pipeInput("1", buildUser("Homer", Instant.parse("1949-01-01T01:00:00Z")));
+        inputTopic.pipeInput("1", buildOrder(1L, -100.0));
 
-        User bart = buildUser("Bart", Instant.parse("1980-01-01T01:00:00Z"));
-        inputTopic.pipeInput("2", bart);
+        Order validOrder = buildOrder(2L, 100.0);
+        inputTopic.pipeInput("2", validOrder);
 
-        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(bart, results.getFirst().value);
+        assertEquals(validOrder, results.getFirst().value);
 
         assertEquals(1.0, testDriver.metrics().get(droppedRecordsTotalMetric()).metricValue());
         assertEquals(
@@ -117,13 +116,12 @@ class KafkaStreamsExceptionHandlerProcessingDslApplicationTest {
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
-    private User buildUser(String firstName, Instant birthDate) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName("Simpson")
-                .setNationality(CountryCode.US)
-                .setBirthDate(birthDate)
+    private Order buildOrder(long id, double amount) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(1L)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(amount)
                 .build();
     }
 

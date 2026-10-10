@@ -20,8 +20,8 @@ package io.github.loicgreffier.streams.process.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_PROCESS_TOPIC = "USER_PROCESS_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String ORDER_PROCESS_TOPIC = "ORDER_PROCESS_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

@@ -19,17 +19,16 @@
 package io.github.loicgreffier.streams.count;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.count.constant.StateStore.USER_COUNT_STORE;
-import static io.github.loicgreffier.streams.count.constant.Topic.USER_COUNT_TOPIC;
-import static io.github.loicgreffier.streams.count.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.count.constant.StateStore.ORDER_COUNT_STORE;
+import static io.github.loicgreffier.streams.count.constant.Topic.ORDER_COUNT_TOPIC;
+import static io.github.loicgreffier.streams.count.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.count.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.count.serdes.SerdesUtils;
 import java.io.IOException;
@@ -58,7 +57,7 @@ class KafkaStreamsCountApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
+    private TestInputTopic<String, Order> inputTopic;
     private TestOutputTopic<String, Long> outputTopic;
 
     @BeforeEach
@@ -80,10 +79,10 @@ class KafkaStreamsCountApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
-        outputTopic = testDriver.createOutputTopic(USER_COUNT_TOPIC, new StringDeserializer(), new LongDeserializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
+        outputTopic = testDriver.createOutputTopic(ORDER_COUNT_TOPIC, new StringDeserializer(), new LongDeserializer());
     }
 
     @AfterEach
@@ -94,32 +93,31 @@ class KafkaStreamsCountApplicationTest {
     }
 
     @Test
-    void shouldCountByNationality() {
-        inputTopic.pipeInput("1", buildUser("Homer", "Simpson", CountryCode.US));
-        inputTopic.pipeInput("2", buildUser("Milhouse", "Van Houten", CountryCode.BE));
-        inputTopic.pipeInput("3", buildUser("Marge", "Simpson", CountryCode.US));
-        inputTopic.pipeInput("4", buildUser("Kirk", "Van Houten", CountryCode.BE));
+    void shouldCountByCustomer() {
+        inputTopic.pipeInput("1", buildOrder(1L, 1L));
+        inputTopic.pipeInput("2", buildOrder(2L, 2L));
+        inputTopic.pipeInput("3", buildOrder(3L, 1L));
+        inputTopic.pipeInput("4", buildOrder(4L, 2L));
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair(CountryCode.US.toString(), 1L), results.getFirst());
-        assertEquals(KeyValue.pair(CountryCode.BE.toString(), 1L), results.get(1));
-        assertEquals(KeyValue.pair(CountryCode.US.toString(), 2L), results.get(2));
-        assertEquals(KeyValue.pair(CountryCode.BE.toString(), 2L), results.get(3));
+        assertEquals(KeyValue.pair("1", 1L), results.getFirst());
+        assertEquals(KeyValue.pair("2", 1L), results.get(1));
+        assertEquals(KeyValue.pair("1", 2L), results.get(2));
+        assertEquals(KeyValue.pair("2", 2L), results.get(3));
 
-        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(USER_COUNT_STORE);
+        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(ORDER_COUNT_STORE);
 
-        assertEquals(2, stateStore.get(CountryCode.US.toString()));
-        assertEquals(2, stateStore.get(CountryCode.BE.toString()));
+        assertEquals(2, stateStore.get("1"));
+        assertEquals(2, stateStore.get("2"));
     }
 
-    private User buildUser(String firstName, String lastName, CountryCode nationality) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName(lastName)
-                .setNationality(nationality)
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    private Order buildOrder(long id, long customerId) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(customerId)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(100.0)
                 .build();
     }
 }

@@ -1,0 +1,34 @@
+{
+  "namespace": "io.github.loicgreffier.avro",
+  "type": "record",
+  "name": "Delivery",
+  "fields": [
+    {
+      "name": "id",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Delivery id"
+    },
+    {
+      "name": "orderId",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Delivered order id"
+    },
+    {
+      "name": "destination",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "Delivery destination city"
+    }
+  ]
+}

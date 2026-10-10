@@ -20,7 +20,7 @@ package io.github.loicgreffier.consumer.avro.generic.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

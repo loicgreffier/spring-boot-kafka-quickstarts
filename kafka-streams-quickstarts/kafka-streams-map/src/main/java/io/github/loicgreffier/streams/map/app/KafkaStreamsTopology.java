@@ -18,10 +18,10 @@
  */
 package io.github.loicgreffier.streams.map.app;
 
-import static io.github.loicgreffier.streams.map.constant.Topic.USER_MAP_TOPIC;
-import static io.github.loicgreffier.streams.map.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.map.constant.Topic.ORDER_MAP_TOPIC;
+import static io.github.loicgreffier.streams.map.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.map.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
@@ -38,21 +38,20 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} topic, maps the first name and last name to uppercase, and
-     * changes the key of the record to the last name. The transformed records are then written to the
-     * {@code USER_MAP_TOPIC} topic.
+     * <p>This topology reads from the {@code ORDER_TOPIC} topic, maps the items to uppercase, and changes the key of
+     * the record to the customer id. The transformed records are then written to the {@code ORDER_MAP_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .map((_, user) -> {
-                    user.setFirstName(user.getFirstName().toUpperCase());
-                    user.setLastName(user.getLastName().toUpperCase());
-                    return KeyValue.pair(user.getLastName(), user);
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
+                .map((_, order) -> {
+                    order.setItems(
+                            order.getItems().stream().map(String::toUpperCase).toList());
+                    return KeyValue.pair(String.valueOf(order.getCustomerId()), order);
                 })
-                .to(USER_MAP_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+                .to(ORDER_MAP_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /** Private constructor. */

@@ -18,11 +18,11 @@
  */
 package io.github.loicgreffier.streams.store.keyvalue.app;
 
-import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.USER_KEY_VALUE_STORE;
-import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.USER_KEY_VALUE_SUPPLIER_STORE;
-import static io.github.loicgreffier.streams.store.keyvalue.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.ORDER_KEY_VALUE_STORE;
+import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.ORDER_KEY_VALUE_SUPPLIER_STORE;
+import static io.github.loicgreffier.streams.store.keyvalue.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.store.keyvalue.app.processor.PutInStoreProcessor;
 import io.github.loicgreffier.streams.store.keyvalue.serdes.SerdesUtils;
 import java.util.Collections;
@@ -42,7 +42,7 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} and processes the records using the
+     * <p>This topology reads from the {@code ORDER_TOPIC} and processes the records using the
      * {@link PutInStoreProcessor} processor, which writes the records to a {@link KeyValueStore} state store. It
      * demonstrates two strategies for using a state store in a processor:
      *
@@ -56,19 +56,19 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        final StoreBuilder<KeyValueStore<String, User>> storeBuilder = Stores.keyValueStoreBuilder(
-                Stores.persistentKeyValueStore(USER_KEY_VALUE_STORE), Serdes.String(), SerdesUtils.getValueSerdes());
+        final StoreBuilder<KeyValueStore<String, Order>> storeBuilder = Stores.keyValueStoreBuilder(
+                Stores.persistentKeyValueStore(ORDER_KEY_VALUE_STORE), Serdes.String(), SerdesUtils.getValueSerdes());
 
-        streamsBuilder.addStateStore(storeBuilder).<String, User>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.addStateStore(storeBuilder).<String, Order>stream(
+                        ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .process(() -> new PutInStoreProcessor(storeBuilder.name()), storeBuilder.name());
 
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .process(new ProcessorSupplier<String, User, String, User>() {
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .process(new ProcessorSupplier<String, Order, String, Order>() {
                     @Override
                     public Set<StoreBuilder<?>> stores() {
-                        StoreBuilder<KeyValueStore<String, User>> supplierStoreBuilder = Stores.keyValueStoreBuilder(
-                                Stores.persistentKeyValueStore(USER_KEY_VALUE_SUPPLIER_STORE),
+                        StoreBuilder<KeyValueStore<String, Order>> supplierStoreBuilder = Stores.keyValueStoreBuilder(
+                                Stores.persistentKeyValueStore(ORDER_KEY_VALUE_SUPPLIER_STORE),
                                 Serdes.String(),
                                 SerdesUtils.getValueSerdes());
 
@@ -76,8 +76,8 @@ public class KafkaStreamsTopology {
                     }
 
                     @Override
-                    public Processor<String, User, String, User> get() {
-                        return new PutInStoreProcessor(USER_KEY_VALUE_SUPPLIER_STORE);
+                    public Processor<String, Order, String, Order> get() {
+                        return new PutInStoreProcessor(ORDER_KEY_VALUE_SUPPLIER_STORE);
                     }
                 });
     }

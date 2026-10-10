@@ -18,10 +18,10 @@
  */
 package io.github.loicgreffier.streams.mapvalues.app;
 
-import static io.github.loicgreffier.streams.mapvalues.constant.Topic.USER_MAP_VALUES_TOPIC;
-import static io.github.loicgreffier.streams.mapvalues.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.mapvalues.constant.Topic.ORDER_MAP_VALUES_TOPIC;
+import static io.github.loicgreffier.streams.mapvalues.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.mapvalues.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -33,24 +33,24 @@ import org.slf4j.LoggerFactory;
 /** Kafka Streams topology. */
 public class KafkaStreamsTopology {
     private static final Logger log = LoggerFactory.getLogger(KafkaStreamsTopology.class);
+    private static final double VAT_RATE = 1.2;
 
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} topic, maps the first name and last name to uppercase, and
-     * writes the transformed records to the {@code USER_MAP_VALUES_TOPIC} topic.
+     * <p>This topology reads from the {@code ORDER_TOPIC} topic, applies a 20% VAT to the order amount, and writes the
+     * transformed records to the {@code ORDER_MAP_VALUES_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .mapValues(user -> {
-                    user.setFirstName(user.getFirstName().toUpperCase());
-                    user.setLastName(user.getLastName().toUpperCase());
-                    return user;
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
+                .mapValues(order -> {
+                    order.setAmount(Math.round(order.getAmount() * VAT_RATE * 100) / 100.0);
+                    return order;
                 })
-                .to(USER_MAP_VALUES_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+                .to(ORDER_MAP_VALUES_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /** Private constructor. */

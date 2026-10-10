@@ -21,6 +21,7 @@ package io.github.loicgreffier.streams.producer.order.constant;
 /** Topic name constants. */
 public abstract class Topic {
     public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String ORDER_TOPIC_TWO = "ORDER_TOPIC_TWO";
 
     /** Private constructor. */
     private Topic() {}

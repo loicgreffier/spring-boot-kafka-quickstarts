@@ -19,10 +19,10 @@
 package io.github.loicgreffier.streams.leftjoin.stream.table;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.COUNTRY_TOPIC;
-import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC;
-import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.USER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC;
-import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.CUSTOMER_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.ORDER_CUSTOMER_LEFT_JOIN_STREAM_TABLE_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.ORDER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -30,10 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.Country;
-import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.JoinUserCountry;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Customer;
+import io.github.loicgreffier.avro.JoinOrderCustomer;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.leftjoin.stream.table.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.leftjoin.stream.table.serdes.SerdesUtils;
 import java.io.IOException;
@@ -60,10 +59,10 @@ class KafkaStreamsLeftJoinStreamTableApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> userInputTopic;
-    private TestInputTopic<String, Country> countryInputTopic;
-    private TestOutputTopic<String, User> rekeyUserOutputTopic;
-    private TestOutputTopic<String, JoinUserCountry> joinOutputTopic;
+    private TestInputTopic<String, Order> orderInputTopic;
+    private TestInputTopic<String, Customer> customerInputTopic;
+    private TestOutputTopic<String, Order> rekeyOrderOutputTopic;
+    private TestOutputTopic<String, JoinOrderCustomer> joinOutputTopic;
 
     @BeforeEach
     void setUp() {
@@ -83,22 +82,22 @@ class KafkaStreamsLeftJoinStreamTableApplicationTest {
         KafkaStreamsTopology.topology(streamsBuilder);
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
-        userInputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+        orderInputTopic = testDriver.createInputTopic(
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
-        countryInputTopic = testDriver.createInputTopic(
-                COUNTRY_TOPIC,
+                SerdesUtils.<Order>getValueSerdes().serializer());
+        customerInputTopic = testDriver.createInputTopic(
+                CUSTOMER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<Country>getValueSerdes().serializer());
-        rekeyUserOutputTopic = testDriver.createOutputTopic(
-                "streams-left-join-stream-table-test-" + USER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC + "-repartition",
+                SerdesUtils.<Customer>getValueSerdes().serializer());
+        rekeyOrderOutputTopic = testDriver.createOutputTopic(
+                "streams-left-join-stream-table-test-" + ORDER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC + "-repartition",
                 new StringDeserializer(),
-                SerdesUtils.<User>getValueSerdes().deserializer());
+                SerdesUtils.<Order>getValueSerdes().deserializer());
         joinOutputTopic = testDriver.createOutputTopic(
-                USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC,
+                ORDER_CUSTOMER_LEFT_JOIN_STREAM_TABLE_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<JoinUserCountry>getValueSerdes().deserializer());
+                SerdesUtils.<JoinOrderCustomer>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -110,57 +109,56 @@ class KafkaStreamsLeftJoinStreamTableApplicationTest {
 
     @Test
     void shouldRekey() {
-        User user = buildUser();
-        userInputTopic.pipeInput("1", user);
+        Order order = buildOrder();
+        orderInputTopic.pipeInput("1", order);
 
-        List<KeyValue<String, User>> results = rekeyUserOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, Order>> results = rekeyOrderOutputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("US", user), results.getFirst());
+        assertEquals(KeyValue.pair("3", order), results.getFirst());
     }
 
     @Test
-    void shouldJoinUserToCountry() {
-        Country country = buildCountry();
-        countryInputTopic.pipeInput("US", country);
+    void shouldJoinOrderToCustomer() {
+        Customer customer = buildCustomer();
+        customerInputTopic.pipeInput("3", customer);
 
-        User user = buildUser();
-        userInputTopic.pipeInput("1", user);
+        Order order = buildOrder();
+        orderInputTopic.pipeInput("1", order);
 
-        List<KeyValue<String, JoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinOrderCustomer>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertEquals("US", results.getFirst().key);
-        assertEquals(user, results.getFirst().value.getUser());
-        assertEquals(country, results.getFirst().value.getCountry());
+        assertEquals("3", results.getFirst().key);
+        assertEquals(order, results.getFirst().value.getOrder());
+        assertEquals(customer, results.getFirst().value.getCustomer());
     }
 
     @Test
-    void shouldEmitValueEvenIfNoCountry() {
-        User user = buildUser();
-        userInputTopic.pipeInput("1", user);
+    void shouldEmitValueEvenIfNoCustomer() {
+        Order order = buildOrder();
+        orderInputTopic.pipeInput("1", order);
 
-        List<KeyValue<String, JoinUserCountry>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinOrderCustomer>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertEquals("US", results.getFirst().key);
-        assertEquals(user, results.getFirst().value.getUser());
-        assertNull(results.getFirst().value.getCountry());
+        assertEquals("3", results.getFirst().key);
+        assertEquals(order, results.getFirst().value.getOrder());
+        assertNull(results.getFirst().value.getCustomer());
     }
 
-    private User buildUser() {
-        return User.newBuilder()
+    private Order buildOrder() {
+        return Order.newBuilder()
                 .setId(1L)
-                .setFirstName("Homer")
-                .setLastName("Simpson")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-                .setNationality(CountryCode.US)
+                .setCustomerId(3L)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(1249.90)
                 .build();
     }
 
-    private Country buildCountry() {
-        return Country.newBuilder()
-                .setCode(CountryCode.US)
-                .setName("United States")
-                .setCapital("Washington")
-                .setOfficialLanguage("English")
+    private Customer buildCustomer() {
+        return Customer.newBuilder()
+                .setId(3L)
+                .setFirstName("Homer")
+                .setLastName("Simpson")
+                .setEmail("homer.simpson@mail.com")
                 .build();
     }
 }

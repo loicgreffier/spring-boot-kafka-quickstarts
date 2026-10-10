@@ -19,17 +19,16 @@
 package io.github.loicgreffier.streams.reduce;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.reduce.constant.StateStore.USER_REDUCE_STORE;
-import static io.github.loicgreffier.streams.reduce.constant.Topic.USER_REDUCE_TOPIC;
-import static io.github.loicgreffier.streams.reduce.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.reduce.constant.StateStore.ORDER_REDUCE_STORE;
+import static io.github.loicgreffier.streams.reduce.constant.Topic.ORDER_REDUCE_TOPIC;
+import static io.github.loicgreffier.streams.reduce.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.reduce.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.reduce.serdes.SerdesUtils;
 import java.io.IOException;
@@ -57,8 +56,8 @@ class KafkaStreamsReduceApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
-    private TestOutputTopic<String, User> outputTopic;
+    private TestInputTopic<String, Order> inputTopic;
+    private TestOutputTopic<String, Order> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -79,13 +78,13 @@ class KafkaStreamsReduceApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-                USER_REDUCE_TOPIC,
+                ORDER_REDUCE_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<User>getValueSerdes().deserializer());
+                SerdesUtils.<Order>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -96,40 +95,36 @@ class KafkaStreamsReduceApplicationTest {
     }
 
     @Test
-    void shouldReduceByNationalityAndKeepOldest() {
-        User oldestUs = buildUser("Homer", "Simpson", Instant.parse("1956-08-29T18:35:24Z"), CountryCode.US);
+    void shouldReduceByCustomerAndKeepHighestAmount() {
+        Order highestCustomerOne = buildOrder(1L, 1L, 1500.0);
+        Order lowestCustomerOne = buildOrder(2L, 1L, 50.0);
+        Order lowestCustomerTwo = buildOrder(3L, 2L, 20.0);
+        Order highestCustomerTwo = buildOrder(4L, 2L, 800.0);
 
-        User youngestUs = buildUser("Bart", "Simpson", Instant.parse("1994-11-09T08:08:50Z"), CountryCode.US);
+        inputTopic.pipeInput("1", highestCustomerOne);
+        inputTopic.pipeInput("2", lowestCustomerOne);
+        inputTopic.pipeInput("3", lowestCustomerTwo);
+        inputTopic.pipeInput("4", highestCustomerTwo);
 
-        User youngestBe = buildUser("Milhouse", "Van Houten", Instant.parse("1996-02-02T04:58:01Z"), CountryCode.BE);
+        List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
-        User oldestBe = buildUser("Kirk", "Van Houten", Instant.parse("1976-05-26T04:52:06Z"), CountryCode.BE);
+        assertEquals(KeyValue.pair("1", highestCustomerOne), results.getFirst());
+        assertEquals(KeyValue.pair("1", highestCustomerOne), results.get(1));
+        assertEquals(KeyValue.pair("2", lowestCustomerTwo), results.get(2));
+        assertEquals(KeyValue.pair("2", highestCustomerTwo), results.get(3));
 
-        inputTopic.pipeInput("1", oldestUs);
-        inputTopic.pipeInput("2", youngestUs);
-        inputTopic.pipeInput("3", youngestBe);
-        inputTopic.pipeInput("4", oldestBe);
+        KeyValueStore<String, Order> stateStore = testDriver.getKeyValueStore(ORDER_REDUCE_STORE);
 
-        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
-
-        assertEquals(KeyValue.pair(CountryCode.US.toString(), oldestUs), results.getFirst());
-        assertEquals(KeyValue.pair(CountryCode.US.toString(), oldestUs), results.get(1));
-        assertEquals(KeyValue.pair(CountryCode.BE.toString(), youngestBe), results.get(2));
-        assertEquals(KeyValue.pair(CountryCode.BE.toString(), oldestBe), results.get(3));
-
-        KeyValueStore<String, User> stateStore = testDriver.getKeyValueStore(USER_REDUCE_STORE);
-
-        assertEquals(oldestUs, stateStore.get(CountryCode.US.toString()));
-        assertEquals(oldestBe, stateStore.get(CountryCode.BE.toString()));
+        assertEquals(highestCustomerOne, stateStore.get("1"));
+        assertEquals(highestCustomerTwo, stateStore.get("2"));
     }
 
-    private User buildUser(String firstName, String lastName, Instant birthDate, CountryCode nationality) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName(lastName)
-                .setBirthDate(birthDate)
-                .setNationality(nationality)
+    private Order buildOrder(long id, long customerId, double amount) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(customerId)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(amount)
                 .build();
     }
 }

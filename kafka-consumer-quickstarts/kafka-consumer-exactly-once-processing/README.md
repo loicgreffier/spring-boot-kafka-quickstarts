@@ -1,6 +1,6 @@
 # Consumer Exactly Once Processing
 
-This module consumes records of type `<String, User>` from the `USER_TOPIC`, maps the first and last names to uppercase, and sends them to the `EXACTLY_ONCE_PROCESSING_TOPIC` within a transaction.
+This module consumes records of type `<String, Order>` from the `ORDER_TOPIC`, applies a 20% VAT to the order amount, and sends them to the `EXACTLY_ONCE_PROCESSING_TOPIC` within a transaction.
 
 It demonstrates the following:
 
@@ -21,7 +21,7 @@ To compile and run this demo, you'll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, User>` to the `USER_TOPIC`. You can use the [Producer Avro Specific](../../kafka-producer-quickstarts/kafka-producer-avro-specific) for this.
+- Produce records of type `<String, Order>` to the `ORDER_TOPIC`. You can use the [Producer Avro Specific](../../kafka-producer-quickstarts/kafka-producer-avro-specific) for this.
 - Start the consumer.
 
 Alternatively, to run everything at once using Docker, run:

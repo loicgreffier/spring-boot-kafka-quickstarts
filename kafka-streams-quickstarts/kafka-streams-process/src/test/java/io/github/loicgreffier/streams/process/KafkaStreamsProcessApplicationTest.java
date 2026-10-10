@@ -19,19 +19,21 @@
 package io.github.loicgreffier.streams.process;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.process.constant.Topic.USER_PROCESS_TOPIC;
-import static io.github.loicgreffier.streams.process.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.process.constant.Topic.ORDER_PROCESS_TOPIC;
+import static io.github.loicgreffier.streams.process.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.avro.UserMetadata;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.OrderMetadata;
 import io.github.loicgreffier.streams.process.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.process.serdes.SerdesUtils;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -40,11 +42,11 @@ import java.util.Map;
 import java.util.Properties;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.TopologyTestDriver;
+import org.apache.kafka.streams.test.TestRecord;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,8 +56,8 @@ class KafkaStreamsProcessApplicationTest {
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
-    private TestOutputTopic<String, UserMetadata> outputTopic;
+    private TestInputTopic<String, Order> inputTopic;
+    private TestOutputTopic<String, OrderMetadata> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -76,13 +78,13 @@ class KafkaStreamsProcessApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-                USER_PROCESS_TOPIC,
+                ORDER_PROCESS_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<UserMetadata>getValueSerdes().deserializer());
+                SerdesUtils.<OrderMetadata>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -94,33 +96,41 @@ class KafkaStreamsProcessApplicationTest {
 
     @Test
     void shouldProcess() {
-        User homer = buildUser("Homer");
-        User marge = buildUser("Marge");
+        Order firstOrder = buildOrder(1L, 10L);
+        Order secondOrder = buildOrder(2L, 10L);
 
-        inputTopic.pipeInput("1", homer);
-        inputTopic.pipeInput("2", marge);
+        inputTopic.pipeInput("1", firstOrder);
+        inputTopic.pipeInput("2", secondOrder);
 
-        List<KeyValue<String, UserMetadata>> results = outputTopic.readKeyValuesToList();
+        List<TestRecord<String, OrderMetadata>> results = outputTopic.readRecordsToList();
 
-        assertEquals("Simpson", results.getFirst().key);
-        assertEquals(homer, results.getFirst().value.getUser());
-        assertEquals(USER_TOPIC, results.getFirst().value.getTopic());
-        assertEquals(0, results.getFirst().value.getPartition());
-        assertEquals(0, results.getFirst().value.getOffset());
+        assertEquals("10", results.getFirst().key());
+        assertEquals(firstOrder, results.getFirst().value().getOrder());
+        assertEquals(ORDER_TOPIC, results.getFirst().value().getTopic());
+        assertEquals(0, results.getFirst().value().getPartition());
+        assertEquals(0, results.getFirst().value().getOffset());
+        assertNotNull(results.getFirst().headers().lastHeader("correlationId"));
+        assertEquals(
+                "ORDER_CREATED",
+                new String(results.getFirst().headers().lastHeader("eventType").value(), StandardCharsets.UTF_8));
 
-        assertEquals("Simpson", results.get(1).key);
-        assertEquals(marge, results.get(1).value.getUser());
-        assertEquals(USER_TOPIC, results.get(1).value.getTopic());
-        assertEquals(0, results.get(1).value.getPartition());
-        assertEquals(1, results.get(1).value.getOffset());
+        assertEquals("10", results.get(1).key());
+        assertEquals(secondOrder, results.get(1).value().getOrder());
+        assertEquals(ORDER_TOPIC, results.get(1).value().getTopic());
+        assertEquals(0, results.get(1).value().getPartition());
+        assertEquals(1, results.get(1).value().getOffset());
+        assertNotNull(results.get(1).headers().lastHeader("correlationId"));
+        assertEquals(
+                "ORDER_CREATED",
+                new String(results.get(1).headers().lastHeader("eventType").value(), StandardCharsets.UTF_8));
     }
 
-    private User buildUser(String firstName) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName("Simpson")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    private Order buildOrder(long id, long customerId) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(customerId)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(1249.90)
                 .build();
     }
 }

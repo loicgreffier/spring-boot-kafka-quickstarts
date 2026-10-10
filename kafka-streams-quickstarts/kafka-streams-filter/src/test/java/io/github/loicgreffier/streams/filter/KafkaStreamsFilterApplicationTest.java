@@ -19,8 +19,8 @@
 package io.github.loicgreffier.streams.filter;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.filter.constant.Topic.USER_FILTER_TOPIC;
-import static io.github.loicgreffier.streams.filter.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.filter.constant.Topic.ORDER_FILTER_TOPIC;
+import static io.github.loicgreffier.streams.filter.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.filter.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.filter.serdes.SerdesUtils;
 import java.io.IOException;
@@ -55,8 +55,8 @@ class KafkaStreamsFilterApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
-    private TestOutputTopic<String, User> outputTopic;
+    private TestInputTopic<String, Order> inputTopic;
+    private TestOutputTopic<String, Order> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -77,13 +77,13 @@ class KafkaStreamsFilterApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-                USER_FILTER_TOPIC,
+                ORDER_FILTER_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<User>getValueSerdes().deserializer());
+                SerdesUtils.<Order>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -94,39 +94,39 @@ class KafkaStreamsFilterApplicationTest {
     }
 
     @Test
-    void shouldFilterBadLastName() {
-        inputTopic.pipeInput("1", buildUser("Ned", "Flanders"));
+    void shouldFilterLowAmount() {
+        inputTopic.pipeInput("1", buildOrder(1L, 3L, List.of("Laptop", "Mouse"), 999.99));
 
-        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
         assertTrue(results.isEmpty());
     }
 
     @Test
-    void shouldFilterBadFirstName() {
-        inputTopic.pipeInput("1", buildUser("Marge", "Simpson"));
+    void shouldFilterNotEnoughItems() {
+        inputTopic.pipeInput("1", buildOrder(1L, 3L, List.of("Laptop"), 1249.90));
 
-        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
         assertTrue(results.isEmpty());
     }
 
     @Test
     void shouldNotFilter() {
-        User user = buildUser("Homer", "Simpson");
-        inputTopic.pipeInput("1", user);
+        Order order = buildOrder(1L, 3L, List.of("Laptop", "Mouse"), 1249.90);
+        inputTopic.pipeInput("1", order);
 
-        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", user), results.getFirst());
+        assertEquals(KeyValue.pair("1", order), results.getFirst());
     }
 
-    private User buildUser(String firstName, String lastName) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName(lastName)
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    private Order buildOrder(long id, long customerId, List<String> items, double amount) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(customerId)
+                .setItems(items)
+                .setAmount(amount)
                 .build();
     }
 }

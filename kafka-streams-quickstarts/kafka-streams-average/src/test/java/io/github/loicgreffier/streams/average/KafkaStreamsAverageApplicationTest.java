@@ -19,30 +19,27 @@
 package io.github.loicgreffier.streams.average;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.average.constant.StateStore.USER_AVERAGE_STORE;
-import static io.github.loicgreffier.streams.average.constant.Topic.USER_AVERAGE_TOPIC;
-import static io.github.loicgreffier.streams.average.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.StateStore.ORDER_AVERAGE_STORE;
+import static io.github.loicgreffier.streams.average.constant.Topic.ORDER_AVERAGE_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.avro.UserAverageAge;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.OrderAverageAmount;
 import io.github.loicgreffier.streams.average.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.average.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import org.apache.kafka.common.serialization.LongDeserializer;
+import org.apache.kafka.common.serialization.DoubleDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KeyValue;
@@ -61,8 +58,8 @@ class KafkaStreamsAverageApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
-    private TestOutputTopic<String, Long> outputTopic;
+    private TestInputTopic<String, Order> inputTopic;
+    private TestOutputTopic<String, Double> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -83,11 +80,11 @@ class KafkaStreamsAverageApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         outputTopic =
-                testDriver.createOutputTopic(USER_AVERAGE_TOPIC, new StringDeserializer(), new LongDeserializer());
+                testDriver.createOutputTopic(ORDER_AVERAGE_TOPIC, new StringDeserializer(), new DoubleDeserializer());
     }
 
     @AfterEach
@@ -98,35 +95,27 @@ class KafkaStreamsAverageApplicationTest {
     }
 
     @Test
-    void shouldComputeAverageAgeByNationality() {
-        LocalDate currentDate = LocalDate.now();
+    void shouldComputeAverageAmountByCustomer() {
+        inputTopic.pipeInput("1", buildOrder(1L, 25.0));
+        inputTopic.pipeInput("2", buildOrder(2L, 75.5));
 
-        User yearsOld25 =
-                buildUser("Homer", currentDate.minusYears(25).atStartOfDay().toInstant(ZoneOffset.UTC));
-        User yearsOld75 =
-                buildUser("Marge", currentDate.minusYears(75).atStartOfDay().toInstant(ZoneOffset.UTC));
+        List<KeyValue<String, Double>> results = outputTopic.readKeyValuesToList();
 
-        inputTopic.pipeInput("1", yearsOld25);
-        inputTopic.pipeInput("2", yearsOld75);
+        assertEquals(KeyValue.pair("1", 25.0), results.getFirst());
+        assertEquals(KeyValue.pair("1", 50.25), results.get(1));
 
-        List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
+        KeyValueStore<String, OrderAverageAmount> stateStore = testDriver.getKeyValueStore(ORDER_AVERAGE_STORE);
 
-        assertEquals(KeyValue.pair("US", 25L), results.getFirst());
-        assertEquals(KeyValue.pair("US", 50L), results.get(1));
-
-        KeyValueStore<String, UserAverageAge> stateStore = testDriver.getKeyValueStore(USER_AVERAGE_STORE);
-
-        assertEquals(2L, stateStore.get("US").getCount());
-        assertEquals(100L, stateStore.get("US").getAgeSum());
+        assertEquals(2L, stateStore.get("1").getCount());
+        assertEquals(100.5, stateStore.get("1").getAmountSum());
     }
 
-    private User buildUser(String firstName, Instant birthDate) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName("Simpson")
-                .setNationality(CountryCode.US)
-                .setBirthDate(birthDate)
+    private Order buildOrder(long id, double amount) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(1L)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(amount)
                 .build();
     }
 }

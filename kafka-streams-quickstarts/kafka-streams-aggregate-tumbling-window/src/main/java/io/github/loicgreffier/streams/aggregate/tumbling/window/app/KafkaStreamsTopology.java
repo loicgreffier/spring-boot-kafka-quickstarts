@@ -18,14 +18,14 @@
  */
 package io.github.loicgreffier.streams.aggregate.tumbling.window.app;
 
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.StateStore.USER_AGGREGATE_TUMBLING_WINDOW_STORE;
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.GROUP_USER_BY_LAST_NAME_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.USER_AGGREGATE_TUMBLING_WINDOW_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.StateStore.ORDER_AGGREGATE_TUMBLING_WINDOW_STORE;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.GROUP_ORDER_BY_CUSTOMER_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.ORDER_AGGREGATE_TUMBLING_WINDOW_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.tumbling.window.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.avro.UserAggregate;
-import io.github.loicgreffier.streams.aggregate.tumbling.window.app.aggregator.UserAggregator;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.OrderAggregate;
+import io.github.loicgreffier.streams.aggregate.tumbling.window.app.aggregator.OrderAggregator;
 import io.github.loicgreffier.streams.aggregate.tumbling.window.serdes.SerdesUtils;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -48,10 +48,10 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads records from the {@code USER_TOPIC} topic, selects the last name of the user as the key,
-     * groups the records by key, and aggregates users by last name using tumbling windows. The tumbling windows are 5
-     * minutes in length, with a 1-minute grace period. A new key is generated based on the window's start and end time.
-     * The aggregated result is written to the {@code USER_AGGREGATE_TUMBLING_WINDOW_TOPIC} topic.
+     * <p>This topology reads records from the {@code ORDER_TOPIC} topic, selects the customer id of the order as the
+     * key, groups the records by key, and aggregates orders by customer id using tumbling windows. The tumbling windows
+     * are 5 minutes in length, with a 1-minute grace period. A new key is generated based on the window's start and end
+     * time. The aggregated result is written to the {@code ORDER_AGGREGATE_TUMBLING_WINDOW_TOPIC} topic.
      *
      * <p>Tumbling windows are aligned to the epoch (1970-01-01T00:00:00Z). Every 5 minutes, a new 5-minute window is
      * created, as long as the stream time progresses. A record belongs to a tumbling window if its timestamp is within
@@ -60,22 +60,24 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .selectKey((_, user) -> user.getLastName())
-                .groupByKey(Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
+                .selectKey((_, order) -> String.valueOf(order.getCustomerId()))
+                .groupByKey(Grouped.with(GROUP_ORDER_BY_CUSTOMER_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)))
                 .aggregate(
-                        () -> new UserAggregate(new ArrayList<>()),
-                        new UserAggregator(),
-                        Materialized.<String, UserAggregate, WindowStore<Bytes, byte[]>>as(
-                                        USER_AGGREGATE_TUMBLING_WINDOW_STORE)
+                        () -> new OrderAggregate(new ArrayList<>()),
+                        new OrderAggregator(),
+                        Materialized.<String, OrderAggregate, WindowStore<Bytes, byte[]>>as(
+                                        ORDER_AGGREGATE_TUMBLING_WINDOW_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))
                 .toStream()
                 .selectKey((key, _) -> key.key() + "@" + key.window().startTime() + "->"
                         + key.window().endTime())
-                .to(USER_AGGREGATE_TUMBLING_WINDOW_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+                .to(
+                        ORDER_AGGREGATE_TUMBLING_WINDOW_TOPIC,
+                        Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /** Private constructor. */

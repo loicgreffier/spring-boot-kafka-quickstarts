@@ -18,12 +18,12 @@
  */
 package io.github.loicgreffier.streams.schedule.app;
 
-import static io.github.loicgreffier.streams.schedule.constant.StateStore.USER_SCHEDULE_STORE;
-import static io.github.loicgreffier.streams.schedule.constant.Topic.USER_SCHEDULE_TOPIC;
-import static io.github.loicgreffier.streams.schedule.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.schedule.constant.StateStore.ORDER_SCHEDULE_STORE;
+import static io.github.loicgreffier.streams.schedule.constant.Topic.ORDER_SCHEDULE_TOPIC;
+import static io.github.loicgreffier.streams.schedule.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.streams.schedule.app.processor.CountNationalityProcessor;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.streams.schedule.app.processor.CountOrderProcessor;
 import io.github.loicgreffier.streams.schedule.serdes.SerdesUtils;
 import java.util.Collections;
 import java.util.Set;
@@ -43,29 +43,29 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} topic and processes the records with the
-     * {@link CountNationalityProcessor} processor. The processor supplier registers a {@link KeyValueStore} state store
-     * when it is built. The result is written to the {@code USER_SCHEDULE_TOPIC} topic.
+     * <p>This topology reads from the {@code ORDER_TOPIC} topic and processes the records with the
+     * {@link CountOrderProcessor} processor. The processor supplier registers a {@link KeyValueStore} state store when
+     * it is built. The result is written to the {@code ORDER_SCHEDULE_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .process(new ProcessorSupplier<String, User, String, Long>() {
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .process(new ProcessorSupplier<String, Order, String, Long>() {
                     @Override
                     public Set<StoreBuilder<?>> stores() {
                         StoreBuilder<KeyValueStore<String, Long>> storeBuilder = Stores.keyValueStoreBuilder(
-                                Stores.persistentKeyValueStore(USER_SCHEDULE_STORE), Serdes.String(), Serdes.Long());
+                                Stores.persistentKeyValueStore(ORDER_SCHEDULE_STORE), Serdes.String(), Serdes.Long());
 
                         return Collections.singleton(storeBuilder);
                     }
 
                     @Override
-                    public Processor<String, User, String, Long> get() {
-                        return new CountNationalityProcessor();
+                    public Processor<String, Order, String, Long> get() {
+                        return new CountOrderProcessor();
                     }
                 })
-                .to(USER_SCHEDULE_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
+                .to(ORDER_SCHEDULE_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
     }
 
     /** Private constructor. */

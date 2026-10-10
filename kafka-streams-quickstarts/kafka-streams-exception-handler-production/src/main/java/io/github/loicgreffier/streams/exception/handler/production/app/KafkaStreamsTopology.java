@@ -18,12 +18,13 @@
  */
 package io.github.loicgreffier.streams.exception.handler.production.app;
 
-import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.ORDER_PRODUCTION_EXCEPTION_HANDLER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.avro.UserWithEmail;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.OrderWithCurrency;
 import io.github.loicgreffier.streams.exception.handler.production.serdes.SerdesUtils;
+import java.util.List;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
@@ -40,19 +41,19 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} topic and either:
+     * <p>This topology reads from the {@code ORDER_TOPIC} topic and either:
      *
      * <ul>
-     *   <li>Populates the email field, changing the record type from {@link User} to {@link UserWithEmail}. Since the
-     *       email field is non-nullable, this breaks schema backward compatibility, triggering a serialization
-     *       exception when registering the schema in the Schema Registry automatically.
-     *   <li>Populates the biography field with a large text that exceeds the maximum record size allowed by Kafka (1
-     *       MiB), triggering a production exception due to the record being too large.
+     *   <li>Populates the currency field, changing the record type from {@link Order} to {@link OrderWithCurrency}.
+     *       Since the currency field is non-nullable, this breaks schema backward compatibility, triggering a
+     *       serialization exception when registering the schema in the Schema Registry automatically.
+     *   <li>Replaces the items with a large text that exceeds the maximum record size allowed by Kafka (1 MiB),
+     *       triggering a production exception due to the record being too large.
      * </ul>
      *
-     * The population of the email and biography fields is not applied to all records in order to avoid generating too
+     * The population of the currency and items fields is not applied to all records in order to avoid generating too
      * many exceptions. Serialization and production exceptions are handled by the produce exception handler. The result
-     * is written to the {@code USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC} topic.
+     * is written to the {@code ORDER_PRODUCTION_EXCEPTION_HANDLER_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
@@ -62,29 +63,27 @@ public class KafkaStreamsTopology {
             stringBuilder.append(LOREM_IPSUM);
         }
 
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .mapValues(user -> {
-                    if (user.getId() % 15 == 10) {
-                        return UserWithEmail.newBuilder()
-                                .setId(user.getId())
-                                .setFirstName(user.getFirstName())
-                                .setLastName(user.getLastName())
-                                .setEmail(user.getFirstName() + "." + user.getLastName() + "@mail.com")
-                                .setNationality(user.getNationality())
-                                .setBirthDate(user.getBirthDate())
-                                .setBiography(user.getBiography())
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
+                .mapValues(order -> {
+                    if (order.getId() % 15 == 10) {
+                        return OrderWithCurrency.newBuilder()
+                                .setId(order.getId())
+                                .setCustomerId(order.getCustomerId())
+                                .setItems(order.getItems())
+                                .setAmount(order.getAmount())
+                                .setCurrency("EUR")
                                 .build();
                     }
 
-                    if (user.getId() % 15 == 1) {
-                        user.setBiography(stringBuilder.toString());
+                    if (order.getId() % 15 == 1) {
+                        order.setItems(List.of(stringBuilder.toString()));
                     }
 
-                    return user;
+                    return order;
                 })
                 .to(
-                        USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC,
+                        ORDER_PRODUCTION_EXCEPTION_HANDLER_TOPIC,
                         Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 

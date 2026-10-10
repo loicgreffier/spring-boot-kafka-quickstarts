@@ -20,8 +20,8 @@ package io.github.loicgreffier.streams.exception.handler.production;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.AUTO_REGISTER_SCHEMAS;
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.ORDER_PRODUCTION_EXCEPTION_HANDLER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.production.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.common.utils.Utils.mkEntry;
 import static org.apache.kafka.common.utils.Utils.mkMap;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -33,8 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde;
-import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.exception.handler.production.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.exception.handler.production.error.CustomProductionExceptionHandler;
 import io.github.loicgreffier.streams.exception.handler.production.serdes.SerdesUtils;
@@ -63,8 +62,8 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
-    private TestOutputTopic<String, User> outputTopic;
+    private TestInputTopic<String, Order> inputTopic;
+    private TestOutputTopic<String, Order> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -90,12 +89,12 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
         // Create SerDes for input and output topics only
         Map<String, String> config = Map.of(SCHEMA_REGISTRY_URL_CONFIG, MOCK_SCHEMA_REGISTRY_URL);
 
-        SpecificAvroSerde<User> serDes = new SpecificAvroSerde<>();
+        SpecificAvroSerde<Order> serDes = new SpecificAvroSerde<>();
         serDes.configure(config, false);
 
-        inputTopic = testDriver.createInputTopic(USER_TOPIC, new StringSerializer(), serDes.serializer());
+        inputTopic = testDriver.createInputTopic(ORDER_TOPIC, new StringSerializer(), serDes.serializer());
         outputTopic = testDriver.createOutputTopic(
-                USER_PRODUCTION_EXCEPTION_HANDLER_TOPIC, new StringDeserializer(), serDes.deserializer());
+                ORDER_PRODUCTION_EXCEPTION_HANDLER_TOPIC, new StringDeserializer(), serDes.deserializer());
     }
 
     @AfterEach
@@ -107,9 +106,9 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
 
     @Test
     void shouldHandleSerializationExceptionsAndContinueProcessing() {
-        inputTopic.pipeInput("10", buildUser());
+        inputTopic.pipeInput("10", buildOrder(1L, 100.0));
 
-        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
         assertTrue(results.isEmpty());
 
@@ -119,13 +118,12 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
-    private User buildUser() {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName("Homer")
-                .setLastName("Simpson")
-                .setNationality(CountryCode.US)
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    private Order buildOrder(long id, double amount) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(1L)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(amount)
                 .build();
     }
 

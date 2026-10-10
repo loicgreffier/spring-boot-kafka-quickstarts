@@ -1,6 +1,6 @@
 # Consumer Exception Processing Retry
 
-This module consumes records of type `<String, String>` from the `STRING_TOPIC` and implements a retry mechanism to handle exceptions that occur while processing records.
+This module consumes orders serialized as JSON strings, of type `<String, String>`, from the `ORDER_JSON_TOPIC` and implements a retry mechanism to handle exceptions that occur while processing records.
 
 It demonstrates the following:
 
@@ -20,7 +20,7 @@ To compile and run this demo, you'll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, String>` to the `STRING_TOPIC`. You can use the [Producer String](../../kafka-producer-quickstarts/kafka-producer-string) for this.
+- Produce orders serialized as JSON strings, of type `<String, String>`, to the `ORDER_JSON_TOPIC`. You can use the [Producer String](../../kafka-producer-quickstarts/kafka-producer-string) for this.
 - Start the consumer.
 
 Alternatively, to run everything at once using Docker, run:

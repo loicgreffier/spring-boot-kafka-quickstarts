@@ -18,14 +18,14 @@
  */
 package io.github.loicgreffier.streams.aggregate.sliding.window.app;
 
-import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.StateStore.USER_AGGREGATE_SLIDING_WINDOW_STORE;
-import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.Topic.GROUP_USER_BY_LAST_NAME_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.Topic.USER_AGGREGATE_SLIDING_WINDOW_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.StateStore.ORDER_AGGREGATE_SLIDING_WINDOW_STORE;
+import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.Topic.GROUP_ORDER_BY_CUSTOMER_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.Topic.ORDER_AGGREGATE_SLIDING_WINDOW_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.avro.UserAggregate;
-import io.github.loicgreffier.streams.aggregate.sliding.window.app.aggregator.UserAggregator;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.OrderAggregate;
+import io.github.loicgreffier.streams.aggregate.sliding.window.app.aggregator.OrderAggregator;
 import io.github.loicgreffier.streams.aggregate.sliding.window.serdes.SerdesUtils;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -48,10 +48,10 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads records from the {@code USER_TOPIC} topic, selects the last name of the user as the key,
-     * groups the records by key, and aggregates users by last name using 5-minute sliding windows with a 1-minute grace
-     * period. A new key is generated with the window's start and end times. The aggregated results are written to the
-     * {@code USER_AGGREGATE_SLIDING_WINDOW_TOPIC} topic.
+     * <p>This topology reads records from the {@code ORDER_TOPIC} topic, selects the customer id of the order as the
+     * key, groups the records by key, and aggregates orders by customer id using 5-minute sliding windows with a
+     * 1-minute grace period. A new key is generated with the window's start and end times. The aggregated results are
+     * written to the {@code ORDER_AGGREGATE_SLIDING_WINDOW_TOPIC} topic.
      *
      * <p>{@link org.apache.kafka.streams.kstream.SlidingWindows} are aligned to the record's timestamp. Each time a
      * record is processed, a new window is created. The window is bounded as follows:
@@ -68,22 +68,22 @@ public class KafkaStreamsTopology {
      * @see org.apache.kafka.streams.kstream.internals.KStreamSlidingWindowAggregate
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .selectKey((_, user) -> user.getLastName())
-                .groupByKey(Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
+                .selectKey((_, order) -> String.valueOf(order.getCustomerId()))
+                .groupByKey(Grouped.with(GROUP_ORDER_BY_CUSTOMER_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .windowedBy(SlidingWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)))
                 .aggregate(
-                        () -> new UserAggregate(new ArrayList<>()),
-                        new UserAggregator(),
-                        Materialized.<String, UserAggregate, WindowStore<Bytes, byte[]>>as(
-                                        USER_AGGREGATE_SLIDING_WINDOW_STORE)
+                        () -> new OrderAggregate(new ArrayList<>()),
+                        new OrderAggregator(),
+                        Materialized.<String, OrderAggregate, WindowStore<Bytes, byte[]>>as(
+                                        ORDER_AGGREGATE_SLIDING_WINDOW_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))
                 .toStream()
                 .selectKey((key, _) -> key.key() + "@" + key.window().startTime() + "->"
                         + key.window().endTime())
-                .to(USER_AGGREGATE_SLIDING_WINDOW_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+                .to(ORDER_AGGREGATE_SLIDING_WINDOW_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /** Private constructor. */

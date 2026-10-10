@@ -1,0 +1,25 @@
+{
+  "namespace": "io.github.loicgreffier.avro",
+  "type": "record",
+  "name": "JoinOrderDelivery",
+  "fields": [
+    {
+      "name": "order",
+      "type": [
+        "null",
+        "Order"
+      ],
+      "default": null,
+      "doc": "Order"
+    },
+    {
+      "name": "delivery",
+      "type": [
+        "null",
+        "Delivery"
+      ],
+      "default": null,
+      "doc": "Delivery"
+    }
+  ]
+}

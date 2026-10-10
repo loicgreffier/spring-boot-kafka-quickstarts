@@ -20,9 +20,9 @@ package io.github.loicgreffier.streams.exception.handler.processing.papi.constan
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_PROCESSING_EXCEPTION_HANDLER_PAPI_TOPIC =
-            "USER_PROCESSING_EXCEPTION_HANDLER_PAPI_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String ORDER_PROCESSING_EXCEPTION_HANDLER_PAPI_TOPIC =
+            "ORDER_PROCESSING_EXCEPTION_HANDLER_PAPI_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

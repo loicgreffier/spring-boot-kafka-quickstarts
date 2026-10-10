@@ -18,11 +18,11 @@
  */
 package io.github.loicgreffier.streams.merge.app;
 
-import static io.github.loicgreffier.streams.merge.constant.Topic.USER_MERGE_TOPIC;
-import static io.github.loicgreffier.streams.merge.constant.Topic.USER_TOPIC;
-import static io.github.loicgreffier.streams.merge.constant.Topic.USER_TOPIC_TWO;
+import static io.github.loicgreffier.streams.merge.constant.Topic.ORDER_MERGE_TOPIC;
+import static io.github.loicgreffier.streams.merge.constant.Topic.ORDER_TOPIC;
+import static io.github.loicgreffier.streams.merge.constant.Topic.ORDER_TOPIC_TWO;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.merge.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -39,21 +39,21 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} topic and the {@code USER_TOPIC_TWO} topic, then merges the
-     * two streams into a single stream and writes the result to the {@code USER_MERGE_TOPIC} topic.
+     * <p>This topology reads from the {@code ORDER_TOPIC} topic and the {@code ORDER_TOPIC_TWO} topic, then merges the
+     * two streams into a single stream and writes the result to the {@code ORDER_MERGE_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        KStream<String, User> streamOne = streamsBuilder.<String, User>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user));
+        KStream<String, Order> streamOne = streamsBuilder.<String, Order>stream(
+                        ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order));
 
-        KStream<String, User> streamTwo = streamsBuilder.<String, User>stream(
-                        USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user));
+        KStream<String, Order> streamTwo = streamsBuilder.<String, Order>stream(
+                        ORDER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order));
 
-        streamOne.merge(streamTwo).to(USER_MERGE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+        streamOne.merge(streamTwo).to(ORDER_MERGE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /** Private constructor. */

@@ -1,6 +1,6 @@
 # Producer String
 
-This module produces records of type `<String, String>` to the `STRING_TOPIC`.
+This module produces orders serialized as JSON strings, of type `<String, String>`, to the `ORDER_JSON_TOPIC`.
 
 It demonstrates the following:
 

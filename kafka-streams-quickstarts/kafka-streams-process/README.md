@@ -1,14 +1,12 @@
 # Kafka Streams Process
 
-This module streams records of type `<String, User>` from the `USER_TOPIC`, uses the Processor API to enrich the values with metadata, and changes the key.
+This module streams records of type `<String, Order>` from the `ORDER_TOPIC`, uses the Processor API to enrich the values with metadata, and changes the key to the customer id.
 
 It demonstrates the following:
 
 - How to use the Kafka Streams Processor API, including `process()`.
 - How to access and enrich records with metadata using the processor context.
 - How to write unit tests with Topology Test Driver.
-
-![topology.png](topology.png)
 
 ## Prerequisites
 
@@ -23,7 +21,7 @@ To compile and run this demo, you'll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, User>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
+- Produce records of type `<String, Order>` to the `ORDER_TOPIC`. You can use the [Producer Order](../specific-producers/kafka-streams-producer-order) for this.
 - Start the Kafka Streams application.
 
 Alternatively, to run everything at once using Docker, run:
@@ -37,5 +35,5 @@ This will start the following services in Docker:
 - Kafka Broker
 - Schema Registry
 - Control Center
-- Producer User
+- Producer Order
 - Kafka Streams Process

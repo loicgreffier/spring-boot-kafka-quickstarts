@@ -20,7 +20,7 @@ package io.github.loicgreffier.streams.average.constant;
 
 /** State store name constants. */
 public abstract class StateStore {
-    public static final String USER_AVERAGE_STORE = "USER_AVERAGE_STORE";
+    public static final String ORDER_AVERAGE_STORE = "ORDER_AVERAGE_STORE";
 
     /** Private constructor. */
     private StateStore() {}

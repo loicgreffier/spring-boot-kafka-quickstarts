@@ -18,11 +18,11 @@
  */
 package io.github.loicgreffier.streams.process.app;
 
-import static io.github.loicgreffier.streams.process.constant.Topic.USER_PROCESS_TOPIC;
-import static io.github.loicgreffier.streams.process.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.process.constant.Topic.ORDER_PROCESS_TOPIC;
+import static io.github.loicgreffier.streams.process.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.streams.process.app.processor.UserMetadataProcessor;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.streams.process.app.processor.OrderMetadataProcessor;
 import io.github.loicgreffier.streams.process.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -35,15 +35,15 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} and processes the records using the
-     * {@link UserMetadataProcessor} processor. The result is written to the {@code USER_PROCESS_TOPIC}.
+     * <p>This topology reads from the {@code ORDER_TOPIC} and processes the records using the
+     * {@link OrderMetadataProcessor} processor. The result is written to the {@code ORDER_PROCESS_TOPIC}.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .process(UserMetadataProcessor::new)
-                .to(USER_PROCESS_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .process(OrderMetadataProcessor::new)
+                .to(ORDER_PROCESS_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /** Private constructor. */

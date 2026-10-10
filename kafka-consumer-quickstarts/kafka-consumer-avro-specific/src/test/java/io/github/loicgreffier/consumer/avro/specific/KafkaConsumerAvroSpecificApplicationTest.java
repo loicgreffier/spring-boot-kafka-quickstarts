@@ -18,17 +18,17 @@
  */
 package io.github.loicgreffier.consumer.avro.specific;
 
-import static io.github.loicgreffier.consumer.avro.specific.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.consumer.avro.specific.constant.Topic.ORDER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.consumer.avro.specific.app.ConsumerRunner;
-import java.time.Instant;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
@@ -45,7 +45,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerAvroSpecificApplicationTest {
     @Spy
-    private MockConsumer<String, User> mockConsumer = new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
+    private MockConsumer<String, Order> mockConsumer = new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
 
     @InjectMocks
     private ConsumerRunner consumerRunner;
@@ -54,7 +54,7 @@ class KafkaConsumerAvroSpecificApplicationTest {
 
     @BeforeEach
     void setUp() {
-        topicPartition = new TopicPartition(USER_TOPIC, 0);
+        topicPartition = new TopicPartition(ORDER_TOPIC, 0);
         mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(Collections.singletonList(topicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(topicPartition, 0L));
         mockConsumer.updateEndOffsets(Map.of(topicPartition, 0L));
@@ -62,16 +62,16 @@ class KafkaConsumerAvroSpecificApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, User> message = new ConsumerRecord<>(
-                USER_TOPIC,
+        ConsumerRecord<String, Order> message = new ConsumerRecord<>(
+                ORDER_TOPIC,
                 0,
                 0,
                 "1",
-                User.newBuilder()
+                Order.newBuilder()
                         .setId(1L)
-                        .setFirstName("Homer")
-                        .setLastName("Simpson")
-                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .setCustomerId(3L)
+                        .setItems(List.of("Laptop", "Mouse"))
+                        .setAmount(1249.90)
                         .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -85,16 +85,16 @@ class KafkaConsumerAvroSpecificApplicationTest {
 
     @Test
     void shouldFailOnPoisonPill() {
-        ConsumerRecord<String, User> message = new ConsumerRecord<>(
-                USER_TOPIC,
+        ConsumerRecord<String, Order> message = new ConsumerRecord<>(
+                ORDER_TOPIC,
                 0,
                 0,
                 "1",
-                User.newBuilder()
+                Order.newBuilder()
                         .setId(1L)
-                        .setFirstName("Homer")
-                        .setLastName("Simpson")
-                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .setCustomerId(3L)
+                        .setItems(List.of("Laptop", "Mouse"))
+                        .setAmount(1249.90)
                         .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));

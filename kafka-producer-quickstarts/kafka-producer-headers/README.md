@@ -1,6 +1,7 @@
 # Producer Headers
 
-This module produces records of type `<String, String>` with headers to the `STRING_TOPIC`.
+This module produces orders serialized as JSON strings, of type `<String, String>`, to the `ORDER_JSON_TOPIC`.
+Each record carries a `correlationId` header and an `eventType` header.
 
 It demonstrates the following:
 

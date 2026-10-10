@@ -1,0 +1,43 @@
+{
+  "namespace": "io.github.loicgreffier.avro",
+  "type": "record",
+  "name": "OrderMetadata",
+  "fields": [
+    {
+      "name": "order",
+      "type": [
+        "null",
+        "Order"
+      ],
+      "default": null,
+      "doc": "Order"
+    },
+    {
+      "name": "offset",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Order offset"
+    },
+    {
+      "name": "partition",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "Order partition"
+    },
+    {
+      "name": "topic",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "Order topic"
+    }
+  ]
+}

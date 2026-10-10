@@ -19,17 +19,17 @@
 package io.github.loicgreffier.streams.branch;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_A_TOPIC;
-import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_B_TOPIC;
-import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_DEFAULT_TOPIC;
-import static io.github.loicgreffier.streams.branch.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.ORDER_BRANCH_A_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.ORDER_BRANCH_B_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.ORDER_BRANCH_DEFAULT_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.branch.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.branch.serdes.SerdesUtils;
 import java.io.IOException;
@@ -56,10 +56,10 @@ class KafkaStreamsBranchApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
-    private TestOutputTopic<String, User> outputTopicA;
-    private TestOutputTopic<String, User> outputTopicB;
-    private TestOutputTopic<String, User> outputTopicDefault;
+    private TestInputTopic<String, Order> inputTopic;
+    private TestOutputTopic<String, Order> outputTopicA;
+    private TestOutputTopic<String, Order> outputTopicB;
+    private TestOutputTopic<String, Order> outputTopicDefault;
 
     @BeforeEach
     void setUp() {
@@ -80,21 +80,21 @@ class KafkaStreamsBranchApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         outputTopicA = testDriver.createOutputTopic(
-                USER_BRANCH_A_TOPIC,
+                ORDER_BRANCH_A_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<User>getValueSerdes().deserializer());
+                SerdesUtils.<Order>getValueSerdes().deserializer());
         outputTopicB = testDriver.createOutputTopic(
-                USER_BRANCH_B_TOPIC,
+                ORDER_BRANCH_B_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<User>getValueSerdes().deserializer());
+                SerdesUtils.<Order>getValueSerdes().deserializer());
         outputTopicDefault = testDriver.createOutputTopic(
-                USER_BRANCH_DEFAULT_TOPIC,
+                ORDER_BRANCH_DEFAULT_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<User>getValueSerdes().deserializer());
+                SerdesUtils.<Order>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -106,40 +106,39 @@ class KafkaStreamsBranchApplicationTest {
 
     @Test
     void shouldBranchToTopicA() {
-        inputTopic.pipeInput("1", buildUser("Homer", "Simpson"));
+        inputTopic.pipeInput("1", buildOrder(1L, 3L, List.of("Laptop", "Mouse"), 1500.0));
 
-        List<KeyValue<String, User>> results = outputTopicA.readKeyValuesToList();
+        List<KeyValue<String, Order>> results = outputTopicA.readKeyValuesToList();
 
-        assertEquals("HOMER", results.getFirst().value.getFirstName());
-        assertEquals("SIMPSON", results.getFirst().value.getLastName());
+        assertEquals(1350.0, results.getFirst().value.getAmount());
     }
 
     @Test
     void shouldBranchToTopicB() {
-        User user = buildUser("Ned", "Flanders");
-        inputTopic.pipeInput("1", user);
+        Order order = buildOrder(1L, 3L, List.of("Keyboard"), 500.0);
+        inputTopic.pipeInput("1", order);
 
-        List<KeyValue<String, User>> results = outputTopicB.readKeyValuesToList();
+        List<KeyValue<String, Order>> results = outputTopicB.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", user), results.getFirst());
+        assertEquals(KeyValue.pair("1", order), results.getFirst());
     }
 
     @Test
     void shouldBranchToDefaultTopic() {
-        User user = buildUser("Milhouse", "Van Houten");
-        inputTopic.pipeInput("1", user);
+        Order order = buildOrder(1L, 3L, List.of("Mouse Pad"), 50.0);
+        inputTopic.pipeInput("1", order);
 
-        List<KeyValue<String, User>> results = outputTopicDefault.readKeyValuesToList();
+        List<KeyValue<String, Order>> results = outputTopicDefault.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", user), results.getFirst());
+        assertEquals(KeyValue.pair("1", order), results.getFirst());
     }
 
-    private User buildUser(String firstName, String lastName) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName(lastName)
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    private Order buildOrder(long id, long customerId, List<String> items, double amount) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(customerId)
+                .setItems(items)
+                .setAmount(amount)
                 .build();
     }
 }

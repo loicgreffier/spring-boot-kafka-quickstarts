@@ -18,10 +18,13 @@
  */
 package io.github.loicgreffier.producer.headers;
 
-import static io.github.loicgreffier.producer.headers.constant.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.producer.headers.constant.Topic.ORDER_JSON_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.loicgreffier.producer.headers.app.ProducerRunner;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -61,15 +64,13 @@ class KafkaProducerHeadersApplicationTest {
 
         ProducerRecord<String, String> sentRecord = mockProducer.history().getFirst();
 
-        assertEquals(STRING_TOPIC, sentRecord.topic());
+        assertEquals(ORDER_JSON_TOPIC, sentRecord.topic());
         assertEquals("0", sentRecord.key());
-        assertEquals("Message 0", sentRecord.value());
-        assertEquals("id", sentRecord.headers().lastHeader("id").key());
-        assertEquals("0", new String(sentRecord.headers().lastHeader("id").value()));
-        assertEquals("message", sentRecord.headers().lastHeader("message").key());
+        assertTrue(sentRecord.value().startsWith("{\"id\":0,\"customerId\":"));
+        assertNotNull(sentRecord.headers().lastHeader("correlationId"));
         assertEquals(
-                "Message 0",
-                new String(sentRecord.headers().lastHeader("message").value()));
+                "ORDER_CREATED",
+                new String(sentRecord.headers().lastHeader("eventType").value(), StandardCharsets.UTF_8));
     }
 
     private void waitForProducer() throws InterruptedException {

@@ -20,8 +20,8 @@ package io.github.loicgreffier.streams.selectkey.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_SELECT_KEY_TOPIC = "USER_SELECT_KEY_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String ORDER_SELECT_KEY_TOPIC = "ORDER_SELECT_KEY_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

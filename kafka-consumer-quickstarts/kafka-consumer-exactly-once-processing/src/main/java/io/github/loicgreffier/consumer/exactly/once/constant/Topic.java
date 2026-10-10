@@ -20,7 +20,7 @@ package io.github.loicgreffier.consumer.exactly.once.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
     public static final String EXACTLY_ONCE_PROCESSING_TOPIC = "EXACTLY_ONCE_PROCESSING_TOPIC";
 
     /** Private constructor. */

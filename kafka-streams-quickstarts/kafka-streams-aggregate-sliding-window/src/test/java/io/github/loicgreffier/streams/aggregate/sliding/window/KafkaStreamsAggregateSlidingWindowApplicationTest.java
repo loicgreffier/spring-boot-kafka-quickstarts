@@ -19,9 +19,9 @@
 package io.github.loicgreffier.streams.aggregate.sliding.window;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.StateStore.USER_AGGREGATE_SLIDING_WINDOW_STORE;
-import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.Topic.USER_AGGREGATE_SLIDING_WINDOW_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.StateStore.ORDER_AGGREGATE_SLIDING_WINDOW_STORE;
+import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.Topic.ORDER_AGGREGATE_SLIDING_WINDOW_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.sliding.window.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -30,8 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.avro.UserAggregate;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.OrderAggregate;
 import io.github.loicgreffier.streams.aggregate.sliding.window.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.aggregate.sliding.window.serdes.SerdesUtils;
 import java.io.IOException;
@@ -61,8 +61,8 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
-    private TestOutputTopic<String, UserAggregate> outputTopic;
+    private TestInputTopic<String, Order> inputTopic;
+    private TestOutputTopic<String, OrderAggregate> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -83,13 +83,13 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-                USER_AGGREGATE_SLIDING_WINDOW_TOPIC,
+                ORDER_AGGREGATE_SLIDING_WINDOW_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<UserAggregate>getValueSerdes().deserializer());
+                SerdesUtils.<OrderAggregate>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -101,90 +101,95 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
 
     @Test
     void shouldAggregateWhenTimeWindowIsRespected() {
-        User homer = buildUser("Homer");
-        inputTopic.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
+        Order firstOrder = buildOrder(1L);
+        inputTopic.pipeInput("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
-        User marge = buildUser("Marge");
-        inputTopic.pipeInput("2", marge, Instant.parse("2000-01-01T01:02:00Z"));
+        Order secondOrder = buildOrder(2L);
+        inputTopic.pipeInput("2", secondOrder, Instant.parse("2000-01-01T01:02:00Z"));
 
-        User bart = buildUser("Bart");
-        inputTopic.pipeInput("3", bart, Instant.parse("2000-01-01T01:04:00Z"));
+        Order thirdOrder = buildOrder(3L);
+        inputTopic.pipeInput("3", thirdOrder, Instant.parse("2000-01-01T01:04:00Z"));
 
-        List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
 
-        // Homer arrives
-        assertEquals("Simpson@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
-        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
+        // First order arrives
+        assertEquals("1@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
+        assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
 
-        // Marge arrives.
-        assertEquals("Simpson@2000-01-01T01:00:00.001Z->2000-01-01T01:05:00.001Z", results.get(1).key);
-        assertIterableEquals(List.of(marge), results.get(1).value.getUsers());
+        // Second order arrives.
+        assertEquals("1@2000-01-01T01:00:00.001Z->2000-01-01T01:05:00.001Z", results.get(1).key);
+        assertIterableEquals(List.of(secondOrder), results.get(1).value.getOrders());
 
-        assertEquals("Simpson@2000-01-01T00:57:00Z->2000-01-01T01:02:00Z", results.get(2).key);
-        assertIterableEquals(List.of(homer, marge), results.get(2).value.getUsers());
+        assertEquals("1@2000-01-01T00:57:00Z->2000-01-01T01:02:00Z", results.get(2).key);
+        assertIterableEquals(
+                List.of(firstOrder, secondOrder), results.get(2).value.getOrders());
 
-        // Bart arrives
-        assertEquals("Simpson@2000-01-01T01:00:00.001Z->2000-01-01T01:05:00.001Z", results.get(3).key);
-        assertIterableEquals(List.of(marge, bart), results.get(3).value.getUsers());
+        // Third order arrives
+        assertEquals("1@2000-01-01T01:00:00.001Z->2000-01-01T01:05:00.001Z", results.get(3).key);
+        assertIterableEquals(
+                List.of(secondOrder, thirdOrder), results.get(3).value.getOrders());
 
-        assertEquals("Simpson@2000-01-01T01:02:00.001Z->2000-01-01T01:07:00.001Z", results.get(4).key);
-        assertIterableEquals(List.of(bart), results.get(4).value.getUsers());
+        assertEquals("1@2000-01-01T01:02:00.001Z->2000-01-01T01:07:00.001Z", results.get(4).key);
+        assertIterableEquals(List.of(thirdOrder), results.get(4).value.getOrders());
 
-        assertEquals("Simpson@2000-01-01T00:59:00Z->2000-01-01T01:04:00Z", results.get(5).key);
-        assertIterableEquals(List.of(homer, marge, bart), results.get(5).value.getUsers());
+        assertEquals("1@2000-01-01T00:59:00Z->2000-01-01T01:04:00Z", results.get(5).key);
+        assertIterableEquals(
+                List.of(firstOrder, secondOrder, thirdOrder),
+                results.get(5).value.getOrders());
 
-        WindowStore<String, UserAggregate> stateStore = testDriver.getWindowStore(USER_AGGREGATE_SLIDING_WINDOW_STORE);
+        WindowStore<String, OrderAggregate> stateStore =
+                testDriver.getWindowStore(ORDER_AGGREGATE_SLIDING_WINDOW_STORE);
 
-        try (KeyValueIterator<Windowed<String>, UserAggregate> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, UserAggregate> keyValueSimpson55To00 = iterator.next();
-            assertEquals("Simpson", keyValueSimpson55To00.key.key());
+        try (KeyValueIterator<Windowed<String>, OrderAggregate> iterator = stateStore.all()) {
+            KeyValue<Windowed<String>, OrderAggregate> keyValue55To00 = iterator.next();
+            assertEquals("1", keyValue55To00.key.key());
             assertEquals(
                     "2000-01-01T00:55:00Z",
-                    keyValueSimpson55To00.key.window().startTime().toString());
+                    keyValue55To00.key.window().startTime().toString());
             assertEquals(
                     "2000-01-01T01:00:00Z",
-                    keyValueSimpson55To00.key.window().endTime().toString());
-            assertIterableEquals(List.of(homer), keyValueSimpson55To00.value.getUsers());
+                    keyValue55To00.key.window().endTime().toString());
+            assertIterableEquals(List.of(firstOrder), keyValue55To00.value.getOrders());
 
-            KeyValue<Windowed<String>, UserAggregate> keyValueSimpson57To02 = iterator.next();
-            assertEquals("Simpson", keyValueSimpson57To02.key.key());
+            KeyValue<Windowed<String>, OrderAggregate> keyValue57To02 = iterator.next();
+            assertEquals("1", keyValue57To02.key.key());
             assertEquals(
                     "2000-01-01T00:57:00Z",
-                    keyValueSimpson57To02.key.window().startTime().toString());
+                    keyValue57To02.key.window().startTime().toString());
             assertEquals(
                     "2000-01-01T01:02:00Z",
-                    keyValueSimpson57To02.key.window().endTime().toString());
-            assertIterableEquals(List.of(homer, marge), keyValueSimpson57To02.value.getUsers());
+                    keyValue57To02.key.window().endTime().toString());
+            assertIterableEquals(List.of(firstOrder, secondOrder), keyValue57To02.value.getOrders());
 
-            KeyValue<Windowed<String>, UserAggregate> keyValueSimpson59To04 = iterator.next();
-            assertEquals("Simpson", keyValueSimpson59To04.key.key());
+            KeyValue<Windowed<String>, OrderAggregate> keyValue59To04 = iterator.next();
+            assertEquals("1", keyValue59To04.key.key());
             assertEquals(
                     "2000-01-01T00:59:00Z",
-                    keyValueSimpson59To04.key.window().startTime().toString());
+                    keyValue59To04.key.window().startTime().toString());
             assertEquals(
                     "2000-01-01T01:04:00Z",
-                    keyValueSimpson59To04.key.window().endTime().toString());
-            assertIterableEquals(List.of(homer, marge, bart), keyValueSimpson59To04.value.getUsers());
+                    keyValue59To04.key.window().endTime().toString());
+            assertIterableEquals(List.of(firstOrder, secondOrder, thirdOrder), keyValue59To04.value.getOrders());
 
-            KeyValue<Windowed<String>, UserAggregate> keyValueSimpson00To05 = iterator.next();
-            assertEquals("Simpson", keyValueSimpson00To05.key.key());
+            KeyValue<Windowed<String>, OrderAggregate> keyValue00To05 = iterator.next();
+            assertEquals("1", keyValue00To05.key.key());
             assertEquals(
                     "2000-01-01T01:00:00.001Z",
-                    keyValueSimpson00To05.key.window().startTime().toString());
+                    keyValue00To05.key.window().startTime().toString());
             assertEquals(
                     "2000-01-01T01:05:00.001Z",
-                    keyValueSimpson00To05.key.window().endTime().toString());
-            assertIterableEquals(List.of(marge, bart), keyValueSimpson00To05.value.getUsers());
+                    keyValue00To05.key.window().endTime().toString());
+            assertIterableEquals(List.of(secondOrder, thirdOrder), keyValue00To05.value.getOrders());
 
-            KeyValue<Windowed<String>, UserAggregate> keyValueSimpson02To07 = iterator.next();
-            assertEquals("Simpson", keyValueSimpson02To07.key.key());
+            KeyValue<Windowed<String>, OrderAggregate> keyValue02To07 = iterator.next();
+            assertEquals("1", keyValue02To07.key.key());
             assertEquals(
                     "2000-01-01T01:02:00.001Z",
-                    keyValueSimpson02To07.key.window().startTime().toString());
+                    keyValue02To07.key.window().startTime().toString());
             assertEquals(
                     "2000-01-01T01:07:00.001Z",
-                    keyValueSimpson02To07.key.window().endTime().toString());
-            assertIterableEquals(List.of(bart), keyValueSimpson02To07.value.getUsers());
+                    keyValue02To07.key.window().endTime().toString());
+            assertIterableEquals(List.of(thirdOrder), keyValue02To07.value.getOrders());
 
             assertFalse(iterator.hasNext());
         }
@@ -192,42 +197,43 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
 
     @Test
     void shouldNotAggregateWhenTimeWindowIsNotRespected() {
-        User homer = buildUser("Homer");
-        inputTopic.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
+        Order firstOrder = buildOrder(1L);
+        inputTopic.pipeInput("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
-        User marge = buildUser("Marge");
-        inputTopic.pipeInput("2", marge, Instant.parse("2000-01-01T01:05:01Z"));
+        Order secondOrder = buildOrder(2L);
+        inputTopic.pipeInput("2", secondOrder, Instant.parse("2000-01-01T01:05:01Z"));
 
-        List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Simpson@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
-        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
+        assertEquals("1@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
+        assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
 
-        assertEquals("Simpson@2000-01-01T01:00:01Z->2000-01-01T01:05:01Z", results.get(1).key);
-        assertIterableEquals(List.of(marge), results.get(1).value.getUsers());
+        assertEquals("1@2000-01-01T01:00:01Z->2000-01-01T01:05:01Z", results.get(1).key);
+        assertIterableEquals(List.of(secondOrder), results.get(1).value.getOrders());
 
-        WindowStore<String, UserAggregate> stateStore = testDriver.getWindowStore(USER_AGGREGATE_SLIDING_WINDOW_STORE);
+        WindowStore<String, OrderAggregate> stateStore =
+                testDriver.getWindowStore(ORDER_AGGREGATE_SLIDING_WINDOW_STORE);
 
-        try (KeyValueIterator<Windowed<String>, UserAggregate> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, UserAggregate> keyValue00To05 = iterator.next();
-            assertEquals("Simpson", keyValue00To05.key.key());
+        try (KeyValueIterator<Windowed<String>, OrderAggregate> iterator = stateStore.all()) {
+            KeyValue<Windowed<String>, OrderAggregate> keyValue00To05 = iterator.next();
+            assertEquals("1", keyValue00To05.key.key());
             assertEquals(
                     "2000-01-01T00:55:00Z",
                     keyValue00To05.key.window().startTime().toString());
             assertEquals(
                     "2000-01-01T01:00:00Z",
                     keyValue00To05.key.window().endTime().toString());
-            assertIterableEquals(List.of(homer), keyValue00To05.value.getUsers());
+            assertIterableEquals(List.of(firstOrder), keyValue00To05.value.getOrders());
 
-            KeyValue<Windowed<String>, UserAggregate> keyValue01To06 = iterator.next();
-            assertEquals("Simpson", keyValue01To06.key.key());
+            KeyValue<Windowed<String>, OrderAggregate> keyValue01To06 = iterator.next();
+            assertEquals("1", keyValue01To06.key.key());
             assertEquals(
                     "2000-01-01T01:00:01Z",
                     keyValue01To06.key.window().startTime().toString());
             assertEquals(
                     "2000-01-01T01:05:01Z",
                     keyValue01To06.key.window().endTime().toString());
-            assertIterableEquals(List.of(marge), keyValue01To06.value.getUsers());
+            assertIterableEquals(List.of(secondOrder), keyValue01To06.value.getOrders());
 
             assertFalse(iterator.hasNext());
         }
@@ -235,98 +241,101 @@ class KafkaStreamsAggregateSlidingWindowApplicationTest {
 
     @Test
     void shouldHonorGracePeriod() {
-        User homer = buildUser("Homer");
-        inputTopic.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
+        Order firstOrder = buildOrder(1L);
+        inputTopic.pipeInput("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
-        User marge = buildUser("Marge");
-        inputTopic.pipeInput("3", marge, Instant.parse("2000-01-01T01:05:30Z"));
+        Order secondOrder = buildOrder(2L);
+        inputTopic.pipeInput("3", secondOrder, Instant.parse("2000-01-01T01:05:30Z"));
 
         // At this point, the stream time is 01:05:30. It exceeds by 30 seconds
-        // the upper bound of the forward sliding window introduced by Homer's event
-        // [01:00:00.001Z->01:05:00.001Z], where Bart should be included.
-        // However, the following delayed record "Bart" will still be aggregated into this window
+        // the upper bound of the forward sliding window introduced by the first order
+        // [01:00:00.001Z->01:05:00.001Z], where the third order should be included.
+        // However, the following delayed third order will still be aggregated into this window
         // because the grace period is 1 minute.
 
-        User bart = buildUser("Bart");
-        inputTopic.pipeInput("2", bart, Instant.parse("2000-01-01T01:03:00Z"));
+        Order thirdOrder = buildOrder(3L);
+        inputTopic.pipeInput("2", thirdOrder, Instant.parse("2000-01-01T01:03:00Z"));
 
-        List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
 
-        // Homer arrives
-        assertEquals("Simpson@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
-        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
+        // First order arrives
+        assertEquals("1@2000-01-01T00:55:00Z->2000-01-01T01:00:00Z", results.getFirst().key);
+        assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
 
-        // Marge arrives
-        assertEquals("Simpson@2000-01-01T01:00:30Z->2000-01-01T01:05:30Z", results.get(1).key);
-        assertIterableEquals(List.of(marge), results.get(1).value.getUsers());
+        // Second order arrives
+        assertEquals("1@2000-01-01T01:00:30Z->2000-01-01T01:05:30Z", results.get(1).key);
+        assertIterableEquals(List.of(secondOrder), results.get(1).value.getOrders());
 
-        // Bart arrives
-        assertEquals("Simpson@2000-01-01T01:00:30Z->2000-01-01T01:05:30Z", results.get(2).key);
-        assertIterableEquals(List.of(marge, bart), results.get(2).value.getUsers());
+        // Third order arrives
+        assertEquals("1@2000-01-01T01:00:30Z->2000-01-01T01:05:30Z", results.get(2).key);
+        assertIterableEquals(
+                List.of(secondOrder, thirdOrder), results.get(2).value.getOrders());
 
-        // Even if the stream time is 01:05:30, the window introduced by Homer's event
+        // Even if the stream time is 01:05:30, the window introduced by the first order
         // [01:00:00.001Z->01:05:00.001Z] is
         // not yet closed thanks to the grace period of 1 minute.
-        // Bart whose timestamp is 01:03:00 is included in the window.
-        assertEquals("Simpson@2000-01-01T01:00:00.001Z->2000-01-01T01:05:00.001Z", results.get(3).key);
-        assertIterableEquals(List.of(bart), results.get(3).value.getUsers());
+        // The third order whose timestamp is 01:03:00 is included in the window.
+        assertEquals("1@2000-01-01T01:00:00.001Z->2000-01-01T01:05:00.001Z", results.get(3).key);
+        assertIterableEquals(List.of(thirdOrder), results.get(3).value.getOrders());
 
-        assertEquals("Simpson@2000-01-01T01:03:00.001Z->2000-01-01T01:08:00.001Z", results.get(4).key);
-        assertIterableEquals(List.of(marge, bart), results.get(4).value.getUsers());
+        assertEquals("1@2000-01-01T01:03:00.001Z->2000-01-01T01:08:00.001Z", results.get(4).key);
+        assertIterableEquals(
+                List.of(secondOrder, thirdOrder), results.get(4).value.getOrders());
 
-        WindowStore<String, UserAggregate> stateStore = testDriver.getWindowStore(USER_AGGREGATE_SLIDING_WINDOW_STORE);
+        WindowStore<String, OrderAggregate> stateStore =
+                testDriver.getWindowStore(ORDER_AGGREGATE_SLIDING_WINDOW_STORE);
 
-        try (KeyValueIterator<Windowed<String>, UserAggregate> iterator = stateStore.all()) {
-            KeyValue<Windowed<String>, UserAggregate> keyValue55To00 = iterator.next();
-            assertEquals("Simpson", keyValue55To00.key.key());
+        try (KeyValueIterator<Windowed<String>, OrderAggregate> iterator = stateStore.all()) {
+            KeyValue<Windowed<String>, OrderAggregate> keyValue55To00 = iterator.next();
+            assertEquals("1", keyValue55To00.key.key());
             assertEquals(
                     "2000-01-01T00:55:00Z",
                     keyValue55To00.key.window().startTime().toString());
             assertEquals(
                     "2000-01-01T01:00:00Z",
                     keyValue55To00.key.window().endTime().toString());
-            assertIterableEquals(List.of(homer), keyValue55To00.value.getUsers());
+            assertIterableEquals(List.of(firstOrder), keyValue55To00.value.getOrders());
 
-            KeyValue<Windowed<String>, UserAggregate> keyValue00To05 = iterator.next();
-            assertEquals("Simpson", keyValue00To05.key.key());
+            KeyValue<Windowed<String>, OrderAggregate> keyValue00To05 = iterator.next();
+            assertEquals("1", keyValue00To05.key.key());
             assertEquals(
                     "2000-01-01T01:00:00.001Z",
                     keyValue00To05.key.window().startTime().toString());
             assertEquals(
                     "2000-01-01T01:05:00.001Z",
                     keyValue00To05.key.window().endTime().toString());
-            assertIterableEquals(List.of(bart), keyValue00To05.value.getUsers());
+            assertIterableEquals(List.of(thirdOrder), keyValue00To05.value.getOrders());
 
-            KeyValue<Windowed<String>, UserAggregate> keyValue00m30To05m30 = iterator.next();
-            assertEquals("Simpson", keyValue00m30To05m30.key.key());
+            KeyValue<Windowed<String>, OrderAggregate> keyValue00m30To05m30 = iterator.next();
+            assertEquals("1", keyValue00m30To05m30.key.key());
             assertEquals(
                     "2000-01-01T01:00:30Z",
                     keyValue00m30To05m30.key.window().startTime().toString());
             assertEquals(
                     "2000-01-01T01:05:30Z",
                     keyValue00m30To05m30.key.window().endTime().toString());
-            assertIterableEquals(List.of(marge, bart), keyValue00m30To05m30.value.getUsers());
+            assertIterableEquals(List.of(secondOrder, thirdOrder), keyValue00m30To05m30.value.getOrders());
 
-            KeyValue<Windowed<String>, UserAggregate> keyValue03To08 = iterator.next();
-            assertEquals("Simpson", keyValue03To08.key.key());
+            KeyValue<Windowed<String>, OrderAggregate> keyValue03To08 = iterator.next();
+            assertEquals("1", keyValue03To08.key.key());
             assertEquals(
                     "2000-01-01T01:03:00.001Z",
                     keyValue03To08.key.window().startTime().toString());
             assertEquals(
                     "2000-01-01T01:08:00.001Z",
                     keyValue03To08.key.window().endTime().toString());
-            assertIterableEquals(List.of(marge, bart), keyValue03To08.value.getUsers());
+            assertIterableEquals(List.of(secondOrder, thirdOrder), keyValue03To08.value.getOrders());
 
             assertFalse(iterator.hasNext());
         }
     }
 
-    private User buildUser(String firstName) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName("Simpson")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    private Order buildOrder(long id) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(1L)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(100.0)
                 .build();
     }
 }

@@ -1,6 +1,6 @@
 # Producer Avro Specific
 
-This module produces records of type `<String, User>` to the `USER_TOPIC`.
+This module produces orders of type `<String, Order>` to the `ORDER_TOPIC`.
 
 It demonstrates the following:
 

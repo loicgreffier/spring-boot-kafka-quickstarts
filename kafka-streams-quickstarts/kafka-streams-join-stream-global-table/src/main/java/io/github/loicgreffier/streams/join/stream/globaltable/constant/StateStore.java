@@ -20,7 +20,7 @@ package io.github.loicgreffier.streams.join.stream.globaltable.constant;
 
 /** State store name constants. */
 public abstract class StateStore {
-    public static final String COUNTRY_STORE = "COUNTRY_STORE";
+    public static final String CUSTOMER_STORE = "CUSTOMER_STORE";
 
     /** Private constructor. */
     private StateStore() {}

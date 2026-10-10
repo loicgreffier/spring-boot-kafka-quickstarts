@@ -20,7 +20,7 @@ package io.github.loicgreffier.producer.string.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String STRING_TOPIC = "STRING_TOPIC";
+    public static final String ORDER_JSON_TOPIC = "ORDER_JSON_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

@@ -19,7 +19,7 @@
 package io.github.loicgreffier.consumer.exactly.once;
 
 import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.EXACTLY_ONCE_PROCESSING_TOPIC;
-import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.ORDER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,10 +31,10 @@ import static org.mockito.Mockito.verify;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.consumer.exactly.once.app.ConsumerRunner;
-import java.time.Instant;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.MockConsumer;
@@ -54,18 +54,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class KafkaConsumerExactlyOnceProcessingApplicationTest {
-    private final Serializer<User> serializer = (topic, kafkaUser) -> {
+    private final Serializer<Order> serializer = (topic, order) -> {
         KafkaAvroSerializer inner = new KafkaAvroSerializer();
         inner.configure(Map.of(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://"), false);
-        return inner.serialize(topic, kafkaUser);
+        return inner.serialize(topic, order);
     };
 
     @Spy
-    private MockProducer<String, User> mockProducer =
+    private MockProducer<String, Order> mockProducer =
             new MockProducer<>(true, null, new StringSerializer(), serializer);
 
     @Spy
-    private MockConsumer<String, User> mockConsumer = new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
+    private MockConsumer<String, Order> mockConsumer = new MockConsumer<>(AutoOffsetResetStrategy.EARLIEST.name());
 
     @InjectMocks
     private ConsumerRunner consumerRunner;
@@ -74,7 +74,7 @@ class KafkaConsumerExactlyOnceProcessingApplicationTest {
 
     @BeforeEach
     void setUp() {
-        topicPartition = new TopicPartition(USER_TOPIC, 0);
+        topicPartition = new TopicPartition(ORDER_TOPIC, 0);
         mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(Collections.singletonList(topicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(topicPartition, 0L));
         mockConsumer.updateEndOffsets(Map.of(topicPartition, 0L));
@@ -82,16 +82,16 @@ class KafkaConsumerExactlyOnceProcessingApplicationTest {
 
     @Test
     void shouldCommitTransaction() {
-        ConsumerRecord<String, User> message = new ConsumerRecord<>(
-                USER_TOPIC,
+        ConsumerRecord<String, Order> message = new ConsumerRecord<>(
+                ORDER_TOPIC,
                 0,
                 0,
                 "1",
-                User.newBuilder()
+                Order.newBuilder()
                         .setId(1L)
-                        .setFirstName("Homer")
-                        .setLastName("Simpson")
-                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .setCustomerId(3L)
+                        .setItems(List.of("Laptop", "Mouse"))
+                        .setAmount(1249.90)
                         .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -99,36 +99,34 @@ class KafkaConsumerExactlyOnceProcessingApplicationTest {
 
         consumerRunner.run();
 
-        ProducerRecord<String, User> sentRecord = mockProducer.history().getFirst();
+        ProducerRecord<String, Order> sentRecord = mockProducer.history().getFirst();
 
         assertEquals(EXACTLY_ONCE_PROCESSING_TOPIC, sentRecord.topic());
         assertEquals("1", sentRecord.key());
         assertNotNull(sentRecord.value().getId());
-        assertEquals("HOMER", sentRecord.value().getFirstName());
-        assertEquals("SIMPSON", sentRecord.value().getLastName());
-        assertNotNull(sentRecord.value().getBirthDate());
+        assertEquals(1499.88, sentRecord.value().getAmount());
         assertTrue(mockProducer.transactionInitialized());
         assertTrue(mockProducer.transactionCommitted());
 
         assertTrue(mockConsumer.closed());
         verify(mockProducer)
                 .sendOffsetsToTransaction(
-                        eq(Map.of(new TopicPartition(USER_TOPIC, 0), new OffsetAndMetadata(1L))),
+                        eq(Map.of(new TopicPartition(ORDER_TOPIC, 0), new OffsetAndMetadata(1L))),
                         argThat(argument -> argument.groupId().equals("dummy.group.id")));
     }
 
     @Test
     void shouldAbortTransaction() {
-        ConsumerRecord<String, User> message = new ConsumerRecord<>(
-                USER_TOPIC,
+        ConsumerRecord<String, Order> message = new ConsumerRecord<>(
+                ORDER_TOPIC,
                 0,
                 0,
                 "1",
-                User.newBuilder()
+                Order.newBuilder()
                         .setId(1L)
-                        // Null first name to trigger an exception
-                        .setLastName("Simpson")
-                        .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+                        .setCustomerId(3L)
+                        .setItems(List.of("Laptop", "Mouse"))
+                        // Null amount to trigger an exception
                         .build());
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));

@@ -18,10 +18,10 @@
  */
 package io.github.loicgreffier.streams.exception.handler.processing.dsl.app;
 
-import static io.github.loicgreffier.streams.exception.handler.processing.dsl.constant.Topic.USER_PROCESSING_EXCEPTION_HANDLER_DSL_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.processing.dsl.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.processing.dsl.constant.Topic.ORDER_PROCESSING_EXCEPTION_HANDLER_DSL_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.processing.dsl.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.exception.handler.processing.dsl.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -37,23 +37,23 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads records from the {@code USER_TOPIC} topic. It throws an exception while mapping the value
-     * if the birthdate is negative. These exceptions are handled by the processing exception handler. The processed
-     * results are written to the {@code USER_PROCESSING_EXCEPTION_HANDLER_TOPIC} topic.
+     * <p>This topology reads records from the {@code ORDER_TOPIC} topic. It throws an exception while mapping the value
+     * if the order amount is negative. These exceptions are handled by the processing exception handler. The processed
+     * results are written to the {@code ORDER_PROCESSING_EXCEPTION_HANDLER_DSL_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .mapValues(user -> {
-                    if (user.getBirthDate().toEpochMilli() < 0) {
-                        throw new IllegalArgumentException("Age must be positive");
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
+                .mapValues(order -> {
+                    if (order.getAmount() < 0) {
+                        throw new IllegalArgumentException("Amount must be positive");
                     }
-                    return user;
+                    return order;
                 })
                 .to(
-                        USER_PROCESSING_EXCEPTION_HANDLER_DSL_TOPIC,
+                        ORDER_PROCESSING_EXCEPTION_HANDLER_DSL_TOPIC,
                         Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 

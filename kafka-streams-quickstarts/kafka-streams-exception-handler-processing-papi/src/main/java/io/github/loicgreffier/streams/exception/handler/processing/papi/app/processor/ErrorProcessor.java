@@ -18,7 +18,7 @@
  */
 package io.github.loicgreffier.streams.exception.handler.processing.papi.app.processor;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import java.time.Duration;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.processor.api.ContextualFixedKeyProcessor;
@@ -26,7 +26,7 @@ import org.apache.kafka.streams.processor.api.FixedKeyProcessorContext;
 import org.apache.kafka.streams.processor.api.FixedKeyRecord;
 
 /** This class represents a processor that throws an exception during processing and punctuation. */
-public class ErrorProcessor extends ContextualFixedKeyProcessor<String, User, User> {
+public class ErrorProcessor extends ContextualFixedKeyProcessor<String, Order, Order> {
 
     /**
      * Initialize the processor.
@@ -34,7 +34,7 @@ public class ErrorProcessor extends ContextualFixedKeyProcessor<String, User, Us
      * @param context The processor context.
      */
     @Override
-    public void init(FixedKeyProcessorContext<String, User> context) {
+    public void init(FixedKeyProcessorContext<String, Order> context) {
         super.init(context);
         context.schedule(Duration.ofMinutes(1), PunctuationType.WALL_CLOCK_TIME, _ -> {
             throw new IllegalArgumentException("Forced processing exception during punctuation");
@@ -42,14 +42,14 @@ public class ErrorProcessor extends ContextualFixedKeyProcessor<String, User, Us
     }
 
     /**
-     * Process the record by throwing an exception if the first name or last name is null.
+     * Process the record by throwing an exception if the order amount is negative.
      *
      * @param message The record to process
      */
     @Override
-    public void process(FixedKeyRecord<String, User> message) {
-        if (message.value().getBirthDate().toEpochMilli() < 0) {
-            throw new IllegalArgumentException("Age must be positive");
+    public void process(FixedKeyRecord<String, Order> message) {
+        if (message.value().getAmount() < 0) {
+            throw new IllegalArgumentException("Amount must be positive");
         }
         context().forward(message);
     }

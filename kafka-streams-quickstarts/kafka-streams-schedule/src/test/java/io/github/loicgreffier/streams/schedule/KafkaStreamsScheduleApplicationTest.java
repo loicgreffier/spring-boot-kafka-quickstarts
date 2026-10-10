@@ -19,17 +19,16 @@
 package io.github.loicgreffier.streams.schedule;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.schedule.constant.StateStore.USER_SCHEDULE_STORE;
-import static io.github.loicgreffier.streams.schedule.constant.Topic.USER_SCHEDULE_TOPIC;
-import static io.github.loicgreffier.streams.schedule.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.schedule.constant.StateStore.ORDER_SCHEDULE_STORE;
+import static io.github.loicgreffier.streams.schedule.constant.Topic.ORDER_SCHEDULE_TOPIC;
+import static io.github.loicgreffier.streams.schedule.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.schedule.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.schedule.serdes.SerdesUtils;
 import java.io.IOException;
@@ -60,7 +59,7 @@ class KafkaStreamsScheduleApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
+    private TestInputTopic<String, Order> inputTopic;
     private TestOutputTopic<String, Long> outputTopic;
 
     @BeforeEach
@@ -82,11 +81,11 @@ class KafkaStreamsScheduleApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         outputTopic =
-                testDriver.createOutputTopic(USER_SCHEDULE_TOPIC, new StringDeserializer(), new LongDeserializer());
+                testDriver.createOutputTopic(ORDER_SCHEDULE_TOPIC, new StringDeserializer(), new LongDeserializer());
     }
 
     @AfterEach
@@ -97,70 +96,64 @@ class KafkaStreamsScheduleApplicationTest {
     }
 
     @Test
-    void shouldCountUserByNationality() {
-        inputTopic.pipeInput(new TestRecord<>(
-                "1", buildUser("Homer", "Simpson", CountryCode.US), Instant.parse("2000-01-01T01:00:00Z")));
+    void shouldCountOrdersByCustomer() {
+        inputTopic.pipeInput(new TestRecord<>("1", buildOrder(1L, 3L), Instant.parse("2000-01-01T01:00:00Z")));
 
-        inputTopic.pipeInput(new TestRecord<>(
-                "2", buildUser("Marge", "Simpson", CountryCode.US), Instant.parse("2000-01-01T01:01:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("2", buildOrder(2L, 3L), Instant.parse("2000-01-01T01:01:00Z")));
 
-        inputTopic.pipeInput(new TestRecord<>(
-                "3", buildUser("Milhouse", "Van Houten", CountryCode.BE), Instant.parse("2000-01-01T01:01:30Z")));
+        inputTopic.pipeInput(new TestRecord<>("3", buildOrder(3L, 1L), Instant.parse("2000-01-01T01:01:30Z")));
 
-        inputTopic.pipeInput(new TestRecord<>(
-                "4", buildUser("Luigi", "Risotto", CountryCode.IT), Instant.parse("2000-01-01T01:02:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("4", buildOrder(4L, 2L), Instant.parse("2000-01-01T01:02:00Z")));
 
         testDriver.advanceWallClockTime(Duration.ofMinutes(2));
 
-        inputTopic.pipeInput(new TestRecord<>(
-                "5", buildUser("Bart", "Simpson", CountryCode.US), Instant.parse("2000-01-01T01:04:00Z")));
+        inputTopic.pipeInput(new TestRecord<>("5", buildOrder(5L, 3L), Instant.parse("2000-01-01T01:04:00Z")));
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
         // 1st stream time punctuate
-        assertEquals("US", results.getFirst().key);
+        assertEquals("3", results.getFirst().key);
         assertEquals(1, results.getFirst().value);
 
         // 2nd stream time punctuate
-        assertEquals("US", results.get(1).key);
+        assertEquals("3", results.get(1).key);
         assertEquals(2, results.get(1).value);
 
         // 3rd stream time punctuate
-        assertEquals("BE", results.get(2).key);
+        assertEquals("1", results.get(2).key);
         assertEquals(1, results.get(2).value);
 
-        assertEquals("IT", results.get(3).key);
+        assertEquals("2", results.get(3).key);
         assertEquals(1, results.get(3).value);
 
-        assertEquals("US", results.get(4).key);
+        assertEquals("3", results.get(4).key);
         assertEquals(2, results.get(4).value);
 
         // 1st wall clock time punctuate now
 
         // 4th stream time punctuate
-        assertEquals("BE", results.get(5).key);
+        assertEquals("1", results.get(5).key);
         assertEquals(0, results.get(5).value);
 
-        assertEquals("IT", results.get(6).key);
+        assertEquals("2", results.get(6).key);
         assertEquals(0, results.get(6).value);
 
-        assertEquals("US", results.get(7).key);
+        assertEquals("3", results.get(7).key);
         assertEquals(1, results.get(7).value);
 
-        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(USER_SCHEDULE_STORE);
+        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(ORDER_SCHEDULE_STORE);
 
-        assertEquals(1, stateStore.get("US"));
-        assertEquals(0, stateStore.get("BE"));
-        assertEquals(0, stateStore.get("IT"));
+        assertEquals(1, stateStore.get("3"));
+        assertEquals(0, stateStore.get("1"));
+        assertEquals(0, stateStore.get("2"));
     }
 
-    private User buildUser(String firstName, String lastName, CountryCode nationality) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName(lastName)
-                .setNationality(nationality)
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    private Order buildOrder(long id, long customerId) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(customerId)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(1249.90)
                 .build();
     }
 }

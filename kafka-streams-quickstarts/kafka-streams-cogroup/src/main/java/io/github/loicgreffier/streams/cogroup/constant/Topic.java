@@ -20,11 +20,11 @@ package io.github.loicgreffier.streams.cogroup.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_TOPIC_TWO = "USER_TOPIC_TWO";
-    public static final String USER_COGROUP_TOPIC = "USER_COGROUP_TOPIC";
-    public static final String GROUP_USER_BY_LAST_NAME_TOPIC = "GROUP_USER_BY_LAST_NAME_TOPIC";
-    public static final String GROUP_USER_BY_LAST_NAME_TOPIC_TWO = "GROUP_USER_BY_LAST_NAME_TOPIC_TWO";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String ORDER_TOPIC_TWO = "ORDER_TOPIC_TWO";
+    public static final String ORDER_COGROUP_TOPIC = "ORDER_COGROUP_TOPIC";
+    public static final String GROUP_ORDER_BY_CUSTOMER_TOPIC = "GROUP_ORDER_BY_CUSTOMER_TOPIC";
+    public static final String GROUP_ORDER_BY_CUSTOMER_TOPIC_TWO = "GROUP_ORDER_BY_CUSTOMER_TOPIC_TWO";
 
     /** Private constructor. */
     private Topic() {}

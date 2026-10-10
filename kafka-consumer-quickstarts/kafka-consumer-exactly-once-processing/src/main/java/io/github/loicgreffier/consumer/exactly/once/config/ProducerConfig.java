@@ -18,7 +18,7 @@
  */
 package io.github.loicgreffier.consumer.exactly.once.config;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.consumer.exactly.once.property.ProducerProperties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -36,7 +36,7 @@ public class ProducerConfig {
      * @return A Kafka producer instance.
      */
     @Bean
-    public Producer<String, User> kafkaProducer(ProducerProperties properties) {
+    public Producer<String, Order> kafkaProducer(ProducerProperties properties) {
         return new KafkaProducer<>(properties.asProperties());
     }
 }

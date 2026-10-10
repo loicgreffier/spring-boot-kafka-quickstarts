@@ -20,7 +20,7 @@ package io.github.loicgreffier.streams.schedule.constant;
 
 /** State store name constants. */
 public abstract class StateStore {
-    public static final String USER_SCHEDULE_STORE = "USER_SCHEDULE_STORE";
+    public static final String ORDER_SCHEDULE_STORE = "ORDER_SCHEDULE_STORE";
 
     /** Private constructor. */
     private StateStore() {}

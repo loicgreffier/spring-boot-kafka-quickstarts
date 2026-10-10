@@ -18,8 +18,9 @@
  */
 package io.github.loicgreffier.producer.string;
 
-import static io.github.loicgreffier.producer.string.constant.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.producer.string.constant.Topic.ORDER_JSON_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.loicgreffier.producer.string.app.ProducerRunner;
 import java.util.concurrent.TimeUnit;
@@ -61,9 +62,9 @@ class KafkaProducerStringApplicationTest {
 
         ProducerRecord<String, String> sentRecord = mockProducer.history().getFirst();
 
-        assertEquals(STRING_TOPIC, sentRecord.topic());
+        assertEquals(ORDER_JSON_TOPIC, sentRecord.topic());
         assertEquals("0", sentRecord.key());
-        assertEquals("Message 0", sentRecord.value());
+        assertTrue(sentRecord.value().startsWith("{\"id\":0,\"customerId\":"));
     }
 
     private void waitForProducer() throws InterruptedException {

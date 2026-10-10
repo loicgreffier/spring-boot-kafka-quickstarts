@@ -18,12 +18,11 @@
  */
 package io.github.loicgreffier.streams.flatmap.app;
 
-import static io.github.loicgreffier.streams.flatmap.constant.Topic.USER_FLATMAP_TOPIC;
-import static io.github.loicgreffier.streams.flatmap.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.flatmap.constant.Topic.ORDER_FLATMAP_TOPIC;
+import static io.github.loicgreffier.streams.flatmap.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.flatmap.serdes.SerdesUtils;
-import java.util.List;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -39,19 +38,19 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} topic, maps the value to a list of key-value pairs where the
-     * first name becomes the key and the last name becomes the value. The key is then transformed to uppercase. The
-     * resulting key-value pairs are written to the {@code USER_FLATMAP_TOPIC} topic.
+     * <p>This topology reads from the {@code ORDER_TOPIC} topic and maps each order to a list of key-value pairs, one
+     * per item, where the item name becomes the key and the order id becomes the value. The resulting key-value pairs
+     * are written to the {@code ORDER_FLATMAP_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .flatMap((_, user) -> List.of(
-                        KeyValue.pair(user.getFirstName().toUpperCase(), user.getFirstName()),
-                        KeyValue.pair(user.getLastName().toUpperCase(), user.getLastName())))
-                .to(USER_FLATMAP_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
+                .flatMap((_, order) -> order.getItems().stream()
+                        .map(item -> KeyValue.pair(item, String.valueOf(order.getId())))
+                        .toList())
+                .to(ORDER_FLATMAP_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
     }
 
     /** Private constructor. */

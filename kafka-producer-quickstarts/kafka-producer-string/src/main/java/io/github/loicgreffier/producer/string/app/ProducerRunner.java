@@ -18,8 +18,11 @@
  */
 package io.github.loicgreffier.producer.string.app;
 
-import static io.github.loicgreffier.producer.string.constant.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.producer.string.constant.Item.ITEMS;
+import static io.github.loicgreffier.producer.string.constant.Topic.ORDER_JSON_TOPIC;
 
+import io.github.loicgreffier.producer.string.model.Order;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -34,6 +37,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
+    private final Random random = new Random();
     private final Producer<String, String> producer;
     private boolean stopped = false;
 
@@ -52,7 +56,7 @@ public class ProducerRunner {
      * <p>The {@code @Async} annotation is used to run the producer in a separate thread, ensuring it does not block the
      * main thread.
      *
-     * <p>The Kafka producer sends string records to the {@code STRING_TOPIC} topic.
+     * <p>The Kafka producer sends orders serialized as JSON strings to the {@code ORDER_JSON_TOPIC} topic.
      *
      * @throws InterruptedException if the thread is interrupted while sleeping
      */
@@ -61,8 +65,10 @@ public class ProducerRunner {
     public void run() throws InterruptedException {
         int i = 0;
         while (!stopped) {
+            Order order = buildOrder(i);
+
             ProducerRecord<String, String> message =
-                    new ProducerRecord<>(STRING_TOPIC, String.valueOf(i), "Message %s".formatted(i));
+                    new ProducerRecord<>(ORDER_JSON_TOPIC, String.valueOf(order.id()), order.toJson());
 
             producer.send(message, (recordMetadata, e) -> {
                 if (e != null) {
@@ -91,5 +97,21 @@ public class ProducerRunner {
      */
     public void setStopped(boolean stopped) {
         this.stopped = stopped;
+    }
+
+    /**
+     * Builds an order.
+     *
+     * @param id The order id.
+     * @return The order.
+     */
+    private Order buildOrder(int id) {
+        return new Order(
+                id,
+                random.nextInt(10),
+                random.ints(random.nextInt(1, 9), 0, ITEMS.size())
+                        .mapToObj(ITEMS::get)
+                        .toList(),
+                random.nextInt(1000, 100000) / 100.0);
     }
 }

@@ -20,9 +20,9 @@ package io.github.loicgreffier.streams.exception.handler.deserialization.constan
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC =
-            "USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String ORDER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC =
+            "ORDER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

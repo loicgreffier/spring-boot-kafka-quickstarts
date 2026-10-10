@@ -18,12 +18,10 @@
  */
 package io.github.loicgreffier.producer.avro.specific.app;
 
-import static io.github.loicgreffier.producer.avro.specific.constant.Name.FIRST_NAMES;
-import static io.github.loicgreffier.producer.avro.specific.constant.Name.LAST_NAMES;
-import static io.github.loicgreffier.producer.avro.specific.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.producer.avro.specific.constant.Item.ITEMS;
+import static io.github.loicgreffier.producer.avro.specific.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
-import java.time.Instant;
+import io.github.loicgreffier.avro.Order;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.producer.Producer;
@@ -40,7 +38,7 @@ import org.springframework.stereotype.Component;
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
     private final Random random = new Random();
-    private final Producer<String, User> producer;
+    private final Producer<String, Order> producer;
     private boolean stopped = false;
 
     /**
@@ -48,7 +46,7 @@ public class ProducerRunner {
      *
      * @param producer The Kafka producer
      */
-    public ProducerRunner(Producer<String, User> producer) {
+    public ProducerRunner(Producer<String, Order> producer) {
         this.producer = producer;
     }
 
@@ -58,7 +56,7 @@ public class ProducerRunner {
      * <p>The {@code @Async} annotation is used to run the producer in a separate thread, ensuring it does not block the
      * main thread.
      *
-     * <p>The Kafka producer sends specific Avro records to the {@code USER_TOPIC} topic.
+     * <p>The Kafka producer sends specific Avro records to the {@code ORDER_TOPIC} topic.
      *
      * @throws InterruptedException if the thread is interrupted while sleeping
      */
@@ -67,7 +65,7 @@ public class ProducerRunner {
     public void run() throws InterruptedException {
         int i = 0;
         while (!stopped) {
-            ProducerRecord<String, User> message = new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildUser(i));
+            ProducerRecord<String, Order> message = new ProducerRecord<>(ORDER_TOPIC, String.valueOf(i), buildOrder(i));
 
             producer.send(message, (recordMetadata, e) -> {
                 if (e != null) {
@@ -104,12 +102,14 @@ public class ProducerRunner {
      * @param id The record id.
      * @return The specific Avro record.
      */
-    private User buildUser(int id) {
-        return User.newBuilder()
+    private Order buildOrder(int id) {
+        return Order.newBuilder()
                 .setId((long) id)
-                .setFirstName(FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())))
-                .setLastName(LAST_NAMES.get(random.nextInt(LAST_NAMES.size())))
-                .setBirthDate(Instant.now())
+                .setCustomerId((long) random.nextInt(10))
+                .setItems(random.ints(random.nextInt(1, 9), 0, ITEMS.size())
+                        .mapToObj(ITEMS::get)
+                        .toList())
+                .setAmount(random.nextInt(1000, 100000) / 100.0)
                 .build();
     }
 }

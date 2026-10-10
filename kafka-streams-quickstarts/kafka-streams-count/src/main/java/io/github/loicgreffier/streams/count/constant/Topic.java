@@ -20,9 +20,9 @@ package io.github.loicgreffier.streams.count.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_COUNT_TOPIC = "USER_COUNT_TOPIC";
-    public static final String GROUP_USER_BY_NATIONALITY_TOPIC = "GROUP_USER_BY_NATIONALITY_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String ORDER_COUNT_TOPIC = "ORDER_COUNT_TOPIC";
+    public static final String GROUP_ORDER_BY_CUSTOMER_TOPIC = "GROUP_ORDER_BY_CUSTOMER_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

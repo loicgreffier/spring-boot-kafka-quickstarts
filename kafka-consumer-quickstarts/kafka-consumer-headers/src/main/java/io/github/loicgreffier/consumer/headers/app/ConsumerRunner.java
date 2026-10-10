@@ -18,7 +18,7 @@
  */
 package io.github.loicgreffier.consumer.headers.app;
 
-import static io.github.loicgreffier.consumer.headers.constant.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.consumer.headers.constant.Topic.ORDER_JSON_TOPIC;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -57,16 +57,16 @@ public class ConsumerRunner {
      * <p>The {@code @Async} annotation ensures that the consumer runs in a separate thread, preventing it from blocking
      * the main application thread during startup.
      *
-     * <p>This Kafka consumer listens to the {@code STRING_TOPIC} and processes string records along with their
-     * associated headers.
+     * <p>This Kafka consumer listens to the {@code ORDER_JSON_TOPIC} and processes orders serialized as JSON strings,
+     * along with their {@code correlationId} and {@code eventType} headers.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         try {
-            log.info("Subscribing to {} topic", STRING_TOPIC);
+            log.info("Subscribing to {} topic", ORDER_JSON_TOPIC);
 
-            consumer.subscribe(Collections.singleton(STRING_TOPIC), new CustomConsumerRebalanceListener());
+            consumer.subscribe(Collections.singleton(ORDER_JSON_TOPIC), new CustomConsumerRebalanceListener());
 
             while (true) {
                 ConsumerRecords<String, String> messages = consumer.poll(Duration.ofMillis(1000));
@@ -75,22 +75,23 @@ public class ConsumerRunner {
                 long startTime = System.currentTimeMillis();
 
                 for (ConsumerRecord<String, String> message : messages) {
-                    Header headerId = message.headers().lastHeader("id");
-                    String headerIdValue = headerId != null ? new String(headerId.value(), StandardCharsets.UTF_8) : "";
+                    Header correlationId = message.headers().lastHeader("correlationId");
+                    String correlationIdValue =
+                            correlationId != null ? new String(correlationId.value(), StandardCharsets.UTF_8) : "";
 
-                    Header headerMessage = message.headers().lastHeader("message");
-                    String headerMessageValue =
-                            headerMessage != null ? new String(headerMessage.value(), StandardCharsets.UTF_8) : "";
+                    Header eventType = message.headers().lastHeader("eventType");
+                    String eventTypeValue =
+                            eventType != null ? new String(eventType.value(), StandardCharsets.UTF_8) : "";
 
                     log.info(
-                            "Processing offset = {}, partition = {}, key = {}, value = {}, header id = {}, "
-                                    + "header message = {}",
+                            "Processing offset = {}, partition = {}, key = {}, value = {}, correlationId = {}, "
+                                    + "eventType = {}",
                             message.offset(),
                             message.partition(),
                             message.key(),
                             message.value(),
-                            headerIdValue,
-                            headerMessageValue);
+                            correlationIdValue,
+                            eventTypeValue);
                 }
 
                 long processingTimeMs = System.currentTimeMillis() - startTime;

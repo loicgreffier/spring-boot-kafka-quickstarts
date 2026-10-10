@@ -20,8 +20,8 @@ package io.github.loicgreffier.streams.exception.handler.dlq.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_EXCEPTION_HANDLER_OUTPUT_TOPIC = "USER_EXCEPTION_HANDLER_OUTPUT_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String ORDER_EXCEPTION_HANDLER_OUTPUT_TOPIC = "ORDER_EXCEPTION_HANDLER_OUTPUT_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

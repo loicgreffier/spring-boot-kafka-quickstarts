@@ -18,10 +18,10 @@
  */
 package io.github.loicgreffier.streams.print.app;
 
-import static io.github.loicgreffier.streams.print.constant.Topic.USER_TOPIC;
-import static io.github.loicgreffier.streams.print.constant.Topic.USER_TOPIC_TWO;
+import static io.github.loicgreffier.streams.print.constant.Topic.ORDER_TOPIC;
+import static io.github.loicgreffier.streams.print.constant.Topic.ORDER_TOPIC_TWO;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.print.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -37,35 +37,35 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} and writes the result to the file specified by the
-     * {@code filePath} parameter. It also reads from the {@code USER_TOPIC_TWO} and prints the result to the console.
+     * <p>This topology reads from the {@code ORDER_TOPIC} and writes the result to the file specified by the
+     * {@code filePath} parameter. It also reads from the {@code ORDER_TOPIC_TWO} and prints the result to the console.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      * @param filePath The file path.
      */
     public static void topology(StreamsBuilder streamsBuilder, String filePath) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .print(Printed.<String, User>toFile(filePath)
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
+                .print(Printed.<String, Order>toFile(filePath)
                         .withKeyValueMapper(KafkaStreamsTopology::toOutput)
-                        .withLabel(USER_TOPIC));
+                        .withLabel(ORDER_TOPIC));
 
-        streamsBuilder.<String, User>stream(
-                        USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .print(Printed.<String, User>toSysOut()
+        streamsBuilder.<String, Order>stream(
+                        ORDER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .print(Printed.<String, Order>toSysOut()
                         .withKeyValueMapper(KafkaStreamsTopology::toOutput)
-                        .withLabel(USER_TOPIC_TWO));
+                        .withLabel(ORDER_TOPIC_TWO));
     }
 
     /**
      * Formats the key and value into a string.
      *
      * @param key The key.
-     * @param kafkaUser The value.
+     * @param order The value.
      * @return The formatted string.
      */
-    private static String toOutput(String key, User kafkaUser) {
-        return "Processing key = %s, value = %s".formatted(key, kafkaUser);
+    private static String toOutput(String key, Order order) {
+        return "Processing key = %s, value = %s".formatted(key, order);
     }
 
     /** Private constructor. */

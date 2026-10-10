@@ -16,8 +16,8 @@
                 <artifactId>avro-maven-plugin</artifactId>
                 <configuration>
                     <imports>
-                        <import>${project.basedir}/src/main/avro/country.avsc</import>
-                        <import>${project.basedir}/src/main/avro/user.avsc</import>
+                        <import>${project.basedir}/src/main/avro/customer.avsc</import>
+                        <import>${project.basedir}/src/main/avro/order.avsc</import>
                     </imports>
                 </configuration>
             </plugin>

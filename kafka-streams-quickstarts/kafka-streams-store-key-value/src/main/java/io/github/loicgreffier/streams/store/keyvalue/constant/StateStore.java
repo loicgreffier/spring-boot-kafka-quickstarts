@@ -20,8 +20,8 @@ package io.github.loicgreffier.streams.store.keyvalue.constant;
 
 /** State store name constants. */
 public abstract class StateStore {
-    public static final String USER_KEY_VALUE_STORE = "USER_KEY_VALUE_STORE";
-    public static final String USER_KEY_VALUE_SUPPLIER_STORE = "USER_KEY_VALUE_SUPPLIER_STORE";
+    public static final String ORDER_KEY_VALUE_STORE = "ORDER_KEY_VALUE_STORE";
+    public static final String ORDER_KEY_VALUE_SUPPLIER_STORE = "ORDER_KEY_VALUE_SUPPLIER_STORE";
 
     /** Private constructor. */
     private StateStore() {}

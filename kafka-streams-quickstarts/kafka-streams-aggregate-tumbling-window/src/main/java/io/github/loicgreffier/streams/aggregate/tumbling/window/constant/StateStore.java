@@ -20,7 +20,7 @@ package io.github.loicgreffier.streams.aggregate.tumbling.window.constant;
 
 /** State store name constants. */
 public abstract class StateStore {
-    public static final String USER_AGGREGATE_TUMBLING_WINDOW_STORE = "USER_AGGREGATE_TUMBLING_WINDOW_STORE";
+    public static final String ORDER_AGGREGATE_TUMBLING_WINDOW_STORE = "ORDER_AGGREGATE_TUMBLING_WINDOW_STORE";
 
     /** Private constructor. */
     private StateStore() {}
