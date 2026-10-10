@@ -18,7 +18,7 @@
  */
 package io.github.loicgreffier.consumer.avro.generic.app;
 
-import static io.github.loicgreffier.consumer.avro.generic.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.consumer.avro.generic.constant.Topic.ORDER_TOPIC;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -56,16 +56,16 @@ public class ConsumerRunner {
      * <p>The {@code @Async} annotation ensures the consumer runs on a separate thread, preventing it from blocking the
      * main application thread during startup.
      *
-     * <p>This Kafka consumer listens to the {@code USER_TOPIC} and processes generic Avro records. Since it uses
+     * <p>This Kafka consumer listens to the {@code ORDER_TOPIC} and processes generic Avro records. Since it uses
      * generic records, it does not need to know the specific Avro schema in advance.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         try {
-            log.info("Subscribing to {} topic", USER_TOPIC);
+            log.info("Subscribing to {} topic", ORDER_TOPIC);
 
-            consumer.subscribe(Collections.singleton(USER_TOPIC), new CustomConsumerRebalanceListener());
+            consumer.subscribe(Collections.singleton(ORDER_TOPIC), new CustomConsumerRebalanceListener());
 
             while (true) {
                 ConsumerRecords<String, GenericRecord> messages = consumer.poll(Duration.ofMillis(1000));
@@ -75,12 +75,13 @@ public class ConsumerRunner {
 
                 for (ConsumerRecord<String, GenericRecord> message : messages) {
                     log.info(
-                            "Processing offset = {}, partition = {}, key = {}, firstName = {}, lastName = {}",
+                            "Processing offset = {}, partition = {}, key = {}, customerId = {}, items = {}, amount = {}",
                             message.offset(),
                             message.partition(),
                             message.key(),
-                            message.value().get("firstName"),
-                            message.value().get("lastName"));
+                            message.value().get("customerId"),
+                            message.value().get("items"),
+                            message.value().get("amount"));
                 }
 
                 long processingTimeMs = System.currentTimeMillis() - startTime;

@@ -1,6 +1,6 @@
 # Producer Avro Generic
 
-This module produces records of type `<String, GenericRecord>` to the `USER_TOPIC`.
+This module produces orders of type `<String, GenericRecord>` to the `ORDER_TOPIC`.
 
 It demonstrates the following:
 

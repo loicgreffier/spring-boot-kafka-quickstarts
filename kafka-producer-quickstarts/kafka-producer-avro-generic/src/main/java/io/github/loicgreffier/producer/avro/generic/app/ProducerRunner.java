@@ -18,9 +18,8 @@
  */
 package io.github.loicgreffier.producer.avro.generic.app;
 
-import static io.github.loicgreffier.producer.avro.generic.constant.Name.FIRST_NAMES;
-import static io.github.loicgreffier.producer.avro.generic.constant.Name.LAST_NAMES;
-import static io.github.loicgreffier.producer.avro.generic.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.producer.avro.generic.constant.Item.ITEMS;
+import static io.github.loicgreffier.producer.avro.generic.constant.Topic.ORDER_TOPIC;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +61,7 @@ public class ProducerRunner {
      * <p>The {@code @Async} annotation is used to run the producer in a separate thread, ensuring it does not block the
      * main thread.
      *
-     * <p>The Kafka producer sends generic Avro records to the {@code USER_TOPIC} topic.
+     * <p>The Kafka producer sends generic Avro records to the {@code ORDER_TOPIC} topic.
      *
      * @throws IOException if the schema file cannot be read
      * @throws InterruptedException if the thread is interrupted while sleeping
@@ -70,13 +69,13 @@ public class ProducerRunner {
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() throws IOException, InterruptedException {
-        File schemaFile = new ClassPathResource("user.avsc").getFile();
+        File schemaFile = new ClassPathResource("order.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
         int i = 0;
         while (!stopped) {
             ProducerRecord<String, GenericRecord> message =
-                    new ProducerRecord<>(USER_TOPIC, String.valueOf(i), buildGenericRecord(schema, i));
+                    new ProducerRecord<>(ORDER_TOPIC, String.valueOf(i), buildGenericRecord(schema, i));
 
             producer.send(message, (recordMetadata, e) -> {
                 if (e != null) {
@@ -117,9 +116,13 @@ public class ProducerRunner {
     private GenericRecord buildGenericRecord(Schema schema, int id) {
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", (long) id);
-        genericRecord.put("firstName", FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())));
-        genericRecord.put("lastName", LAST_NAMES.get(random.nextInt(LAST_NAMES.size())));
-        genericRecord.put("birthDate", System.currentTimeMillis());
+        genericRecord.put("customerId", (long) random.nextInt(10));
+        genericRecord.put(
+                "items",
+                random.ints(random.nextInt(1, 9), 0, ITEMS.size())
+                        .mapToObj(ITEMS::get)
+                        .toList());
+        genericRecord.put("amount", random.nextInt(1000, 100000) / 100.0);
         return genericRecord;
     }
 }

@@ -18,7 +18,7 @@
  */
 package io.github.loicgreffier.consumer.exception.processing.retry;
 
-import static io.github.loicgreffier.consumer.exception.processing.retry.constant.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.consumer.exception.processing.retry.constant.Topic.ORDER_JSON_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -64,7 +64,7 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
 
     @BeforeEach
     void setUp() {
-        topicPartition = new TopicPartition(STRING_TOPIC, 0);
+        topicPartition = new TopicPartition(ORDER_JSON_TOPIC, 0);
         mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(Collections.singletonList(topicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(topicPartition, 0L));
         mockConsumer.updateEndOffsets(Map.of(topicPartition, 0L));
@@ -72,7 +72,12 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(
+                ORDER_JSON_TOPIC,
+                0,
+                0,
+                "1",
+                "{\"id\":1,\"customerId\":3,\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -82,15 +87,22 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
         assertTrue(mockConsumer.closed());
 
         verify(mockConsumer).commitSync(argThat((ArgumentMatcher<Map<TopicPartition, OffsetAndMetadata>>)
-                argument -> argument.containsKey(new TopicPartition(STRING_TOPIC, 0))
-                        && argument.get(new TopicPartition(STRING_TOPIC, 0)).offset() == 1L));
+                argument -> argument.containsKey(new TopicPartition(ORDER_JSON_TOPIC, 0))
+                        && argument.get(new TopicPartition(ORDER_JSON_TOPIC, 0)).offset() == 1L));
     }
 
     @Test
     void shouldRewindOffsetOnExternalSystemError() throws Exception {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
-        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(STRING_TOPIC, 0, 1, "2", "Message 2");
-        ConsumerRecord<String, String> message3 = new ConsumerRecord<>(STRING_TOPIC, 0, 2, "3", "Message 3");
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(
+                ORDER_JSON_TOPIC,
+                0,
+                0,
+                "1",
+                "{\"id\":1,\"customerId\":3,\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
+        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(
+                ORDER_JSON_TOPIC, 0, 1, "2", "{\"id\":2,\"customerId\":5,\"items\":[\"Keyboard\"],\"amount\":89.99}");
+        ConsumerRecord<String, String> message3 = new ConsumerRecord<>(
+                ORDER_JSON_TOPIC, 0, 2, "3", "{\"id\":3,\"customerId\":7,\"items\":[\"Monitor\"],\"amount\":219.00}");
 
         // First poll to rewind, second poll to resume
         for (int i = 0; i < 2; i++) {
@@ -120,7 +132,12 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
 
     @Test
     void shouldRewindToEarliestOnExternalSystemError() throws Exception {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(
+                ORDER_JSON_TOPIC,
+                0,
+                0,
+                "1",
+                "{\"id\":1,\"customerId\":3,\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
 
         for (int i = 0; i < 2; i++) {
             mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -141,7 +158,8 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
 
     @Test
     void shouldRewindToLatestOnExternalSystemError() throws Exception {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 2");
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(
+                ORDER_JSON_TOPIC, 0, 0, "1", "{\"id\":2,\"customerId\":5,\"items\":[\"Keyboard\"],\"amount\":89.99}");
 
         for (int i = 0; i < 2; i++) {
             mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));

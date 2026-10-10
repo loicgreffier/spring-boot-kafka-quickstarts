@@ -18,9 +18,13 @@
  */
 package io.github.loicgreffier.producer.headers.app;
 
-import static io.github.loicgreffier.producer.headers.constant.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.producer.headers.constant.Item.ITEMS;
+import static io.github.loicgreffier.producer.headers.constant.Topic.ORDER_JSON_TOPIC;
 
+import io.github.loicgreffier.producer.headers.model.Order;
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -35,6 +39,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
+    private final Random random = new Random();
     private final Producer<String, String> producer;
     private boolean stopped = false;
 
@@ -53,7 +58,8 @@ public class ProducerRunner {
      * <p>The {@code @Async} annotation is used to run the producer in a separate thread, preventing it from blocking
      * the main thread.
      *
-     * <p>The Kafka producer sends string records with headers to the {@code STRING_TOPIC} topic.
+     * <p>The Kafka producer sends orders serialized as JSON strings to the {@code ORDER_JSON_TOPIC} topic, with a
+     * {@code correlationId} header and an {@code eventType} header.
      *
      * @throws InterruptedException if the thread is interrupted while sleeping
      */
@@ -62,11 +68,13 @@ public class ProducerRunner {
     public void run() throws InterruptedException {
         int i = 0;
         while (!stopped) {
-            ProducerRecord<String, String> message =
-                    new ProducerRecord<>(STRING_TOPIC, String.valueOf(i), "Message %s".formatted(i));
+            Order order = buildOrder(i);
 
-            message.headers().add("id", String.valueOf(i).getBytes(StandardCharsets.UTF_8));
-            message.headers().add("message", "Message %s".formatted(i).getBytes(StandardCharsets.UTF_8));
+            ProducerRecord<String, String> message =
+                    new ProducerRecord<>(ORDER_JSON_TOPIC, String.valueOf(order.id()), order.toJson());
+
+            message.headers().add("correlationId", UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8));
+            message.headers().add("eventType", "ORDER_CREATED".getBytes(StandardCharsets.UTF_8));
 
             producer.send(message, (recordMetadata, e) -> {
                 if (e != null) {
@@ -95,5 +103,21 @@ public class ProducerRunner {
      */
     public void setStopped(boolean stopped) {
         this.stopped = stopped;
+    }
+
+    /**
+     * Builds an order.
+     *
+     * @param id The order id.
+     * @return The order.
+     */
+    private Order buildOrder(int id) {
+        return new Order(
+                id,
+                random.nextInt(10),
+                random.ints(random.nextInt(1, 9), 0, ITEMS.size())
+                        .mapToObj(ITEMS::get)
+                        .toList(),
+                random.nextInt(1000, 100000) / 100.0);
     }
 }

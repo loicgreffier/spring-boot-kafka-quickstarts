@@ -1,7 +1,7 @@
 # Producer Transaction
 
-This module produces transactional records of type `<String, String>` to two topics: `FIRST_STRING_TOPIC`
-and `SECOND_STRING_TOPIC`.
+This module produces an order and its payment, serialized as JSON strings of type `<String, String>`, within a single
+transaction to two topics: `ORDER_JSON_TOPIC` and `PAYMENT_JSON_TOPIC`.
 
 It demonstrates the following:
 

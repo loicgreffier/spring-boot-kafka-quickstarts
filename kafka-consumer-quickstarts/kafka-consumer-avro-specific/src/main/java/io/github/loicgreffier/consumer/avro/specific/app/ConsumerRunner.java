@@ -18,9 +18,9 @@
  */
 package io.github.loicgreffier.consumer.avro.specific.app;
 
-import static io.github.loicgreffier.consumer.avro.specific.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.consumer.avro.specific.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import java.time.Duration;
 import java.util.Collections;
 import org.apache.kafka.clients.consumer.CommitFailedException;
@@ -39,14 +39,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConsumerRunner {
     private static final Logger log = LoggerFactory.getLogger(ConsumerRunner.class);
-    private final Consumer<String, User> consumer;
+    private final Consumer<String, Order> consumer;
 
     /**
      * Constructor.
      *
      * @param consumer The Kafka consumer.
      */
-    public ConsumerRunner(Consumer<String, User> consumer) {
+    public ConsumerRunner(Consumer<String, Order> consumer) {
         this.consumer = consumer;
     }
 
@@ -56,23 +56,23 @@ public class ConsumerRunner {
      * <p>The {@code @Async} annotation is used to run the consumer in a separate thread, ensuring that it does not
      * block the main application thread during startup.
      *
-     * <p>This Kafka consumer listens to the {@code USER_TOPIC} and processes specific Avro records.
+     * <p>This Kafka consumer listens to the {@code ORDER_TOPIC} and processes specific Avro records.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         try {
-            log.info("Subscribing to {} topic", USER_TOPIC);
+            log.info("Subscribing to {} topic", ORDER_TOPIC);
 
-            consumer.subscribe(Collections.singleton(USER_TOPIC), new CustomConsumerRebalanceListener());
+            consumer.subscribe(Collections.singleton(ORDER_TOPIC), new CustomConsumerRebalanceListener());
 
             while (true) {
-                ConsumerRecords<String, User> messages = consumer.poll(Duration.ofMillis(1000));
+                ConsumerRecords<String, Order> messages = consumer.poll(Duration.ofMillis(1000));
                 log.info("Pulled {} records", messages.count());
 
                 long startTime = System.currentTimeMillis();
 
-                for (ConsumerRecord<String, User> message : messages) {
+                for (ConsumerRecord<String, Order> message : messages) {
                     log.info(
                             "Processing offset = {}, partition = {}, key = {}, value = {}",
                             message.offset(),

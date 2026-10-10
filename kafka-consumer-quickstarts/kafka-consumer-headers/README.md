@@ -1,6 +1,6 @@
 # Consumer Headers
 
-This module consumes records of type `<String, String>` from the `STRING_TOPIC` along with their associated headers.
+This module consumes orders serialized as JSON strings, of type `<String, String>`, from the `ORDER_JSON_TOPIC` along with their `correlationId` and `eventType` headers.
 
 It demonstrates the following:
 
@@ -21,7 +21,7 @@ To compile and run this demo, you'll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, String>` with headers named `id` and `message` to the `STRING_TOPIC`. You can use the [Producer Headers](../../kafka-producer-quickstarts/kafka-producer-headers) for this.
+- Produce records of type `<String, String>` with headers named `correlationId` and `eventType` to the `ORDER_JSON_TOPIC`. You can use the [Producer Headers](../../kafka-producer-quickstarts/kafka-producer-headers) for this.
 - Start the consumer.
 
 Alternatively, to run everything at once using Docker, run:

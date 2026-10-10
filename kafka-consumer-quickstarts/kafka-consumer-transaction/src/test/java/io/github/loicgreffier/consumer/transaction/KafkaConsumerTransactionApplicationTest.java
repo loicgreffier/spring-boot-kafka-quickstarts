@@ -18,8 +18,8 @@
  */
 package io.github.loicgreffier.consumer.transaction;
 
-import static io.github.loicgreffier.consumer.transaction.constant.Topic.FIRST_STRING_TOPIC;
-import static io.github.loicgreffier.consumer.transaction.constant.Topic.SECOND_STRING_TOPIC;
+import static io.github.loicgreffier.consumer.transaction.constant.Topic.ORDER_JSON_TOPIC;
+import static io.github.loicgreffier.consumer.transaction.constant.Topic.PAYMENT_JSON_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 
@@ -47,8 +47,8 @@ class KafkaConsumerTransactionApplicationTest {
 
     @BeforeEach
     void setUp() {
-        TopicPartition firstTopicPartition = new TopicPartition(FIRST_STRING_TOPIC, 0);
-        TopicPartition secondTopicPartition = new TopicPartition(SECOND_STRING_TOPIC, 0);
+        TopicPartition firstTopicPartition = new TopicPartition(ORDER_JSON_TOPIC, 0);
+        TopicPartition secondTopicPartition = new TopicPartition(PAYMENT_JSON_TOPIC, 0);
         mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(List.of(firstTopicPartition, secondTopicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(firstTopicPartition, 0L, secondTopicPartition, 0L));
         mockConsumer.updateEndOffsets(Map.of(firstTopicPartition, 0L, secondTopicPartition, 0L));
@@ -56,9 +56,14 @@ class KafkaConsumerTransactionApplicationTest {
 
     @Test
     void shouldConsumeFromBothTopicsSuccessfully() {
-        ConsumerRecord<String, String> firstMessage = new ConsumerRecord<>(FIRST_STRING_TOPIC, 0, 0, "1", "Message 1");
+        ConsumerRecord<String, String> firstMessage = new ConsumerRecord<>(
+                ORDER_JSON_TOPIC,
+                0,
+                0,
+                "1",
+                "{\"id\":1,\"customerId\":3,\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
         ConsumerRecord<String, String> secondMessage =
-                new ConsumerRecord<>(SECOND_STRING_TOPIC, 0, 0, "2", "Message 2");
+                new ConsumerRecord<>(PAYMENT_JSON_TOPIC, 0, 0, "1", "{\"id\":1,\"orderId\":1,\"amount\":1249.90}");
 
         mockConsumer.schedulePollTask(() -> {
             mockConsumer.addRecord(firstMessage);

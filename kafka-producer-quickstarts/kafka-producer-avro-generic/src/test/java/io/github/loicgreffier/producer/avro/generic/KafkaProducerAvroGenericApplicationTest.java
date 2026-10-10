@@ -18,7 +18,7 @@
  */
 package io.github.loicgreffier.producer.avro.generic;
 
-import static io.github.loicgreffier.producer.avro.generic.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.producer.avro.generic.constant.Topic.ORDER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -69,12 +69,12 @@ class KafkaProducerAvroGenericApplicationTest {
         ProducerRecord<String, GenericRecord> sentRecord =
                 mockProducer.history().getFirst();
 
-        assertEquals(USER_TOPIC, sentRecord.topic());
+        assertEquals(ORDER_TOPIC, sentRecord.topic());
         assertEquals("0", sentRecord.key());
         assertNotNull(sentRecord.value().get("id"));
-        assertNotNull(sentRecord.value().get("firstName"));
-        assertNotNull(sentRecord.value().get("lastName"));
-        assertNotNull(sentRecord.value().get("birthDate"));
+        assertNotNull(sentRecord.value().get("customerId"));
+        assertNotNull(sentRecord.value().get("items"));
+        assertNotNull(sentRecord.value().get("amount"));
     }
 
     private void waitForProducer() throws InterruptedException {

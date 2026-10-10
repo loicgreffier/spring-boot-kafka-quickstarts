@@ -18,8 +18,8 @@
  */
 package io.github.loicgreffier.producer.transaction;
 
-import static io.github.loicgreffier.producer.transaction.constant.Topic.FIRST_STRING_TOPIC;
-import static io.github.loicgreffier.producer.transaction.constant.Topic.SECOND_STRING_TOPIC;
+import static io.github.loicgreffier.producer.transaction.constant.Topic.ORDER_JSON_TOPIC;
+import static io.github.loicgreffier.producer.transaction.constant.Topic.PAYMENT_JSON_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -61,17 +61,18 @@ class KafkaProducerTransactionApplicationTest {
 
         waitForProducer(false);
 
-        ProducerRecord<String, String> firstSentRecord = mockProducer.history().getFirst();
+        ProducerRecord<String, String> orderSentRecord = mockProducer.history().getFirst();
 
-        assertEquals(FIRST_STRING_TOPIC, firstSentRecord.topic());
-        assertEquals("1", firstSentRecord.key());
-        assertEquals("Message 1", firstSentRecord.value());
+        assertEquals(ORDER_JSON_TOPIC, orderSentRecord.topic());
+        assertEquals("1", orderSentRecord.key());
+        assertTrue(orderSentRecord.value().startsWith("{\"id\":1,\"customerId\":"));
 
-        ProducerRecord<String, String> secondSentRecord = mockProducer.history().getLast();
+        ProducerRecord<String, String> paymentSentRecord =
+                mockProducer.history().getLast();
 
-        assertEquals(SECOND_STRING_TOPIC, secondSentRecord.topic());
-        assertEquals("1", secondSentRecord.key());
-        assertEquals("Message 1", secondSentRecord.value());
+        assertEquals(PAYMENT_JSON_TOPIC, paymentSentRecord.topic());
+        assertEquals("1", paymentSentRecord.key());
+        assertTrue(paymentSentRecord.value().startsWith("{\"id\":1,\"orderId\":1,\"amount\":"));
 
         assertTrue(mockProducer.transactionInitialized());
         assertTrue(mockProducer.transactionCommitted());

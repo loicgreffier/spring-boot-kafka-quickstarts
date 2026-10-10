@@ -18,13 +18,14 @@
  */
 package io.github.loicgreffier.producer.avro.specific;
 
-import static io.github.loicgreffier.producer.avro.specific.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.producer.avro.specific.constant.Topic.ORDER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.producer.avro.specific.app.ProducerRunner;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -44,14 +45,14 @@ import org.slf4j.LoggerFactory;
 class KafkaProducerAvroSpecificApplicationTest {
     private static final Logger log = LoggerFactory.getLogger(KafkaProducerAvroSpecificApplicationTest.class);
 
-    private final Serializer<User> serializer = (topic, kafkaUser) -> {
+    private final Serializer<Order> serializer = (topic, order) -> {
         KafkaAvroSerializer inner = new KafkaAvroSerializer();
         inner.configure(Map.of(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "mock://"), false);
-        return inner.serialize(topic, kafkaUser);
+        return inner.serialize(topic, order);
     };
 
     @Spy
-    private MockProducer<String, User> mockProducer =
+    private MockProducer<String, Order> mockProducer =
             new MockProducer<>(true, null, new StringSerializer(), serializer);
 
     @InjectMocks
@@ -71,14 +72,14 @@ class KafkaProducerAvroSpecificApplicationTest {
 
         waitForProducer();
 
-        ProducerRecord<String, User> sentRecord = mockProducer.history().getFirst();
+        ProducerRecord<String, Order> sentRecord = mockProducer.history().getFirst();
 
-        assertEquals(USER_TOPIC, sentRecord.topic());
+        assertEquals(ORDER_TOPIC, sentRecord.topic());
         assertEquals("0", sentRecord.key());
         assertNotNull(sentRecord.value().getId());
-        assertNotNull(sentRecord.value().getFirstName());
-        assertNotNull(sentRecord.value().getLastName());
-        assertNotNull(sentRecord.value().getBirthDate());
+        assertNotNull(sentRecord.value().getCustomerId());
+        assertFalse(sentRecord.value().getItems().isEmpty());
+        assertNotNull(sentRecord.value().getAmount());
     }
 
     private void waitForProducer() throws InterruptedException {

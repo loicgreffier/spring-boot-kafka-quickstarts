@@ -18,7 +18,7 @@
  */
 package io.github.loicgreffier.consumer.exactly.once.config;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.consumer.exactly.once.property.ConsumerProperties;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -37,7 +37,7 @@ public class ConsumerConfig {
      * @return A Kafka consumer instance.
      */
     @Bean(destroyMethod = "wakeup")
-    public Consumer<String, User> kafkaConsumer(ConsumerProperties properties) {
+    public Consumer<String, Order> kafkaConsumer(ConsumerProperties properties) {
         return new KafkaConsumer<>(properties.asProperties());
     }
 }

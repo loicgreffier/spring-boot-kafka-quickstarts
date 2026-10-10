@@ -19,9 +19,9 @@
 package io.github.loicgreffier.consumer.exactly.once.app;
 
 import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.EXACTLY_ONCE_PROCESSING_TOPIC;
-import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.consumer.exactly.once.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,8 +48,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConsumerRunner {
     private static final Logger log = LoggerFactory.getLogger(ConsumerRunner.class);
-    private final Consumer<String, User> consumer;
-    private final Producer<String, User> producer;
+    private static final double VAT_RATE = 1.2;
+    private final Consumer<String, Order> consumer;
+    private final Producer<String, Order> producer;
 
     /**
      * Constructor.
@@ -57,7 +58,7 @@ public class ConsumerRunner {
      * @param consumer The Kafka consumer.
      * @param producer The Kafka producer.
      */
-    public ConsumerRunner(Consumer<String, User> consumer, Producer<String, User> producer) {
+    public ConsumerRunner(Consumer<String, Order> consumer, Producer<String, Order> producer) {
         this.consumer = consumer;
         this.producer = producer;
     }
@@ -68,8 +69,8 @@ public class ConsumerRunner {
      * <p>The {@code @Async} annotation is used to run the consumer in a separate thread, ensuring that it does not
      * block the main application thread during startup.
      *
-     * <p>This Kafka consumer listens to the {@code USER_TOPIC}, and processes records by mapping the first name and
-     * last name to uppercase. It then sends the transformed records to the {@code EXACTLY_ONCE_PROCESSING_TOPIC} using
+     * <p>This Kafka consumer listens to the {@code ORDER_TOPIC}, and processes records by applying a 20% VAT to the
+     * order amount. It then sends the transformed records to the {@code EXACTLY_ONCE_PROCESSING_TOPIC} using
      * transactions, forming a consume-process-produce loop.
      *
      * <p>Transactions ensure that processed records are sent to the output topic along with the offsets of the
@@ -82,14 +83,14 @@ public class ConsumerRunner {
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         try {
-            log.info("Subscribing to {} topic", USER_TOPIC);
-            consumer.subscribe(Collections.singleton(USER_TOPIC), new CustomConsumerRebalanceListener());
+            log.info("Subscribing to {} topic", ORDER_TOPIC);
+            consumer.subscribe(Collections.singleton(ORDER_TOPIC), new CustomConsumerRebalanceListener());
 
             log.info("Init transactions");
             producer.initTransactions();
 
             while (true) {
-                ConsumerRecords<String, User> messages = consumer.poll(Duration.ofMillis(1000));
+                ConsumerRecords<String, Order> messages = consumer.poll(Duration.ofMillis(1000));
                 log.info("Pulled {} records", messages.count());
 
                 if (!messages.isEmpty()) {
@@ -98,7 +99,7 @@ public class ConsumerRunner {
 
                     long startTime = System.currentTimeMillis();
 
-                    for (ConsumerRecord<String, User> message : messages) {
+                    for (ConsumerRecord<String, Order> message : messages) {
                         log.info(
                                 "Processing offset = {}, partition = {}, key = {}, value = {}",
                                 message.offset(),
@@ -107,17 +108,16 @@ public class ConsumerRunner {
                                 message.value());
 
                         // This is where any processing (e.g., an external system call) would take place.
-                        // In this example, the processing simply converts the message to uppercase.
+                        // In this example, the processing simply applies VAT to the order amount.
                         // If an error occurs during batch processing, all sent messages are aborted.
                         // Without transactions, there would be no way to detect a processing failure
                         // and abort, so upon restart the same events would be delivered again
                         // (resulting in at-least-once delivery).
-                        User kafkaUser = message.value();
-                        kafkaUser.setFirstName(kafkaUser.getFirstName().toUpperCase());
-                        kafkaUser.setLastName(kafkaUser.getLastName().toUpperCase());
+                        Order order = message.value();
+                        order.setAmount(Math.round(order.getAmount() * VAT_RATE * 100) / 100.0);
 
-                        ProducerRecord<String, User> transformedMessage =
-                                new ProducerRecord<>(EXACTLY_ONCE_PROCESSING_TOPIC, message.key(), kafkaUser);
+                        ProducerRecord<String, Order> transformedMessage =
+                                new ProducerRecord<>(EXACTLY_ONCE_PROCESSING_TOPIC, message.key(), order);
 
                         producer.send(transformedMessage, (recordMetadata, e) -> {
                             if (e != null) {

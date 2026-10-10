@@ -1,0 +1,43 @@
+{
+  "namespace": "io.github.loicgreffier.avro",
+  "type": "record",
+  "name": "Order",
+  "fields": [
+    {
+      "name": "id",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Order id"
+    },
+    {
+      "name": "customerId",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Customer id"
+    },
+    {
+      "name": "items",
+      "type": {
+        "type": "array",
+        "items": "string"
+      },
+      "default": [],
+      "doc": "Ordered items"
+    },
+    {
+      "name": "amount",
+      "type": [
+        "null",
+        "double"
+      ],
+      "default": null,
+      "doc": "Order amount"
+    }
+  ]
+}

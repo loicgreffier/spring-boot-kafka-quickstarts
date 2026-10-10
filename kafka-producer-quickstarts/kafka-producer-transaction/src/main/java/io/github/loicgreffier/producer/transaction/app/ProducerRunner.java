@@ -18,10 +18,14 @@
  */
 package io.github.loicgreffier.producer.transaction.app;
 
-import static io.github.loicgreffier.producer.transaction.constant.Topic.FIRST_STRING_TOPIC;
-import static io.github.loicgreffier.producer.transaction.constant.Topic.SECOND_STRING_TOPIC;
+import static io.github.loicgreffier.producer.transaction.constant.Item.ITEMS;
+import static io.github.loicgreffier.producer.transaction.constant.Topic.ORDER_JSON_TOPIC;
+import static io.github.loicgreffier.producer.transaction.constant.Topic.PAYMENT_JSON_TOPIC;
 
+import io.github.loicgreffier.producer.transaction.model.Order;
+import io.github.loicgreffier.producer.transaction.model.Payment;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -39,6 +43,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
+    private final Random random = new Random();
     private final Producer<String, String> producer;
     private boolean stopped = false;
 
@@ -57,9 +62,9 @@ public class ProducerRunner {
      * <p>The {@code @Async} annotation is used to run the producer in a separate thread, ensuring it does not block the
      * main thread.
      *
-     * <p>The Kafka producer sends two string records to two topics: {@code FIRST_STRING_TOPIC} and
-     * {@code SECOND_STRING_TOPIC}, within a single transaction. Either both records are successfully committed as part
-     * of the transaction, or both are discarded if the transaction fails.
+     * <p>The Kafka producer sends an order and its payment, serialized as JSON strings, to two topics:
+     * {@code ORDER_JSON_TOPIC} and {@code PAYMENT_JSON_TOPIC}, within a single transaction. Either both records are
+     * successfully committed as part of the transaction, or both are discarded if the transaction fails.
      *
      * @throws InterruptedException if the thread is interrupted while sleeping
      */
@@ -71,13 +76,16 @@ public class ProducerRunner {
 
         int i = 0;
         while (!stopped) {
-            ProducerRecord<String, String> firstMessage =
-                    new ProducerRecord<>(FIRST_STRING_TOPIC, String.valueOf(i), "Message %s".formatted(i));
+            Order order = buildOrder(i);
+            Payment payment = new Payment(i, order.id(), order.amount());
 
-            ProducerRecord<String, String> secondMessage =
-                    new ProducerRecord<>(SECOND_STRING_TOPIC, String.valueOf(i), "Message %s".formatted(i));
+            ProducerRecord<String, String> orderMessage =
+                    new ProducerRecord<>(ORDER_JSON_TOPIC, String.valueOf(order.id()), order.toJson());
 
-            List<ProducerRecord<String, String>> messages = List.of(firstMessage, secondMessage);
+            ProducerRecord<String, String> paymentMessage =
+                    new ProducerRecord<>(PAYMENT_JSON_TOPIC, String.valueOf(payment.orderId()), payment.toJson());
+
+            List<ProducerRecord<String, String>> messages = List.of(orderMessage, paymentMessage);
 
             try {
                 log.info("Begin transaction");
@@ -97,7 +105,7 @@ public class ProducerRunner {
                     }
                 }));
 
-                if (Integer.parseInt(messages.getFirst().key()) % 3 == 0) {
+                if (order.id() % 3 == 0) {
                     throw new IllegalStateException("Error during transaction...");
                 }
 
@@ -125,5 +133,21 @@ public class ProducerRunner {
      */
     public void setStopped(boolean stopped) {
         this.stopped = stopped;
+    }
+
+    /**
+     * Builds an order.
+     *
+     * @param id The order id.
+     * @return The order.
+     */
+    private Order buildOrder(int id) {
+        return new Order(
+                id,
+                random.nextInt(10),
+                random.ints(random.nextInt(1, 9), 0, ITEMS.size())
+                        .mapToObj(ITEMS::get)
+                        .toList(),
+                random.nextInt(1000, 100000) / 100.0);
     }
 }

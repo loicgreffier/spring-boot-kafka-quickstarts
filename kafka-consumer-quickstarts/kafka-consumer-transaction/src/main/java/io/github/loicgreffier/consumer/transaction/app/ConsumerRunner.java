@@ -18,8 +18,8 @@
  */
 package io.github.loicgreffier.consumer.transaction.app;
 
-import static io.github.loicgreffier.consumer.transaction.constant.Topic.FIRST_STRING_TOPIC;
-import static io.github.loicgreffier.consumer.transaction.constant.Topic.SECOND_STRING_TOPIC;
+import static io.github.loicgreffier.consumer.transaction.constant.Topic.ORDER_JSON_TOPIC;
+import static io.github.loicgreffier.consumer.transaction.constant.Topic.PAYMENT_JSON_TOPIC;
 
 import java.time.Duration;
 import java.util.List;
@@ -56,17 +56,17 @@ public class ConsumerRunner {
      * <p>The {@code @Async} annotation ensures that the consumer runs in a separate thread and does not block the main
      * application thread.
      *
-     * <p>This Kafka consumer processes string records from the {@code FIRST_STRING_TOPIC} and
-     * {@code SECOND_STRING_TOPIC} topics with an isolation level of {@code read_committed}, meaning it will only read
-     * records that are part of a committed transaction or records not associated with any transaction.
+     * <p>This Kafka consumer processes orders and payments serialized as JSON strings from the {@code ORDER_JSON_TOPIC}
+     * and {@code PAYMENT_JSON_TOPIC} topics with an isolation level of {@code read_committed}, meaning it will only
+     * read records that are part of a committed transaction or records not associated with any transaction.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         try {
-            log.info("Subscribing to {} and {} topics", FIRST_STRING_TOPIC, SECOND_STRING_TOPIC);
+            log.info("Subscribing to {} and {} topics", ORDER_JSON_TOPIC, PAYMENT_JSON_TOPIC);
 
-            consumer.subscribe(List.of(FIRST_STRING_TOPIC, SECOND_STRING_TOPIC), new CustomConsumerRebalanceListener());
+            consumer.subscribe(List.of(ORDER_JSON_TOPIC, PAYMENT_JSON_TOPIC), new CustomConsumerRebalanceListener());
 
             while (true) {
                 ConsumerRecords<String, String> messages = consumer.poll(Duration.ofMillis(1000));

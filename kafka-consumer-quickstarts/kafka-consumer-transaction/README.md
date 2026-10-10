@@ -1,6 +1,6 @@
 # Consumer Transaction
 
-This module consumes records of type `<String, String>` from two topics: `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`.
+This module consumes orders and payments serialized as JSON strings, of type `<String, String>`, from two topics: `ORDER_JSON_TOPIC` and `PAYMENT_JSON_TOPIC`.
 
 It demonstrates the following:
 
@@ -21,7 +21,7 @@ To compile and run this demo, you'll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, String>` to the `FIRST_STRING_TOPIC` and `SECOND_STRING_TOPIC`. You can use the [Producer Transaction](../../kafka-producer-quickstarts/kafka-producer-transaction) for this.
+- Produce orders and payments of type `<String, String>` to the `ORDER_JSON_TOPIC` and `PAYMENT_JSON_TOPIC`. You can use the [Producer Transaction](../../kafka-producer-quickstarts/kafka-producer-transaction) for this.
 - Start the consumer.
 
 Alternatively, to run everything at once using Docker, run:

@@ -18,7 +18,7 @@
  */
 package io.github.loicgreffier.consumer.string.app;
 
-import static io.github.loicgreffier.consumer.string.constant.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.consumer.string.constant.Topic.ORDER_JSON_TOPIC;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -55,15 +55,15 @@ public class ConsumerRunner {
      * <p>The {@code @Async} annotation ensures that the consumer runs in a separate thread and does not block the main
      * application thread.
      *
-     * <p>This Kafka consumer processes string records from the {@code STRING_TOPIC} topic.
+     * <p>This Kafka consumer processes orders serialized as JSON strings from the {@code ORDER_JSON_TOPIC} topic.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
         try {
-            log.info("Subscribing to {} topic", STRING_TOPIC);
+            log.info("Subscribing to {} topic", ORDER_JSON_TOPIC);
 
-            consumer.subscribe(Collections.singleton(STRING_TOPIC), new CustomConsumerRebalanceListener());
+            consumer.subscribe(Collections.singleton(ORDER_JSON_TOPIC), new CustomConsumerRebalanceListener());
 
             while (true) {
                 ConsumerRecords<String, String> messages = consumer.poll(Duration.ofMillis(1000));

@@ -20,8 +20,8 @@ package io.github.loicgreffier.consumer.transaction.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String FIRST_STRING_TOPIC = "FIRST_STRING_TOPIC";
-    public static final String SECOND_STRING_TOPIC = "SECOND_STRING_TOPIC";
+    public static final String ORDER_JSON_TOPIC = "ORDER_JSON_TOPIC";
+    public static final String PAYMENT_JSON_TOPIC = "PAYMENT_JSON_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

@@ -18,7 +18,7 @@
  */
 package io.github.loicgreffier.consumer.avro.generic;
 
-import static io.github.loicgreffier.consumer.avro.generic.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.consumer.avro.generic.constant.Topic.ORDER_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
@@ -28,9 +28,8 @@ import static org.mockito.Mockito.verify;
 import io.github.loicgreffier.consumer.avro.generic.app.ConsumerRunner;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
@@ -61,7 +60,7 @@ class KafkaConsumerAvroGenericApplicationTest {
 
     @BeforeEach
     void setUp() {
-        topicPartition = new TopicPartition(USER_TOPIC, 0);
+        topicPartition = new TopicPartition(ORDER_TOPIC, 0);
         mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(Collections.singletonList(topicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(topicPartition, 0L));
         mockConsumer.updateEndOffsets(Map.of(topicPartition, 0L));
@@ -69,18 +68,16 @@ class KafkaConsumerAvroGenericApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() throws IOException {
-        File schemaFile = new ClassPathResource("user.avsc").getFile();
+        File schemaFile = new ClassPathResource("order.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "Homer");
-        genericRecord.put("lastName", "Simpson");
-        genericRecord.put(
-                "birthDate",
-                Timestamp.from(Instant.parse("2000-01-01T01:00:00Z")).getTime());
+        genericRecord.put("customerId", 3L);
+        genericRecord.put("items", List.of("Laptop", "Mouse"));
+        genericRecord.put("amount", 1249.90);
 
-        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1", genericRecord);
+        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(ORDER_TOPIC, 0, 0, "1", genericRecord);
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -93,18 +90,16 @@ class KafkaConsumerAvroGenericApplicationTest {
 
     @Test
     void shouldFailOnPoisonPill() throws IOException {
-        File schemaFile = new ClassPathResource("user.avsc").getFile();
+        File schemaFile = new ClassPathResource("order.avsc").getFile();
         Schema schema = new Schema.Parser().parse(schemaFile);
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", 1L);
-        genericRecord.put("firstName", "Homer");
-        genericRecord.put("lastName", "Simpson");
-        genericRecord.put(
-                "birthDate",
-                Timestamp.from(Instant.parse("2000-01-01T01:00:00Z")).getTime());
+        genericRecord.put("customerId", 3L);
+        genericRecord.put("items", List.of("Laptop", "Mouse"));
+        genericRecord.put("amount", 1249.90);
 
-        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(USER_TOPIC, 0, 0, "1", genericRecord);
+        ConsumerRecord<String, GenericRecord> message = new ConsumerRecord<>(ORDER_TOPIC, 0, 0, "1", genericRecord);
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(() -> {

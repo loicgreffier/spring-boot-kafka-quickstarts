@@ -18,7 +18,7 @@
  */
 package io.github.loicgreffier.consumer.string;
 
-import static io.github.loicgreffier.consumer.string.constant.Topic.STRING_TOPIC;
+import static io.github.loicgreffier.consumer.string.constant.Topic.ORDER_JSON_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
@@ -52,7 +52,7 @@ class KafkaConsumerStringApplicationTest {
 
     @BeforeEach
     void setUp() {
-        topicPartition = new TopicPartition(STRING_TOPIC, 0);
+        topicPartition = new TopicPartition(ORDER_JSON_TOPIC, 0);
         mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(Collections.singletonList(topicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(topicPartition, 0L));
         mockConsumer.updateEndOffsets(Map.of(topicPartition, 0L));
@@ -60,7 +60,12 @@ class KafkaConsumerStringApplicationTest {
 
     @Test
     void shouldConsumeSuccessfully() {
-        ConsumerRecord<String, String> message = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(
+                ORDER_JSON_TOPIC,
+                0,
+                0,
+                "1",
+                "{\"id\":1,\"customerId\":3,\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -74,8 +79,14 @@ class KafkaConsumerStringApplicationTest {
 
     @Test
     void shouldFailOnPoisonPill() {
-        ConsumerRecord<String, String> message1 = new ConsumerRecord<>(STRING_TOPIC, 0, 0, "1", "Message 1");
-        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(STRING_TOPIC, 0, 2, "2", "Message 2");
+        ConsumerRecord<String, String> message1 = new ConsumerRecord<>(
+                ORDER_JSON_TOPIC,
+                0,
+                0,
+                "1",
+                "{\"id\":1,\"customerId\":3,\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
+        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(
+                ORDER_JSON_TOPIC, 0, 2, "2", "{\"id\":2,\"customerId\":5,\"items\":[\"Keyboard\"],\"amount\":89.99}");
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message1));
         mockConsumer.schedulePollTask(() -> {
