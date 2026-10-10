@@ -19,23 +19,23 @@
 package io.github.loicgreffier.streams.store.keyvalue;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.USER_KEY_VALUE_STORE;
-import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.USER_KEY_VALUE_SUPPLIER_STORE;
-import static io.github.loicgreffier.streams.store.keyvalue.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.ORDER_KEY_VALUE_STORE;
+import static io.github.loicgreffier.streams.store.keyvalue.constant.StateStore.ORDER_KEY_VALUE_SUPPLIER_STORE;
+import static io.github.loicgreffier.streams.store.keyvalue.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.store.keyvalue.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.store.keyvalue.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -54,7 +54,7 @@ class KafkaStreamsStoreKeyValueApplicationTest {
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
+    private TestInputTopic<String, Order> inputTopic;
 
     @BeforeEach
     void setUp() {
@@ -75,9 +75,9 @@ class KafkaStreamsStoreKeyValueApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
     }
 
     @AfterEach
@@ -88,27 +88,26 @@ class KafkaStreamsStoreKeyValueApplicationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {USER_KEY_VALUE_STORE, USER_KEY_VALUE_SUPPLIER_STORE})
+    @ValueSource(strings = {ORDER_KEY_VALUE_STORE, ORDER_KEY_VALUE_SUPPLIER_STORE})
     void shouldPutAndGetFromKeyValueStores(String storeName) {
-        User homer = buildUser("Homer");
-        inputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
+        Order firstOrder = buildOrder(1L, 1L);
+        inputTopic.pipeInput(new TestRecord<>("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z")));
 
-        User marge = buildUser("Marge");
-        inputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:00:30Z")));
+        Order secondOrder = buildOrder(2L, 1L);
+        inputTopic.pipeInput(new TestRecord<>("2", secondOrder, Instant.parse("2000-01-01T01:00:30Z")));
 
-        KeyValueStore<String, User> keyValueStore = testDriver.getKeyValueStore(storeName);
+        KeyValueStore<String, Order> keyValueStore = testDriver.getKeyValueStore(storeName);
 
-        assertEquals(homer, keyValueStore.get("1"));
-        assertEquals(marge, keyValueStore.get("2"));
+        assertEquals(firstOrder, keyValueStore.get("1"));
+        assertEquals(secondOrder, keyValueStore.get("2"));
     }
 
-    private User buildUser(String firstName) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName("Simpson")
-                .setNationality(CountryCode.GB)
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    private Order buildOrder(long id, long customerId) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(customerId)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(1249.90)
                 .build();
     }
 }

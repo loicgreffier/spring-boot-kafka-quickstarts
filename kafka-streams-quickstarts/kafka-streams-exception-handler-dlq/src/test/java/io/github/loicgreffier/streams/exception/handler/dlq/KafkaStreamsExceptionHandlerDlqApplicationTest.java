@@ -19,8 +19,8 @@
 package io.github.loicgreffier.streams.exception.handler.dlq;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.exception.handler.dlq.constant.Topic.USER_EXCEPTION_HANDLER_OUTPUT_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.dlq.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.dlq.constant.Topic.ORDER_EXCEPTION_HANDLER_OUTPUT_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.dlq.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.common.utils.Utils.mkEntry;
 import static org.apache.kafka.common.utils.Utils.mkMap;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -31,8 +31,7 @@ import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.exception.handler.dlq.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.exception.handler.dlq.serdes.SerdesUtils;
 import java.io.IOException;
@@ -62,9 +61,9 @@ class KafkaStreamsExceptionHandlerDlqApplicationTest {
     private static final String DLQ_TOPIC = "DLQ_TOPIC";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
-    private TestOutputTopic<String, User> outputTopic;
-    private TestOutputTopic<String, User> dlqTopic;
+    private TestInputTopic<String, Order> inputTopic;
+    private TestOutputTopic<String, Order> outputTopic;
+    private TestOutputTopic<String, Order> dlqTopic;
 
     @BeforeEach
     void setUp() {
@@ -88,17 +87,17 @@ class KafkaStreamsExceptionHandlerDlqApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-                USER_EXCEPTION_HANDLER_OUTPUT_TOPIC,
+                ORDER_EXCEPTION_HANDLER_OUTPUT_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<User>getValueSerdes().deserializer());
+                SerdesUtils.<Order>getValueSerdes().deserializer());
         dlqTopic = testDriver.createOutputTopic(
                 DLQ_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<User>getValueSerdes().deserializer());
+                SerdesUtils.<Order>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -110,33 +109,32 @@ class KafkaStreamsExceptionHandlerDlqApplicationTest {
 
     @Test
     void shouldRouteIllegalArgumentExceptionToDlqAndContinueProcessing() {
-        User homer = buildUser("Homer", Instant.parse("1949-01-01T01:00:00Z"));
-        inputTopic.pipeInput("1", homer);
+        Order invalidOrder = buildOrder(1L, -100.0);
+        inputTopic.pipeInput("1", invalidOrder);
 
-        User bart = buildUser("Bart", Instant.parse("1980-01-01T01:00:00Z"));
-        inputTopic.pipeInput("2", bart);
+        Order validOrder = buildOrder(2L, 100.0);
+        inputTopic.pipeInput("2", validOrder);
 
-        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(bart, results.getFirst().value);
+        assertEquals(validOrder, results.getFirst().value);
 
         assertEquals(1.0, testDriver.metrics().get(droppedRecordsTotalMetric()).metricValue());
         assertEquals(
                 0.03333333333333333,
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
 
-        List<KeyValue<String, User>> dlqResults = dlqTopic.readKeyValuesToList();
+        List<KeyValue<String, Order>> dlqResults = dlqTopic.readKeyValuesToList();
 
-        assertEquals(homer, dlqResults.getFirst().value);
+        assertEquals(invalidOrder, dlqResults.getFirst().value);
     }
 
-    private User buildUser(String firstName, Instant birthDate) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName("Simpson")
-                .setNationality(CountryCode.US)
-                .setBirthDate(birthDate)
+    private Order buildOrder(long id, double amount) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(1L)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(amount)
                 .build();
     }
 

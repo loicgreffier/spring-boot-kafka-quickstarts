@@ -18,8 +18,8 @@
  */
 package io.github.loicgreffier.streams.producer.order.config;
 
-import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.producer.order.property.ProducerProperties;
+import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +36,7 @@ public class ProducerConfig {
      * @return A Kafka producer instance.
      */
     @Bean
-    public Producer<String, Order> kafkaProducer(ProducerProperties properties) {
+    public Producer<String, SpecificRecord> kafkaProducer(ProducerProperties properties) {
         return new KafkaProducer<>(properties.asProperties());
     }
 }

@@ -20,10 +20,11 @@ package io.github.loicgreffier.streams.leftjoin.stream.table.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String COUNTRY_TOPIC = "COUNTRY_TOPIC";
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC = "USER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC";
-    public static final String USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC = "USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC";
+    public static final String CUSTOMER_TOPIC = "CUSTOMER_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String ORDER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC = "ORDER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC";
+    public static final String ORDER_CUSTOMER_LEFT_JOIN_STREAM_TABLE_TOPIC =
+            "ORDER_CUSTOMER_LEFT_JOIN_STREAM_TABLE_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

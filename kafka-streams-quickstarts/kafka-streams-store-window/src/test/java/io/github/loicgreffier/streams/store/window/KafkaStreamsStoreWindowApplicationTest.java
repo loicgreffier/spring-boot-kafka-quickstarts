@@ -19,9 +19,9 @@
 package io.github.loicgreffier.streams.store.window;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.store.window.constant.StateStore.USER_WINDOW_STORE;
-import static io.github.loicgreffier.streams.store.window.constant.StateStore.USER_WINDOW_SUPPLIER_STORE;
-import static io.github.loicgreffier.streams.store.window.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.store.window.constant.StateStore.ORDER_WINDOW_STORE;
+import static io.github.loicgreffier.streams.store.window.constant.StateStore.ORDER_WINDOW_SUPPLIER_STORE;
+import static io.github.loicgreffier.streams.store.window.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -30,14 +30,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.store.window.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.store.window.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -57,7 +57,7 @@ class KafkaStreamsStoreWindowApplicationTest {
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
+    private TestInputTopic<String, Order> inputTopic;
 
     @BeforeEach
     void setUp() {
@@ -78,9 +78,9 @@ class KafkaStreamsStoreWindowApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
     }
 
     @AfterEach
@@ -91,63 +91,64 @@ class KafkaStreamsStoreWindowApplicationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {USER_WINDOW_STORE, USER_WINDOW_SUPPLIER_STORE})
+    @ValueSource(strings = {ORDER_WINDOW_STORE, ORDER_WINDOW_SUPPLIER_STORE})
     void shouldPutAndGetFromWindowStores(String storeName) {
-        User homer = buildUser("Homer");
-        Instant homerTimestamp = Instant.parse("2000-01-01T01:00:00Z");
-        inputTopic.pipeInput(new TestRecord<>("1", homer, homerTimestamp));
-        inputTopic.pipeInput(new TestRecord<>("1", homer, homerTimestamp.plusSeconds(10)));
+        Order firstOrder = buildOrder(1L, 1L);
+        Instant firstOrderTimestamp = Instant.parse("2000-01-01T01:00:00Z");
+        inputTopic.pipeInput(new TestRecord<>("1", firstOrder, firstOrderTimestamp));
+        inputTopic.pipeInput(new TestRecord<>("1", firstOrder, firstOrderTimestamp.plusSeconds(10)));
 
-        User marge = buildUser("Marge");
-        Instant margeTimestamp = Instant.parse("2000-01-01T01:00:30Z");
-        inputTopic.pipeInput(new TestRecord<>("2", marge, margeTimestamp));
-        inputTopic.pipeInput(new TestRecord<>("2", marge, margeTimestamp.plusSeconds(10)));
+        Order secondOrder = buildOrder(2L, 1L);
+        Instant secondOrderTimestamp = Instant.parse("2000-01-01T01:00:30Z");
+        inputTopic.pipeInput(new TestRecord<>("2", secondOrder, secondOrderTimestamp));
+        inputTopic.pipeInput(new TestRecord<>("2", secondOrder, secondOrderTimestamp.plusSeconds(10)));
 
-        WindowStore<String, User> windowStore = testDriver.getWindowStore(storeName);
+        WindowStore<String, Order> windowStore = testDriver.getWindowStore(storeName);
 
         // Fetch from window store by key and timestamp. The timestamp used to fetch has to be equal to
         // the window start time to get the value.
 
-        assertEquals(homer, windowStore.fetch("1", homerTimestamp.toEpochMilli()));
+        assertEquals(firstOrder, windowStore.fetch("1", firstOrderTimestamp.toEpochMilli()));
         assertEquals(
-                homer, windowStore.fetch("1", homerTimestamp.plusSeconds(10).toEpochMilli()));
-        assertNull(windowStore.fetch("1", homerTimestamp.plusSeconds(1).toEpochMilli()));
+                firstOrder,
+                windowStore.fetch("1", firstOrderTimestamp.plusSeconds(10).toEpochMilli()));
+        assertNull(windowStore.fetch("1", firstOrderTimestamp.plusSeconds(1).toEpochMilli()));
 
         // Fetch from window store by key and time range.
 
-        try (WindowStoreIterator<User> iterator = windowStore.fetch(
+        try (WindowStoreIterator<Order> iterator = windowStore.fetch(
                 "1",
-                homerTimestamp.minusSeconds(30).toEpochMilli(),
-                homerTimestamp.plusSeconds(30).toEpochMilli())) {
-            assertEquals(homer, iterator.next().value);
-            assertEquals(homer, iterator.next().value);
+                firstOrderTimestamp.minusSeconds(30).toEpochMilli(),
+                firstOrderTimestamp.plusSeconds(30).toEpochMilli())) {
+            assertEquals(firstOrder, iterator.next().value);
+            assertEquals(firstOrder, iterator.next().value);
 
             assertFalse(iterator.hasNext());
         }
 
-        assertEquals(marge, windowStore.fetch("2", margeTimestamp.toEpochMilli()));
+        assertEquals(secondOrder, windowStore.fetch("2", secondOrderTimestamp.toEpochMilli()));
         assertEquals(
-                marge, windowStore.fetch("2", margeTimestamp.plusSeconds(10).toEpochMilli()));
-        assertNull(windowStore.fetch("2", margeTimestamp.plusSeconds(1).toEpochMilli()));
+                secondOrder,
+                windowStore.fetch("2", secondOrderTimestamp.plusSeconds(10).toEpochMilli()));
+        assertNull(windowStore.fetch("2", secondOrderTimestamp.plusSeconds(1).toEpochMilli()));
 
-        try (WindowStoreIterator<User> iterator = windowStore.fetch(
+        try (WindowStoreIterator<Order> iterator = windowStore.fetch(
                 "2",
-                margeTimestamp.minusSeconds(30).toEpochMilli(),
-                margeTimestamp.plusSeconds(30).toEpochMilli())) {
-            assertEquals(marge, iterator.next().value);
-            assertEquals(marge, iterator.next().value);
+                secondOrderTimestamp.minusSeconds(30).toEpochMilli(),
+                secondOrderTimestamp.plusSeconds(30).toEpochMilli())) {
+            assertEquals(secondOrder, iterator.next().value);
+            assertEquals(secondOrder, iterator.next().value);
 
             assertFalse(iterator.hasNext());
         }
     }
 
-    private User buildUser(String firstName) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName("Simpson")
-                .setNationality(CountryCode.GB)
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    private Order buildOrder(long id, long customerId) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(customerId)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(1249.90)
                 .build();
     }
 }

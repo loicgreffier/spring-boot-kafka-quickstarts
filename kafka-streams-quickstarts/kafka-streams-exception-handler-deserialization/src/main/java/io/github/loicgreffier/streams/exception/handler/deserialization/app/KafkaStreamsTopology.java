@@ -18,10 +18,10 @@
  */
 package io.github.loicgreffier.streams.exception.handler.deserialization.app;
 
-import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.ORDER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.exception.handler.deserialization.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -37,17 +37,17 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads records from the {@code USER_TOPIC} topic, processes each record by displaying its key and
-     * value. If a deserialization exception occurs, it will be handled by the deserialization exception handler. The
-     * result will be written to the {@code USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC} topic.
+     * <p>This topology reads records from the {@code ORDER_TOPIC} topic, processes each record by displaying its key
+     * and value. If a deserialization exception occurs, it will be handled by the deserialization exception handler.
+     * The result will be written to the {@code ORDER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .to(
-                        USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC,
+                        ORDER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC,
                         Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 

@@ -19,10 +19,10 @@
 package io.github.loicgreffier.streams.outerjoin.stream.stream;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic.USER_OUTER_JOIN_STREAM_STREAM_REKEY_TOPIC;
-import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic.USER_OUTER_JOIN_STREAM_STREAM_TOPIC;
-import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic.USER_TOPIC;
-import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic.USER_TOPIC_TWO;
+import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.StateStore.ORDER_PAYMENT_OUTER_JOIN_STREAM_STREAM_STORE;
+import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic.ORDER_PAYMENT_OUTER_JOIN_STREAM_STREAM_TOPIC;
+import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic.ORDER_TOPIC;
+import static io.github.loicgreffier.streams.outerjoin.stream.stream.constant.Topic.PAYMENT_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -31,10 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.JoinUsers;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.JoinOrderPayment;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.Payment;
 import io.github.loicgreffier.streams.outerjoin.stream.stream.app.KafkaStreamsTopology;
-import io.github.loicgreffier.streams.outerjoin.stream.stream.constant.StateStore;
 import io.github.loicgreffier.streams.outerjoin.stream.stream.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -64,11 +64,9 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> leftInputTopic;
-    private TestInputTopic<String, User> rightInputTopic;
-    private TestOutputTopic<String, User> rekeyLeftOutputTopic;
-    private TestOutputTopic<String, User> rekeyRightOutputTopic;
-    private TestOutputTopic<String, JoinUsers> joinOutputTopic;
+    private TestInputTopic<String, Order> orderInputTopic;
+    private TestInputTopic<String, Payment> paymentInputTopic;
+    private TestOutputTopic<String, JoinOrderPayment> joinOutputTopic;
 
     @BeforeEach
     void setUp() {
@@ -88,28 +86,18 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
         KafkaStreamsTopology.topology(streamsBuilder);
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
-        leftInputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+        orderInputTopic = testDriver.createInputTopic(
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
-        rightInputTopic = testDriver.createInputTopic(
-                USER_TOPIC_TWO,
+                SerdesUtils.<Order>getValueSerdes().serializer());
+        paymentInputTopic = testDriver.createInputTopic(
+                PAYMENT_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
-        rekeyLeftOutputTopic = testDriver.createOutputTopic(
-                "streams-outer-join-stream-stream-test-" + USER_OUTER_JOIN_STREAM_STREAM_REKEY_TOPIC
-                        + "-left-repartition",
-                new StringDeserializer(),
-                SerdesUtils.<User>getValueSerdes().deserializer());
-        rekeyRightOutputTopic = testDriver.createOutputTopic(
-                "streams-outer-join-stream-stream-test-" + USER_OUTER_JOIN_STREAM_STREAM_REKEY_TOPIC
-                        + "-right-repartition",
-                new StringDeserializer(),
-                SerdesUtils.<User>getValueSerdes().deserializer());
+                SerdesUtils.<Payment>getValueSerdes().serializer());
         joinOutputTopic = testDriver.createOutputTopic(
-                USER_OUTER_JOIN_STREAM_STREAM_TOPIC,
+                ORDER_PAYMENT_OUTER_JOIN_STREAM_STREAM_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<JoinUsers>getValueSerdes().deserializer());
+                SerdesUtils.<JoinOrderPayment>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -120,228 +108,164 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
     }
 
     @Test
-    void shouldRekey() {
-        User leftUser = buildUser("Homer");
-        User rightUser = buildUser("Marge");
-
-        leftInputTopic.pipeInput("1", leftUser);
-        rightInputTopic.pipeInput("2", rightUser);
-
-        List<KeyValue<String, User>> topicOneResults = rekeyLeftOutputTopic.readKeyValuesToList();
-        List<KeyValue<String, User>> topicTwoResults = rekeyRightOutputTopic.readKeyValuesToList();
-
-        assertEquals(KeyValue.pair("Simpson", leftUser), topicOneResults.getFirst());
-        assertEquals(KeyValue.pair("Simpson", rightUser), topicTwoResults.getFirst());
-    }
-
-    @Test
     void shouldJoinWhenTimeWindowIsRespected() {
-        User homer = buildUser("Homer");
-        leftInputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
+        Order orderOne = buildOrder(1L);
+        orderInputTopic.pipeInput(new TestRecord<>("1", orderOne, Instant.parse("2000-01-01T01:00:00Z")));
 
-        User marge = buildUser("Marge");
-        rightInputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:02:00Z")));
+        Payment paymentOne = buildPayment(1L);
+        paymentInputTopic.pipeInput(new TestRecord<>("1", paymentOne, Instant.parse("2000-01-01T01:02:00Z")));
 
-        User bart = buildUser("Bart");
-        leftInputTopic.pipeInput(new TestRecord<>("3", bart, Instant.parse("2000-01-01T01:03:00Z")));
+        Order orderTwo = buildOrder(2L);
+        orderInputTopic.pipeInput(new TestRecord<>("2", orderTwo, Instant.parse("2000-01-01T01:03:00Z")));
 
-        List<KeyValue<String, JoinUsers>> results = joinOutputTopic.readKeyValuesToList();
+        Payment paymentTwo = buildPayment(2L);
+        paymentInputTopic.pipeInput(new TestRecord<>("2", paymentTwo, Instant.parse("2000-01-01T01:04:00Z")));
 
-        assertEquals("Simpson", results.getFirst().key);
-        assertEquals(homer, results.getFirst().value.getUserOne());
-        assertEquals(marge, results.getFirst().value.getUserTwo());
+        List<KeyValue<String, JoinOrderPayment>> results = joinOutputTopic.readKeyValuesToList();
 
-        assertEquals("Simpson", results.get(1).key);
-        assertEquals(bart, results.get(1).value.getUserOne());
-        assertEquals(marge, results.get(1).value.getUserTwo());
+        assertEquals("1", results.getFirst().key);
+        assertEquals(orderOne, results.getFirst().value.getOrder());
+        assertEquals(paymentOne, results.getFirst().value.getPayment());
 
-        WindowStore<String, User> leftStateStore =
-                testDriver.getWindowStore(StateStore.USER_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-this-join-store");
+        assertEquals("2", results.get(1).key);
+        assertEquals(orderTwo, results.get(1).value.getOrder());
+        assertEquals(paymentTwo, results.get(1).value.getPayment());
 
-        try (KeyValueIterator<Windowed<String>, User> iterator = leftStateStore.all()) {
-            // As join windows are looking backward and forward in time,
-            // records are kept in the store for "before" + "after" duration.
+        // As join windows are looking backward and forward in time,
+        // records are kept in the store for "before" + "after" duration.
+        WindowStore<String, Order> orderStateStore =
+                testDriver.getWindowStore(ORDER_PAYMENT_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-this-join-store");
 
-            KeyValue<Windowed<String>, User> leftKeyValue00To10 = iterator.next();
-            assertEquals("Simpson", leftKeyValue00To10.key.key());
-            assertEquals(
-                    "2000-01-01T01:00:00Z",
-                    leftKeyValue00To10.key.window().startTime().toString());
-            assertEquals(
-                    "2000-01-01T01:10:00Z",
-                    leftKeyValue00To10.key.window().endTime().toString());
-            assertEquals(homer, leftKeyValue00To10.value);
-
-            KeyValue<Windowed<String>, User> leftKeyValue03To13 = iterator.next();
-            assertEquals("Simpson", leftKeyValue03To13.key.key());
-            assertEquals(
-                    "2000-01-01T01:03:00Z",
-                    leftKeyValue03To13.key.window().startTime().toString());
-            assertEquals(
-                    "2000-01-01T01:13:00Z",
-                    leftKeyValue03To13.key.window().endTime().toString());
-            assertEquals(bart, leftKeyValue03To13.value);
-
+        try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
+            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", orderOne);
+            assertWindowedRecord(iterator.next(), "2", "2000-01-01T01:03:00Z", "2000-01-01T01:13:00Z", orderTwo);
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, User> rightStateStore =
-                testDriver.getWindowStore(StateStore.USER_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
+        WindowStore<String, Payment> paymentStateStore =
+                testDriver.getWindowStore(ORDER_PAYMENT_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, User> iterator = rightStateStore.all()) {
-            KeyValue<Windowed<String>, User> rightKeyValue02To12 = iterator.next();
-            assertEquals("Simpson", rightKeyValue02To12.key.key());
-            assertEquals(
-                    "2000-01-01T01:02:00Z",
-                    rightKeyValue02To12.key.window().startTime().toString());
-            assertEquals(
-                    "2000-01-01T01:12:00Z",
-                    rightKeyValue02To12.key.window().endTime().toString());
-            assertEquals(marge, rightKeyValue02To12.value);
-
+        try (KeyValueIterator<Windowed<String>, Payment> iterator = paymentStateStore.all()) {
+            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:02:00Z", "2000-01-01T01:12:00Z", paymentOne);
+            assertWindowedRecord(iterator.next(), "2", "2000-01-01T01:04:00Z", "2000-01-01T01:14:00Z", paymentTwo);
             assertFalse(iterator.hasNext());
         }
     }
 
     @Test
-    void shouldEmitLeftOrRightUserWhenTimeWindowIsNotRespected() {
-        User homer = buildUser("Homer");
-        leftInputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
+    void shouldEmitUnpaidOrderOrOrphanPaymentWhenTimeWindowIsNotRespected() {
+        Order orderOne = buildOrder(1L);
+        orderInputTopic.pipeInput(new TestRecord<>("1", orderOne, Instant.parse("2000-01-01T01:00:00Z")));
 
-        User marge = buildUser("Marge");
-        rightInputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:06:00Z")));
+        Payment paymentOne = buildPayment(1L);
+        paymentInputTopic.pipeInput(new TestRecord<>("1", paymentOne, Instant.parse("2000-01-01T01:06:00Z")));
 
-        User bart = buildUser("Bart");
-        leftInputTopic.pipeInput(new TestRecord<>("3", bart, Instant.parse("2000-01-01T01:13:00Z")));
+        Order orderTwo = buildOrder(2L);
+        orderInputTopic.pipeInput(new TestRecord<>("2", orderTwo, Instant.parse("2000-01-01T01:13:00Z")));
 
-        List<KeyValue<String, JoinUsers>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinOrderPayment>> results = joinOutputTopic.readKeyValuesToList();
 
-        // The right value is null because Marge arrived too late for Homer.
-        assertEquals("Simpson", results.getFirst().key);
-        assertEquals(homer, results.getFirst().value.getUserOne());
-        assertNull(results.getFirst().value.getUserTwo());
+        // The payment is null because the payment arrived too late for the order.
+        assertEquals("1", results.getFirst().key);
+        assertEquals(orderOne, results.getFirst().value.getOrder());
+        assertNull(results.getFirst().value.getPayment());
 
-        // The left value is null because Bart arrived too late for Marge.
-        assertEquals("Simpson", results.get(1).key);
-        assertNull(results.get(1).value.getUserOne());
-        assertEquals(marge, results.get(1).value.getUserTwo());
+        // The order is null because the order of the payment is outside the join window.
+        assertEquals("1", results.get(1).key);
+        assertNull(results.get(1).value.getOrder());
+        assertEquals(paymentOne, results.get(1).value.getPayment());
 
-        // Bart has not been emitted yet because it would require a new record to make the stream time advance.
+        // No output for the second order yet because it requires a new record to make the stream time advance.
+        assertEquals(2, results.size());
 
-        WindowStore<String, User> leftStateStore =
-                testDriver.getWindowStore(StateStore.USER_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-this-join-store");
+        // The first order is no longer in the store because the stream time (01:13:00) exceeds its retention.
+        WindowStore<String, Order> orderStateStore =
+                testDriver.getWindowStore(ORDER_PAYMENT_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-this-join-store");
 
-        try (KeyValueIterator<Windowed<String>, User> iterator = leftStateStore.all()) {
-            KeyValue<Windowed<String>, User> leftKeyValue00To10 = iterator.next();
-            assertEquals("Simpson", leftKeyValue00To10.key.key());
-            assertEquals(
-                    "2000-01-01T01:13:00Z",
-                    leftKeyValue00To10.key.window().startTime().toString());
-            assertEquals(
-                    "2000-01-01T01:23:00Z",
-                    leftKeyValue00To10.key.window().endTime().toString());
-            assertEquals(bart, leftKeyValue00To10.value);
-
+        try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
+            assertWindowedRecord(iterator.next(), "2", "2000-01-01T01:13:00Z", "2000-01-01T01:23:00Z", orderTwo);
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, User> rightStateStore =
-                testDriver.getWindowStore(StateStore.USER_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
+        WindowStore<String, Payment> paymentStateStore =
+                testDriver.getWindowStore(ORDER_PAYMENT_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, User> iterator = rightStateStore.all()) {
-            KeyValue<Windowed<String>, User> rightKeyValue = iterator.next();
-            assertEquals("Simpson", rightKeyValue.key.key());
-            assertEquals(
-                    "2000-01-01T01:06:00Z",
-                    rightKeyValue.key.window().startTime().toString());
-            assertEquals(
-                    "2000-01-01T01:16:00Z", rightKeyValue.key.window().endTime().toString());
-            assertEquals(marge, rightKeyValue.value);
-
+        try (KeyValueIterator<Windowed<String>, Payment> iterator = paymentStateStore.all()) {
+            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:06:00Z", "2000-01-01T01:16:00Z", paymentOne);
             assertFalse(iterator.hasNext());
         }
     }
 
     @Test
     void shouldHonorGracePeriod() {
-        User homer = buildUser("Homer");
-        leftInputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
+        Order orderOne = buildOrder(1L);
+        orderInputTopic.pipeInput(new TestRecord<>("1", orderOne, Instant.parse("2000-01-01T01:00:00Z")));
 
-        User marge = buildUser("Marge");
-        leftInputTopic.pipeInput(new TestRecord<>("3", marge, Instant.parse("2000-01-01T01:10:30Z")));
+        Order orderTwo = buildOrder(2L);
+        orderInputTopic.pipeInput(new TestRecord<>("2", orderTwo, Instant.parse("2000-01-01T01:10:30Z")));
 
         // At this point, the stream time is 01:10:30. It exceeds by 30 seconds
-        // the upper bound of the Homer's window [01:00:00.001Z->01:10:00Z] in the store.
-        // However, the following delayed record "Bart" will be joined with the first record
+        // the upper bound of the first order's window [01:00:00.001Z->01:10:00Z] in the store.
+        // However, the following delayed payment will be joined with the first order
         // thanks to the grace period of 1 minute.
 
-        User bart = buildUser("Bart");
-        rightInputTopic.pipeInput(new TestRecord<>("2", bart, Instant.parse("2000-01-01T01:05:00Z")));
+        Payment payment = buildPayment(1L);
+        paymentInputTopic.pipeInput(new TestRecord<>("1", payment, Instant.parse("2000-01-01T01:05:00Z")));
 
-        List<KeyValue<String, JoinUsers>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinOrderPayment>> results = joinOutputTopic.readKeyValuesToList();
 
-        // No record in the secondary stream matched the first record in the primary stream
-        // at the end of the join window + grace period (01:06:00). Null value is emitted.
-        assertEquals("Simpson", results.getFirst().key);
-        assertEquals(homer, results.getFirst().value.getUserOne());
-        assertNull(results.getFirst().value.getUserTwo());
+        // No payment matched the first order at the end of the join window + grace period (01:06:00).
+        // A null payment is emitted.
+        assertEquals("1", results.getFirst().key);
+        assertEquals(orderOne, results.getFirst().value.getOrder());
+        assertNull(results.getFirst().value.getPayment());
 
-        // The delayed record finally comes and joined with the first record,
-        // so an updated record is emitted with the right value.
-        assertEquals("Simpson", results.get(1).key);
-        assertEquals(homer, results.get(1).value.getUserOne());
-        assertEquals(bart, results.get(1).value.getUserTwo());
+        // The delayed payment finally comes and is joined with the first order,
+        // so an updated record is emitted with the payment.
+        assertEquals("1", results.get(1).key);
+        assertEquals(orderOne, results.get(1).value.getOrder());
+        assertEquals(payment, results.get(1).value.getPayment());
 
-        WindowStore<String, User> leftStateStore =
-                testDriver.getWindowStore(StateStore.USER_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-this-join-store");
+        WindowStore<String, Order> orderStateStore =
+                testDriver.getWindowStore(ORDER_PAYMENT_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-this-join-store");
 
-        try (KeyValueIterator<Windowed<String>, User> iterator = leftStateStore.all()) {
-            KeyValue<Windowed<String>, User> leftKeyValue00To10 = iterator.next();
-            assertEquals("Simpson", leftKeyValue00To10.key.key());
-            assertEquals(
-                    "2000-01-01T01:00:00Z",
-                    leftKeyValue00To10.key.window().startTime().toString());
-            assertEquals(
-                    "2000-01-01T01:10:00Z",
-                    leftKeyValue00To10.key.window().endTime().toString());
-            assertEquals(homer, leftKeyValue00To10.value);
-
-            KeyValue<Windowed<String>, User> leftKeyValue10m30To20m30 = iterator.next();
-            assertEquals("Simpson", leftKeyValue10m30To20m30.key.key());
-            assertEquals(
-                    "2000-01-01T01:10:30Z",
-                    leftKeyValue10m30To20m30.key.window().startTime().toString());
-            assertEquals(
-                    "2000-01-01T01:20:30Z",
-                    leftKeyValue10m30To20m30.key.window().endTime().toString());
-            assertEquals(marge, leftKeyValue10m30To20m30.value);
-
+        try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
+            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", orderOne);
+            assertWindowedRecord(iterator.next(), "2", "2000-01-01T01:10:30Z", "2000-01-01T01:20:30Z", orderTwo);
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, User> rightStateStore =
-                testDriver.getWindowStore(StateStore.USER_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
+        WindowStore<String, Payment> paymentStateStore =
+                testDriver.getWindowStore(ORDER_PAYMENT_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, User> iterator = rightStateStore.all()) {
-            KeyValue<Windowed<String>, User> rightKeyValue = iterator.next();
-            assertEquals("Simpson", rightKeyValue.key.key());
-            assertEquals(
-                    "2000-01-01T01:05:00Z",
-                    rightKeyValue.key.window().startTime().toString());
-            assertEquals(
-                    "2000-01-01T01:15:00Z", rightKeyValue.key.window().endTime().toString());
-            assertEquals(bart, rightKeyValue.value);
-
+        try (KeyValueIterator<Windowed<String>, Payment> iterator = paymentStateStore.all()) {
+            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:05:00Z", "2000-01-01T01:15:00Z", payment);
             assertFalse(iterator.hasNext());
         }
     }
 
-    private User buildUser(String firstName) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName("Simpson")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    private <T> void assertWindowedRecord(
+            KeyValue<Windowed<String>, T> keyValue, String key, String start, String end, T value) {
+        assertEquals(key, keyValue.key.key());
+        assertEquals(start, keyValue.key.window().startTime().toString());
+        assertEquals(end, keyValue.key.window().endTime().toString());
+        assertEquals(value, keyValue.value);
+    }
+
+    private Order buildOrder(Long id) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(3L)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(1249.90)
+                .build();
+    }
+
+    private Payment buildPayment(Long orderId) {
+        return Payment.newBuilder()
+                .setId(orderId)
+                .setOrderId(orderId)
+                .setAmount(1249.90)
                 .build();
     }
 }

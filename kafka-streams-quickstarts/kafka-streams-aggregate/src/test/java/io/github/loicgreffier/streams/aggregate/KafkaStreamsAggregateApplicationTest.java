@@ -19,9 +19,9 @@
 package io.github.loicgreffier.streams.aggregate;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.aggregate.constant.StateStore.USER_AGGREGATE_STORE;
-import static io.github.loicgreffier.streams.aggregate.constant.Topic.USER_AGGREGATE_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.constant.StateStore.ORDER_AGGREGATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.constant.Topic.ORDER_AGGREGATE_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.avro.UserAggregate;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.OrderAggregate;
 import io.github.loicgreffier.streams.aggregate.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.aggregate.serdes.SerdesUtils;
 import java.io.IOException;
@@ -58,8 +58,8 @@ class KafkaStreamsAggregateApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
-    private TestOutputTopic<String, UserAggregate> outputTopic;
+    private TestInputTopic<String, Order> inputTopic;
+    private TestOutputTopic<String, OrderAggregate> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -80,13 +80,13 @@ class KafkaStreamsAggregateApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-                USER_AGGREGATE_TOPIC,
+                ORDER_AGGREGATE_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<UserAggregate>getValueSerdes().deserializer());
+                SerdesUtils.<OrderAggregate>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -98,38 +98,42 @@ class KafkaStreamsAggregateApplicationTest {
 
     @Test
     void shouldAggregate() {
-        User homer = buildUser("Homer");
-        inputTopic.pipeInput("1", homer);
+        Order firstOrder = buildOrder(1L);
+        inputTopic.pipeInput("1", firstOrder);
 
-        User marge = buildUser("Marge");
-        inputTopic.pipeInput("2", marge);
+        Order secondOrder = buildOrder(2L);
+        inputTopic.pipeInput("2", secondOrder);
 
-        User bart = buildUser("Homer");
-        inputTopic.pipeInput("3", bart);
+        Order thirdOrder = buildOrder(3L);
+        inputTopic.pipeInput("3", thirdOrder);
 
-        List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Simpson", results.getFirst().key);
-        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
+        assertEquals("1", results.getFirst().key);
+        assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
 
-        assertEquals("Simpson", results.get(1).key);
-        assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
+        assertEquals("1", results.get(1).key);
+        assertIterableEquals(
+                List.of(firstOrder, secondOrder), results.get(1).value.getOrders());
 
-        assertEquals("Simpson", results.get(2).key);
-        assertIterableEquals(List.of(homer, marge, bart), results.get(2).value.getUsers());
+        assertEquals("1", results.get(2).key);
+        assertIterableEquals(
+                List.of(firstOrder, secondOrder, thirdOrder),
+                results.get(2).value.getOrders());
 
-        KeyValueStore<String, UserAggregate> stateStore = testDriver.getKeyValueStore(USER_AGGREGATE_STORE);
+        KeyValueStore<String, OrderAggregate> stateStore = testDriver.getKeyValueStore(ORDER_AGGREGATE_STORE);
 
         assertIterableEquals(
-                List.of(homer, marge, bart), stateStore.get("Simpson").getUsers());
+                List.of(firstOrder, secondOrder, thirdOrder),
+                stateStore.get("1").getOrders());
     }
 
-    private User buildUser(String firstName) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName("Simpson")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    private Order buildOrder(long id) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(1L)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(100.0)
                 .build();
     }
 }

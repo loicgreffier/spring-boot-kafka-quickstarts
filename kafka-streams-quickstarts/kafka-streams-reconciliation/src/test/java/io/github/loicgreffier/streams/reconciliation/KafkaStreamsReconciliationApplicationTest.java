@@ -18,29 +18,10 @@
  */
 package io.github.loicgreffier.streams.reconciliation;
 
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static io.github.loicgreffier.streams.reconciliation.constant.Topic.ORDER_TOPIC;
+import static io.github.loicgreffier.streams.reconciliation.constant.Topic.PAYMENT_TOPIC;
 import static io.github.loicgreffier.streams.reconciliation.constant.Topic.RECONCILIATION_TOPIC;
-import static io.github.loicgreffier.streams.reconciliation.constant.Topic.USER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -48,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.Payment;
 import io.github.loicgreffier.avro.Reconciliation;
-import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.reconciliation.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.reconciliation.serdes.SerdesUtils;
 import java.io.IOException;
@@ -76,8 +57,8 @@ class KafkaStreamsReconciliationApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputUserTopic;
     private TestInputTopic<String, Order> inputOrderTopic;
+    private TestInputTopic<String, Payment> inputPaymentTopic;
     private TestOutputTopic<String, Reconciliation> outputTopic;
 
     @BeforeEach
@@ -98,14 +79,14 @@ class KafkaStreamsReconciliationApplicationTest {
         KafkaStreamsTopology.topology(streamsBuilder);
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
-        inputUserTopic = testDriver.createInputTopic(
-                USER_TOPIC,
-                new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
         inputOrderTopic = testDriver.createInputTopic(
                 ORDER_TOPIC,
                 new StringSerializer(),
                 SerdesUtils.<Order>getValueSerdes().serializer());
+        inputPaymentTopic = testDriver.createInputTopic(
+                PAYMENT_TOPIC,
+                new StringSerializer(),
+                SerdesUtils.<Payment>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
                 RECONCILIATION_TOPIC,
                 new StringDeserializer(),
@@ -121,34 +102,29 @@ class KafkaStreamsReconciliationApplicationTest {
 
     @Test
     void shouldReconcile() {
-        User homer = buildUser();
         Order order = buildOrder();
+        Payment payment = buildPayment();
 
-        inputUserTopic.pipeInput("1", homer);
         inputOrderTopic.pipeInput("1", order);
+        inputPaymentTopic.pipeInput("1", payment);
 
         List<KeyValue<String, Reconciliation>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("1", results.getFirst().key);
-        assertEquals(homer, results.getFirst().value.getCustomer());
         assertEquals(order, results.getFirst().value.getOrder());
-    }
-
-    private User buildUser() {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName("Homer")
-                .setLastName("Simpson")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-                .build();
+        assertEquals(payment, results.getFirst().value.getPayment());
     }
 
     private Order buildOrder() {
         return Order.newBuilder()
                 .setId(1L)
-                .setItems(List.of("Duff Beer", "Donuts"))
-                .setTotalAmount(10.99)
-                .setCustomerId(1L)
+                .setCustomerId(3L)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(1249.90)
                 .build();
+    }
+
+    private Payment buildPayment() {
+        return Payment.newBuilder().setId(1L).setOrderId(1L).setAmount(1249.90).build();
     }
 }

@@ -62,6 +62,51 @@ services:
       CONTROL_CENTER_MODE_ENABLE: "management"
       PORT: 9021
 
+  kafka-streams-producer-order:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-producer-order-1.0.0
+    hostname: kafka-streams-producer-order
+    container_name: kafka-streams-producer-order
+    networks:
+      - spring-boot-kafka-quickstarts
+    depends_on:
+      - broker
+      - schema-registry
+    ports:
+      - "8082:8080"
+    restart: unless-stopped
+    environment:
+      SPRING_APPLICATION_JSON: |
+        {
+          "kafka": {
+            "properties": {
+              "bootstrap.servers": "broker:29092",
+              "schema.registry.url": "http://schema-registry:8081"
+            }
+          }
+        }
+
+  kafka-streams-store-key-value:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-store-key-value-1.0.0
+    hostname: kafka-streams-store-key-value
+    container_name: kafka-streams-store-key-value
+    networks:
+      - spring-boot-kafka-quickstarts
+    depends_on:
+      - kafka-streams-producer-order
+    ports:
+      - "8083:8080"
+    restart: unless-stopped
+    environment:
+      SPRING_APPLICATION_JSON: |
+        {
+          "kafka": {
+            "properties": {
+              "bootstrap.servers": "broker:29092",
+              "schema.registry.url": "http://schema-registry:8081"
+            }
+          }
+        }
+
 networks:
   spring-boot-kafka-quickstarts:
     driver: bridge

@@ -20,8 +20,8 @@ package io.github.loicgreffier.streams.schedule.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_SCHEDULE_TOPIC = "USER_SCHEDULE_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String ORDER_SCHEDULE_TOPIC = "ORDER_SCHEDULE_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

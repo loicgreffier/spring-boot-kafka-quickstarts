@@ -19,8 +19,8 @@
 package io.github.loicgreffier.streams.exception.handler.deserialization;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC;
-import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.ORDER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC;
+import static io.github.loicgreffier.streams.exception.handler.deserialization.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.common.utils.Utils.mkEntry;
 import static org.apache.kafka.common.utils.Utils.mkMap;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
@@ -30,8 +30,7 @@ import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.exception.handler.deserialization.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.exception.handler.deserialization.error.CustomDeserializationExceptionHandler;
 import io.github.loicgreffier.streams.exception.handler.deserialization.serdes.SerdesUtils;
@@ -60,9 +59,9 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
+    private TestInputTopic<String, Order> inputTopic;
     private TestInputTopic<String, String> inputTopicForDeserializationException;
-    private TestOutputTopic<String, User> outputTopic;
+    private TestOutputTopic<String, Order> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -85,15 +84,15 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         inputTopicForDeserializationException =
-                testDriver.createInputTopic(USER_TOPIC, new StringSerializer(), new StringSerializer());
+                testDriver.createInputTopic(ORDER_TOPIC, new StringSerializer(), new StringSerializer());
         outputTopic = testDriver.createOutputTopic(
-                USER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC,
+                ORDER_DESERIALIZATION_EXCEPTION_HANDLER_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<User>getValueSerdes().deserializer());
+                SerdesUtils.<Order>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -105,24 +104,24 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
 
     @Test
     void shouldHandleDeserializationExceptionsAndContinueProcessing() {
-        User homer = buildUser("Homer");
-        inputTopic.pipeInput("1", homer);
+        Order firstOrder = buildOrder(1L, 100.0);
+        inputTopic.pipeInput("1", firstOrder);
 
         inputTopicForDeserializationException.pipeInput("2", "invalid");
 
-        User marge = buildUser("Marge");
-        inputTopic.pipeInput("3", marge);
+        Order secondOrder = buildOrder(3L, 200.0);
+        inputTopic.pipeInput("3", secondOrder);
 
         inputTopicForDeserializationException.pipeInput("4", "invalid");
 
-        User bart = buildUser("Bart");
-        inputTopic.pipeInput("5", bart);
+        Order thirdOrder = buildOrder(5L, 300.0);
+        inputTopic.pipeInput("5", thirdOrder);
 
-        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("1", homer), results.getFirst());
-        assertEquals(KeyValue.pair("3", marge), results.get(1));
-        assertEquals(KeyValue.pair("5", bart), results.get(2));
+        assertEquals(KeyValue.pair("1", firstOrder), results.getFirst());
+        assertEquals(KeyValue.pair("3", secondOrder), results.get(1));
+        assertEquals(KeyValue.pair("5", thirdOrder), results.get(2));
 
         assertEquals(2.0, testDriver.metrics().get(droppedRecordsTotalMetric()).metricValue());
         assertEquals(
@@ -130,13 +129,12 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
                 testDriver.metrics().get(droppedRecordsRateMetric()).metricValue());
     }
 
-    private User buildUser(String firstName) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName("Simpson")
-                .setNationality(CountryCode.US)
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    private Order buildOrder(long id, double amount) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(1L)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(amount)
                 .build();
     }
 

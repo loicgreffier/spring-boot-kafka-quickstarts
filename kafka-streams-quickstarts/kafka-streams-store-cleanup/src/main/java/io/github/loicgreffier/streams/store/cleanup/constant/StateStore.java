@@ -20,7 +20,7 @@ package io.github.loicgreffier.streams.store.cleanup.constant;
 
 /** State store name constants. */
 public abstract class StateStore {
-    public static final String USER_SCHEDULE_STORE_CLEANUP_STORE = "USER_SCHEDULE_STORE_CLEANUP_STORE";
+    public static final String ORDER_STORE_CLEANUP_STORE = "ORDER_STORE_CLEANUP_STORE";
 
     /** Private constructor. */
     private StateStore() {}

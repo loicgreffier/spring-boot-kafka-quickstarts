@@ -21,8 +21,8 @@ package io.github.loicgreffier.streams.reconciliation.app.processor;
 import static io.github.loicgreffier.streams.reconciliation.constant.StateStore.RECONCILIATION_STORE;
 
 import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.Payment;
 import io.github.loicgreffier.avro.Reconciliation;
-import io.github.loicgreffier.avro.User;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
@@ -51,11 +51,11 @@ public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, S
     }
 
     /**
-     * Process a record and perform reconciliation. Checks whether a reconciliation record exists for the given key. If
-     * it does not exist, a new reconciliation record is created. If the record is a {@code User}, the customer is set
-     * in the reconciliation record. If the record is a {@code Order}, the order is set in the reconciliation record. If
-     * both customer and order are present in the reconciliation record, the record is emitted and removed from the
-     * store. Otherwise, the current state of the reconciliation record is logged.
+     * Process a record and perform reconciliation. Checks whether a reconciliation record exists for the given order
+     * id. If it does not exist, a new reconciliation record is created. If the record is an {@code Order}, the order is
+     * set in the reconciliation record. If the record is a {@code Payment}, the payment is set in the reconciliation
+     * record. If both order and payment are present in the reconciliation record, the record is emitted and removed
+     * from the store. Otherwise, the current state of the reconciliation record is logged.
      *
      * @param message The message to process.
      */
@@ -63,36 +63,38 @@ public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, S
     public void process(Record<String, T> message) {
         log.info("Processing record {}", message.value().getClass().getSimpleName());
 
-        String customerId = message.key();
-        Reconciliation reconciliation = reconciliationStore.get(customerId);
+        String orderId = message.key();
+        Reconciliation reconciliation = reconciliationStore.get(orderId);
 
         if (reconciliation == null) {
-            log.info("No reconciliation record found for key = {}. Storing record in the store", customerId);
+            log.info("No reconciliation record found for key = {}. Storing record in the store", orderId);
             reconciliation = new Reconciliation();
         }
 
-        if (message.value() instanceof User kafkaUser) {
-            reconciliation.setCustomer(kafkaUser);
-        } else if (message.value() instanceof Order kafkaOrder) {
-            reconciliation.setOrder(kafkaOrder);
+        if (message.value() instanceof Order order) {
+            reconciliation.setOrder(order);
         }
 
-        reconciliationStore.put(customerId, reconciliation);
+        if (message.value() instanceof Payment payment) {
+            reconciliation.setPayment(payment);
+        }
 
+        reconciliationStore.put(orderId, reconciliation);
         log.info(
                 "Reconciliation record for key = {} updated in the store. Checking if reconciliation is complete",
-                customerId);
+                orderId);
 
-        if (reconciliation.getCustomer() != null && reconciliation.getOrder() != null) {
-            log.info("Reconciliation record for key = {} is complete. Emitting record", customerId);
-            reconciliationStore.delete(customerId);
-            context().forward(new Record<>(customerId, reconciliation, context().currentSystemTimeMs()));
-        } else {
+        if (reconciliation.getOrder() == null || reconciliation.getPayment() == null) {
             log.info(
-                    "Reconciliation record for key = {} is not complete yet. Has customer = {}, has order = {}",
-                    customerId,
-                    reconciliation.getCustomer() != null,
-                    reconciliation.getOrder() != null);
+                    "Reconciliation record for key = {} is not complete yet. Has order = {}, has payment = {}",
+                    orderId,
+                    reconciliation.getOrder() != null,
+                    reconciliation.getPayment() != null);
+            return;
         }
+
+        log.info("Reconciliation record for key = {} is complete. Emitting record", orderId);
+        reconciliationStore.delete(orderId);
+        context().forward(new Record<>(orderId, reconciliation, context().currentSystemTimeMs()));
     }
 }

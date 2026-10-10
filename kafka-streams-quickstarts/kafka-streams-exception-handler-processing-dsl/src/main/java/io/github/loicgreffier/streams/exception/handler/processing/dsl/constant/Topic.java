@@ -20,9 +20,9 @@ package io.github.loicgreffier.streams.exception.handler.processing.dsl.constant
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_PROCESSING_EXCEPTION_HANDLER_DSL_TOPIC =
-            "USER_PROCESSING_EXCEPTION_HANDLER_DSL_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String ORDER_PROCESSING_EXCEPTION_HANDLER_DSL_TOPIC =
+            "ORDER_PROCESSING_EXCEPTION_HANDLER_DSL_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

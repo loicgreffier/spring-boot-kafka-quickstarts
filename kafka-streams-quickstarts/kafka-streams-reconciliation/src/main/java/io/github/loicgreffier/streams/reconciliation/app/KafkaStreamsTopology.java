@@ -20,19 +20,18 @@ package io.github.loicgreffier.streams.reconciliation.app;
 
 import static io.github.loicgreffier.streams.reconciliation.constant.StateStore.RECONCILIATION_STORE;
 import static io.github.loicgreffier.streams.reconciliation.constant.Topic.ORDER_TOPIC;
+import static io.github.loicgreffier.streams.reconciliation.constant.Topic.PAYMENT_TOPIC;
 import static io.github.loicgreffier.streams.reconciliation.constant.Topic.RECONCILIATION_TOPIC;
-import static io.github.loicgreffier.streams.reconciliation.constant.Topic.USER_TOPIC;
 
 import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.Payment;
 import io.github.loicgreffier.avro.Reconciliation;
-import io.github.loicgreffier.avro.User;
 import io.github.loicgreffier.streams.reconciliation.app.processor.ReconciliationProcessor;
 import io.github.loicgreffier.streams.reconciliation.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
-import org.apache.kafka.streams.kstream.Repartitioned;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
@@ -43,10 +42,10 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} and {@code ORDER_TOPIC} topics. It reconciles a customer and
-     * an order, regardless of which record arrives first or how much time passes between the two. The
-     * {@code ORDER_TOPIC} is repartitioned before entering the processor to prevent records with a new key from being
-     * processed by the wrong task. The result is written to the {@code RECONCILIATION_TOPIC}.
+     * <p>This topology reads from the {@code ORDER_TOPIC} and {@code PAYMENT_TOPIC} topics. It reconciles an order and
+     * its payment, regardless of which record arrives first or how much time passes between the two. Both topics are
+     * keyed by order id, so they are co-partitioned: an order and its payment are processed by the same task and share
+     * the same reconciliation store. The result is written to the {@code RECONCILIATION_TOPIC}.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
@@ -56,14 +55,12 @@ public class KafkaStreamsTopology {
 
         streamsBuilder.addStateStore(storeBuilder);
 
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .process(() -> new ReconciliationProcessor<>(), RECONCILIATION_STORE)
                 .to(RECONCILIATION_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
 
-        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .selectKey((_, value) -> String.valueOf(value.getCustomerId()))
-                .repartition(Repartitioned.<String, Order>with(Serdes.String(), SerdesUtils.getValueSerdes())
-                        .withName(ORDER_TOPIC))
+        streamsBuilder.<String, Payment>stream(
+                        PAYMENT_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .process(() -> new ReconciliationProcessor<>(), RECONCILIATION_STORE)
                 .to(RECONCILIATION_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }

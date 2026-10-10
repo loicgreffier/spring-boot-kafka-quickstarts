@@ -20,8 +20,8 @@ package io.github.loicgreffier.streams.reconciliation.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
     public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String PAYMENT_TOPIC = "PAYMENT_TOPIC";
     public static final String RECONCILIATION_TOPIC = "RECONCILIATION_TOPIC";
 
     /** Private constructor. */

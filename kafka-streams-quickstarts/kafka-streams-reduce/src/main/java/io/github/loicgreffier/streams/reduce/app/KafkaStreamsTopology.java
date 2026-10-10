@@ -18,13 +18,13 @@
  */
 package io.github.loicgreffier.streams.reduce.app;
 
-import static io.github.loicgreffier.streams.reduce.constant.StateStore.USER_REDUCE_STORE;
-import static io.github.loicgreffier.streams.reduce.constant.Topic.GROUP_USER_BY_NATIONALITY_TOPIC;
-import static io.github.loicgreffier.streams.reduce.constant.Topic.USER_REDUCE_TOPIC;
-import static io.github.loicgreffier.streams.reduce.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.reduce.constant.StateStore.ORDER_REDUCE_STORE;
+import static io.github.loicgreffier.streams.reduce.constant.Topic.GROUP_ORDER_BY_CUSTOMER_TOPIC;
+import static io.github.loicgreffier.streams.reduce.constant.Topic.ORDER_REDUCE_TOPIC;
+import static io.github.loicgreffier.streams.reduce.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.streams.reduce.app.reducer.MaxAgeReducer;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.streams.reduce.app.reducer.MaxAmountReducer;
 import io.github.loicgreffier.streams.reduce.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -44,24 +44,24 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} topic, groups by nationality and reduces the stream to the
-     * user with the max age. The result is written to the {@code USER_REDUCE_TOPIC} topic.
+     * <p>This topology reads from the {@code ORDER_TOPIC} topic, groups by customer id and reduces the stream to the
+     * order with the highest amount. The result is written to the {@code ORDER_REDUCE_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .groupBy(
-                        (_, user) -> user.getNationality().toString(),
-                        Grouped.with(GROUP_USER_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+                        (_, order) -> String.valueOf(order.getCustomerId()),
+                        Grouped.with(GROUP_ORDER_BY_CUSTOMER_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .reduce(
-                        new MaxAgeReducer(),
-                        Materialized.<String, User, KeyValueStore<Bytes, byte[]>>as(USER_REDUCE_STORE)
+                        new MaxAmountReducer(),
+                        Materialized.<String, Order, KeyValueStore<Bytes, byte[]>>as(ORDER_REDUCE_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))
                 .toStream()
-                .to(USER_REDUCE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+                .to(ORDER_REDUCE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /** Private constructor. */

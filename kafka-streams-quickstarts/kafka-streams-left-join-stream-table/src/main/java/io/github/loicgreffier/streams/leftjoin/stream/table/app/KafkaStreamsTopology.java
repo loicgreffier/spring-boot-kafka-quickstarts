@@ -18,15 +18,15 @@
  */
 package io.github.loicgreffier.streams.leftjoin.stream.table.app;
 
-import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.COUNTRY_TOPIC;
-import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC;
-import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.USER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC;
-import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.StateStore.CUSTOMER_STORE;
+import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.CUSTOMER_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.ORDER_CUSTOMER_LEFT_JOIN_STREAM_TABLE_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.ORDER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.table.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.Country;
-import io.github.loicgreffier.avro.JoinUserCountry;
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.streams.leftjoin.stream.table.constant.StateStore;
+import io.github.loicgreffier.avro.Customer;
+import io.github.loicgreffier.avro.JoinOrderCustomer;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.leftjoin.stream.table.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -47,57 +47,54 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} topic and the {@code COUNTRY_TOPIC} topic as a table. The
-     * stream is joined to the table by nationality using a left join. The result is written to the
-     * {@code USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC} topic.
+     * <p>This topology reads from the {@code ORDER_TOPIC} topic and the {@code CUSTOMER_TOPIC} topic as a table. The
+     * stream is re-keyed by customer id, then joined to the table by customer id using a left join. The result is
+     * written to the {@code ORDER_CUSTOMER_LEFT_JOIN_STREAM_TABLE_TOPIC} topic.
      *
-     * <p>A left join emits an output for each record in the primary stream. If there is no matching record in the
-     * secondary stream (the table), a {@code null} value is returned for that record.
+     * <p>A left join emits an output for each order. If there is no matching customer, a {@code null} customer is
+     * returned.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        KTable<String, Country> countryTable = streamsBuilder.table(
-                COUNTRY_TOPIC,
-                Materialized.<String, Country, KeyValueStore<Bytes, byte[]>>as(StateStore.COUNTRY_STORE)
+        KTable<String, Customer> customerTable = streamsBuilder.table(
+                CUSTOMER_TOPIC,
+                Materialized.<String, Customer, KeyValueStore<Bytes, byte[]>>as(CUSTOMER_STORE)
                         .withKeySerde(Serdes.String())
                         .withValueSerde(SerdesUtils.getValueSerdes()));
 
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .selectKey((_, user) -> user.getNationality().toString())
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
+                .selectKey((_, order) -> String.valueOf(order.getCustomerId()))
                 .leftJoin(
-                        countryTable,
-                        (key, user, country) -> {
-                            if (country != null) {
+                        customerTable,
+                        (order, customer) -> {
+                            if (customer == null) {
                                 log.info(
-                                        "Joined {} {} {} to country {} by code {}",
-                                        user.getId(),
-                                        user.getFirstName(),
-                                        user.getLastName(),
-                                        country.getName(),
-                                        key);
+                                        "No matching customer for order {} with customer id {}",
+                                        order.getId(),
+                                        order.getCustomerId());
                             } else {
                                 log.info(
-                                        "No matching country for {} {} {} with code {}",
-                                        user.getId(),
-                                        user.getFirstName(),
-                                        user.getLastName(),
-                                        key);
+                                        "Joined order {} to customer {} {} by customer id {}",
+                                        order.getId(),
+                                        customer.getFirstName(),
+                                        customer.getLastName(),
+                                        order.getCustomerId());
                             }
 
-                            return JoinUserCountry.newBuilder()
-                                    .setUser(user)
-                                    .setCountry(country)
+                            return JoinOrderCustomer.newBuilder()
+                                    .setOrder(order)
+                                    .setCustomer(customer)
                                     .build();
                         },
                         Joined.with(
                                 Serdes.String(),
                                 SerdesUtils.getValueSerdes(),
                                 SerdesUtils.getValueSerdes(),
-                                USER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC))
+                                ORDER_LEFT_JOIN_STREAM_TABLE_REKEY_TOPIC))
                 .to(
-                        USER_COUNTRY_LEFT_JOIN_STREAM_TABLE_TOPIC,
+                        ORDER_CUSTOMER_LEFT_JOIN_STREAM_TABLE_TOPIC,
                         Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 

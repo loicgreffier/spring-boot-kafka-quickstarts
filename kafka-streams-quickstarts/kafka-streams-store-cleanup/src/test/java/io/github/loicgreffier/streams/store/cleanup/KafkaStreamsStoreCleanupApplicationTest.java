@@ -19,8 +19,8 @@
 package io.github.loicgreffier.streams.store.cleanup;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.store.cleanup.constant.StateStore.USER_SCHEDULE_STORE_CLEANUP_STORE;
-import static io.github.loicgreffier.streams.store.cleanup.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.store.cleanup.constant.StateStore.ORDER_STORE_CLEANUP_STORE;
+import static io.github.loicgreffier.streams.store.cleanup.constant.Topic.ORDER_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -28,14 +28,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.store.cleanup.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.store.cleanup.serdes.SerdesUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -53,7 +53,7 @@ class KafkaStreamsStoreCleanupApplicationTest {
     private static final String MOCK_SCHEMA_REGISTRY_URL = "mock://" + CLASS_NAME;
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopic;
+    private TestInputTopic<String, Order> inputTopic;
 
     @BeforeEach
     void setUp() {
@@ -74,9 +74,9 @@ class KafkaStreamsStoreCleanupApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopic = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
     }
 
     @AfterEach
@@ -88,43 +88,42 @@ class KafkaStreamsStoreCleanupApplicationTest {
 
     @Test
     void shouldFillAndCleanupStore() {
-        User homer = buildUser("Homer", "Simpson");
-        inputTopic.pipeInput(new TestRecord<>("1", homer, Instant.parse("2000-01-01T01:00:00Z")));
+        Order firstOrder = buildOrder(1L, 1L);
+        inputTopic.pipeInput(new TestRecord<>("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z")));
 
-        User marge = buildUser("Marge", "Simpson");
-        inputTopic.pipeInput(new TestRecord<>("2", marge, Instant.parse("2000-01-01T01:00:20Z")));
+        Order secondOrder = buildOrder(2L, 1L);
+        inputTopic.pipeInput(new TestRecord<>("2", secondOrder, Instant.parse("2000-01-01T01:00:20Z")));
 
-        User milhouse = buildUser("Milhouse", "Van Houten");
-        inputTopic.pipeInput(new TestRecord<>("3", milhouse, Instant.parse("2000-01-01T01:00:40Z")));
+        Order thirdOrder = buildOrder(3L, 1L);
+        inputTopic.pipeInput(new TestRecord<>("3", thirdOrder, Instant.parse("2000-01-01T01:00:40Z")));
 
-        KeyValueStore<String, User> stateStore = testDriver.getKeyValueStore(USER_SCHEDULE_STORE_CLEANUP_STORE);
+        KeyValueStore<String, Order> stateStore = testDriver.getKeyValueStore(ORDER_STORE_CLEANUP_STORE);
 
         // The 1st stream time punctuate is triggered after the 1st record is pushed,
         // so the 1st record is not in the store anymore.
         assertNull(stateStore.get("1"));
-        assertEquals(marge, stateStore.get("2"));
-        assertEquals(milhouse, stateStore.get("3"));
+        assertEquals(secondOrder, stateStore.get("2"));
+        assertEquals(thirdOrder, stateStore.get("3"));
 
-        User bart = buildUser("Bart", "Simpson");
-        inputTopic.pipeInput(new TestRecord<>("4", bart, Instant.parse("2000-01-01T01:02:00Z")));
+        Order fourthOrder = buildOrder(4L, 1L);
+        inputTopic.pipeInput(new TestRecord<>("4", fourthOrder, Instant.parse("2000-01-01T01:02:00Z")));
 
-        User lisa = buildUser("Lisa", "Simpson");
-        inputTopic.pipeInput(new TestRecord<>("5", lisa, Instant.parse("2000-01-01T01:02:30Z")));
+        Order fifthOrder = buildOrder(5L, 1L);
+        inputTopic.pipeInput(new TestRecord<>("5", fifthOrder, Instant.parse("2000-01-01T01:02:30Z")));
 
         // 2nd stream time punctuate
         assertNull(stateStore.get("2"));
         assertNull(stateStore.get("3"));
         assertNull(stateStore.get("4"));
-        assertEquals(lisa, stateStore.get("5"));
+        assertEquals(fifthOrder, stateStore.get("5"));
     }
 
-    private User buildUser(String firstName, String lastName) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName(lastName)
-                .setNationality(CountryCode.GB)
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    private Order buildOrder(long id, long customerId) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(customerId)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(1249.90)
                 .build();
     }
 }

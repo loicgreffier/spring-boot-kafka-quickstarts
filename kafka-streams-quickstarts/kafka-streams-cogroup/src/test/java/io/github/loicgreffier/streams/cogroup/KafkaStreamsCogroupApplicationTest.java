@@ -19,10 +19,10 @@
 package io.github.loicgreffier.streams.cogroup;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.cogroup.constant.StateStore.USER_COGROUP_AGGREGATE_STORE;
-import static io.github.loicgreffier.streams.cogroup.constant.Topic.USER_COGROUP_TOPIC;
-import static io.github.loicgreffier.streams.cogroup.constant.Topic.USER_TOPIC;
-import static io.github.loicgreffier.streams.cogroup.constant.Topic.USER_TOPIC_TWO;
+import static io.github.loicgreffier.streams.cogroup.constant.StateStore.ORDER_COGROUP_AGGREGATE_STORE;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.ORDER_COGROUP_TOPIC;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.ORDER_TOPIC;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.ORDER_TOPIC_TWO;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -30,8 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.avro.UserAggregate;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.OrderAggregate;
 import io.github.loicgreffier.streams.cogroup.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.cogroup.serdes.SerdesUtils;
 import java.io.IOException;
@@ -59,9 +59,9 @@ class KafkaStreamsCogroupApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
 
     private TopologyTestDriver testDriver;
-    private TestInputTopic<String, User> inputTopicOne;
-    private TestInputTopic<String, User> inputTopicTwo;
-    private TestOutputTopic<String, UserAggregate> outputTopic;
+    private TestInputTopic<String, Order> inputTopicOne;
+    private TestInputTopic<String, Order> inputTopicTwo;
+    private TestOutputTopic<String, OrderAggregate> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -82,17 +82,17 @@ class KafkaStreamsCogroupApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopicOne = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         inputTopicTwo = testDriver.createInputTopic(
-                USER_TOPIC_TWO,
+                ORDER_TOPIC_TWO,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-                USER_COGROUP_TOPIC,
+                ORDER_COGROUP_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<UserAggregate>getValueSerdes().deserializer());
+                SerdesUtils.<OrderAggregate>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -103,81 +103,89 @@ class KafkaStreamsCogroupApplicationTest {
     }
 
     @Test
-    void shouldAggregateFirstNamesByLastNameStreamOne() {
-        User homer = buildUser("Homer");
-        inputTopicOne.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
+    void shouldAggregateOrdersByCustomerStreamOne() {
+        Order firstOrder = buildOrder(1L);
+        inputTopicOne.pipeInput("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
-        User marge = buildUser("Marge");
-        inputTopicOne.pipeInput("2", marge, Instant.parse("2000-01-01T01:00:00Z"));
+        Order secondOrder = buildOrder(2L);
+        inputTopicOne.pipeInput("2", secondOrder, Instant.parse("2000-01-01T01:00:00Z"));
 
-        List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
+        List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("Simpson", results.getFirst().key);
-        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
+        assertEquals("1", results.getFirst().key);
+        assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
 
-        assertEquals("Simpson", results.get(1).key);
-        assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
+        assertEquals("1", results.get(1).key);
+        assertIterableEquals(
+                List.of(firstOrder, secondOrder), results.get(1).value.getOrders());
 
-        KeyValueStore<String, UserAggregate> stateStore = testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
-
-        assertIterableEquals(List.of(homer, marge), stateStore.get("Simpson").getUsers());
-    }
-
-    @Test
-    void shouldAggregateFirstNamesByLastNameStreamTwo() {
-        User homer = buildUser("Homer");
-        inputTopicTwo.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
-
-        User marge = buildUser("Marge");
-        inputTopicTwo.pipeInput("2", marge, Instant.parse("2000-01-01T01:00:00Z"));
-
-        List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
-
-        assertEquals("Simpson", results.getFirst().key);
-        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
-
-        assertEquals("Simpson", results.get(1).key);
-        assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
-
-        KeyValueStore<String, UserAggregate> stateStore = testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
-
-        assertIterableEquals(List.of(homer, marge), stateStore.get("Simpson").getUsers());
-    }
-
-    @Test
-    void shouldAggregateFirstNamesByLastNameBothCogroupedStreams() {
-        User homer = buildUser("Homer");
-        inputTopicOne.pipeInput("1", homer, Instant.parse("2000-01-01T01:00:00Z"));
-
-        User marge = buildUser("Marge");
-        inputTopicOne.pipeInput("2", marge, Instant.parse("2000-01-01T01:00:00Z"));
-
-        User bart = buildUser("Bart");
-        inputTopicTwo.pipeInput("3", bart, Instant.parse("2000-01-01T01:00:00Z"));
-
-        List<KeyValue<String, UserAggregate>> results = outputTopic.readKeyValuesToList();
-
-        assertEquals("Simpson", results.getFirst().key);
-        assertIterableEquals(List.of(homer), results.getFirst().value.getUsers());
-
-        assertEquals("Simpson", results.get(1).key);
-        assertIterableEquals(List.of(homer, marge), results.get(1).value.getUsers());
-
-        assertEquals("Simpson", results.get(2).key);
-        assertIterableEquals(List.of(homer, marge, bart), results.get(2).value.getUsers());
-
-        KeyValueStore<String, UserAggregate> stateStore = testDriver.getKeyValueStore(USER_COGROUP_AGGREGATE_STORE);
+        KeyValueStore<String, OrderAggregate> stateStore = testDriver.getKeyValueStore(ORDER_COGROUP_AGGREGATE_STORE);
 
         assertIterableEquals(
-                List.of(homer, marge, bart), stateStore.get("Simpson").getUsers());
+                List.of(firstOrder, secondOrder), stateStore.get("1").getOrders());
     }
 
-    private User buildUser(String firstName) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName("Simpson")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
+    @Test
+    void shouldAggregateOrdersByCustomerStreamTwo() {
+        Order firstOrder = buildOrder(1L);
+        inputTopicTwo.pipeInput("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
+
+        Order secondOrder = buildOrder(2L);
+        inputTopicTwo.pipeInput("2", secondOrder, Instant.parse("2000-01-01T01:00:00Z"));
+
+        List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
+
+        assertEquals("1", results.getFirst().key);
+        assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
+
+        assertEquals("1", results.get(1).key);
+        assertIterableEquals(
+                List.of(firstOrder, secondOrder), results.get(1).value.getOrders());
+
+        KeyValueStore<String, OrderAggregate> stateStore = testDriver.getKeyValueStore(ORDER_COGROUP_AGGREGATE_STORE);
+
+        assertIterableEquals(
+                List.of(firstOrder, secondOrder), stateStore.get("1").getOrders());
+    }
+
+    @Test
+    void shouldAggregateOrdersByCustomerBothCogroupedStreams() {
+        Order firstOrder = buildOrder(1L);
+        inputTopicOne.pipeInput("1", firstOrder, Instant.parse("2000-01-01T01:00:00Z"));
+
+        Order secondOrder = buildOrder(2L);
+        inputTopicOne.pipeInput("2", secondOrder, Instant.parse("2000-01-01T01:00:00Z"));
+
+        Order thirdOrder = buildOrder(3L);
+        inputTopicTwo.pipeInput("3", thirdOrder, Instant.parse("2000-01-01T01:00:00Z"));
+
+        List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
+
+        assertEquals("1", results.getFirst().key);
+        assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
+
+        assertEquals("1", results.get(1).key);
+        assertIterableEquals(
+                List.of(firstOrder, secondOrder), results.get(1).value.getOrders());
+
+        assertEquals("1", results.get(2).key);
+        assertIterableEquals(
+                List.of(firstOrder, secondOrder, thirdOrder),
+                results.get(2).value.getOrders());
+
+        KeyValueStore<String, OrderAggregate> stateStore = testDriver.getKeyValueStore(ORDER_COGROUP_AGGREGATE_STORE);
+
+        assertIterableEquals(
+                List.of(firstOrder, secondOrder, thirdOrder),
+                stateStore.get("1").getOrders());
+    }
+
+    private Order buildOrder(long id) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(1L)
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(100.0)
                 .build();
     }
 }

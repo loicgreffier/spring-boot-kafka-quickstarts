@@ -1,0 +1,34 @@
+{
+  "namespace": "io.github.loicgreffier.avro",
+  "type": "record",
+  "name": "Payment",
+  "fields": [
+    {
+      "name": "id",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Payment id"
+    },
+    {
+      "name": "orderId",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Paid order id"
+    },
+    {
+      "name": "amount",
+      "type": [
+        "null",
+        "double"
+      ],
+      "default": null,
+      "doc": "Payment amount"
+    }
+  ]
+}

@@ -12,8 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>kafka-streams-producer-country</module>
+        <module>kafka-streams-producer-customer</module>
         <module>kafka-streams-producer-order</module>
-        <module>kafka-streams-producer-user</module>
     </modules>
 </project>

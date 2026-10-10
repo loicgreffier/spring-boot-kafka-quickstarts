@@ -62,10 +62,10 @@ services:
       CONTROL_CENTER_MODE_ENABLE: "management"
       PORT: 9021
 
-  kafka-streams-producer-country:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-producer-country-1.0.0
-    hostname: kafka-streams-producer-country
-    container_name: kafka-streams-producer-country
+  kafka-streams-producer-customer:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-producer-customer-1.0.0
+    hostname: kafka-streams-producer-customer
+    container_name: kafka-streams-producer-customer
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
@@ -85,14 +85,14 @@ services:
           }
         }
 
-  kafka-streams-producer-user:
-    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-producer-user-1.0.0
-    hostname: kafka-streams-producer-user
-    container_name: kafka-streams-producer-user
+  kafka-streams-producer-order:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-producer-order-1.0.0
+    hostname: kafka-streams-producer-order
+    container_name: kafka-streams-producer-order
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
-      - kafka-streams-producer-country
+      - kafka-streams-producer-customer
     ports:
       - "8083:8080"
     restart: unless-stopped
@@ -114,7 +114,7 @@ services:
     networks:
       - spring-boot-kafka-quickstarts
     depends_on:
-      - kafka-streams-producer-user
+      - kafka-streams-producer-order
     ports:
       - "8084:8080"
     restart: unless-stopped

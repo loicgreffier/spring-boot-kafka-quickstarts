@@ -4,15 +4,6 @@
   "name": "Reconciliation",
   "fields": [
     {
-      "name": "customer",
-      "type": [
-        "null",
-        "User"
-      ],
-      "default": null,
-      "doc": "Customer"
-    },
-    {
       "name": "order",
       "type": [
         "null",
@@ -20,6 +11,15 @@
       ],
       "default": null,
       "doc": "Order"
+    },
+    {
+      "name": "payment",
+      "type": [
+        "null",
+        "Payment"
+      ],
+      "default": null,
+      "doc": "Payment"
     }
   ]
 }

@@ -20,7 +20,7 @@ package io.github.loicgreffier.streams.reduce.constant;
 
 /** State store name constants. */
 public abstract class StateStore {
-    public static final String USER_REDUCE_STORE = "USER_REDUCE_STORE";
+    public static final String ORDER_REDUCE_STORE = "ORDER_REDUCE_STORE";
 
     /** Private constructor. */
     private StateStore() {}

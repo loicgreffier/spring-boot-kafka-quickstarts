@@ -18,11 +18,11 @@
  */
 package io.github.loicgreffier.streams.processvalues.app;
 
-import static io.github.loicgreffier.streams.processvalues.constant.Topic.USER_PROCESS_VALUES_TOPIC;
-import static io.github.loicgreffier.streams.processvalues.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.processvalues.constant.Topic.ORDER_PROCESS_VALUES_TOPIC;
+import static io.github.loicgreffier.streams.processvalues.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.streams.processvalues.app.processor.UserMetadataFixedKeyProcessor;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.streams.processvalues.app.processor.OrderMetadataFixedKeyProcessor;
 import io.github.loicgreffier.streams.processvalues.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -35,15 +35,16 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} and processes the records using the
-     * {@link UserMetadataFixedKeyProcessor} processor. The result is written to the {@code USER_PROCESS_VALUES_TOPIC}.
+     * <p>This topology reads from the {@code ORDER_TOPIC} and processes the records using the
+     * {@link OrderMetadataFixedKeyProcessor} processor. The result is written to the
+     * {@code ORDER_PROCESS_VALUES_TOPIC}.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .processValues(UserMetadataFixedKeyProcessor::new)
-                .to(USER_PROCESS_VALUES_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .processValues(OrderMetadataFixedKeyProcessor::new)
+                .to(ORDER_PROCESS_VALUES_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /** Private constructor. */

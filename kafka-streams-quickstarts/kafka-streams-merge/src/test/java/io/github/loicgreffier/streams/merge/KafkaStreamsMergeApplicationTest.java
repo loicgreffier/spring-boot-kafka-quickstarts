@@ -19,17 +19,16 @@
 package io.github.loicgreffier.streams.merge;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.merge.constant.Topic.USER_MERGE_TOPIC;
-import static io.github.loicgreffier.streams.merge.constant.Topic.USER_TOPIC;
-import static io.github.loicgreffier.streams.merge.constant.Topic.USER_TOPIC_TWO;
+import static io.github.loicgreffier.streams.merge.constant.Topic.ORDER_MERGE_TOPIC;
+import static io.github.loicgreffier.streams.merge.constant.Topic.ORDER_TOPIC;
+import static io.github.loicgreffier.streams.merge.constant.Topic.ORDER_TOPIC_TWO;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.CountryCode;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.merge.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.merge.serdes.SerdesUtils;
 import java.io.IOException;
@@ -56,9 +55,9 @@ class KafkaStreamsMergeApplicationTest {
     private static final String STATE_DIR = "/tmp/kafka-streams-quickstarts-test";
     private TopologyTestDriver testDriver;
 
-    private TestInputTopic<String, User> inputTopicOne;
-    private TestInputTopic<String, User> inputTopicTwo;
-    private TestOutputTopic<String, User> outputTopic;
+    private TestInputTopic<String, Order> inputTopicOne;
+    private TestInputTopic<String, Order> inputTopicTwo;
+    private TestOutputTopic<String, Order> outputTopic;
 
     @BeforeEach
     void setUp() {
@@ -78,17 +77,17 @@ class KafkaStreamsMergeApplicationTest {
         testDriver = new TopologyTestDriver(streamsBuilder.build(), properties, Instant.parse("2000-01-01T01:00:00Z"));
 
         inputTopicOne = testDriver.createInputTopic(
-                USER_TOPIC,
+                ORDER_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         inputTopicTwo = testDriver.createInputTopic(
-                USER_TOPIC_TWO,
+                ORDER_TOPIC_TWO,
                 new StringSerializer(),
-                SerdesUtils.<User>getValueSerdes().serializer());
+                SerdesUtils.<Order>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
-                USER_MERGE_TOPIC,
+                ORDER_MERGE_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<User>getValueSerdes().deserializer());
+                SerdesUtils.<Order>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -100,25 +99,23 @@ class KafkaStreamsMergeApplicationTest {
 
     @Test
     void shouldMergeBothStreams() {
-        User firstUser = buildUser("Homer");
-        User secondUser = buildUser("Marge");
+        Order firstOrder = buildOrder(1L, 3L, List.of("Laptop", "Mouse"), 1249.90);
+        Order secondOrder = buildOrder(2L, 5L, List.of("Keyboard"), 89.99);
+        inputTopicOne.pipeInput("1", firstOrder);
+        inputTopicTwo.pipeInput("2", secondOrder);
 
-        inputTopicOne.pipeInput("1", firstUser);
-        inputTopicTwo.pipeInput("2", secondUser);
+        List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
-        List<KeyValue<String, User>> results = outputTopic.readKeyValuesToList();
-
-        assertEquals(KeyValue.pair("1", firstUser), results.getFirst());
-        assertEquals(KeyValue.pair("2", secondUser), results.get(1));
+        assertEquals(KeyValue.pair("1", firstOrder), results.getFirst());
+        assertEquals(KeyValue.pair("2", secondOrder), results.get(1));
     }
 
-    private User buildUser(String firstName) {
-        return User.newBuilder()
-                .setId(1L)
-                .setFirstName(firstName)
-                .setLastName("Simpson")
-                .setBirthDate(Instant.parse("2000-01-01T01:00:00Z"))
-                .setNationality(CountryCode.US)
+    private Order buildOrder(long id, long customerId, List<String> items, double amount) {
+        return Order.newBuilder()
+                .setId(id)
+                .setCustomerId(customerId)
+                .setItems(items)
+                .setAmount(amount)
                 .build();
     }
 }

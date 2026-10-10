@@ -18,14 +18,14 @@
  */
 package io.github.loicgreffier.streams.aggregate.app;
 
-import static io.github.loicgreffier.streams.aggregate.constant.StateStore.USER_AGGREGATE_STORE;
-import static io.github.loicgreffier.streams.aggregate.constant.Topic.GROUP_USER_BY_LAST_NAME_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.constant.Topic.USER_AGGREGATE_TOPIC;
-import static io.github.loicgreffier.streams.aggregate.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.constant.StateStore.ORDER_AGGREGATE_STORE;
+import static io.github.loicgreffier.streams.aggregate.constant.Topic.GROUP_ORDER_BY_CUSTOMER_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.constant.Topic.ORDER_AGGREGATE_TOPIC;
+import static io.github.loicgreffier.streams.aggregate.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.avro.UserAggregate;
-import io.github.loicgreffier.streams.aggregate.app.aggregator.UserAggregator;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.OrderAggregate;
+import io.github.loicgreffier.streams.aggregate.app.aggregator.OrderAggregator;
 import io.github.loicgreffier.streams.aggregate.serdes.SerdesUtils;
 import java.util.ArrayList;
 import org.apache.kafka.common.serialization.Serdes;
@@ -46,25 +46,25 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads records from the {@code USER_TOPIC} topic, selects the last name of the user as the key,
-     * groups the records by the selected key, and aggregates the users by key. The aggregated results are then written
-     * to the {@code USER_AGGREGATE_TOPIC} topic.
+     * <p>This topology reads records from the {@code ORDER_TOPIC} topic, selects the customer id of the order as the
+     * key, groups the records by the selected key, and aggregates the orders by key. The aggregated results are then
+     * written to the {@code ORDER_AGGREGATE_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .selectKey((_, user) -> user.getLastName())
-                .groupByKey(Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
+                .selectKey((_, order) -> String.valueOf(order.getCustomerId()))
+                .groupByKey(Grouped.with(GROUP_ORDER_BY_CUSTOMER_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .aggregate(
-                        () -> new UserAggregate(new ArrayList<>()),
-                        new UserAggregator(),
-                        Materialized.<String, UserAggregate, KeyValueStore<Bytes, byte[]>>as(USER_AGGREGATE_STORE)
+                        () -> new OrderAggregate(new ArrayList<>()),
+                        new OrderAggregator(),
+                        Materialized.<String, OrderAggregate, KeyValueStore<Bytes, byte[]>>as(ORDER_AGGREGATE_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))
                 .toStream()
-                .to(USER_AGGREGATE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+                .to(ORDER_AGGREGATE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /** Private constructor. */

@@ -1,13 +1,12 @@
 # Kafka Streams Reconciliation
 
-This module streams records of type `<String, User>` from the `USER_TOPIC` and `<String, Order>` from the `ORDER_TOPIC`, and reconciles an order with its customer.
+This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and `<String, Payment>` from the `PAYMENT_TOPIC`, and reconciles an order with its payment.
+Both topics are keyed by order id, so an order and its payment are processed by the same task.
 
 It demonstrates the following:
 
 - How to reconcile data from two different topics, regardless of the order in which records arrive or how much time passes between them.
 - How to write unit tests with Topology Test Driver.
-
-![topology.png](topology.png)
 
 ## Prerequisites
 
@@ -22,8 +21,7 @@ To compile and run this demo, you'll need:
 To run the application manually:
 
 - Start a [Confluent Platform](https://docs.confluent.io/platform/current/get-started/platform-quickstart.html#step-1-download-and-start-cp) in a Docker environment.
-- Produce records of type `<String, User>` to the `USER_TOPIC`. You can use the [Producer User](../specific-producers/kafka-streams-producer-user) for this.
-- Produce records of type `<String, Order>` to the `ORDER_TOPIC`. You can use the [Producer Order](../specific-producers/kafka-streams-producer-order) for this.
+- Produce records of type `<String, Order>` to the `ORDER_TOPIC` and records of type `<String, Payment>` to the `PAYMENT_TOPIC`. You can use the [Producer Order](../specific-producers/kafka-streams-producer-order) for this.
 - Start the Kafka Streams application.
 
 Alternatively, to run everything at once using Docker, run:
@@ -37,6 +35,5 @@ This will start the following services in Docker:
 - Kafka Broker
 - Schema Registry
 - Control Center
-- Producer User
 - Producer Order
 - Kafka Streams Reconciliation

@@ -18,16 +18,16 @@
  */
 package io.github.loicgreffier.streams.cogroup.app;
 
-import static io.github.loicgreffier.streams.cogroup.constant.StateStore.USER_COGROUP_AGGREGATE_STORE;
-import static io.github.loicgreffier.streams.cogroup.constant.Topic.GROUP_USER_BY_LAST_NAME_TOPIC;
-import static io.github.loicgreffier.streams.cogroup.constant.Topic.GROUP_USER_BY_LAST_NAME_TOPIC_TWO;
-import static io.github.loicgreffier.streams.cogroup.constant.Topic.USER_COGROUP_TOPIC;
-import static io.github.loicgreffier.streams.cogroup.constant.Topic.USER_TOPIC;
-import static io.github.loicgreffier.streams.cogroup.constant.Topic.USER_TOPIC_TWO;
+import static io.github.loicgreffier.streams.cogroup.constant.StateStore.ORDER_COGROUP_AGGREGATE_STORE;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.GROUP_ORDER_BY_CUSTOMER_TOPIC;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.GROUP_ORDER_BY_CUSTOMER_TOPIC_TWO;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.ORDER_COGROUP_TOPIC;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.ORDER_TOPIC;
+import static io.github.loicgreffier.streams.cogroup.constant.Topic.ORDER_TOPIC_TWO;
 
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.avro.UserAggregate;
-import io.github.loicgreffier.streams.cogroup.app.aggregator.UserAggregator;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.OrderAggregate;
+import io.github.loicgreffier.streams.cogroup.app.aggregator.OrderAggregator;
 import io.github.loicgreffier.streams.cogroup.serdes.SerdesUtils;
 import java.util.ArrayList;
 import org.apache.kafka.common.serialization.Serdes;
@@ -49,40 +49,40 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} and {@code USER_TOPIC_TWO} topics, groups both streams by last
-     * name and cogroups them so a single aggregate per last name is built out of both sources. The result is written to
-     * the {@code USER_COGROUP_TOPIC} topic.
+     * <p>This topology reads from the {@code ORDER_TOPIC} and {@code ORDER_TOPIC_TWO} topics, groups both streams by
+     * last id and cogroups them so a single aggregate per customer is built out of both sources. The result is written
+     * to the {@code ORDER_COGROUP_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        final UserAggregator aggregator = new UserAggregator();
+        final OrderAggregator aggregator = new OrderAggregator();
 
-        final KGroupedStream<String, User> groupedStreamOne = streamsBuilder.<String, User>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
+        final KGroupedStream<String, Order> groupedStreamOne = streamsBuilder.<String, Order>stream(
+                        ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .groupBy(
-                        (_, user) -> user.getLastName(),
-                        Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()));
+                        (_, order) -> String.valueOf(order.getCustomerId()),
+                        Grouped.with(GROUP_ORDER_BY_CUSTOMER_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()));
 
-        final KGroupedStream<String, User> groupedStreamTwo = streamsBuilder.<String, User>stream(
-                        USER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
+        final KGroupedStream<String, Order> groupedStreamTwo = streamsBuilder.<String, Order>stream(
+                        ORDER_TOPIC_TWO, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .groupBy(
-                        (_, user) -> user.getLastName(),
-                        Grouped.with(GROUP_USER_BY_LAST_NAME_TOPIC_TWO, Serdes.String(), SerdesUtils.getValueSerdes()));
+                        (_, order) -> String.valueOf(order.getCustomerId()),
+                        Grouped.with(GROUP_ORDER_BY_CUSTOMER_TOPIC_TWO, Serdes.String(), SerdesUtils.getValueSerdes()));
 
         groupedStreamOne
                 .cogroup(aggregator)
                 .cogroup(groupedStreamTwo, aggregator)
                 .aggregate(
-                        () -> new UserAggregate(new ArrayList<>()),
-                        Materialized.<String, UserAggregate, KeyValueStore<Bytes, byte[]>>as(
-                                        USER_COGROUP_AGGREGATE_STORE)
+                        () -> new OrderAggregate(new ArrayList<>()),
+                        Materialized.<String, OrderAggregate, KeyValueStore<Bytes, byte[]>>as(
+                                        ORDER_COGROUP_AGGREGATE_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))
                 .toStream()
-                .to(USER_COGROUP_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+                .to(ORDER_COGROUP_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /** Private constructor. */

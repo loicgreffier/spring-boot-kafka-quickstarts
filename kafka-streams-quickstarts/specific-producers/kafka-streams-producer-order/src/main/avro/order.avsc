@@ -13,19 +13,6 @@
       "doc": "Order id"
     },
     {
-      "name": "items",
-      "type": {
-        "type": "array",
-        "items": "string"
-      }
-    },
-    {
-      "name": "totalAmount",
-      "type": ["null","double"],
-      "default": null,
-      "doc": "Total amount of the order"
-    },
-    {
       "name": "customerId",
       "type": [
         "null",
@@ -33,6 +20,24 @@
       ],
       "default": null,
       "doc": "Customer id"
+    },
+    {
+      "name": "items",
+      "type": {
+        "type": "array",
+        "items": "string"
+      },
+      "default": [],
+      "doc": "Ordered items"
+    },
+    {
+      "name": "amount",
+      "type": [
+        "null",
+        "double"
+      ],
+      "default": null,
+      "doc": "Order amount"
     }
   ]
 }

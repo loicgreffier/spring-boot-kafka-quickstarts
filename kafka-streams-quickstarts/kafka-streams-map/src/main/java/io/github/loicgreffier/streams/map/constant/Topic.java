@@ -20,8 +20,8 @@ package io.github.loicgreffier.streams.map.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_MAP_TOPIC = "USER_MAP_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String ORDER_MAP_TOPIC = "ORDER_MAP_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

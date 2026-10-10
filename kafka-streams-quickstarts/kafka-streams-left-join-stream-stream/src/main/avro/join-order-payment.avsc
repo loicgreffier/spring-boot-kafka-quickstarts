@@ -1,0 +1,25 @@
+{
+  "namespace": "io.github.loicgreffier.avro",
+  "type": "record",
+  "name": "JoinOrderPayment",
+  "fields": [
+    {
+      "name": "order",
+      "type": [
+        "null",
+        "Order"
+      ],
+      "default": null,
+      "doc": "Order"
+    },
+    {
+      "name": "payment",
+      "type": [
+        "null",
+        "Payment"
+      ],
+      "default": null,
+      "doc": "Payment"
+    }
+  ]
+}

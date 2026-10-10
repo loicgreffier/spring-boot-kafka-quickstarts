@@ -20,9 +20,9 @@ package io.github.loicgreffier.streams.merge.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_TOPIC_TWO = "USER_TOPIC_TWO";
-    public static final String USER_MERGE_TOPIC = "USER_MERGE_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String ORDER_TOPIC_TWO = "ORDER_TOPIC_TWO";
+    public static final String ORDER_MERGE_TOPIC = "ORDER_MERGE_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

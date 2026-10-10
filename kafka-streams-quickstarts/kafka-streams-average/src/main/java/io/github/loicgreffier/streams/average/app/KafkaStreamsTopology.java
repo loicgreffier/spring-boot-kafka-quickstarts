@@ -18,14 +18,14 @@
  */
 package io.github.loicgreffier.streams.average.app;
 
-import static io.github.loicgreffier.streams.average.constant.StateStore.USER_AVERAGE_STORE;
-import static io.github.loicgreffier.streams.average.constant.Topic.GROUP_USER_BY_NATIONALITY_TOPIC;
-import static io.github.loicgreffier.streams.average.constant.Topic.USER_AVERAGE_TOPIC;
-import static io.github.loicgreffier.streams.average.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.StateStore.ORDER_AVERAGE_STORE;
+import static io.github.loicgreffier.streams.average.constant.Topic.GROUP_ORDER_BY_CUSTOMER_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.Topic.ORDER_AVERAGE_TOPIC;
+import static io.github.loicgreffier.streams.average.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
-import io.github.loicgreffier.avro.UserAverageAge;
-import io.github.loicgreffier.streams.average.app.aggregator.AgeAggregator;
+import io.github.loicgreffier.avro.Order;
+import io.github.loicgreffier.avro.OrderAverageAmount;
+import io.github.loicgreffier.streams.average.app.aggregator.AmountAggregator;
 import io.github.loicgreffier.streams.average.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -45,28 +45,28 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads records from the {@code USER_TOPIC} topic, groups the records by nationality, and performs
-     * an aggregation of the total age sum and count for each nationality. Afterward, the average age for each group is
-     * computed by dividing the total age sum by the count. The result, which includes the average age by nationality,
-     * is written to the {@code USER_AVERAGE_TOPIC} topic.
+     * <p>This topology reads records from the {@code ORDER_TOPIC} topic, groups the records by customer id, and
+     * performs an aggregation of the total amount sum and count for each customer. Afterward, the average order amount
+     * for each group is computed by dividing the total amount sum by the count. The result, which includes the average
+     * order amount by customer, is written to the {@code ORDER_AVERAGE_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .groupBy(
-                        (_, user) -> user.getNationality().toString(),
-                        Grouped.with(GROUP_USER_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+                        (_, order) -> String.valueOf(order.getCustomerId()),
+                        Grouped.with(GROUP_ORDER_BY_CUSTOMER_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
                 .aggregate(
-                        () -> new UserAverageAge(0L, 0L),
-                        new AgeAggregator(),
-                        Materialized.<String, UserAverageAge, KeyValueStore<Bytes, byte[]>>as(USER_AVERAGE_STORE)
+                        () -> new OrderAverageAmount(0L, 0.0),
+                        new AmountAggregator(),
+                        Materialized.<String, OrderAverageAmount, KeyValueStore<Bytes, byte[]>>as(ORDER_AVERAGE_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))
-                .mapValues(value -> value.getAgeSum() / value.getCount())
+                .mapValues(value -> Math.round(value.getAmountSum() / value.getCount() * 100) / 100.0)
                 .toStream()
-                .to(USER_AVERAGE_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
+                .to(ORDER_AVERAGE_TOPIC, Produced.with(Serdes.String(), Serdes.Double()));
     }
 
     /** Private constructor. */

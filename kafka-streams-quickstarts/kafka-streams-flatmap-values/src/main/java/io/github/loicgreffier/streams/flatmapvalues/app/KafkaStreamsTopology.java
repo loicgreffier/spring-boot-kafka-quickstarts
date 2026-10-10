@@ -18,12 +18,11 @@
  */
 package io.github.loicgreffier.streams.flatmapvalues.app;
 
-import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.USER_FLATMAP_VALUES_TOPIC;
-import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.ORDER_FLATMAP_VALUES_TOPIC;
+import static io.github.loicgreffier.streams.flatmapvalues.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.flatmapvalues.serdes.SerdesUtils;
-import java.util.List;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
@@ -38,17 +37,17 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} topic, maps the value to a list of strings containing the
-     * first name and last name. The resulting list of strings is written to the {@code USER_FLATMAP_VALUES_TOPIC}
+     * <p>This topology reads from the {@code ORDER_TOPIC} topic and maps each order to its list of items, producing one
+     * record per item with the same key. The resulting records are written to the {@code ORDER_FLATMAP_VALUES_TOPIC}
      * topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .flatMapValues(user -> List.of(user.getFirstName(), user.getLastName()))
-                .to(USER_FLATMAP_VALUES_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
+                .flatMapValues(Order::getItems)
+                .to(ORDER_FLATMAP_VALUES_TOPIC, Produced.with(Serdes.String(), Serdes.String()));
     }
 
     /** Private constructor. */

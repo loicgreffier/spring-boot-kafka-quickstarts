@@ -20,7 +20,7 @@ package io.github.loicgreffier.streams.join.stream.stream.constant;
 
 /** State store name constants. */
 public abstract class StateStore {
-    public static final String USER_JOIN_STREAM_STREAM_STORE = "USER_JOIN_STREAM_STREAM_STORE";
+    public static final String ORDER_PAYMENT_JOIN_STREAM_STREAM_STORE = "ORDER_PAYMENT_JOIN_STREAM_STREAM_STORE";
 
     /** Private constructor. */
     private StateStore() {}

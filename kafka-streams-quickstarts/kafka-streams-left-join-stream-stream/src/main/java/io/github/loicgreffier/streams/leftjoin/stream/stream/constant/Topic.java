@@ -20,10 +20,10 @@ package io.github.loicgreffier.streams.leftjoin.stream.stream.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String USER_TOPIC = "USER_TOPIC";
-    public static final String USER_TOPIC_TWO = "USER_TOPIC_TWO";
-    public static final String USER_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC = "USER_LEFT_JOIN_STREAM_STREAM_REKEY_TOPIC";
-    public static final String USER_LEFT_JOIN_STREAM_STREAM_TOPIC = "USER_LEFT_JOIN_STREAM_STREAM_TOPIC";
+    public static final String ORDER_TOPIC = "ORDER_TOPIC";
+    public static final String PAYMENT_TOPIC = "PAYMENT_TOPIC";
+    public static final String ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_TOPIC =
+            "ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

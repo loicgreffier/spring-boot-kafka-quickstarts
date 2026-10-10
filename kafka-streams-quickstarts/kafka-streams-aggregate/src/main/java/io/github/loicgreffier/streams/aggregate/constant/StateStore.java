@@ -20,7 +20,7 @@ package io.github.loicgreffier.streams.aggregate.constant;
 
 /** State store name constants. */
 public abstract class StateStore {
-    public static final String USER_AGGREGATE_STORE = "USER_AGGREGATE_STORE";
+    public static final String ORDER_AGGREGATE_STORE = "ORDER_AGGREGATE_STORE";
 
     /** Private constructor. */
     private StateStore() {}

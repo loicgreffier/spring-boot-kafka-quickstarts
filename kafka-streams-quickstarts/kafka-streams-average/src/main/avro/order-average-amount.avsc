@@ -1,0 +1,25 @@
+{
+  "namespace": "io.github.loicgreffier.avro",
+  "type": "record",
+  "name": "OrderAverageAmount",
+  "fields": [
+    {
+      "name": "count",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "Order counter"
+    },
+    {
+      "name": "amountSum",
+      "type": [
+        "null",
+        "double"
+      ],
+      "default": null,
+      "doc": "Order amount sum"
+    }
+  ]
+}

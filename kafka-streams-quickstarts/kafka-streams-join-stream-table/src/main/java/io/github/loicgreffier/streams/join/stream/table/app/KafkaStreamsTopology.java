@@ -18,15 +18,15 @@
  */
 package io.github.loicgreffier.streams.join.stream.table.app;
 
-import static io.github.loicgreffier.streams.join.stream.table.constant.StateStore.COUNTRY_STORE;
-import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.COUNTRY_TOPIC;
-import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.USER_COUNTRY_JOIN_STREAM_TABLE_TOPIC;
-import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.USER_JOIN_STREAM_TABLE_REKEY_TOPIC;
-import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.table.constant.StateStore.CUSTOMER_STORE;
+import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.CUSTOMER_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.ORDER_CUSTOMER_JOIN_STREAM_TABLE_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.ORDER_JOIN_STREAM_TABLE_REKEY_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.table.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.Country;
-import io.github.loicgreffier.avro.JoinUserCountry;
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Customer;
+import io.github.loicgreffier.avro.JoinOrderCustomer;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.join.stream.table.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -47,45 +47,47 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} topic and the {@code COUNTRY_TOPIC} topic as a table. The
-     * stream is joined to the table by nationality using an inner join. The result is written to the
-     * {@code USER_COUNTRY_JOIN_STREAM_TABLE_TOPIC} topic.
+     * <p>This topology reads from the {@code ORDER_TOPIC} topic and the {@code CUSTOMER_TOPIC} topic as a table. The
+     * stream is re-keyed by customer id, then joined to the table by customer id using an inner join. The result is
+     * written to the {@code ORDER_CUSTOMER_JOIN_STREAM_TABLE_TOPIC} topic.
      *
      * <p>An inner join emits an output when both the stream and the table have records with the same key.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        KTable<String, Country> countryTable = streamsBuilder.table(
-                COUNTRY_TOPIC,
-                Materialized.<String, Country, KeyValueStore<Bytes, byte[]>>as(COUNTRY_STORE)
+        KTable<String, Customer> customerTable = streamsBuilder.table(
+                CUSTOMER_TOPIC,
+                Materialized.<String, Customer, KeyValueStore<Bytes, byte[]>>as(CUSTOMER_STORE)
                         .withKeySerde(Serdes.String())
                         .withValueSerde(SerdesUtils.getValueSerdes()));
 
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .selectKey((_, user) -> user.getNationality().toString())
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
+                .selectKey((_, order) -> String.valueOf(order.getCustomerId()))
                 .join(
-                        countryTable,
-                        (key, user, country) -> {
+                        customerTable,
+                        (order, customer) -> {
                             log.info(
-                                    "Joined {} {} {} to country {} by code {}",
-                                    user.getId(),
-                                    user.getFirstName(),
-                                    user.getLastName(),
-                                    country.getName(),
-                                    key);
-                            return JoinUserCountry.newBuilder()
-                                    .setUser(user)
-                                    .setCountry(country)
+                                    "Joined order {} to customer {} {} by customer id {}",
+                                    order.getId(),
+                                    customer.getFirstName(),
+                                    customer.getLastName(),
+                                    order.getCustomerId());
+
+                            return JoinOrderCustomer.newBuilder()
+                                    .setOrder(order)
+                                    .setCustomer(customer)
                                     .build();
                         },
                         Joined.with(
                                 Serdes.String(),
                                 SerdesUtils.getValueSerdes(),
                                 SerdesUtils.getValueSerdes(),
-                                USER_JOIN_STREAM_TABLE_REKEY_TOPIC))
-                .to(USER_COUNTRY_JOIN_STREAM_TABLE_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+                                ORDER_JOIN_STREAM_TABLE_REKEY_TOPIC))
+                .to(
+                        ORDER_CUSTOMER_JOIN_STREAM_TABLE_TOPIC,
+                        Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /** Private constructor. */

@@ -18,9 +18,9 @@
  */
 package io.github.loicgreffier.streams.repartition.app;
 
-import static io.github.loicgreffier.streams.repartition.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.repartition.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.repartition.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -36,15 +36,15 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code USER_TOPIC} and repartitions the stream into 3 partitions. The result is
-     * written to the {@code USER_TOPIC} repartition topic.
+     * <p>This topology reads from the {@code ORDER_TOPIC} and repartitions the stream into 3 partitions. The result is
+     * written to the {@code ORDER_TOPIC} repartition topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
-                .repartition(Repartitioned.<String, User>as(USER_TOPIC)
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
+                .repartition(Repartitioned.<String, Order>as(ORDER_TOPIC)
                         .withKeySerde(Serdes.String())
                         .withValueSerde(SerdesUtils.getValueSerdes())
                         .withNumberOfPartitions(3));

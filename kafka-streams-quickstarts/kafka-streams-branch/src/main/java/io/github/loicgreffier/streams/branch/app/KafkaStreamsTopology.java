@@ -18,12 +18,12 @@
  */
 package io.github.loicgreffier.streams.branch.app;
 
-import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_A_TOPIC;
-import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_B_TOPIC;
-import static io.github.loicgreffier.streams.branch.constant.Topic.USER_BRANCH_DEFAULT_TOPIC;
-import static io.github.loicgreffier.streams.branch.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.ORDER_BRANCH_A_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.ORDER_BRANCH_B_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.ORDER_BRANCH_DEFAULT_TOPIC;
+import static io.github.loicgreffier.streams.branch.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.branch.serdes.SerdesUtils;
 import java.util.Map;
 import org.apache.kafka.common.serialization.Serdes;
@@ -43,52 +43,51 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads records from the {@code USER_TOPIC} topic, then splits the stream into three branches:
+     * <p>This topology reads records from the {@code ORDER_TOPIC} topic, then splits the stream into three branches:
      *
      * <ul>
-     *   <li>The first branch filters records where the last name starts with "S".
-     *   <li>The second branch filters records where the last name starts with "F".
-     *   <li>The default branch is used for all records with last names that do not start with "S" or "F".
+     *   <li>The first branch filters orders with an amount greater than or equal to 1000 and applies a 10% discount.
+     *   <li>The second branch filters orders with an amount greater than or equal to 100.
+     *   <li>The default branch is used for all other orders.
      * </ul>
      *
      * <p>The filtered records are written to the following topics:
      *
      * <ul>
-     *   <li>{@code USER_BRANCH_A_TOPIC} for records with last names starting with "S".
-     *   <li>{@code USER_BRANCH_B_TOPIC} for records with last names starting with "F".
-     *   <li>{@code USER_BRANCH_DEFAULT_TOPIC} for all other records.
+     *   <li>{@code ORDER_BRANCH_A_TOPIC} for orders with an amount greater than or equal to 1000.
+     *   <li>{@code ORDER_BRANCH_B_TOPIC} for orders with an amount greater than or equal to 100.
+     *   <li>{@code ORDER_BRANCH_DEFAULT_TOPIC} for all other orders.
      * </ul>
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        Map<String, KStream<String, User>> branches = streamsBuilder.<String, User>stream(
-                        USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
+        Map<String, KStream<String, Order>> branches = streamsBuilder.<String, Order>stream(
+                        ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .split(Named.as("BRANCH_"))
                 .branch(
-                        (_, value) -> value.getLastName().startsWith("S"),
-                        Branched.withFunction(KafkaStreamsTopology::toUppercase, "A"))
-                .branch((_, value) -> value.getLastName().startsWith("F"), Branched.as("B"))
+                        (_, order) -> order.getAmount() >= 1000,
+                        Branched.withFunction(KafkaStreamsTopology::applyDiscount, "A"))
+                .branch((_, order) -> order.getAmount() >= 100, Branched.as("B"))
                 .defaultBranch(Branched.withConsumer(stream -> stream.to(
-                        USER_BRANCH_DEFAULT_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()))));
+                        ORDER_BRANCH_DEFAULT_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()))));
 
-        branches.get("BRANCH_A").to(USER_BRANCH_A_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+        branches.get("BRANCH_A").to(ORDER_BRANCH_A_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
 
-        branches.get("BRANCH_B").to(USER_BRANCH_B_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
+        branches.get("BRANCH_B").to(ORDER_BRANCH_B_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 
     /**
-     * Converts the first and last name to uppercase.
+     * Applies a 10% discount to the order amount.
      *
-     * @param streamUser The stream of users.
-     * @return The stream of users with uppercase first and last name.
+     * @param streamOrder The stream of orders.
+     * @return The stream of orders with the discounted amount.
      */
-    private static KStream<String, User> toUppercase(KStream<String, User> streamUser) {
-        return streamUser.mapValues(user -> {
-            user.setFirstName(user.getFirstName().toUpperCase());
-            user.setLastName(user.getLastName().toUpperCase());
-            return user;
+    private static KStream<String, Order> applyDiscount(KStream<String, Order> streamOrder) {
+        return streamOrder.mapValues(order -> {
+            order.setAmount(Math.round(order.getAmount() * 0.9 * 100) / 100.0);
+            return order;
         });
     }
 

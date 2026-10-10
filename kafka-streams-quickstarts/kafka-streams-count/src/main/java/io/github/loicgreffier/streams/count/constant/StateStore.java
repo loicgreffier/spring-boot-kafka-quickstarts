@@ -20,7 +20,7 @@ package io.github.loicgreffier.streams.count.constant;
 
 /** State store name constants. */
 public abstract class StateStore {
-    public static final String USER_COUNT_STORE = "USER_COUNT_STORE";
+    public static final String ORDER_COUNT_STORE = "ORDER_COUNT_STORE";
 
     /** Private constructor. */
     private StateStore() {}

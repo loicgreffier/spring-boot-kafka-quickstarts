@@ -18,12 +18,12 @@
  */
 package io.github.loicgreffier.streams.count.app;
 
-import static io.github.loicgreffier.streams.count.constant.StateStore.USER_COUNT_STORE;
-import static io.github.loicgreffier.streams.count.constant.Topic.GROUP_USER_BY_NATIONALITY_TOPIC;
-import static io.github.loicgreffier.streams.count.constant.Topic.USER_COUNT_TOPIC;
-import static io.github.loicgreffier.streams.count.constant.Topic.USER_TOPIC;
+import static io.github.loicgreffier.streams.count.constant.StateStore.ORDER_COUNT_STORE;
+import static io.github.loicgreffier.streams.count.constant.Topic.GROUP_ORDER_BY_CUSTOMER_TOPIC;
+import static io.github.loicgreffier.streams.count.constant.Topic.ORDER_COUNT_TOPIC;
+import static io.github.loicgreffier.streams.count.constant.Topic.ORDER_TOPIC;
 
-import io.github.loicgreffier.avro.User;
+import io.github.loicgreffier.avro.Order;
 import io.github.loicgreffier.streams.count.serdes.SerdesUtils;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -43,23 +43,23 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads records from the {@code USER_TOPIC} topic, groups the records by nationality, and counts
-     * the number of users in each group. The aggregated count for each nationality is written to the
-     * {@code USER_COUNT_TOPIC} topic.
+     * <p>This topology reads records from the {@code ORDER_TOPIC} topic, groups the records by customer id, and counts
+     * the number of orders of each customer. The aggregated count for each customer is written to the
+     * {@code ORDER_COUNT_TOPIC} topic.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        streamsBuilder.<String, User>stream(USER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, user) -> log.info("Processing key = {}, value = {}", key, user))
+        streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .groupBy(
-                        (_, user) -> user.getNationality().toString(),
-                        Grouped.with(GROUP_USER_BY_NATIONALITY_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
-                .count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as(USER_COUNT_STORE)
+                        (_, order) -> String.valueOf(order.getCustomerId()),
+                        Grouped.with(GROUP_ORDER_BY_CUSTOMER_TOPIC, Serdes.String(), SerdesUtils.getValueSerdes()))
+                .count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as(ORDER_COUNT_STORE)
                         .withKeySerde(Serdes.String())
                         .withValueSerde(Serdes.Long()))
                 .toStream()
-                .to(USER_COUNT_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
+                .to(ORDER_COUNT_TOPIC, Produced.with(Serdes.String(), Serdes.Long()));
     }
 
     /** Private constructor. */
