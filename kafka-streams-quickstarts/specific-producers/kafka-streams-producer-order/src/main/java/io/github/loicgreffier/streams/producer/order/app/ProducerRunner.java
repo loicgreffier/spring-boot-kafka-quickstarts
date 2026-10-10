@@ -40,6 +40,7 @@ public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
     private final Random random = new Random();
     private final Producer<String, Order> producer;
+    private boolean stopped = false;
 
     /**
      * Constructor.
@@ -65,15 +66,26 @@ public class ProducerRunner {
     @EventListener(ApplicationReadyEvent.class)
     public void run() throws InterruptedException {
         int i = 0;
-        while (true) {
+        while (!stopped) {
             Order order = buildOrder(i);
             send(new ProducerRecord<>(ORDER_TOPIC, String.valueOf(order.getId()), order));
-            send(new ProducerRecord<>(ORDER_TOPIC_TWO, String.valueOf(i), buildOrder(i)));
+
+            Order orderTwo = buildOrder(i);
+            send(new ProducerRecord<>(ORDER_TOPIC_TWO, String.valueOf(orderTwo.getId()), orderTwo));
 
             TimeUnit.SECONDS.sleep(1);
 
             i++;
         }
+    }
+
+    /**
+     * Set whether the runner is stopped.
+     *
+     * @param stopped {@code true} to stop the runner; {@code false} otherwise.
+     */
+    public void setStopped(boolean stopped) {
+        this.stopped = stopped;
     }
 
     /**

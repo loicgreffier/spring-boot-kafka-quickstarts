@@ -39,6 +39,7 @@ public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
     private final Random random = new Random();
     private final Producer<String, Delivery> producer;
+    private boolean stopped = false;
 
     /**
      * Constructor.
@@ -55,8 +56,7 @@ public class ProducerRunner {
      * <p>The {@code @Async} annotation is used to run the producer in a separate thread, preventing it from blocking
      * the main thread.
      *
-     * <p>The Kafka producer sends delivery records to the {@code DELIVERY_TOPIC}, keyed by order id. Delivery i ships
-     * the order i of the {@code ORDER_TOPIC} topic, except one order out of five, which is never delivered.
+     * <p>The Kafka producer sends delivery records to the {@code DELIVERY_TOPIC}, keyed by order id.
      *
      * @throws InterruptedException if the thread is interrupted while sleeping
      */
@@ -64,16 +64,23 @@ public class ProducerRunner {
     @EventListener(ApplicationReadyEvent.class)
     public void run() throws InterruptedException {
         int i = 0;
-        while (true) {
-            if (i % 5 != 0) {
-                Delivery delivery = buildDelivery(i);
-                send(new ProducerRecord<>(DELIVERY_TOPIC, String.valueOf(delivery.getOrderId()), delivery));
-            }
+        while (!stopped) {
+            Delivery delivery = buildDelivery(i);
+            send(new ProducerRecord<>(DELIVERY_TOPIC, String.valueOf(delivery.getOrderId()), delivery));
 
             TimeUnit.SECONDS.sleep(1);
 
             i++;
         }
+    }
+
+    /**
+     * Set whether the runner is stopped.
+     *
+     * @param stopped {@code true} to stop the runner; {@code false} otherwise.
+     */
+    public void setStopped(boolean stopped) {
+        this.stopped = stopped;
     }
 
     /**
