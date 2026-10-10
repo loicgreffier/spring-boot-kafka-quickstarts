@@ -21,7 +21,7 @@ package io.github.loicgreffier.consumer.transaction.constant;
 /** Topic name constants. */
 public abstract class Topic {
     public static final String ORDER_JSON_TOPIC = "ORDER_JSON_TOPIC";
-    public static final String PAYMENT_JSON_TOPIC = "PAYMENT_JSON_TOPIC";
+    public static final String DELIVERY_JSON_TOPIC = "DELIVERY_JSON_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

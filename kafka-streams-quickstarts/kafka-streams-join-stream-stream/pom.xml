@@ -17,7 +17,7 @@
                 <configuration>
                     <imports>
                         <import>${project.basedir}/src/main/avro/order.avsc</import>
-                        <import>${project.basedir}/src/main/avro/payment.avsc</import>
+                        <import>${project.basedir}/src/main/avro/delivery.avsc</import>
                     </imports>
                 </configuration>
             </plugin>

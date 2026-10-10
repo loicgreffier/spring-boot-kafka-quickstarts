@@ -21,13 +21,10 @@ package io.github.loicgreffier.streams.producer.order.app;
 import static io.github.loicgreffier.streams.producer.order.constant.Item.ITEMS;
 import static io.github.loicgreffier.streams.producer.order.constant.Topic.ORDER_TOPIC;
 import static io.github.loicgreffier.streams.producer.order.constant.Topic.ORDER_TOPIC_TWO;
-import static io.github.loicgreffier.streams.producer.order.constant.Topic.PAYMENT_TOPIC;
 
 import io.github.loicgreffier.avro.Order;
-import io.github.loicgreffier.avro.Payment;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
@@ -42,14 +39,14 @@ import org.springframework.stereotype.Component;
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
     private final Random random = new Random();
-    private final Producer<String, SpecificRecord> producer;
+    private final Producer<String, Order> producer;
 
     /**
      * Constructor.
      *
      * @param producer The Kafka producer
      */
-    public ProducerRunner(Producer<String, SpecificRecord> producer) {
+    public ProducerRunner(Producer<String, Order> producer) {
         this.producer = producer;
     }
 
@@ -59,9 +56,8 @@ public class ProducerRunner {
      * <p>The {@code @Async} annotation is used to run the producer in a separate thread, preventing it from blocking
      * the main thread.
      *
-     * <p>The Kafka producer sends order records to the {@code ORDER_TOPIC} and {@code ORDER_TOPIC_TWO} topics. It also
-     * sends a payment record to the {@code PAYMENT_TOPIC} topic for each order of the {@code ORDER_TOPIC} topic, except
-     * one order out of five, which remains unpaid. Orders and payments are keyed by order id.
+     * <p>The Kafka producer sends order records, keyed by order id, to the {@code ORDER_TOPIC} and
+     * {@code ORDER_TOPIC_TWO} topics.
      *
      * @throws InterruptedException if the thread is interrupted while sleeping
      */
@@ -74,15 +70,6 @@ public class ProducerRunner {
             send(new ProducerRecord<>(ORDER_TOPIC, String.valueOf(order.getId()), order));
             send(new ProducerRecord<>(ORDER_TOPIC_TWO, String.valueOf(i), buildOrder(i)));
 
-            if (i % 5 != 0) {
-                Payment payment = Payment.newBuilder()
-                        .setId((long) i)
-                        .setOrderId(order.getId())
-                        .setAmount(order.getAmount())
-                        .build();
-                send(new ProducerRecord<>(PAYMENT_TOPIC, String.valueOf(payment.getOrderId()), payment));
-            }
-
             TimeUnit.SECONDS.sleep(1);
 
             i++;
@@ -94,7 +81,7 @@ public class ProducerRunner {
      *
      * @param message The message to send.
      */
-    public void send(ProducerRecord<String, SpecificRecord> message) {
+    public void send(ProducerRecord<String, Order> message) {
         producer.send(message, (recordMetadata, e) -> {
             if (e != null) {
                 log.error(e.getMessage());

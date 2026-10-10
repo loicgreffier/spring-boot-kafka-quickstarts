@@ -18,12 +18,13 @@
  */
 package io.github.loicgreffier.producer.transaction.app;
 
+import static io.github.loicgreffier.producer.transaction.constant.Destination.DESTINATIONS;
 import static io.github.loicgreffier.producer.transaction.constant.Item.ITEMS;
+import static io.github.loicgreffier.producer.transaction.constant.Topic.DELIVERY_JSON_TOPIC;
 import static io.github.loicgreffier.producer.transaction.constant.Topic.ORDER_JSON_TOPIC;
-import static io.github.loicgreffier.producer.transaction.constant.Topic.PAYMENT_JSON_TOPIC;
 
+import io.github.loicgreffier.producer.transaction.model.Delivery;
 import io.github.loicgreffier.producer.transaction.model.Order;
-import io.github.loicgreffier.producer.transaction.model.Payment;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -62,8 +63,8 @@ public class ProducerRunner {
      * <p>The {@code @Async} annotation is used to run the producer in a separate thread, ensuring it does not block the
      * main thread.
      *
-     * <p>The Kafka producer sends an order and its payment, serialized as JSON strings, to two topics:
-     * {@code ORDER_JSON_TOPIC} and {@code PAYMENT_JSON_TOPIC}, within a single transaction. Either both records are
+     * <p>The Kafka producer sends an order and its delivery, serialized as JSON strings, to two topics:
+     * {@code ORDER_JSON_TOPIC} and {@code DELIVERY_JSON_TOPIC}, within a single transaction. Either both records are
      * successfully committed as part of the transaction, or both are discarded if the transaction fails.
      *
      * @throws InterruptedException if the thread is interrupted while sleeping
@@ -77,15 +78,15 @@ public class ProducerRunner {
         int i = 0;
         while (!stopped) {
             Order order = buildOrder(i);
-            Payment payment = new Payment(i, order.id(), order.amount());
+            Delivery delivery = new Delivery(i, order.id(), DESTINATIONS.get(random.nextInt(DESTINATIONS.size())));
 
             ProducerRecord<String, String> orderMessage =
                     new ProducerRecord<>(ORDER_JSON_TOPIC, String.valueOf(order.id()), order.toJson());
 
-            ProducerRecord<String, String> paymentMessage =
-                    new ProducerRecord<>(PAYMENT_JSON_TOPIC, String.valueOf(payment.orderId()), payment.toJson());
+            ProducerRecord<String, String> deliveryMessage =
+                    new ProducerRecord<>(DELIVERY_JSON_TOPIC, String.valueOf(delivery.orderId()), delivery.toJson());
 
-            List<ProducerRecord<String, String>> messages = List.of(orderMessage, paymentMessage);
+            List<ProducerRecord<String, String>> messages = List.of(orderMessage, deliveryMessage);
 
             try {
                 log.info("Begin transaction");

@@ -85,6 +85,29 @@ services:
           }
         }
 
+  kafka-streams-producer-delivery:
+    image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-producer-delivery-1.0.0
+    hostname: kafka-streams-producer-delivery
+    container_name: kafka-streams-producer-delivery
+    networks:
+      - spring-boot-kafka-quickstarts
+    depends_on:
+      - broker
+      - schema-registry
+    ports:
+      - "8085:8080"
+    restart: unless-stopped
+    environment:
+      SPRING_APPLICATION_JSON: |
+        {
+          "kafka": {
+            "properties": {
+              "bootstrap.servers": "broker:29092",
+              "schema.registry.url": "http://schema-registry:8081"
+            }
+          }
+        }
+
   kafka-streams-outer-join-stream-stream:
     image: loicgreffier/spring-boot-kafka-quickstarts:kafka-streams-outer-join-stream-stream-1.0.0
     hostname: kafka-streams-outer-join-stream-stream
@@ -93,6 +116,7 @@ services:
       - spring-boot-kafka-quickstarts
     depends_on:
       - kafka-streams-producer-order
+      - kafka-streams-producer-delivery
     ports:
       - "8084:8080"
     restart: unless-stopped

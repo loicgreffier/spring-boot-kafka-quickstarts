@@ -20,8 +20,8 @@ package io.github.loicgreffier.streams.reconciliation.app.processor;
 
 import static io.github.loicgreffier.streams.reconciliation.constant.StateStore.RECONCILIATION_STORE;
 
+import io.github.loicgreffier.avro.Delivery;
 import io.github.loicgreffier.avro.Order;
-import io.github.loicgreffier.avro.Payment;
 import io.github.loicgreffier.avro.Reconciliation;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
@@ -53,8 +53,8 @@ public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, S
     /**
      * Process a record and perform reconciliation. Checks whether a reconciliation record exists for the given order
      * id. If it does not exist, a new reconciliation record is created. If the record is an {@code Order}, the order is
-     * set in the reconciliation record. If the record is a {@code Payment}, the payment is set in the reconciliation
-     * record. If both order and payment are present in the reconciliation record, the record is emitted and removed
+     * set in the reconciliation record. If the record is a {@code Delivery}, the delivery is set in the reconciliation
+     * record. If both order and delivery are present in the reconciliation record, the record is emitted and removed
      * from the store. Otherwise, the current state of the reconciliation record is logged.
      *
      * @param message The message to process.
@@ -75,8 +75,8 @@ public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, S
             reconciliation.setOrder(order);
         }
 
-        if (message.value() instanceof Payment payment) {
-            reconciliation.setPayment(payment);
+        if (message.value() instanceof Delivery delivery) {
+            reconciliation.setDelivery(delivery);
         }
 
         reconciliationStore.put(orderId, reconciliation);
@@ -84,12 +84,12 @@ public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, S
                 "Reconciliation record for key = {} updated in the store. Checking if reconciliation is complete",
                 orderId);
 
-        if (reconciliation.getOrder() == null || reconciliation.getPayment() == null) {
+        if (reconciliation.getOrder() == null || reconciliation.getDelivery() == null) {
             log.info(
-                    "Reconciliation record for key = {} is not complete yet. Has order = {}, has payment = {}",
+                    "Reconciliation record for key = {} is not complete yet. Has order = {}, has delivery = {}",
                     orderId,
                     reconciliation.getOrder() != null,
-                    reconciliation.getPayment() != null);
+                    reconciliation.getDelivery() != null);
             return;
         }
 

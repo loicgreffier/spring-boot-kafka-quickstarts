@@ -19,12 +19,12 @@
 package io.github.loicgreffier.streams.reconciliation.app;
 
 import static io.github.loicgreffier.streams.reconciliation.constant.StateStore.RECONCILIATION_STORE;
+import static io.github.loicgreffier.streams.reconciliation.constant.Topic.DELIVERY_TOPIC;
 import static io.github.loicgreffier.streams.reconciliation.constant.Topic.ORDER_TOPIC;
-import static io.github.loicgreffier.streams.reconciliation.constant.Topic.PAYMENT_TOPIC;
 import static io.github.loicgreffier.streams.reconciliation.constant.Topic.RECONCILIATION_TOPIC;
 
+import io.github.loicgreffier.avro.Delivery;
 import io.github.loicgreffier.avro.Order;
-import io.github.loicgreffier.avro.Payment;
 import io.github.loicgreffier.avro.Reconciliation;
 import io.github.loicgreffier.streams.reconciliation.app.processor.ReconciliationProcessor;
 import io.github.loicgreffier.streams.reconciliation.serdes.SerdesUtils;
@@ -42,9 +42,9 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code ORDER_TOPIC} and {@code PAYMENT_TOPIC} topics. It reconciles an order and
-     * its payment, regardless of which record arrives first or how much time passes between the two. Both topics are
-     * keyed by order id, so they are co-partitioned: an order and its payment are processed by the same task and share
+     * <p>This topology reads from the {@code ORDER_TOPIC} and {@code DELIVERY_TOPIC} topics. It reconciles an order and
+     * its delivery, regardless of which record arrives first or how much time passes between the two. Both topics are
+     * keyed by order id, so they are co-partitioned: an order and its delivery are processed by the same task and share
      * the same reconciliation store. The result is written to the {@code RECONCILIATION_TOPIC}.
      *
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
@@ -59,8 +59,8 @@ public class KafkaStreamsTopology {
                 .process(() -> new ReconciliationProcessor<>(), RECONCILIATION_STORE)
                 .to(RECONCILIATION_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
 
-        streamsBuilder.<String, Payment>stream(
-                        PAYMENT_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+        streamsBuilder.<String, Delivery>stream(
+                        DELIVERY_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .process(() -> new ReconciliationProcessor<>(), RECONCILIATION_STORE)
                 .to(RECONCILIATION_TOPIC, Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }

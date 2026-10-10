@@ -13,13 +13,13 @@
       "doc": "Order"
     },
     {
-      "name": "payment",
+      "name": "delivery",
       "type": [
         "null",
-        "Payment"
+        "Delivery"
       ],
       "default": null,
-      "doc": "Payment"
+      "doc": "Delivery"
     }
   ]
 }

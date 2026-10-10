@@ -13,6 +13,7 @@
 
     <modules>
         <module>kafka-streams-producer-customer</module>
+        <module>kafka-streams-producer-delivery</module>
         <module>kafka-streams-producer-order</module>
     </modules>
 </project>

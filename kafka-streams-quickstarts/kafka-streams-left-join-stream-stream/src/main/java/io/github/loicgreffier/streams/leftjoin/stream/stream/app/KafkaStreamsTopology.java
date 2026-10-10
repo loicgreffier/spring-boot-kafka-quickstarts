@@ -18,14 +18,14 @@
  */
 package io.github.loicgreffier.streams.leftjoin.stream.stream.app;
 
-import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.StateStore.ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_STORE;
-import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.StateStore.ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_STORE;
+import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.DELIVERY_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_TOPIC;
 import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.ORDER_TOPIC;
-import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.PAYMENT_TOPIC;
 
-import io.github.loicgreffier.avro.JoinOrderPayment;
+import io.github.loicgreffier.avro.Delivery;
+import io.github.loicgreffier.avro.JoinOrderDelivery;
 import io.github.loicgreffier.avro.Order;
-import io.github.loicgreffier.avro.Payment;
 import io.github.loicgreffier.streams.leftjoin.stream.stream.serdes.SerdesUtils;
 import java.time.Duration;
 import org.apache.kafka.common.serialization.Serdes;
@@ -45,14 +45,14 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code ORDER_TOPIC} topic and the {@code PAYMENT_TOPIC} topic. Both streams are
+     * <p>This topology reads from the {@code ORDER_TOPIC} topic and the {@code DELIVERY_TOPIC} topic. Both streams are
      * keyed by order id, so they are co-partitioned and can be joined without being re-keyed. The orders are joined to
-     * the payments using a left join, with a 5-minute symmetric join window and a 1-minute grace period. The result is
-     * written to the {@code ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_TOPIC} topic.
+     * the deliveries using a left join, with a 5-minute symmetric join window and a 1-minute grace period. The result
+     * is written to the {@code ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_TOPIC} topic.
      *
-     * <p>A left join emits an output for each order. If no payment matches the order, a {@code null} payment is
+     * <p>A left join emits an output for each order. If no delivery matches the order, a {@code null} delivery is
      * returned at the end of the join window plus the grace period. A new record is required to advance the stream time
-     * and emit the {@code null} result for unpaid orders.
+     * and emit the {@code null} result for undelivered orders.
      *
      * <p>{@link JoinWindows} are aligned to the record's timestamp. They are created each time a record is processed
      * and are bounded as [timestamp - before, timestamp + after]. An output is produced if a record from the secondary
@@ -65,36 +65,36 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        KStream<String, Payment> paymentStream = streamsBuilder.<String, Payment>stream(
-                        PAYMENT_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, payment) -> log.info("Processing key = {}, value = {}", key, payment));
+        KStream<String, Delivery> deliveryStream = streamsBuilder.<String, Delivery>stream(
+                        DELIVERY_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, delivery) -> log.info("Processing key = {}, value = {}", key, delivery));
 
         streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .leftJoin(
-                        paymentStream,
-                        (key, order, payment) -> {
-                            if (payment == null) {
-                                log.info("No matching payment for order {}", order.getId());
+                        deliveryStream,
+                        (key, order, delivery) -> {
+                            if (delivery == null) {
+                                log.info("No matching delivery for order {}", order.getId());
                             } else {
                                 log.info(
-                                        "Joined order {} to payment {} by order id {}",
+                                        "Joined order {} to delivery {} by order id {}",
                                         order.getId(),
-                                        payment.getId(),
+                                        delivery.getId(),
                                         key);
                             }
 
-                            return JoinOrderPayment.newBuilder()
+                            return JoinOrderDelivery.newBuilder()
                                     .setOrder(order)
-                                    .setPayment(payment)
+                                    .setDelivery(delivery)
                                     .build();
                         },
                         JoinWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)),
-                        StreamJoined.<String, Order, Payment>with(
+                        StreamJoined.<String, Order, Delivery>with(
                                         Serdes.String(), SerdesUtils.getValueSerdes(), SerdesUtils.getValueSerdes())
-                                .withStoreName(ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_STORE))
+                                .withStoreName(ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_STORE))
                 .to(
-                        ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_TOPIC,
+                        ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_TOPIC,
                         Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 

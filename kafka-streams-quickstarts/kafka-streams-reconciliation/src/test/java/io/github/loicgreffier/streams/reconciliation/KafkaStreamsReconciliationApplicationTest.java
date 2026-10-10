@@ -19,8 +19,8 @@
 package io.github.loicgreffier.streams.reconciliation;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
+import static io.github.loicgreffier.streams.reconciliation.constant.Topic.DELIVERY_TOPIC;
 import static io.github.loicgreffier.streams.reconciliation.constant.Topic.ORDER_TOPIC;
-import static io.github.loicgreffier.streams.reconciliation.constant.Topic.PAYMENT_TOPIC;
 import static io.github.loicgreffier.streams.reconciliation.constant.Topic.RECONCILIATION_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
@@ -28,8 +28,8 @@ import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
+import io.github.loicgreffier.avro.Delivery;
 import io.github.loicgreffier.avro.Order;
-import io.github.loicgreffier.avro.Payment;
 import io.github.loicgreffier.avro.Reconciliation;
 import io.github.loicgreffier.streams.reconciliation.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.reconciliation.serdes.SerdesUtils;
@@ -58,7 +58,7 @@ class KafkaStreamsReconciliationApplicationTest {
 
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, Order> inputOrderTopic;
-    private TestInputTopic<String, Payment> inputPaymentTopic;
+    private TestInputTopic<String, Delivery> inputDeliveryTopic;
     private TestOutputTopic<String, Reconciliation> outputTopic;
 
     @BeforeEach
@@ -83,10 +83,10 @@ class KafkaStreamsReconciliationApplicationTest {
                 ORDER_TOPIC,
                 new StringSerializer(),
                 SerdesUtils.<Order>getValueSerdes().serializer());
-        inputPaymentTopic = testDriver.createInputTopic(
-                PAYMENT_TOPIC,
+        inputDeliveryTopic = testDriver.createInputTopic(
+                DELIVERY_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<Payment>getValueSerdes().serializer());
+                SerdesUtils.<Delivery>getValueSerdes().serializer());
         outputTopic = testDriver.createOutputTopic(
                 RECONCILIATION_TOPIC,
                 new StringDeserializer(),
@@ -103,16 +103,16 @@ class KafkaStreamsReconciliationApplicationTest {
     @Test
     void shouldReconcile() {
         Order order = buildOrder();
-        Payment payment = buildPayment();
+        Delivery delivery = buildDelivery();
 
         inputOrderTopic.pipeInput("1", order);
-        inputPaymentTopic.pipeInput("1", payment);
+        inputDeliveryTopic.pipeInput("1", delivery);
 
         List<KeyValue<String, Reconciliation>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("1", results.getFirst().key);
         assertEquals(order, results.getFirst().value.getOrder());
-        assertEquals(payment, results.getFirst().value.getPayment());
+        assertEquals(delivery, results.getFirst().value.getDelivery());
     }
 
     private Order buildOrder() {
@@ -124,7 +124,11 @@ class KafkaStreamsReconciliationApplicationTest {
                 .build();
     }
 
-    private Payment buildPayment() {
-        return Payment.newBuilder().setId(1L).setOrderId(1L).setAmount(1249.90).build();
+    private Delivery buildDelivery() {
+        return Delivery.newBuilder()
+                .setId(1L)
+                .setOrderId(1L)
+                .setDestination("Lyon")
+                .build();
     }
 }

@@ -1,7 +1,7 @@
 {
   "namespace": "io.github.loicgreffier.avro",
   "type": "record",
-  "name": "Payment",
+  "name": "Delivery",
   "fields": [
     {
       "name": "id",
@@ -10,7 +10,7 @@
         "long"
       ],
       "default": null,
-      "doc": "Payment id"
+      "doc": "Delivery id"
     },
     {
       "name": "orderId",
@@ -19,16 +19,16 @@
         "long"
       ],
       "default": null,
-      "doc": "Paid order id"
+      "doc": "Delivered order id"
     },
     {
-      "name": "amount",
+      "name": "destination",
       "type": [
         "null",
-        "double"
+        "string"
       ],
       "default": null,
-      "doc": "Payment amount"
+      "doc": "Delivery destination city"
     }
   ]
 }

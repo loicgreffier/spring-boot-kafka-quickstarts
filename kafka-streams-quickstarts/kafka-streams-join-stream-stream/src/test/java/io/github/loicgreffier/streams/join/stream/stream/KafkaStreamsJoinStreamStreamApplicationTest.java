@@ -19,10 +19,10 @@
 package io.github.loicgreffier.streams.join.stream.stream;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.join.stream.stream.constant.StateStore.ORDER_PAYMENT_JOIN_STREAM_STREAM_STORE;
-import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.ORDER_PAYMENT_JOIN_STREAM_STREAM_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.stream.constant.StateStore.ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE;
+import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.DELIVERY_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.ORDER_DELIVERY_JOIN_STREAM_STREAM_TOPIC;
 import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.ORDER_TOPIC;
-import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.PAYMENT_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -31,9 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.JoinOrderPayment;
+import io.github.loicgreffier.avro.Delivery;
+import io.github.loicgreffier.avro.JoinOrderDelivery;
 import io.github.loicgreffier.avro.Order;
-import io.github.loicgreffier.avro.Payment;
 import io.github.loicgreffier.streams.join.stream.stream.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.join.stream.stream.serdes.SerdesUtils;
 import java.io.IOException;
@@ -65,8 +65,8 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
 
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, Order> orderInputTopic;
-    private TestInputTopic<String, Payment> paymentInputTopic;
-    private TestOutputTopic<String, JoinOrderPayment> joinOutputTopic;
+    private TestInputTopic<String, Delivery> deliveryInputTopic;
+    private TestOutputTopic<String, JoinOrderDelivery> joinOutputTopic;
 
     @BeforeEach
     void setUp() {
@@ -90,14 +90,14 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
                 ORDER_TOPIC,
                 new StringSerializer(),
                 SerdesUtils.<Order>getValueSerdes().serializer());
-        paymentInputTopic = testDriver.createInputTopic(
-                PAYMENT_TOPIC,
+        deliveryInputTopic = testDriver.createInputTopic(
+                DELIVERY_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<Payment>getValueSerdes().serializer());
+                SerdesUtils.<Delivery>getValueSerdes().serializer());
         joinOutputTopic = testDriver.createOutputTopic(
-                ORDER_PAYMENT_JOIN_STREAM_STREAM_TOPIC,
+                ORDER_DELIVERY_JOIN_STREAM_STREAM_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<JoinOrderPayment>getValueSerdes().deserializer());
+                SerdesUtils.<JoinOrderDelivery>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -112,29 +112,29 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         Order orderOne = buildOrder(1L);
         orderInputTopic.pipeInput(new TestRecord<>("1", orderOne, Instant.parse("2000-01-01T01:00:00Z")));
 
-        Payment paymentOne = buildPayment(1L);
-        paymentInputTopic.pipeInput(new TestRecord<>("1", paymentOne, Instant.parse("2000-01-01T01:02:00Z")));
+        Delivery deliveryOne = buildDelivery(1L);
+        deliveryInputTopic.pipeInput(new TestRecord<>("1", deliveryOne, Instant.parse("2000-01-01T01:02:00Z")));
 
         Order orderTwo = buildOrder(2L);
         orderInputTopic.pipeInput(new TestRecord<>("2", orderTwo, Instant.parse("2000-01-01T01:03:00Z")));
 
-        Payment paymentTwo = buildPayment(2L);
-        paymentInputTopic.pipeInput(new TestRecord<>("2", paymentTwo, Instant.parse("2000-01-01T01:04:00Z")));
+        Delivery deliveryTwo = buildDelivery(2L);
+        deliveryInputTopic.pipeInput(new TestRecord<>("2", deliveryTwo, Instant.parse("2000-01-01T01:04:00Z")));
 
-        List<KeyValue<String, JoinOrderPayment>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinOrderDelivery>> results = joinOutputTopic.readKeyValuesToList();
 
         assertEquals("1", results.getFirst().key);
         assertEquals(orderOne, results.getFirst().value.getOrder());
-        assertEquals(paymentOne, results.getFirst().value.getPayment());
+        assertEquals(deliveryOne, results.getFirst().value.getDelivery());
 
         assertEquals("2", results.get(1).key);
         assertEquals(orderTwo, results.get(1).value.getOrder());
-        assertEquals(paymentTwo, results.get(1).value.getPayment());
+        assertEquals(deliveryTwo, results.get(1).value.getDelivery());
 
         // As join windows are looking backward and forward in time,
         // records are kept in the store for "before" + "after" duration.
         WindowStore<String, Order> orderStateStore =
-                testDriver.getWindowStore(ORDER_PAYMENT_JOIN_STREAM_STREAM_STORE + "-this-join-store");
+                testDriver.getWindowStore(ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
             assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", orderOne);
@@ -142,12 +142,12 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, Payment> paymentStateStore =
-                testDriver.getWindowStore(ORDER_PAYMENT_JOIN_STREAM_STREAM_STORE + "-other-join-store");
+        WindowStore<String, Delivery> deliveryStateStore =
+                testDriver.getWindowStore(ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE + "-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, Payment> iterator = paymentStateStore.all()) {
-            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:02:00Z", "2000-01-01T01:12:00Z", paymentOne);
-            assertWindowedRecord(iterator.next(), "2", "2000-01-01T01:04:00Z", "2000-01-01T01:14:00Z", paymentTwo);
+        try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStateStore.all()) {
+            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:02:00Z", "2000-01-01T01:12:00Z", deliveryOne);
+            assertWindowedRecord(iterator.next(), "2", "2000-01-01T01:04:00Z", "2000-01-01T01:14:00Z", deliveryTwo);
             assertFalse(iterator.hasNext());
         }
     }
@@ -157,27 +157,27 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
         Order order = buildOrder(1L);
         orderInputTopic.pipeInput(new TestRecord<>("1", order, Instant.parse("2000-01-01T01:00:00Z")));
 
-        Payment payment = buildPayment(1L);
-        paymentInputTopic.pipeInput(new TestRecord<>("1", payment, Instant.parse("2000-01-01T01:05:01Z")));
+        Delivery delivery = buildDelivery(1L);
+        deliveryInputTopic.pipeInput(new TestRecord<>("1", delivery, Instant.parse("2000-01-01T01:05:01Z")));
 
-        List<KeyValue<String, JoinOrderPayment>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinOrderDelivery>> results = joinOutputTopic.readKeyValuesToList();
 
-        // No records joined because the payment arrived too late for the order.
+        // No records joined because the delivery arrived too late for the order.
         assertTrue(results.isEmpty());
 
         WindowStore<String, Order> orderStateStore =
-                testDriver.getWindowStore(ORDER_PAYMENT_JOIN_STREAM_STREAM_STORE + "-this-join-store");
+                testDriver.getWindowStore(ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
             assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", order);
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, Payment> paymentStateStore =
-                testDriver.getWindowStore(ORDER_PAYMENT_JOIN_STREAM_STREAM_STORE + "-other-join-store");
+        WindowStore<String, Delivery> deliveryStateStore =
+                testDriver.getWindowStore(ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE + "-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, Payment> iterator = paymentStateStore.all()) {
-            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:05:01Z", "2000-01-01T01:15:01Z", payment);
+        try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStateStore.all()) {
+            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:05:01Z", "2000-01-01T01:15:01Z", delivery);
             assertFalse(iterator.hasNext());
         }
     }
@@ -192,20 +192,20 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
 
         // At this point, the stream time is 01:10:30. It exceeds by 30 seconds
         // the upper bound of the first order's window [01:00:00.001Z->01:10:00Z] in the store.
-        // However, the following delayed payment will be joined with the first order
+        // However, the following delayed delivery will be joined with the first order
         // thanks to the grace period of 1 minute.
 
-        Payment payment = buildPayment(1L);
-        paymentInputTopic.pipeInput(new TestRecord<>("1", payment, Instant.parse("2000-01-01T01:05:00Z")));
+        Delivery delivery = buildDelivery(1L);
+        deliveryInputTopic.pipeInput(new TestRecord<>("1", delivery, Instant.parse("2000-01-01T01:05:00Z")));
 
-        List<KeyValue<String, JoinOrderPayment>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinOrderDelivery>> results = joinOutputTopic.readKeyValuesToList();
 
         assertEquals("1", results.getFirst().key);
         assertEquals(orderOne, results.getFirst().value.getOrder());
-        assertEquals(payment, results.getFirst().value.getPayment());
+        assertEquals(delivery, results.getFirst().value.getDelivery());
 
         WindowStore<String, Order> orderStateStore =
-                testDriver.getWindowStore(ORDER_PAYMENT_JOIN_STREAM_STREAM_STORE + "-this-join-store");
+                testDriver.getWindowStore(ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
             assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", orderOne);
@@ -213,11 +213,11 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, Payment> paymentStateStore =
-                testDriver.getWindowStore(ORDER_PAYMENT_JOIN_STREAM_STREAM_STORE + "-other-join-store");
+        WindowStore<String, Delivery> deliveryStateStore =
+                testDriver.getWindowStore(ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE + "-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, Payment> iterator = paymentStateStore.all()) {
-            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:05:00Z", "2000-01-01T01:15:00Z", payment);
+        try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStateStore.all()) {
+            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:05:00Z", "2000-01-01T01:15:00Z", delivery);
             assertFalse(iterator.hasNext());
         }
     }
@@ -239,11 +239,11 @@ class KafkaStreamsJoinStreamStreamApplicationTest {
                 .build();
     }
 
-    private Payment buildPayment(Long orderId) {
-        return Payment.newBuilder()
+    private Delivery buildDelivery(Long orderId) {
+        return Delivery.newBuilder()
                 .setId(orderId)
                 .setOrderId(orderId)
-                .setAmount(1249.90)
+                .setDestination("Lyon")
                 .build();
     }
 }

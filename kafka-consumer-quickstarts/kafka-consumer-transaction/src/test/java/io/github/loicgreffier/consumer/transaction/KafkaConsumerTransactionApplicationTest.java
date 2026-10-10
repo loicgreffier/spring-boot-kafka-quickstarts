@@ -18,8 +18,8 @@
  */
 package io.github.loicgreffier.consumer.transaction;
 
+import static io.github.loicgreffier.consumer.transaction.constant.Topic.DELIVERY_JSON_TOPIC;
 import static io.github.loicgreffier.consumer.transaction.constant.Topic.ORDER_JSON_TOPIC;
-import static io.github.loicgreffier.consumer.transaction.constant.Topic.PAYMENT_JSON_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 
@@ -48,7 +48,7 @@ class KafkaConsumerTransactionApplicationTest {
     @BeforeEach
     void setUp() {
         TopicPartition firstTopicPartition = new TopicPartition(ORDER_JSON_TOPIC, 0);
-        TopicPartition secondTopicPartition = new TopicPartition(PAYMENT_JSON_TOPIC, 0);
+        TopicPartition secondTopicPartition = new TopicPartition(DELIVERY_JSON_TOPIC, 0);
         mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(List.of(firstTopicPartition, secondTopicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(firstTopicPartition, 0L, secondTopicPartition, 0L));
         mockConsumer.updateEndOffsets(Map.of(firstTopicPartition, 0L, secondTopicPartition, 0L));
@@ -62,8 +62,8 @@ class KafkaConsumerTransactionApplicationTest {
                 0,
                 "1",
                 "{\"id\":1,\"customerId\":3,\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
-        ConsumerRecord<String, String> secondMessage =
-                new ConsumerRecord<>(PAYMENT_JSON_TOPIC, 0, 0, "1", "{\"id\":1,\"orderId\":1,\"amount\":1249.90}");
+        ConsumerRecord<String, String> secondMessage = new ConsumerRecord<>(
+                DELIVERY_JSON_TOPIC, 0, 0, "1", "{\"id\":1,\"orderId\":1,\"destination\":\"Lyon\"}");
 
         mockConsumer.schedulePollTask(() -> {
             mockConsumer.addRecord(firstMessage);

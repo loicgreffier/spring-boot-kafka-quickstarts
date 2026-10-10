@@ -21,8 +21,8 @@ package io.github.loicgreffier.streams.join.stream.stream.constant;
 /** Topic name constants. */
 public abstract class Topic {
     public static final String ORDER_TOPIC = "ORDER_TOPIC";
-    public static final String PAYMENT_TOPIC = "PAYMENT_TOPIC";
-    public static final String ORDER_PAYMENT_JOIN_STREAM_STREAM_TOPIC = "ORDER_PAYMENT_JOIN_STREAM_STREAM_TOPIC";
+    public static final String DELIVERY_TOPIC = "DELIVERY_TOPIC";
+    public static final String ORDER_DELIVERY_JOIN_STREAM_STREAM_TOPIC = "ORDER_DELIVERY_JOIN_STREAM_STREAM_TOPIC";
 
     /** Private constructor. */
     private Topic() {}

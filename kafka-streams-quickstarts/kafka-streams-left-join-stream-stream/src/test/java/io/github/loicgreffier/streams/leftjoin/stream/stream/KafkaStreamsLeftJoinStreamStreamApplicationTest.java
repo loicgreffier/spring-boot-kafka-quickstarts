@@ -19,10 +19,10 @@
 package io.github.loicgreffier.streams.leftjoin.stream.stream;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
-import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.StateStore.ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_STORE;
-import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.StateStore.ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_STORE;
+import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.DELIVERY_TOPIC;
+import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_TOPIC;
 import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.ORDER_TOPIC;
-import static io.github.loicgreffier.streams.leftjoin.stream.stream.constant.Topic.PAYMENT_TOPIC;
 import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.streams.StreamsConfig.STATE_DIR_CONFIG;
@@ -31,9 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
-import io.github.loicgreffier.avro.JoinOrderPayment;
+import io.github.loicgreffier.avro.Delivery;
+import io.github.loicgreffier.avro.JoinOrderDelivery;
 import io.github.loicgreffier.avro.Order;
-import io.github.loicgreffier.avro.Payment;
 import io.github.loicgreffier.streams.leftjoin.stream.stream.app.KafkaStreamsTopology;
 import io.github.loicgreffier.streams.leftjoin.stream.stream.serdes.SerdesUtils;
 import java.io.IOException;
@@ -65,8 +65,8 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
 
     private TopologyTestDriver testDriver;
     private TestInputTopic<String, Order> orderInputTopic;
-    private TestInputTopic<String, Payment> paymentInputTopic;
-    private TestOutputTopic<String, JoinOrderPayment> joinOutputTopic;
+    private TestInputTopic<String, Delivery> deliveryInputTopic;
+    private TestOutputTopic<String, JoinOrderDelivery> joinOutputTopic;
 
     @BeforeEach
     void setUp() {
@@ -90,14 +90,14 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
                 ORDER_TOPIC,
                 new StringSerializer(),
                 SerdesUtils.<Order>getValueSerdes().serializer());
-        paymentInputTopic = testDriver.createInputTopic(
-                PAYMENT_TOPIC,
+        deliveryInputTopic = testDriver.createInputTopic(
+                DELIVERY_TOPIC,
                 new StringSerializer(),
-                SerdesUtils.<Payment>getValueSerdes().serializer());
+                SerdesUtils.<Delivery>getValueSerdes().serializer());
         joinOutputTopic = testDriver.createOutputTopic(
-                ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_TOPIC,
+                ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_TOPIC,
                 new StringDeserializer(),
-                SerdesUtils.<JoinOrderPayment>getValueSerdes().deserializer());
+                SerdesUtils.<JoinOrderDelivery>getValueSerdes().deserializer());
     }
 
     @AfterEach
@@ -112,29 +112,29 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
         Order orderOne = buildOrder(1L);
         orderInputTopic.pipeInput(new TestRecord<>("1", orderOne, Instant.parse("2000-01-01T01:00:00Z")));
 
-        Payment paymentOne = buildPayment(1L);
-        paymentInputTopic.pipeInput(new TestRecord<>("1", paymentOne, Instant.parse("2000-01-01T01:02:00Z")));
+        Delivery deliveryOne = buildDelivery(1L);
+        deliveryInputTopic.pipeInput(new TestRecord<>("1", deliveryOne, Instant.parse("2000-01-01T01:02:00Z")));
 
         Order orderTwo = buildOrder(2L);
         orderInputTopic.pipeInput(new TestRecord<>("2", orderTwo, Instant.parse("2000-01-01T01:03:00Z")));
 
-        Payment paymentTwo = buildPayment(2L);
-        paymentInputTopic.pipeInput(new TestRecord<>("2", paymentTwo, Instant.parse("2000-01-01T01:04:00Z")));
+        Delivery deliveryTwo = buildDelivery(2L);
+        deliveryInputTopic.pipeInput(new TestRecord<>("2", deliveryTwo, Instant.parse("2000-01-01T01:04:00Z")));
 
-        List<KeyValue<String, JoinOrderPayment>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinOrderDelivery>> results = joinOutputTopic.readKeyValuesToList();
 
         assertEquals("1", results.getFirst().key);
         assertEquals(orderOne, results.getFirst().value.getOrder());
-        assertEquals(paymentOne, results.getFirst().value.getPayment());
+        assertEquals(deliveryOne, results.getFirst().value.getDelivery());
 
         assertEquals("2", results.get(1).key);
         assertEquals(orderTwo, results.get(1).value.getOrder());
-        assertEquals(paymentTwo, results.get(1).value.getPayment());
+        assertEquals(deliveryTwo, results.get(1).value.getDelivery());
 
         // As join windows are looking backward and forward in time,
         // records are kept in the store for "before" + "after" duration.
         WindowStore<String, Order> orderStateStore =
-                testDriver.getWindowStore(ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_STORE + "-this-join-store");
+                testDriver.getWindowStore(ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
             assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", orderOne);
@@ -142,52 +142,52 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, Payment> paymentStateStore =
-                testDriver.getWindowStore(ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
+        WindowStore<String, Delivery> deliveryStateStore =
+                testDriver.getWindowStore(ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, Payment> iterator = paymentStateStore.all()) {
-            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:02:00Z", "2000-01-01T01:12:00Z", paymentOne);
-            assertWindowedRecord(iterator.next(), "2", "2000-01-01T01:04:00Z", "2000-01-01T01:14:00Z", paymentTwo);
+        try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStateStore.all()) {
+            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:02:00Z", "2000-01-01T01:12:00Z", deliveryOne);
+            assertWindowedRecord(iterator.next(), "2", "2000-01-01T01:04:00Z", "2000-01-01T01:14:00Z", deliveryTwo);
             assertFalse(iterator.hasNext());
         }
     }
 
     @Test
-    void shouldEmitUnpaidOrderWhenTimeWindowIsNotRespected() {
+    void shouldEmitUndeliveredOrderWhenTimeWindowIsNotRespected() {
         Order orderOne = buildOrder(1L);
         orderInputTopic.pipeInput(new TestRecord<>("1", orderOne, Instant.parse("2000-01-01T01:00:00Z")));
 
-        Payment paymentOne = buildPayment(1L);
-        paymentInputTopic.pipeInput(new TestRecord<>("1", paymentOne, Instant.parse("2000-01-01T01:06:00Z")));
+        Delivery deliveryOne = buildDelivery(1L);
+        deliveryInputTopic.pipeInput(new TestRecord<>("1", deliveryOne, Instant.parse("2000-01-01T01:06:00Z")));
 
         Order orderTwo = buildOrder(2L);
         orderInputTopic.pipeInput(new TestRecord<>("2", orderTwo, Instant.parse("2000-01-01T01:13:00Z")));
 
-        List<KeyValue<String, JoinOrderPayment>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinOrderDelivery>> results = joinOutputTopic.readKeyValuesToList();
 
-        // The payment is null because the payment arrived too late for the order.
+        // The delivery is null because the delivery arrived too late for the order.
         assertEquals("1", results.getFirst().key);
         assertEquals(orderOne, results.getFirst().value.getOrder());
-        assertNull(results.getFirst().value.getPayment());
+        assertNull(results.getFirst().value.getDelivery());
 
-        // No output for the payment because of the left join nature.
+        // No output for the delivery because of the left join nature.
         // No output for the second order yet because its join window is still open.
         assertEquals(1, results.size());
 
         // The first order is no longer in the store because the stream time (01:13:00) exceeds its retention.
         WindowStore<String, Order> orderStateStore =
-                testDriver.getWindowStore(ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_STORE + "-this-join-store");
+                testDriver.getWindowStore(ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
             assertWindowedRecord(iterator.next(), "2", "2000-01-01T01:13:00Z", "2000-01-01T01:23:00Z", orderTwo);
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, Payment> paymentStateStore =
-                testDriver.getWindowStore(ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
+        WindowStore<String, Delivery> deliveryStateStore =
+                testDriver.getWindowStore(ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, Payment> iterator = paymentStateStore.all()) {
-            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:06:00Z", "2000-01-01T01:16:00Z", paymentOne);
+        try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStateStore.all()) {
+            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:06:00Z", "2000-01-01T01:16:00Z", deliveryOne);
             assertFalse(iterator.hasNext());
         }
     }
@@ -202,28 +202,28 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
 
         // At this point, the stream time is 01:10:30. It exceeds by 30 seconds
         // the upper bound of the first order's window [01:00:00.001Z->01:10:00Z] in the store.
-        // However, the following delayed payment will be joined with the first order
+        // However, the following delayed delivery will be joined with the first order
         // thanks to the grace period of 1 minute.
 
-        Payment payment = buildPayment(1L);
-        paymentInputTopic.pipeInput(new TestRecord<>("1", payment, Instant.parse("2000-01-01T01:05:00Z")));
+        Delivery delivery = buildDelivery(1L);
+        deliveryInputTopic.pipeInput(new TestRecord<>("1", delivery, Instant.parse("2000-01-01T01:05:00Z")));
 
-        List<KeyValue<String, JoinOrderPayment>> results = joinOutputTopic.readKeyValuesToList();
+        List<KeyValue<String, JoinOrderDelivery>> results = joinOutputTopic.readKeyValuesToList();
 
-        // No payment matched the first order at the end of the join window + grace period (01:06:00).
-        // A null payment is emitted.
+        // No delivery matched the first order at the end of the join window + grace period (01:06:00).
+        // A null delivery is emitted.
         assertEquals("1", results.getFirst().key);
         assertEquals(orderOne, results.getFirst().value.getOrder());
-        assertNull(results.getFirst().value.getPayment());
+        assertNull(results.getFirst().value.getDelivery());
 
-        // The delayed payment finally comes and is joined with the first order,
-        // so an updated record is emitted with the payment.
+        // The delayed delivery finally comes and is joined with the first order,
+        // so an updated record is emitted with the delivery.
         assertEquals("1", results.get(1).key);
         assertEquals(orderOne, results.get(1).value.getOrder());
-        assertEquals(payment, results.get(1).value.getPayment());
+        assertEquals(delivery, results.get(1).value.getDelivery());
 
         WindowStore<String, Order> orderStateStore =
-                testDriver.getWindowStore(ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_STORE + "-this-join-store");
+                testDriver.getWindowStore(ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_STORE + "-this-join-store");
 
         try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
             assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", orderOne);
@@ -231,11 +231,11 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, Payment> paymentStateStore =
-                testDriver.getWindowStore(ORDER_PAYMENT_LEFT_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
+        WindowStore<String, Delivery> deliveryStateStore =
+                testDriver.getWindowStore(ORDER_DELIVERY_LEFT_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, Payment> iterator = paymentStateStore.all()) {
-            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:05:00Z", "2000-01-01T01:15:00Z", payment);
+        try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStateStore.all()) {
+            assertWindowedRecord(iterator.next(), "1", "2000-01-01T01:05:00Z", "2000-01-01T01:15:00Z", delivery);
             assertFalse(iterator.hasNext());
         }
     }
@@ -257,11 +257,11 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
                 .build();
     }
 
-    private Payment buildPayment(Long orderId) {
-        return Payment.newBuilder()
+    private Delivery buildDelivery(Long orderId) {
+        return Delivery.newBuilder()
                 .setId(orderId)
                 .setOrderId(orderId)
-                .setAmount(1249.90)
+                .setDestination("Lyon")
                 .build();
     }
 }

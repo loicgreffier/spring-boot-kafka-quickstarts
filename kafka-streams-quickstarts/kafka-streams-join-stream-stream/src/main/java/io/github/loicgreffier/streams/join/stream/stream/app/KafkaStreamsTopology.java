@@ -18,14 +18,14 @@
  */
 package io.github.loicgreffier.streams.join.stream.stream.app;
 
-import static io.github.loicgreffier.streams.join.stream.stream.constant.StateStore.ORDER_PAYMENT_JOIN_STREAM_STREAM_STORE;
-import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.ORDER_PAYMENT_JOIN_STREAM_STREAM_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.stream.constant.StateStore.ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE;
+import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.DELIVERY_TOPIC;
+import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.ORDER_DELIVERY_JOIN_STREAM_STREAM_TOPIC;
 import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.ORDER_TOPIC;
-import static io.github.loicgreffier.streams.join.stream.stream.constant.Topic.PAYMENT_TOPIC;
 
-import io.github.loicgreffier.avro.JoinOrderPayment;
+import io.github.loicgreffier.avro.Delivery;
+import io.github.loicgreffier.avro.JoinOrderDelivery;
 import io.github.loicgreffier.avro.Order;
-import io.github.loicgreffier.avro.Payment;
 import io.github.loicgreffier.streams.join.stream.stream.serdes.SerdesUtils;
 import java.time.Duration;
 import org.apache.kafka.common.serialization.Serdes;
@@ -45,13 +45,13 @@ public class KafkaStreamsTopology {
     /**
      * Builds the Kafka Streams topology.
      *
-     * <p>This topology reads from the {@code ORDER_TOPIC} topic and the {@code PAYMENT_TOPIC} topic. Both streams are
+     * <p>This topology reads from the {@code ORDER_TOPIC} topic and the {@code DELIVERY_TOPIC} topic. Both streams are
      * keyed by order id, so they are co-partitioned and can be joined without being re-keyed. The orders are joined to
-     * the payments using an inner join, with a 5-minute symmetric join window and a 1-minute grace period. The result
-     * is written to the {@code ORDER_PAYMENT_JOIN_STREAM_STREAM_TOPIC} topic.
+     * the deliveries using an inner join, with a 5-minute symmetric join window and a 1-minute grace period. The result
+     * is written to the {@code ORDER_DELIVERY_JOIN_STREAM_STREAM_TOPIC} topic.
      *
-     * <p>An inner join emits an output when both streams have records with the same key, i.e. when an order is paid
-     * within the join window.
+     * <p>An inner join emits an output when both streams have records with the same key, i.e. when an order is
+     * delivered within the join window.
      *
      * <p>{@link JoinWindows} are aligned to the record's timestamp. They are created each time a record is processed
      * and are bounded as [timestamp - before, timestamp + after]. An output is produced if a record from the secondary
@@ -64,32 +64,32 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        KStream<String, Payment> paymentStream = streamsBuilder.<String, Payment>stream(
-                        PAYMENT_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
-                .peek((key, payment) -> log.info("Processing key = {}, value = {}", key, payment));
+        KStream<String, Delivery> deliveryStream = streamsBuilder.<String, Delivery>stream(
+                        DELIVERY_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
+                .peek((key, delivery) -> log.info("Processing key = {}, value = {}", key, delivery));
 
         streamsBuilder.<String, Order>stream(ORDER_TOPIC, Consumed.with(Serdes.String(), SerdesUtils.getValueSerdes()))
                 .peek((key, order) -> log.info("Processing key = {}, value = {}", key, order))
                 .join(
-                        paymentStream,
-                        (key, order, payment) -> {
+                        deliveryStream,
+                        (key, order, delivery) -> {
                             log.info(
-                                    "Joined order {} to payment {} by order id {}",
+                                    "Joined order {} to delivery {} by order id {}",
                                     order.getId(),
-                                    payment.getId(),
+                                    delivery.getId(),
                                     key);
 
-                            return JoinOrderPayment.newBuilder()
+                            return JoinOrderDelivery.newBuilder()
                                     .setOrder(order)
-                                    .setPayment(payment)
+                                    .setDelivery(delivery)
                                     .build();
                         },
                         JoinWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)),
-                        StreamJoined.<String, Order, Payment>with(
+                        StreamJoined.<String, Order, Delivery>with(
                                         Serdes.String(), SerdesUtils.getValueSerdes(), SerdesUtils.getValueSerdes())
-                                .withStoreName(ORDER_PAYMENT_JOIN_STREAM_STREAM_STORE))
+                                .withStoreName(ORDER_DELIVERY_JOIN_STREAM_STREAM_STORE))
                 .to(
-                        ORDER_PAYMENT_JOIN_STREAM_STREAM_TOPIC,
+                        ORDER_DELIVERY_JOIN_STREAM_STREAM_TOPIC,
                         Produced.with(Serdes.String(), SerdesUtils.getValueSerdes()));
     }
 

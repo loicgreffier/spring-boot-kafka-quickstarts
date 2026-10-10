@@ -1,7 +1,7 @@
 # Producer Transaction
 
-This module produces an order and its payment, serialized as JSON strings of type `<String, String>`, within a single
-transaction to two topics: `ORDER_JSON_TOPIC` and `PAYMENT_JSON_TOPIC`.
+This module produces an order and its delivery, serialized as JSON strings of type `<String, String>`, within a single
+transaction to two topics: `ORDER_JSON_TOPIC` and `DELIVERY_JSON_TOPIC`.
 
 It demonstrates the following:
 

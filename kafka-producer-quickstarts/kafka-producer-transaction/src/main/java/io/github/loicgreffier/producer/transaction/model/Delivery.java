@@ -19,19 +19,19 @@
 package io.github.loicgreffier.producer.transaction.model;
 
 /**
- * This record represents a payment of an order.
+ * This record represents a delivery of an order.
  *
- * @param id The payment id.
- * @param orderId The paid order id.
- * @param amount The payment amount.
+ * @param id The delivery id.
+ * @param orderId The delivered order id.
+ * @param destination The delivery destination city.
  */
-public record Payment(long id, long orderId, double amount) {
+public record Delivery(long id, long orderId, String destination) {
     /**
-     * Converts the payment to a JSON string.
+     * Converts the delivery to a JSON string.
      *
      * @return The JSON string.
      */
     public String toJson() {
-        return "{\"id\":%d,\"orderId\":%d,\"amount\":%s}".formatted(id, orderId, amount);
+        return "{\"id\":%d,\"orderId\":%d,\"destination\":\"%s\"}".formatted(id, orderId, destination);
     }
 }
