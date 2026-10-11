@@ -64,7 +64,7 @@ public class KafkaStreamsTopology {
                         Materialized.<String, OrderAverageAmount, KeyValueStore<Bytes, byte[]>>as(ORDER_AVERAGE_STORE)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(SerdesUtils.getValueSerdes()))
-                .mapValues(value -> Math.round(value.getAmountSum() / value.getCount() * 100) / 100.0)
+                .mapValues(aggregate -> Math.round(aggregate.getAmountSum() / aggregate.getCount() * 100) / 100.0)
                 .toStream()
                 .to(ORDER_AVERAGE_TOPIC, Produced.with(Serdes.String(), Serdes.Double()));
     }

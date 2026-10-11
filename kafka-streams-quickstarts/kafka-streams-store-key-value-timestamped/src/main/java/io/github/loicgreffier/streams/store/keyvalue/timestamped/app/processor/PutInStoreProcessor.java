@@ -37,7 +37,7 @@ public class PutInStoreProcessor extends ContextualProcessor<String, Order, Stri
     /**
      * Constructor.
      *
-     * @param storeName the name of the store.
+     * @param storeName The name of the store.
      */
     public PutInStoreProcessor(String storeName) {
         this.storeName = storeName;
@@ -46,7 +46,7 @@ public class PutInStoreProcessor extends ContextualProcessor<String, Order, Stri
     /**
      * Initialize the processor.
      *
-     * @param context the processor context.
+     * @param context The processor context.
      */
     @Override
     public void init(ProcessorContext<String, Order> context) {
@@ -57,7 +57,7 @@ public class PutInStoreProcessor extends ContextualProcessor<String, Order, Stri
     /**
      * Inserts the message in the state store.
      *
-     * @param message the message to process.
+     * @param message The message to process.
      */
     @Override
     public void process(Record<String, Order> message) {

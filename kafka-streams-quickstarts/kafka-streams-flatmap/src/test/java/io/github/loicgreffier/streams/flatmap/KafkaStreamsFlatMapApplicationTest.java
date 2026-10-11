@@ -92,7 +92,7 @@ class KafkaStreamsFlatMapApplicationTest {
 
     @Test
     void shouldChangeKeyAndFlatMapItems() {
-        inputTopic.pipeInput("ORD1", buildOrder("ORD1", "CUS3", List.of("Laptop", "Mouse"), 1249.90));
+        inputTopic.pipeInput("ORD1", buildOrder());
 
         List<KeyValue<String, String>> results = outputTopic.readKeyValuesToList();
 
@@ -100,12 +100,12 @@ class KafkaStreamsFlatMapApplicationTest {
         assertEquals(KeyValue.pair("Mouse", "ORD1"), results.get(1));
     }
 
-    private Order buildOrder(String id, String customerId, List<String> items, double amount) {
+    private Order buildOrder() {
         return Order.newBuilder()
-                .setId(id)
-                .setCustomerId(customerId)
-                .setItems(items)
-                .setAmount(amount)
+                .setId("ORD1")
+                .setCustomerId("CUS3")
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(1249.90)
                 .build();
     }
 }

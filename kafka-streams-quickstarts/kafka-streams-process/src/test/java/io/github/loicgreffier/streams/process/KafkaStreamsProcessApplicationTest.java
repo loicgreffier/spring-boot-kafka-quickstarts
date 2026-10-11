@@ -96,16 +96,16 @@ class KafkaStreamsProcessApplicationTest {
 
     @Test
     void shouldProcess() {
-        Order firstOrder = buildOrder("ORD1", "CUS10");
-        Order secondOrder = buildOrder("ORD2", "CUS10");
+        Order orderOne = buildOrder("ORD1");
+        Order orderTwo = buildOrder("ORD2");
 
-        inputTopic.pipeInput("ORD1", firstOrder);
-        inputTopic.pipeInput("ORD2", secondOrder);
+        inputTopic.pipeInput("ORD1", orderOne);
+        inputTopic.pipeInput("ORD2", orderTwo);
 
         List<TestRecord<String, OrderMetadata>> results = outputTopic.readRecordsToList();
 
         assertEquals("CUS10", results.getFirst().key());
-        assertEquals(firstOrder, results.getFirst().value().getOrder());
+        assertEquals(orderOne, results.getFirst().value().getOrder());
         assertEquals(ORDER_TOPIC, results.getFirst().value().getTopic());
         assertEquals(0, results.getFirst().value().getPartition());
         assertEquals(0, results.getFirst().value().getOffset());
@@ -115,7 +115,7 @@ class KafkaStreamsProcessApplicationTest {
                 new String(results.getFirst().headers().lastHeader("eventType").value(), StandardCharsets.UTF_8));
 
         assertEquals("CUS10", results.get(1).key());
-        assertEquals(secondOrder, results.get(1).value().getOrder());
+        assertEquals(orderTwo, results.get(1).value().getOrder());
         assertEquals(ORDER_TOPIC, results.get(1).value().getTopic());
         assertEquals(0, results.get(1).value().getPartition());
         assertEquals(1, results.get(1).value().getOffset());
@@ -125,10 +125,10 @@ class KafkaStreamsProcessApplicationTest {
                 new String(results.get(1).headers().lastHeader("eventType").value(), StandardCharsets.UTF_8));
     }
 
-    private Order buildOrder(String id, String customerId) {
+    private Order buildOrder(String id) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId(customerId)
+                .setCustomerId("CUS10")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(1249.90)
                 .build();

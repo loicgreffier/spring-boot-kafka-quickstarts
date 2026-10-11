@@ -44,7 +44,6 @@ import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
-import org.apache.kafka.streams.test.TestRecord;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -91,31 +90,28 @@ class KafkaStreamsStoreKeyValueTimestampedApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {ORDER_TIMESTAMPED_KEY_VALUE_STORE, ORDER_TIMESTAMPED_KEY_VALUE_SUPPLIER_STORE})
     void shouldPutAndGetFromKeyValueStores(String storeName) {
-        Order firstOrder = buildOrder("ORD1", "CUS1");
-        inputTopic.pipeInput(new TestRecord<>("ORD1", firstOrder, Instant.parse("2000-01-01T01:00:00Z")));
+        Order orderOne = buildOrder("ORD1");
+        inputTopic.pipeInput("ORD1", orderOne, Instant.parse("2000-01-01T01:00:00Z"));
 
-        Order secondOrder = buildOrder("ORD2", "CUS1");
-        inputTopic.pipeInput(new TestRecord<>("ORD2", secondOrder, Instant.parse("2000-01-01T01:00:30Z")));
+        Order orderTwo = buildOrder("ORD2");
+        inputTopic.pipeInput("ORD2", orderTwo, Instant.parse("2000-01-01T01:00:30Z"));
 
-        KeyValueStore<String, ValueAndTimestamp<Order>> timestampedKeyValueStore =
-                testDriver.getTimestampedKeyValueStore(storeName);
+        KeyValueStore<String, ValueAndTimestamp<Order>> store = testDriver.getTimestampedKeyValueStore(storeName);
 
-        assertEquals(firstOrder, timestampedKeyValueStore.get("ORD1").value());
+        assertEquals(orderOne, store.get("ORD1").value());
         assertEquals(
                 "2000-01-01T01:00:00Z",
-                Instant.ofEpochMilli(timestampedKeyValueStore.get("ORD1").timestamp())
-                        .toString());
-        assertEquals(secondOrder, timestampedKeyValueStore.get("ORD2").value());
+                Instant.ofEpochMilli(store.get("ORD1").timestamp()).toString());
+        assertEquals(orderTwo, store.get("ORD2").value());
         assertEquals(
                 "2000-01-01T01:00:30Z",
-                Instant.ofEpochMilli(timestampedKeyValueStore.get("ORD2").timestamp())
-                        .toString());
+                Instant.ofEpochMilli(store.get("ORD2").timestamp()).toString());
     }
 
-    private Order buildOrder(String id, String customerId) {
+    private Order buildOrder(String id) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId(customerId)
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(1249.90)
                 .build();

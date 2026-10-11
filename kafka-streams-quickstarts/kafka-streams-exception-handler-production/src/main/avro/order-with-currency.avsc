@@ -42,7 +42,7 @@
     {
       "name": "currency",
       "type": "string",
-      "doc": "Order currency"
+      "doc": "The currency of the order amount. This mandatory field breaks the compatibility with the Order schema."
     }
   ]
 }

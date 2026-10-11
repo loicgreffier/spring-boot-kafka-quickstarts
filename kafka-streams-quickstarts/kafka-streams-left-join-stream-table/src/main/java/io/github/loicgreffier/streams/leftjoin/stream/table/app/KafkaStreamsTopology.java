@@ -69,24 +69,26 @@ public class KafkaStreamsTopology {
                 .leftJoin(
                         customerTable,
                         (order, customer) -> {
+                            JoinOrderCustomer joinOrderCustomer = JoinOrderCustomer.newBuilder()
+                                    .setOrder(order)
+                                    .setCustomer(customer)
+                                    .build();
+
                             if (customer == null) {
                                 log.info(
                                         "No matching customer for order {} with customer id {}",
                                         order.getId(),
                                         order.getCustomerId());
-                            } else {
-                                log.info(
-                                        "Joined order {} to customer {} {} by customer id {}",
-                                        order.getId(),
-                                        customer.getFirstName(),
-                                        customer.getLastName(),
-                                        order.getCustomerId());
+                                return joinOrderCustomer;
                             }
 
-                            return JoinOrderCustomer.newBuilder()
-                                    .setOrder(order)
-                                    .setCustomer(customer)
-                                    .build();
+                            log.info(
+                                    "Joined order {} to customer {} {} by customer id {}",
+                                    order.getId(),
+                                    customer.getFirstName(),
+                                    customer.getLastName(),
+                                    order.getCustomerId());
+                            return joinOrderCustomer;
                         },
                         Joined.with(
                                 Serdes.String(),

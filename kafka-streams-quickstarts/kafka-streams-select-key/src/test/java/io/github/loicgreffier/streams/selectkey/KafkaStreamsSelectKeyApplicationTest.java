@@ -94,7 +94,7 @@ class KafkaStreamsSelectKeyApplicationTest {
 
     @Test
     void shouldSelectCustomerIdAsNewKey() {
-        Order order = buildOrder("ORD1", "CUS3", List.of("Laptop", "Mouse"), 1249.90);
+        Order order = buildOrder();
         inputTopic.pipeInput("ORD1", order);
 
         List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
@@ -102,12 +102,12 @@ class KafkaStreamsSelectKeyApplicationTest {
         assertEquals(KeyValue.pair("CUS3", order), results.getFirst());
     }
 
-    private Order buildOrder(String id, String customerId, List<String> items, double amount) {
+    private Order buildOrder() {
         return Order.newBuilder()
-                .setId(id)
-                .setCustomerId(customerId)
-                .setItems(items)
-                .setAmount(amount)
+                .setId("ORD1")
+                .setCustomerId("CUS3")
+                .setItems(List.of("Laptop", "Mouse"))
+                .setAmount(1249.90)
                 .build();
     }
 }

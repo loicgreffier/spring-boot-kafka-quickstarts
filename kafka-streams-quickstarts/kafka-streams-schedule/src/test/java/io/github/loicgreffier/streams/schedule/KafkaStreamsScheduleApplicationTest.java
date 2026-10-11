@@ -48,7 +48,6 @@ import org.apache.kafka.streams.TestInputTopic;
 import org.apache.kafka.streams.TestOutputTopic;
 import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.state.KeyValueStore;
-import org.apache.kafka.streams.test.TestRecord;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,22 +96,14 @@ class KafkaStreamsScheduleApplicationTest {
 
     @Test
     void shouldCountOrdersByCustomer() {
-        inputTopic.pipeInput(
-                new TestRecord<>("ORD1", buildOrder("ORD1", "CUS3"), Instant.parse("2000-01-01T01:00:00Z")));
-
-        inputTopic.pipeInput(
-                new TestRecord<>("ORD2", buildOrder("ORD2", "CUS3"), Instant.parse("2000-01-01T01:01:00Z")));
-
-        inputTopic.pipeInput(
-                new TestRecord<>("ORD3", buildOrder("ORD3", "CUS1"), Instant.parse("2000-01-01T01:01:30Z")));
-
-        inputTopic.pipeInput(
-                new TestRecord<>("ORD4", buildOrder("ORD4", "CUS2"), Instant.parse("2000-01-01T01:02:00Z")));
+        inputTopic.pipeInput("ORD1", buildOrder("ORD1", "CUS3"), Instant.parse("2000-01-01T01:00:00Z"));
+        inputTopic.pipeInput("ORD2", buildOrder("ORD2", "CUS3"), Instant.parse("2000-01-01T01:01:00Z"));
+        inputTopic.pipeInput("ORD3", buildOrder("ORD3", "CUS1"), Instant.parse("2000-01-01T01:01:30Z"));
+        inputTopic.pipeInput("ORD4", buildOrder("ORD4", "CUS2"), Instant.parse("2000-01-01T01:02:00Z"));
 
         testDriver.advanceWallClockTime(Duration.ofMinutes(2));
 
-        inputTopic.pipeInput(
-                new TestRecord<>("ORD5", buildOrder("ORD5", "CUS3"), Instant.parse("2000-01-01T01:04:00Z")));
+        inputTopic.pipeInput("ORD5", buildOrder("ORD5", "CUS3"), Instant.parse("2000-01-01T01:04:00Z"));
 
         List<KeyValue<String, Long>> results = outputTopic.readKeyValuesToList();
 
@@ -146,11 +137,11 @@ class KafkaStreamsScheduleApplicationTest {
         assertEquals("CUS3", results.get(7).key);
         assertEquals(1, results.get(7).value);
 
-        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(ORDER_SCHEDULE_STORE);
+        KeyValueStore<String, Long> store = testDriver.getKeyValueStore(ORDER_SCHEDULE_STORE);
 
-        assertEquals(1, stateStore.get("CUS3"));
-        assertEquals(0, stateStore.get("CUS1"));
-        assertEquals(0, stateStore.get("CUS2"));
+        assertEquals(1, store.get("CUS3"));
+        assertEquals(0, store.get("CUS1"));
+        assertEquals(0, store.get("CUS2"));
     }
 
     private Order buildOrder(String id, String customerId) {

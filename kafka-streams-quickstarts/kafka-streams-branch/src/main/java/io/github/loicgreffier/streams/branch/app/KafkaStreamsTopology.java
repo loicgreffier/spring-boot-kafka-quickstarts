@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 /** Kafka Streams topology. */
 public class KafkaStreamsTopology {
     private static final Logger log = LoggerFactory.getLogger(KafkaStreamsTopology.class);
+    private static final double DISCOUNT_RATE = 0.9;
 
     /**
      * Builds the Kafka Streams topology.
@@ -86,7 +87,7 @@ public class KafkaStreamsTopology {
      */
     private static KStream<String, Order> applyDiscount(KStream<String, Order> stream) {
         return stream.mapValues(order -> {
-            order.setAmount(Math.round(order.getAmount() * 0.9 * 100) / 100.0);
+            order.setAmount(Math.round(order.getAmount() * DISCOUNT_RATE * 100) / 100.0);
             return order;
         });
     }

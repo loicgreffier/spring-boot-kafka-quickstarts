@@ -47,7 +47,6 @@ import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.apache.kafka.streams.state.WindowStore;
 import org.apache.kafka.streams.state.WindowStoreIterator;
-import org.apache.kafka.streams.test.TestRecord;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -94,59 +93,55 @@ class KafkaStreamsStoreWindowTimestampedApplicationTest {
     @ParameterizedTest
     @ValueSource(strings = {ORDER_TIMESTAMPED_WINDOW_STORE, ORDER_TIMESTAMPED_WINDOW_SUPPLIER_STORE})
     void shouldPutAndGetFromWindowStores(String storeName) {
-        Order firstOrder = buildOrder("ORD1", "CUS1");
-        Instant firstOrderTimestamp = Instant.parse("2000-01-01T01:00:00Z");
-        inputTopic.pipeInput(new TestRecord<>("ORD1", firstOrder, firstOrderTimestamp));
-        inputTopic.pipeInput(new TestRecord<>("ORD1", firstOrder, firstOrderTimestamp.plusSeconds(10)));
+        Order orderOne = buildOrder("ORD1");
+        Instant orderOneTimestamp = Instant.parse("2000-01-01T01:00:00Z");
+        inputTopic.pipeInput("ORD1", orderOne, orderOneTimestamp);
+        inputTopic.pipeInput("ORD1", orderOne, orderOneTimestamp.plusSeconds(10));
 
-        Order secondOrder = buildOrder("ORD2", "CUS1");
-        Instant secondOrderTimestamp = Instant.parse("2000-01-01T01:00:30Z");
-        inputTopic.pipeInput(new TestRecord<>("ORD2", secondOrder, secondOrderTimestamp));
-        inputTopic.pipeInput(new TestRecord<>("ORD2", secondOrder, secondOrderTimestamp.plusSeconds(10)));
+        Order orderTwo = buildOrder("ORD2");
+        Instant orderTwoTimestamp = Instant.parse("2000-01-01T01:00:30Z");
+        inputTopic.pipeInput("ORD2", orderTwo, orderTwoTimestamp);
+        inputTopic.pipeInput("ORD2", orderTwo, orderTwoTimestamp.plusSeconds(10));
 
-        WindowStore<String, ValueAndTimestamp<Order>> windowStore = testDriver.getTimestampedWindowStore(storeName);
+        WindowStore<String, ValueAndTimestamp<Order>> store = testDriver.getTimestampedWindowStore(storeName);
 
         // Fetch from window store by key and timestamp. The timestamp used to fetch has to be equal to
         // the window start time to get the value.
 
         assertEquals(
-                firstOrder,
-                windowStore.fetch("ORD1", firstOrderTimestamp.toEpochMilli()).value());
+                orderOne, store.fetch("ORD1", orderOneTimestamp.toEpochMilli()).value());
         assertEquals(
                 "2000-01-01T01:00:00Z",
-                Instant.ofEpochMilli(windowStore
-                                .fetch("ORD1", firstOrderTimestamp.toEpochMilli())
+                Instant.ofEpochMilli(store.fetch("ORD1", orderOneTimestamp.toEpochMilli())
                                 .timestamp())
                         .toString());
         assertEquals(
-                firstOrder,
-                windowStore
-                        .fetch("ORD1", firstOrderTimestamp.plusSeconds(10).toEpochMilli())
+                orderOne,
+                store.fetch("ORD1", orderOneTimestamp.plusSeconds(10).toEpochMilli())
                         .value());
         assertEquals(
                 "2000-01-01T01:00:10Z",
-                Instant.ofEpochMilli(windowStore
-                                .fetch(
+                Instant.ofEpochMilli(store.fetch(
                                         "ORD1",
-                                        firstOrderTimestamp.plusSeconds(10).toEpochMilli())
+                                        orderOneTimestamp.plusSeconds(10).toEpochMilli())
                                 .timestamp())
                         .toString());
-        assertNull(windowStore.fetch("ORD1", firstOrderTimestamp.plusSeconds(1).toEpochMilli()));
+        assertNull(store.fetch("ORD1", orderOneTimestamp.plusSeconds(1).toEpochMilli()));
 
         // Fetch from window store by key and time range.
 
-        try (WindowStoreIterator<ValueAndTimestamp<Order>> iterator = windowStore.fetch(
+        try (WindowStoreIterator<ValueAndTimestamp<Order>> iterator = store.fetch(
                 "ORD1",
-                firstOrderTimestamp.minusSeconds(30).toEpochMilli(),
-                firstOrderTimestamp.plusSeconds(30).toEpochMilli())) {
+                orderOneTimestamp.minusSeconds(30).toEpochMilli(),
+                orderOneTimestamp.plusSeconds(30).toEpochMilli())) {
             ValueAndTimestamp<Order> valueAndTimestamp = iterator.next().value;
-            assertEquals(firstOrder, valueAndTimestamp.value());
+            assertEquals(orderOne, valueAndTimestamp.value());
             assertEquals(
                     "2000-01-01T01:00:00Z",
                     Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
 
             valueAndTimestamp = iterator.next().value;
-            assertEquals(firstOrder, valueAndTimestamp.value());
+            assertEquals(orderOne, valueAndTimestamp.value());
             assertEquals(
                     "2000-01-01T01:00:10Z",
                     Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
@@ -155,41 +150,37 @@ class KafkaStreamsStoreWindowTimestampedApplicationTest {
         }
 
         assertEquals(
-                secondOrder,
-                windowStore.fetch("ORD2", secondOrderTimestamp.toEpochMilli()).value());
+                orderTwo, store.fetch("ORD2", orderTwoTimestamp.toEpochMilli()).value());
         assertEquals(
                 "2000-01-01T01:00:30Z",
-                Instant.ofEpochMilli(windowStore
-                                .fetch("ORD2", secondOrderTimestamp.toEpochMilli())
+                Instant.ofEpochMilli(store.fetch("ORD2", orderTwoTimestamp.toEpochMilli())
                                 .timestamp())
                         .toString());
         assertEquals(
-                secondOrder,
-                windowStore
-                        .fetch("ORD2", secondOrderTimestamp.plusSeconds(10).toEpochMilli())
+                orderTwo,
+                store.fetch("ORD2", orderTwoTimestamp.plusSeconds(10).toEpochMilli())
                         .value());
         assertEquals(
                 "2000-01-01T01:00:40Z",
-                Instant.ofEpochMilli(windowStore
-                                .fetch(
+                Instant.ofEpochMilli(store.fetch(
                                         "ORD2",
-                                        secondOrderTimestamp.plusSeconds(10).toEpochMilli())
+                                        orderTwoTimestamp.plusSeconds(10).toEpochMilli())
                                 .timestamp())
                         .toString());
-        assertNull(windowStore.fetch("ORD2", secondOrderTimestamp.plusSeconds(1).toEpochMilli()));
+        assertNull(store.fetch("ORD2", orderTwoTimestamp.plusSeconds(1).toEpochMilli()));
 
-        try (WindowStoreIterator<ValueAndTimestamp<Order>> iterator = windowStore.fetch(
+        try (WindowStoreIterator<ValueAndTimestamp<Order>> iterator = store.fetch(
                 "ORD2",
-                secondOrderTimestamp.minusSeconds(30).toEpochMilli(),
-                secondOrderTimestamp.plusSeconds(30).toEpochMilli())) {
+                orderTwoTimestamp.minusSeconds(30).toEpochMilli(),
+                orderTwoTimestamp.plusSeconds(30).toEpochMilli())) {
             ValueAndTimestamp<Order> valueAndTimestamp = iterator.next().value;
-            assertEquals(secondOrder, valueAndTimestamp.value());
+            assertEquals(orderTwo, valueAndTimestamp.value());
             assertEquals(
                     "2000-01-01T01:00:30Z",
                     Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
 
             valueAndTimestamp = iterator.next().value;
-            assertEquals(secondOrder, valueAndTimestamp.value());
+            assertEquals(orderTwo, valueAndTimestamp.value());
             assertEquals(
                     "2000-01-01T01:00:40Z",
                     Instant.ofEpochMilli(valueAndTimestamp.timestamp()).toString());
@@ -198,10 +189,10 @@ class KafkaStreamsStoreWindowTimestampedApplicationTest {
         }
     }
 
-    private Order buildOrder(String id, String customerId) {
+    private Order buildOrder(String id) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId(customerId)
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(1249.90)
                 .build();

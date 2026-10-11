@@ -76,20 +76,22 @@ public class KafkaStreamsTopology {
                 .leftJoin(
                         deliveryStream,
                         (key, order, delivery) -> {
-                            if (delivery == null) {
-                                log.info("No matching delivery for order {}", order.getId());
-                            } else {
-                                log.info(
-                                        "Joined order {} to delivery {} by order id {}",
-                                        order.getId(),
-                                        delivery.getId(),
-                                        key);
-                            }
-
-                            return JoinOrderDelivery.newBuilder()
+                            JoinOrderDelivery joinOrderDelivery = JoinOrderDelivery.newBuilder()
                                     .setOrder(order)
                                     .setDelivery(delivery)
                                     .build();
+
+                            if (delivery == null) {
+                                log.info("No matching delivery for order {}", order.getId());
+                                return joinOrderDelivery;
+                            }
+
+                            log.info(
+                                    "Joined order {} to delivery {} by order id {}",
+                                    order.getId(),
+                                    delivery.getId(),
+                                    key);
+                            return joinOrderDelivery;
                         },
                         JoinWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)),
                         StreamJoined.<String, Order, Delivery>with(

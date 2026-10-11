@@ -54,7 +54,6 @@ import org.apache.kafka.streams.TopologyTestDriver;
 import org.apache.kafka.streams.kstream.Windowed;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.WindowStore;
-import org.apache.kafka.streams.test.TestRecord;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -128,16 +127,16 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
     @Test
     void shouldJoinWhenTimeWindowIsRespected() {
         Order orderOne = buildOrder("ORD1");
-        orderInputTopic.pipeInput(new TestRecord<>("ORD1", orderOne, Instant.parse("2000-01-01T01:00:00Z")));
+        orderInputTopic.pipeInput("ORD1", orderOne, Instant.parse("2000-01-01T01:00:00Z"));
 
         Delivery deliveryOne = buildDelivery("DEL1", "ORD1");
-        deliveryInputTopic.pipeInput(new TestRecord<>("DEL1", deliveryOne, Instant.parse("2000-01-01T01:02:00Z")));
+        deliveryInputTopic.pipeInput("DEL1", deliveryOne, Instant.parse("2000-01-01T01:02:00Z"));
 
         Order orderTwo = buildOrder("ORD2");
-        orderInputTopic.pipeInput(new TestRecord<>("ORD2", orderTwo, Instant.parse("2000-01-01T01:03:00Z")));
+        orderInputTopic.pipeInput("ORD2", orderTwo, Instant.parse("2000-01-01T01:03:00Z"));
 
         Delivery deliveryTwo = buildDelivery("DEL2", "ORD2");
-        deliveryInputTopic.pipeInput(new TestRecord<>("DEL2", deliveryTwo, Instant.parse("2000-01-01T01:04:00Z")));
+        deliveryInputTopic.pipeInput("DEL2", deliveryTwo, Instant.parse("2000-01-01T01:04:00Z"));
 
         List<KeyValue<String, JoinOrderDelivery>> results = joinOutputTopic.readKeyValuesToList();
 
@@ -151,19 +150,19 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
 
         // As join windows are looking backward and forward in time,
         // records are kept in the store for "before" + "after" duration.
-        WindowStore<String, Order> orderStateStore =
+        WindowStore<String, Order> orderStore =
                 testDriver.getWindowStore(ORDER_DELIVERY_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-this-join-store");
 
-        try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
+        try (KeyValueIterator<Windowed<String>, Order> iterator = orderStore.all()) {
             assertWindowedRecord(iterator.next(), "ORD1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", orderOne);
             assertWindowedRecord(iterator.next(), "ORD2", "2000-01-01T01:03:00Z", "2000-01-01T01:13:00Z", orderTwo);
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, Delivery> deliveryStateStore =
+        WindowStore<String, Delivery> deliveryStore =
                 testDriver.getWindowStore(ORDER_DELIVERY_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStateStore.all()) {
+        try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStore.all()) {
             assertWindowedRecord(iterator.next(), "ORD1", "2000-01-01T01:02:00Z", "2000-01-01T01:12:00Z", deliveryOne);
             assertWindowedRecord(iterator.next(), "ORD2", "2000-01-01T01:04:00Z", "2000-01-01T01:14:00Z", deliveryTwo);
             assertFalse(iterator.hasNext());
@@ -173,13 +172,13 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
     @Test
     void shouldEmitUndeliveredOrderOrDeliveryWithoutOrderWhenTimeWindowIsNotRespected() {
         Order orderOne = buildOrder("ORD1");
-        orderInputTopic.pipeInput(new TestRecord<>("ORD1", orderOne, Instant.parse("2000-01-01T01:00:00Z")));
+        orderInputTopic.pipeInput("ORD1", orderOne, Instant.parse("2000-01-01T01:00:00Z"));
 
         Delivery deliveryOne = buildDelivery("DEL1", "ORD1");
-        deliveryInputTopic.pipeInput(new TestRecord<>("DEL1", deliveryOne, Instant.parse("2000-01-01T01:06:00Z")));
+        deliveryInputTopic.pipeInput("DEL1", deliveryOne, Instant.parse("2000-01-01T01:06:00Z"));
 
         Order orderTwo = buildOrder("ORD2");
-        orderInputTopic.pipeInput(new TestRecord<>("ORD2", orderTwo, Instant.parse("2000-01-01T01:13:00Z")));
+        orderInputTopic.pipeInput("ORD2", orderTwo, Instant.parse("2000-01-01T01:13:00Z"));
 
         List<KeyValue<String, JoinOrderDelivery>> results = joinOutputTopic.readKeyValuesToList();
 
@@ -197,18 +196,18 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
         assertEquals(2, results.size());
 
         // The first order is no longer in the store because the stream time (01:13:00) exceeds its retention.
-        WindowStore<String, Order> orderStateStore =
+        WindowStore<String, Order> orderStore =
                 testDriver.getWindowStore(ORDER_DELIVERY_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-this-join-store");
 
-        try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
+        try (KeyValueIterator<Windowed<String>, Order> iterator = orderStore.all()) {
             assertWindowedRecord(iterator.next(), "ORD2", "2000-01-01T01:13:00Z", "2000-01-01T01:23:00Z", orderTwo);
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, Delivery> deliveryStateStore =
+        WindowStore<String, Delivery> deliveryStore =
                 testDriver.getWindowStore(ORDER_DELIVERY_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStateStore.all()) {
+        try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStore.all()) {
             assertWindowedRecord(iterator.next(), "ORD1", "2000-01-01T01:06:00Z", "2000-01-01T01:16:00Z", deliveryOne);
             assertFalse(iterator.hasNext());
         }
@@ -217,10 +216,10 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
     @Test
     void shouldHonorGracePeriod() {
         Order orderOne = buildOrder("ORD1");
-        orderInputTopic.pipeInput(new TestRecord<>("ORD1", orderOne, Instant.parse("2000-01-01T01:00:00Z")));
+        orderInputTopic.pipeInput("ORD1", orderOne, Instant.parse("2000-01-01T01:00:00Z"));
 
         Order orderTwo = buildOrder("ORD2");
-        orderInputTopic.pipeInput(new TestRecord<>("ORD2", orderTwo, Instant.parse("2000-01-01T01:10:30Z")));
+        orderInputTopic.pipeInput("ORD2", orderTwo, Instant.parse("2000-01-01T01:10:30Z"));
 
         // At this point, the stream time is 01:10:30. It exceeds by 30 seconds
         // the upper bound of the first order's window [01:00:00.001Z->01:10:00Z] in the store.
@@ -228,7 +227,7 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
         // thanks to the grace period of 1 minute.
 
         Delivery delivery = buildDelivery("DEL1", "ORD1");
-        deliveryInputTopic.pipeInput(new TestRecord<>("DEL1", delivery, Instant.parse("2000-01-01T01:05:00Z")));
+        deliveryInputTopic.pipeInput("DEL1", delivery, Instant.parse("2000-01-01T01:05:00Z"));
 
         List<KeyValue<String, JoinOrderDelivery>> results = joinOutputTopic.readKeyValuesToList();
 
@@ -244,19 +243,19 @@ class KafkaStreamsOuterJoinStreamStreamApplicationTest {
         assertEquals(orderOne, results.get(1).value.getOrder());
         assertEquals(delivery, results.get(1).value.getDelivery());
 
-        WindowStore<String, Order> orderStateStore =
+        WindowStore<String, Order> orderStore =
                 testDriver.getWindowStore(ORDER_DELIVERY_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-this-join-store");
 
-        try (KeyValueIterator<Windowed<String>, Order> iterator = orderStateStore.all()) {
+        try (KeyValueIterator<Windowed<String>, Order> iterator = orderStore.all()) {
             assertWindowedRecord(iterator.next(), "ORD1", "2000-01-01T01:00:00Z", "2000-01-01T01:10:00Z", orderOne);
             assertWindowedRecord(iterator.next(), "ORD2", "2000-01-01T01:10:30Z", "2000-01-01T01:20:30Z", orderTwo);
             assertFalse(iterator.hasNext());
         }
 
-        WindowStore<String, Delivery> deliveryStateStore =
+        WindowStore<String, Delivery> deliveryStore =
                 testDriver.getWindowStore(ORDER_DELIVERY_OUTER_JOIN_STREAM_STREAM_STORE + "-outer-other-join-store");
 
-        try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStateStore.all()) {
+        try (KeyValueIterator<Windowed<String>, Delivery> iterator = deliveryStore.all()) {
             assertWindowedRecord(iterator.next(), "ORD1", "2000-01-01T01:05:00Z", "2000-01-01T01:15:00Z", delivery);
             assertFalse(iterator.hasNext());
         }

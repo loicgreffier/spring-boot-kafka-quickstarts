@@ -31,11 +31,12 @@ class MaxAmountReducerTest {
         MaxAmountReducer reducer = new MaxAmountReducer();
 
         Order highest = buildOrder("ORD1", 1500.0);
-        Order middle = buildOrder("ORD2", 800.0);
+        Order highestTie = buildOrder("ORD2", 1500.0);
         Order lowest = buildOrder("ORD3", 50.0);
 
         assertEquals(highest, reducer.apply(lowest, highest));
-        assertEquals(highest, reducer.apply(highest, middle));
+        assertEquals(highest, reducer.apply(highest, lowest));
+        assertEquals(highest, reducer.apply(highest, highestTie));
     }
 
     private Order buildOrder(String id, double amount) {

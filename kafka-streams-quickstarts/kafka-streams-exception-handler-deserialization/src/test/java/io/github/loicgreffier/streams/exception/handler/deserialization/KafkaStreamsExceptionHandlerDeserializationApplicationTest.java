@@ -104,24 +104,24 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
 
     @Test
     void shouldHandleDeserializationExceptionsAndContinueProcessing() {
-        Order firstOrder = buildOrder("ORD1", 100.0);
-        inputTopic.pipeInput("ORD1", firstOrder);
+        Order orderOne = buildOrder("ORD1", 100.0);
+        inputTopic.pipeInput("ORD1", orderOne);
 
         inputTopicForDeserializationException.pipeInput("ORD2", "invalid");
 
-        Order secondOrder = buildOrder("ORD3", 200.0);
-        inputTopic.pipeInput("ORD3", secondOrder);
+        Order orderTwo = buildOrder("ORD3", 200.0);
+        inputTopic.pipeInput("ORD3", orderTwo);
 
         inputTopicForDeserializationException.pipeInput("ORD4", "invalid");
 
-        Order thirdOrder = buildOrder("ORD5", 300.0);
-        inputTopic.pipeInput("ORD5", thirdOrder);
+        Order orderThree = buildOrder("ORD5", 300.0);
+        inputTopic.pipeInput("ORD5", orderThree);
 
         List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals(KeyValue.pair("ORD1", firstOrder), results.getFirst());
-        assertEquals(KeyValue.pair("ORD3", secondOrder), results.get(1));
-        assertEquals(KeyValue.pair("ORD5", thirdOrder), results.get(2));
+        assertEquals(KeyValue.pair("ORD1", orderOne), results.getFirst());
+        assertEquals(KeyValue.pair("ORD3", orderTwo), results.get(1));
+        assertEquals(KeyValue.pair("ORD5", orderThree), results.get(2));
 
         assertEquals(2.0, testDriver.metrics().get(droppedRecordsTotalMetric()).metricValue());
         assertEquals(

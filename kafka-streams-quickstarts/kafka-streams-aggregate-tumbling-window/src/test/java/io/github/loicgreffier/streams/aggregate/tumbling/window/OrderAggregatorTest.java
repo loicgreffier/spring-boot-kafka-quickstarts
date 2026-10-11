@@ -33,13 +33,13 @@ class OrderAggregatorTest {
         OrderAggregator aggregator = new OrderAggregator();
         OrderAggregate group = new OrderAggregate(new ArrayList<>());
 
-        Order firstOrder = buildOrder("ORD1");
-        aggregator.apply("CUS1", firstOrder, group);
+        Order orderOne = buildOrder("ORD1");
+        aggregator.apply("CUS1", orderOne, group);
 
-        Order secondOrder = buildOrder("ORD2");
-        aggregator.apply("CUS1", secondOrder, group);
+        Order orderTwo = buildOrder("ORD2");
+        aggregator.apply("CUS1", orderTwo, group);
 
-        assertIterableEquals(List.of(firstOrder, secondOrder), group.getOrders());
+        assertIterableEquals(List.of(orderOne, orderTwo), group.getOrders());
     }
 
     private Order buildOrder(String id) {

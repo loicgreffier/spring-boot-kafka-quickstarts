@@ -98,34 +98,31 @@ class KafkaStreamsAggregateApplicationTest {
 
     @Test
     void shouldAggregate() {
-        Order firstOrder = buildOrder("ORD1");
-        inputTopic.pipeInput("ORD1", firstOrder);
+        Order orderOne = buildOrder("ORD1");
+        inputTopic.pipeInput("ORD1", orderOne);
 
-        Order secondOrder = buildOrder("ORD2");
-        inputTopic.pipeInput("ORD2", secondOrder);
+        Order orderTwo = buildOrder("ORD2");
+        inputTopic.pipeInput("ORD2", orderTwo);
 
-        Order thirdOrder = buildOrder("ORD3");
-        inputTopic.pipeInput("ORD3", thirdOrder);
+        Order orderThree = buildOrder("ORD3");
+        inputTopic.pipeInput("ORD3", orderThree);
 
         List<KeyValue<String, OrderAggregate>> results = outputTopic.readKeyValuesToList();
 
         assertEquals("CUS1", results.getFirst().key);
-        assertIterableEquals(List.of(firstOrder), results.getFirst().value.getOrders());
+        assertIterableEquals(List.of(orderOne), results.getFirst().value.getOrders());
 
         assertEquals("CUS1", results.get(1).key);
-        assertIterableEquals(
-                List.of(firstOrder, secondOrder), results.get(1).value.getOrders());
+        assertIterableEquals(List.of(orderOne, orderTwo), results.get(1).value.getOrders());
 
         assertEquals("CUS1", results.get(2).key);
         assertIterableEquals(
-                List.of(firstOrder, secondOrder, thirdOrder),
-                results.get(2).value.getOrders());
+                List.of(orderOne, orderTwo, orderThree), results.get(2).value.getOrders());
 
-        KeyValueStore<String, OrderAggregate> stateStore = testDriver.getKeyValueStore(ORDER_AGGREGATE_STORE);
+        KeyValueStore<String, OrderAggregate> store = testDriver.getKeyValueStore(ORDER_AGGREGATE_STORE);
 
         assertIterableEquals(
-                List.of(firstOrder, secondOrder, thirdOrder),
-                stateStore.get("CUS1").getOrders());
+                List.of(orderOne, orderTwo, orderThree), store.get("CUS1").getOrders());
     }
 
     private Order buildOrder(String id) {

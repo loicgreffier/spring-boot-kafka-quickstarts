@@ -106,10 +106,10 @@ class KafkaStreamsCountApplicationTest {
         assertEquals(KeyValue.pair("CUS1", 2L), results.get(2));
         assertEquals(KeyValue.pair("CUS2", 2L), results.get(3));
 
-        KeyValueStore<String, Long> stateStore = testDriver.getKeyValueStore(ORDER_COUNT_STORE);
+        KeyValueStore<String, Long> store = testDriver.getKeyValueStore(ORDER_COUNT_STORE);
 
-        assertEquals(2, stateStore.get("CUS1"));
-        assertEquals(2, stateStore.get("CUS2"));
+        assertEquals(2, store.get("CUS1"));
+        assertEquals(2, store.get("CUS2"));
     }
 
     private Order buildOrder(String id, String customerId) {

@@ -47,27 +47,27 @@ class KafkaConsumerTransactionApplicationTest {
 
     @BeforeEach
     void setUp() {
-        TopicPartition firstTopicPartition = new TopicPartition(ORDER_JSON_TOPIC, 0);
-        TopicPartition secondTopicPartition = new TopicPartition(DELIVERY_JSON_TOPIC, 0);
-        mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(List.of(firstTopicPartition, secondTopicPartition)));
-        mockConsumer.updateBeginningOffsets(Map.of(firstTopicPartition, 0L, secondTopicPartition, 0L));
-        mockConsumer.updateEndOffsets(Map.of(firstTopicPartition, 0L, secondTopicPartition, 0L));
+        TopicPartition topicPartitionOne = new TopicPartition(ORDER_JSON_TOPIC, 0);
+        TopicPartition topicPartitionTwo = new TopicPartition(DELIVERY_JSON_TOPIC, 0);
+        mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(List.of(topicPartitionOne, topicPartitionTwo)));
+        mockConsumer.updateBeginningOffsets(Map.of(topicPartitionOne, 0L, topicPartitionTwo, 0L));
+        mockConsumer.updateEndOffsets(Map.of(topicPartitionOne, 0L, topicPartitionTwo, 0L));
     }
 
     @Test
     void shouldConsumeFromBothTopicsSuccessfully() {
-        ConsumerRecord<String, String> firstMessage = new ConsumerRecord<>(
+        ConsumerRecord<String, String> messageOne = new ConsumerRecord<>(
                 ORDER_JSON_TOPIC,
                 0,
                 0,
                 "ORD1",
                 "{\"id\":\"ORD1\",\"customerId\":\"CUS3\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
-        ConsumerRecord<String, String> secondMessage = new ConsumerRecord<>(
+        ConsumerRecord<String, String> messageTwo = new ConsumerRecord<>(
                 DELIVERY_JSON_TOPIC, 0, 0, "DEL1", "{\"id\":\"DEL1\",\"orderId\":\"ORD1\",\"destination\":\"Lyon\"}");
 
         mockConsumer.schedulePollTask(() -> {
-            mockConsumer.addRecord(firstMessage);
-            mockConsumer.addRecord(secondMessage);
+            mockConsumer.addRecord(messageOne);
+            mockConsumer.addRecord(messageTwo);
         });
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
 

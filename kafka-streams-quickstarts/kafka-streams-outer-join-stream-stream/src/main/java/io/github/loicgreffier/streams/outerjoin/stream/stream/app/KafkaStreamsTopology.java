@@ -77,22 +77,27 @@ public class KafkaStreamsTopology {
                 .outerJoin(
                         deliveryStream,
                         (key, order, delivery) -> {
-                            if (order == null) {
-                                log.info("No matching order for delivery {} with order id {}", delivery.getId(), key);
-                            } else if (delivery == null) {
-                                log.info("No matching delivery for order {}", order.getId());
-                            } else {
-                                log.info(
-                                        "Joined order {} to delivery {} by order id {}",
-                                        order.getId(),
-                                        delivery.getId(),
-                                        key);
-                            }
-
-                            return JoinOrderDelivery.newBuilder()
+                            JoinOrderDelivery joinOrderDelivery = JoinOrderDelivery.newBuilder()
                                     .setOrder(order)
                                     .setDelivery(delivery)
                                     .build();
+
+                            if (order == null) {
+                                log.info("No matching order for delivery {} with order id {}", delivery.getId(), key);
+                                return joinOrderDelivery;
+                            }
+
+                            if (delivery == null) {
+                                log.info("No matching delivery for order {}", order.getId());
+                                return joinOrderDelivery;
+                            }
+
+                            log.info(
+                                    "Joined order {} to delivery {} by order id {}",
+                                    order.getId(),
+                                    delivery.getId(),
+                                    key);
+                            return joinOrderDelivery;
                         },
                         JoinWindows.ofTimeDifferenceAndGrace(Duration.ofMinutes(5), Duration.ofMinutes(1)),
                         StreamJoined.<String, Order, Delivery>with(

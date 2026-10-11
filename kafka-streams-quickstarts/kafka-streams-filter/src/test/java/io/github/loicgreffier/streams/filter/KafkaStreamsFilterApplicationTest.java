@@ -95,7 +95,7 @@ class KafkaStreamsFilterApplicationTest {
 
     @Test
     void shouldFilterLowAmount() {
-        inputTopic.pipeInput("ORD1", buildOrder("ORD1", "CUS3", List.of("Laptop", "Mouse"), 999.99));
+        inputTopic.pipeInput("ORD1", buildOrder(List.of("Laptop", "Mouse"), 999.99));
 
         List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
@@ -104,7 +104,7 @@ class KafkaStreamsFilterApplicationTest {
 
     @Test
     void shouldFilterNotEnoughItems() {
-        inputTopic.pipeInput("ORD1", buildOrder("ORD1", "CUS3", List.of("Laptop"), 1249.90));
+        inputTopic.pipeInput("ORD1", buildOrder(List.of("Laptop"), 1249.90));
 
         List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
@@ -113,7 +113,7 @@ class KafkaStreamsFilterApplicationTest {
 
     @Test
     void shouldNotFilter() {
-        Order order = buildOrder("ORD1", "CUS3", List.of("Laptop", "Mouse"), 1249.90);
+        Order order = buildOrder(List.of("Laptop", "Mouse"), 1249.90);
         inputTopic.pipeInput("ORD1", order);
 
         List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
@@ -121,10 +121,10 @@ class KafkaStreamsFilterApplicationTest {
         assertEquals(KeyValue.pair("ORD1", order), results.getFirst());
     }
 
-    private Order buildOrder(String id, String customerId, List<String> items, double amount) {
+    private Order buildOrder(List<String> items, double amount) {
         return Order.newBuilder()
-                .setId(id)
-                .setCustomerId(customerId)
+                .setId("ORD1")
+                .setCustomerId("CUS3")
                 .setItems(items)
                 .setAmount(amount)
                 .build();

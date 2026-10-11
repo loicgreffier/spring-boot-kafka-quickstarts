@@ -23,13 +23,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /** This is the main class for the Spring Boot application. */
 @SpringBootApplication
-public class KafkaStreamsExceptionHandlerProcessingDslApplication {
+public class KafkaStreamsExceptionHandlerProcessingPapiApplication {
     /**
      * The main entry point of the Spring Boot application.
      *
      * @param args The command line arguments.
      */
     public static void main(String[] args) {
-        SpringApplication.run(KafkaStreamsExceptionHandlerProcessingDslApplication.class, args);
+        SpringApplication.run(KafkaStreamsExceptionHandlerProcessingPapiApplication.class, args);
     }
 }

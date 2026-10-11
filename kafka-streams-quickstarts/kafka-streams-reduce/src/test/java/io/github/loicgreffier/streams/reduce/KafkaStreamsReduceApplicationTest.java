@@ -113,10 +113,10 @@ class KafkaStreamsReduceApplicationTest {
         assertEquals(KeyValue.pair("CUS2", lowestCustomerTwo), results.get(2));
         assertEquals(KeyValue.pair("CUS2", highestCustomerTwo), results.get(3));
 
-        KeyValueStore<String, Order> stateStore = testDriver.getKeyValueStore(ORDER_REDUCE_STORE);
+        KeyValueStore<String, Order> store = testDriver.getKeyValueStore(ORDER_REDUCE_STORE);
 
-        assertEquals(highestCustomerOne, stateStore.get("CUS1"));
-        assertEquals(highestCustomerTwo, stateStore.get("CUS2"));
+        assertEquals(highestCustomerOne, store.get("CUS1"));
+        assertEquals(highestCustomerTwo, store.get("CUS2"));
     }
 
     private Order buildOrder(String id, String customerId, double amount) {

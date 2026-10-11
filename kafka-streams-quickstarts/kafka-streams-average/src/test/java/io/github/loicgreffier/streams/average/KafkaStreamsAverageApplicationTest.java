@@ -104,10 +104,10 @@ class KafkaStreamsAverageApplicationTest {
         assertEquals(KeyValue.pair("CUS1", 25.0), results.getFirst());
         assertEquals(KeyValue.pair("CUS1", 50.25), results.get(1));
 
-        KeyValueStore<String, OrderAverageAmount> stateStore = testDriver.getKeyValueStore(ORDER_AVERAGE_STORE);
+        KeyValueStore<String, OrderAverageAmount> store = testDriver.getKeyValueStore(ORDER_AVERAGE_STORE);
 
-        assertEquals(2L, stateStore.get("CUS1").getCount());
-        assertEquals(100.5, stateStore.get("CUS1").getAmountSum());
+        assertEquals(2L, store.get("CUS1").getCount());
+        assertEquals(100.5, store.get("CUS1").getAmountSum());
     }
 
     private Order buildOrder(String id, double amount) {

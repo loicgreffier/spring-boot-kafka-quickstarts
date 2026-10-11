@@ -76,7 +76,7 @@ public class StoreCleanupProcessor extends ContextualProcessor<String, Order, St
      * @param timestamp The timestamp of the punctuation.
      */
     private void forwardTombstones(long timestamp) {
-        log.info("Resetting {} store ", ORDER_STORE_CLEANUP_STORE);
+        log.info("Resetting {} store", ORDER_STORE_CLEANUP_STORE);
 
         try (KeyValueIterator<String, Order> iterator = orderStore.all()) {
             while (iterator.hasNext()) {
