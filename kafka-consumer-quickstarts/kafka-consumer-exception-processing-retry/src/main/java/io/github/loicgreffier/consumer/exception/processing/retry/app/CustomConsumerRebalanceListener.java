@@ -57,7 +57,7 @@ public class CustomConsumerRebalanceListener implements ConsumerRebalanceListene
      */
     @Override
     public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
-        log.info("Partition revoked : {}", partitions);
+        log.info("Partition revoked: {}", partitions);
 
         for (TopicPartition topicPartition : partitions) {
             offsets.remove(topicPartition);
@@ -72,7 +72,7 @@ public class CustomConsumerRebalanceListener implements ConsumerRebalanceListene
      */
     @Override
     public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-        log.info("Partition assigned : {}", partitions);
+        log.info("Partition assigned: {}", partitions);
 
         Map<TopicPartition, OffsetAndMetadata> offsetsTopicPartitions = consumer.committed(new HashSet<>(partitions));
         offsets.putAll(offsetsTopicPartitions.entrySet().stream()
@@ -87,7 +87,7 @@ public class CustomConsumerRebalanceListener implements ConsumerRebalanceListene
      */
     @Override
     public void onPartitionsLost(Collection<TopicPartition> partitions) {
-        log.info("Partition lost : {}", partitions);
+        log.info("Partition lost: {}", partitions);
 
         ConsumerRebalanceListener.super.onPartitionsLost(partitions);
     }

@@ -20,9 +20,12 @@ package io.github.loicgreffier.streams.join.stream.table.constant;
 
 /** Topic name constants. */
 public abstract class Topic {
-    public static final String CUSTOMER_TOPIC = "CUSTOMER_TOPIC";
     public static final String ORDER_TOPIC = "ORDER_TOPIC";
+
+    public static final String CUSTOMER_TOPIC = "CUSTOMER_TOPIC";
+
     public static final String ORDER_JOIN_STREAM_TABLE_REKEY_TOPIC = "ORDER_JOIN_STREAM_TABLE_REKEY_TOPIC";
+
     public static final String ORDER_CUSTOMER_JOIN_STREAM_TABLE_TOPIC = "ORDER_CUSTOMER_JOIN_STREAM_TABLE_TOPIC";
 
     /** Private constructor. */

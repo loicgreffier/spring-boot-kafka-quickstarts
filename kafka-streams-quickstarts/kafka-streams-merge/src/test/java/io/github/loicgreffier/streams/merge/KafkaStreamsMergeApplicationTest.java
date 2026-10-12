@@ -99,8 +99,8 @@ class KafkaStreamsMergeApplicationTest {
 
     @Test
     void shouldMergeBothStreams() {
-        Order orderOne = buildOrder("ORD1", "CUS3", List.of("Laptop", "Mouse"), 1249.90);
-        Order orderTwo = buildOrder("ORD2", "CUS5", List.of("Keyboard"), 89.99);
+        Order orderOne = buildOrder("ORD1", "CUS1", List.of("Laptop", "Mouse"), 1249.90);
+        Order orderTwo = buildOrder("ORD2", "CUS2", List.of("Keyboard"), 89.99);
         inputTopicOne.pipeInput("ORD1", orderOne);
         inputTopicTwo.pipeInput("ORD2", orderTwo);
 

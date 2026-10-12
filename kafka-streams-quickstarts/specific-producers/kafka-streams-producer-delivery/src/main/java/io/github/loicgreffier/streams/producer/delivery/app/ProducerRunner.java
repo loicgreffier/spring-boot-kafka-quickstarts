@@ -37,8 +37,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
-    private final Random random = new Random();
     private final Producer<String, Delivery> producer;
+    private final Random random = new Random();
     private boolean stopped = false;
 
     /**
@@ -75,15 +75,6 @@ public class ProducerRunner {
     }
 
     /**
-     * Set whether the runner is stopped.
-     *
-     * @param stopped {@code true} to stop the runner; {@code false} otherwise.
-     */
-    public void setStopped(boolean stopped) {
-        this.stopped = stopped;
-    }
-
-    /**
      * Sends a message to the Kafka topic.
      *
      * @param message The message to send.
@@ -116,5 +107,14 @@ public class ProducerRunner {
                 .setOrderId("ORD%d".formatted(id))
                 .setDestination(DESTINATIONS.get(random.nextInt(DESTINATIONS.size())))
                 .build();
+    }
+
+    /**
+     * Set whether the runner is stopped.
+     *
+     * @param stopped {@code true} to stop the runner; {@code false} otherwise.
+     */
+    public void setStopped(boolean stopped) {
+        this.stopped = stopped;
     }
 }

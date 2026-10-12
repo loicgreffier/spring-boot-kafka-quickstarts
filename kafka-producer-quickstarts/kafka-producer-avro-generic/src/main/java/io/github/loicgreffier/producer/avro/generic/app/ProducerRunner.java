@@ -42,8 +42,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
-    private final Random random = new Random();
     private final Producer<String, GenericRecord> producer;
+    private final Random random = new Random();
     private boolean stopped = false;
 
     /**
@@ -118,7 +118,7 @@ public class ProducerRunner {
     private GenericRecord buildGenericRecord(Schema schema, int id) {
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", "ORD%d".formatted(id));
-        genericRecord.put("customerId", "CUS%d".formatted(random.nextInt(1, 11)));
+        genericRecord.put("customerId", "CUS%d".formatted(random.nextInt(1, 21)));
         genericRecord.put(
                 "items",
                 random.ints(random.nextInt(1, 9), 0, ITEMS.size())

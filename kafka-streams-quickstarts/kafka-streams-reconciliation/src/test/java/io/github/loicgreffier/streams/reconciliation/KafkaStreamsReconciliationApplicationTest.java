@@ -118,7 +118,7 @@ class KafkaStreamsReconciliationApplicationTest {
     private Order buildOrder() {
         return Order.newBuilder()
                 .setId("ORD1")
-                .setCustomerId("CUS3")
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(1249.90)
                 .build();

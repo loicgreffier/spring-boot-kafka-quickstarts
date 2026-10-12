@@ -106,7 +106,7 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
 
     @Test
     void shouldHandleSerializationExceptionsAndContinueProcessing() {
-        inputTopic.pipeInput("ORD1", buildOrder());
+        inputTopic.pipeInput("ORD2", buildOrder());
 
         List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
@@ -120,7 +120,7 @@ class KafkaStreamsExceptionHandlerProductionApplicationTest {
 
     private Order buildOrder() {
         return Order.newBuilder()
-                .setId("ORD1")
+                .setId("ORD2")
                 .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(100.0)

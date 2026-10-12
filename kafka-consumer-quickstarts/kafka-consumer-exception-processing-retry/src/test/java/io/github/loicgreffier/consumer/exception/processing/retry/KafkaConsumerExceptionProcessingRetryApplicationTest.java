@@ -20,11 +20,11 @@ package io.github.loicgreffier.consumer.exception.processing.retry;
 
 import static io.github.loicgreffier.consumer.exception.processing.retry.constant.Topic.ORDER_JSON_TOPIC;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.argThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import io.github.loicgreffier.consumer.exception.processing.retry.app.ConsumerRunner;
 import io.github.loicgreffier.consumer.exception.processing.retry.property.ConsumerProperties;
@@ -40,8 +40,6 @@ import org.apache.kafka.common.TopicPartition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatcher;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -54,16 +52,14 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
     @Mock
     private ExternalService externalService;
 
-    @Mock
     private ConsumerProperties properties;
-
-    @InjectMocks
     private ConsumerRunner consumerRunner;
-
     private TopicPartition topicPartition;
 
     @BeforeEach
     void setUp() {
+        properties = new ConsumerProperties();
+        consumerRunner = new ConsumerRunner(mockConsumer, properties, externalService);
         topicPartition = new TopicPartition(ORDER_JSON_TOPIC, 0);
         mockConsumer.schedulePollTask(() -> mockConsumer.rebalance(Collections.singletonList(topicPartition)));
         mockConsumer.updateBeginningOffsets(Map.of(topicPartition, 0L));
@@ -71,13 +67,15 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
     }
 
     @Test
-    void shouldConsumeSuccessfully() {
+    void shouldConsumeSuccessfully() throws InterruptedException {
+        doNothing().when(externalService).call(any());
+
         ConsumerRecord<String, String> message = new ConsumerRecord<>(
                 ORDER_JSON_TOPIC,
                 0,
                 0,
                 "ORD1",
-                "{\"id\":\"ORD1\",\"customerId\":\"CUS3\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
+                "{\"id\":\"ORD1\",\"customerId\":\"CUS1\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -86,38 +84,36 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
 
         assertTrue(mockConsumer.closed());
 
-        verify(mockConsumer).commitSync(argThat((ArgumentMatcher<Map<TopicPartition, OffsetAndMetadata>>)
-                argument -> argument.containsKey(new TopicPartition(ORDER_JSON_TOPIC, 0))
-                        && argument.get(new TopicPartition(ORDER_JSON_TOPIC, 0)).offset() == 1L));
+        verify(mockConsumer).commitSync(Map.of(topicPartition, new OffsetAndMetadata(1L)));
     }
 
     @Test
-    void shouldRewindOffsetOnExternalSystemError() throws Exception {
+    void shouldRewindOffsetOnExternalSystemError() throws InterruptedException {
         ConsumerRecord<String, String> message = new ConsumerRecord<>(
                 ORDER_JSON_TOPIC,
                 0,
                 0,
                 "ORD1",
-                "{\"id\":\"ORD1\",\"customerId\":\"CUS3\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
-        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(
+                "{\"id\":\"ORD1\",\"customerId\":\"CUS1\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
+        ConsumerRecord<String, String> messageTwo = new ConsumerRecord<>(
                 ORDER_JSON_TOPIC,
                 0,
                 1,
                 "ORD2",
-                "{\"id\":\"ORD2\",\"customerId\":\"CUS5\",\"items\":[\"Keyboard\"],\"amount\":89.99}");
-        ConsumerRecord<String, String> message3 = new ConsumerRecord<>(
+                "{\"id\":\"ORD2\",\"customerId\":\"CUS2\",\"items\":[\"Keyboard\"],\"amount\":89.99}");
+        ConsumerRecord<String, String> messageThree = new ConsumerRecord<>(
                 ORDER_JSON_TOPIC,
                 0,
                 2,
                 "ORD3",
-                "{\"id\":\"ORD3\",\"customerId\":\"CUS7\",\"items\":[\"Monitor\"],\"amount\":219.00}");
+                "{\"id\":\"ORD3\",\"customerId\":\"CUS3\",\"items\":[\"Monitor\"],\"amount\":219.00}");
 
         // First poll to rewind, second poll to resume
         for (int i = 0; i < 2; i++) {
             mockConsumer.schedulePollTask(() -> {
                 mockConsumer.addRecord(message);
-                mockConsumer.addRecord(message2);
-                mockConsumer.addRecord(message3);
+                mockConsumer.addRecord(messageTwo);
+                mockConsumer.addRecord(messageThree);
             });
         }
 
@@ -125,10 +121,10 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
 
         // Throw exception for message 2, otherwise do nothing
         // Should read from message 2 on second poll loop
-        doNothing().when(externalService).call(argThat(arg -> !arg.equals(message2)));
+        doNothing().when(externalService).call(argThat(arg -> !arg.equals(messageTwo)));
         doThrow(new IllegalStateException("Call to external system failed"))
                 .when(externalService)
-                .call(message2);
+                .call(messageTwo);
 
         consumerRunner.run();
 
@@ -139,13 +135,13 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
     }
 
     @Test
-    void shouldRewindToEarliestOnExternalSystemError() throws Exception {
+    void shouldRewindToEarliestOnExternalSystemError() throws InterruptedException {
         ConsumerRecord<String, String> message = new ConsumerRecord<>(
                 ORDER_JSON_TOPIC,
                 0,
                 0,
                 "ORD1",
-                "{\"id\":\"ORD1\",\"customerId\":\"CUS3\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
+                "{\"id\":\"ORD1\",\"customerId\":\"CUS1\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
 
         for (int i = 0; i < 2; i++) {
             mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
@@ -165,21 +161,21 @@ class KafkaConsumerExceptionProcessingRetryApplicationTest {
     }
 
     @Test
-    void shouldRewindToLatestOnExternalSystemError() throws Exception {
+    void shouldRewindToLatestOnExternalSystemError() throws InterruptedException {
         ConsumerRecord<String, String> message = new ConsumerRecord<>(
                 ORDER_JSON_TOPIC,
                 0,
                 0,
-                "ORD2",
-                "{\"id\":\"ORD2\",\"customerId\":\"CUS5\",\"items\":[\"Keyboard\"],\"amount\":89.99}");
+                "ORD1",
+                "{\"id\":\"ORD1\",\"customerId\":\"CUS1\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
 
         for (int i = 0; i < 2; i++) {
             mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         }
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
 
-        when(properties.getProperties())
-                .thenReturn(Map.of(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, AutoOffsetResetStrategy.LATEST.name()));
+        properties.getProperties().put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, AutoOffsetResetStrategy.LATEST.name());
+
         doThrow(new IllegalStateException("Call to external system failed"))
                 .when(externalService)
                 .call(message);

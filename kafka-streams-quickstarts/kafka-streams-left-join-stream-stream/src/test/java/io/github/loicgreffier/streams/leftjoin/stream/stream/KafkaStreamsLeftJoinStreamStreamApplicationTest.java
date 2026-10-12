@@ -268,7 +268,7 @@ class KafkaStreamsLeftJoinStreamStreamApplicationTest {
     private Order buildOrder(String id) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId("CUS3")
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(1249.90)
                 .build();

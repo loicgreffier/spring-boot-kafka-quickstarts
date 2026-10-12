@@ -124,7 +124,7 @@ class KafkaStreamsFilterApplicationTest {
     private Order buildOrder(List<String> items, double amount) {
         return Order.newBuilder()
                 .setId("ORD1")
-                .setCustomerId("CUS3")
+                .setCustomerId("CUS1")
                 .setItems(items)
                 .setAmount(amount)
                 .build();

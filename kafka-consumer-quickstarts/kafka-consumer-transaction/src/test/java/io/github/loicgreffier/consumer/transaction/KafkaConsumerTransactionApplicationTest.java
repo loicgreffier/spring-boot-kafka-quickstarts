@@ -61,7 +61,7 @@ class KafkaConsumerTransactionApplicationTest {
                 0,
                 0,
                 "ORD1",
-                "{\"id\":\"ORD1\",\"customerId\":\"CUS3\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
+                "{\"id\":\"ORD1\",\"customerId\":\"CUS1\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
         ConsumerRecord<String, String> messageTwo = new ConsumerRecord<>(
                 DELIVERY_JSON_TOPIC, 0, 0, "DEL1", "{\"id\":\"DEL1\",\"orderId\":\"ORD1\",\"destination\":\"Lyon\"}");
 

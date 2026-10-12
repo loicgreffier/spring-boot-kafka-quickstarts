@@ -65,7 +65,7 @@ class KafkaConsumerStringApplicationTest {
                 0,
                 0,
                 "ORD1",
-                "{\"id\":\"ORD1\",\"customerId\":\"CUS3\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
+                "{\"id\":\"ORD1\",\"customerId\":\"CUS1\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
 
         mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
@@ -79,20 +79,14 @@ class KafkaConsumerStringApplicationTest {
 
     @Test
     void shouldFailOnPoisonPill() {
-        ConsumerRecord<String, String> message1 = new ConsumerRecord<>(
+        ConsumerRecord<String, String> message = new ConsumerRecord<>(
                 ORDER_JSON_TOPIC,
                 0,
                 0,
                 "ORD1",
-                "{\"id\":\"ORD1\",\"customerId\":\"CUS3\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
-        ConsumerRecord<String, String> message2 = new ConsumerRecord<>(
-                ORDER_JSON_TOPIC,
-                0,
-                2,
-                "ORD2",
-                "{\"id\":\"ORD2\",\"customerId\":\"CUS5\",\"items\":[\"Keyboard\"],\"amount\":89.99}");
+                "{\"id\":\"ORD1\",\"customerId\":\"CUS1\",\"items\":[\"Laptop\",\"Mouse\"],\"amount\":1249.90}");
 
-        mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message1));
+        mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message));
         mockConsumer.schedulePollTask(() -> {
             throw new RecordDeserializationException(
                     RecordDeserializationException.DeserializationExceptionOrigin.VALUE,
@@ -106,7 +100,6 @@ class KafkaConsumerStringApplicationTest {
                     "Error deserializing",
                     new Exception());
         });
-        mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message2));
 
         assertThrows(RecordDeserializationException.class, () -> consumerRunner.run());
 

@@ -36,7 +36,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
-    private static final int CUSTOMER_COUNT = 10;
     private final Producer<String, Customer> producer;
 
     /**
@@ -54,13 +53,12 @@ public class ProducerRunner {
      * <p>The {@code @Async} annotation is used to run the producer in a separate thread, preventing it from blocking
      * the main thread.
      *
-     * <p>The Kafka producer sends the customer referential to the {@code CUSTOMER_TOPIC}. The customer ids match the
-     * customer ids of the orders.
+     * <p>The Kafka producer sends the customer referential to the {@code CUSTOMER_TOPIC}.
      */
     @Async
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
-        for (int i = 1; i <= CUSTOMER_COUNT; i++) {
+        for (int i = 1; i <= 20; i++) {
             Customer customer = buildCustomer(i);
             ProducerRecord<String, Customer> message = new ProducerRecord<>(CUSTOMER_TOPIC, customer.getId(), customer);
 

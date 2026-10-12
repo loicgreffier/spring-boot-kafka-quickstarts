@@ -56,14 +56,14 @@ public class ConsumerRunner {
      * Constructor.
      *
      * @param consumer The Kafka consumer.
-     * @param externalService The external service.
      * @param properties The consumer properties.
+     * @param externalService The external service.
      */
     public ConsumerRunner(
-            Consumer<String, String> consumer, ExternalService externalService, ConsumerProperties properties) {
+            Consumer<String, String> consumer, ConsumerProperties properties, ExternalService externalService) {
         this.consumer = consumer;
-        this.externalService = externalService;
         this.properties = properties;
+        this.externalService = externalService;
     }
 
     /**
@@ -161,9 +161,9 @@ public class ConsumerRunner {
                             ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
                             EARLIEST.name().toLowerCase());
 
-            if (autoOffsetReset.equalsIgnoreCase(EARLIEST.name().toLowerCase())) {
+            if (autoOffsetReset.equalsIgnoreCase(EARLIEST.name())) {
                 consumer.seekToBeginning(consumer.assignment());
-            } else if (autoOffsetReset.equalsIgnoreCase(LATEST.name().toLowerCase())) {
+            } else if (autoOffsetReset.equalsIgnoreCase(LATEST.name())) {
                 consumer.seekToEnd(consumer.assignment());
             }
         }
@@ -171,14 +171,14 @@ public class ConsumerRunner {
         log.info("Seeking to following partitions-offsets {}", offsets);
 
         for (Map.Entry<TopicPartition, OffsetAndMetadata> entry : offsets.entrySet()) {
-            if (entry.getValue() != null) {
-                consumer.seek(entry.getKey(), entry.getValue());
-            } else {
+            if (entry.getValue() == null) {
                 log.warn(
-                        "Cannot rewind on {} to null offset, this could happen if the consumer "
-                                + "group was just created",
+                        "Cannot rewind on {} to null offset, this could happen if the consumer group was just created",
                         entry.getKey());
+                continue;
             }
+
+            consumer.seek(entry.getKey(), entry.getValue());
         }
     }
 

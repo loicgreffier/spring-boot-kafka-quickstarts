@@ -104,7 +104,7 @@ class KafkaStreamsProcessApplicationTest {
 
         List<TestRecord<String, OrderMetadata>> results = outputTopic.readRecordsToList();
 
-        assertEquals("CUS10", results.getFirst().key());
+        assertEquals("CUS1", results.getFirst().key());
         assertEquals(orderOne, results.getFirst().value().getOrder());
         assertEquals(ORDER_TOPIC, results.getFirst().value().getTopic());
         assertEquals(0, results.getFirst().value().getPartition());
@@ -114,7 +114,7 @@ class KafkaStreamsProcessApplicationTest {
                 "ORDER_CREATED",
                 new String(results.getFirst().headers().lastHeader("eventType").value(), StandardCharsets.UTF_8));
 
-        assertEquals("CUS10", results.get(1).key());
+        assertEquals("CUS1", results.get(1).key());
         assertEquals(orderTwo, results.get(1).value().getOrder());
         assertEquals(ORDER_TOPIC, results.get(1).value().getTopic());
         assertEquals(0, results.get(1).value().getPartition());
@@ -128,7 +128,7 @@ class KafkaStreamsProcessApplicationTest {
     private Order buildOrder(String id) {
         return Order.newBuilder()
                 .setId(id)
-                .setCustomerId("CUS10")
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(1249.90)
                 .build();

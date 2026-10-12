@@ -73,7 +73,7 @@ class KafkaConsumerAvroGenericApplicationTest {
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", "ORD1");
-        genericRecord.put("customerId", "CUS3");
+        genericRecord.put("customerId", "CUS1");
         genericRecord.put("items", List.of("Laptop", "Mouse"));
         genericRecord.put("amount", 1249.90);
 
@@ -95,7 +95,7 @@ class KafkaConsumerAvroGenericApplicationTest {
 
         GenericRecord genericRecord = new GenericData.Record(schema);
         genericRecord.put("id", "ORD1");
-        genericRecord.put("customerId", "CUS3");
+        genericRecord.put("customerId", "CUS1");
         genericRecord.put("items", List.of("Laptop", "Mouse"));
         genericRecord.put("amount", 1249.90);
 

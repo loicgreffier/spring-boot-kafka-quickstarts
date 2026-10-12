@@ -107,12 +107,12 @@ class KafkaStreamsExceptionHandlerDeserializationApplicationTest {
         Order orderOne = buildOrder("ORD1", 100.0);
         inputTopic.pipeInput("ORD1", orderOne);
 
-        inputTopicForDeserializationException.pipeInput("ORD2", "invalid");
+        inputTopicForDeserializationException.pipeInput("ORD2", "Not an Avro order");
 
         Order orderTwo = buildOrder("ORD3", 200.0);
         inputTopic.pipeInput("ORD3", orderTwo);
 
-        inputTopicForDeserializationException.pipeInput("ORD4", "invalid");
+        inputTopicForDeserializationException.pipeInput("ORD4", "Not an Avro order");
 
         Order orderThree = buildOrder("ORD5", 300.0);
         inputTopic.pipeInput("ORD5", orderThree);

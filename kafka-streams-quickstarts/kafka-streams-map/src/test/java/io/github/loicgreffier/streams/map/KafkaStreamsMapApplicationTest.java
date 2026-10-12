@@ -98,14 +98,14 @@ class KafkaStreamsMapApplicationTest {
 
         List<KeyValue<String, Order>> results = outputTopic.readKeyValuesToList();
 
-        assertEquals("CUS3", results.getFirst().key);
+        assertEquals("CUS1", results.getFirst().key);
         assertEquals(List.of("LAPTOP", "MOUSE"), results.getFirst().value.getItems());
     }
 
     private Order buildOrder() {
         return Order.newBuilder()
                 .setId("ORD1")
-                .setCustomerId("CUS3")
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(1249.90)
                 .build();

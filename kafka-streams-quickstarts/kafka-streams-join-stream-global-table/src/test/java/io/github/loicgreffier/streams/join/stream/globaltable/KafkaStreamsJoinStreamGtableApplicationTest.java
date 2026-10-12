@@ -104,7 +104,7 @@ class KafkaStreamsJoinStreamGtableApplicationTest {
     @Test
     void shouldJoinOrderToCustomer() {
         Customer customer = buildCustomer();
-        customerInputTopic.pipeInput("CUS3", customer);
+        customerInputTopic.pipeInput("CUS1", customer);
 
         Order order = buildOrder();
         orderInputTopic.pipeInput("ORD1", order);
@@ -127,7 +127,7 @@ class KafkaStreamsJoinStreamGtableApplicationTest {
     private Order buildOrder() {
         return Order.newBuilder()
                 .setId("ORD1")
-                .setCustomerId("CUS3")
+                .setCustomerId("CUS1")
                 .setItems(List.of("Laptop", "Mouse"))
                 .setAmount(1249.90)
                 .build();
@@ -135,7 +135,7 @@ class KafkaStreamsJoinStreamGtableApplicationTest {
 
     private Customer buildCustomer() {
         return Customer.newBuilder()
-                .setId("CUS3")
+                .setId("CUS1")
                 .setFirstName("Homer")
                 .setLastName("Simpson")
                 .setEmail("homer.simpson@mail.com")

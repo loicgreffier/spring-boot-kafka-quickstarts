@@ -37,8 +37,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProducerRunner {
     private static final Logger log = LoggerFactory.getLogger(ProducerRunner.class);
-    private final Random random = new Random();
     private final Producer<String, Order> producer;
+    private final Random random = new Random();
     private boolean stopped = false;
 
     /**
@@ -107,7 +107,7 @@ public class ProducerRunner {
     private Order buildOrder(int id) {
         return Order.newBuilder()
                 .setId("ORD%d".formatted(id))
-                .setCustomerId("CUS%d".formatted(random.nextInt(1, 11)))
+                .setCustomerId("CUS%d".formatted(random.nextInt(1, 21)))
                 .setItems(random.ints(random.nextInt(1, 9), 0, ITEMS.size())
                         .mapToObj(ITEMS::get)
                         .toList())

@@ -68,7 +68,7 @@ class KafkaConsumerExceptionDeserializationApplicationTest {
                 "ORD1",
                 Order.newBuilder()
                         .setId("ORD1")
-                        .setCustomerId("CUS3")
+                        .setCustomerId("CUS1")
                         .setItems(List.of("Laptop", "Mouse"))
                         .setAmount(1249.90)
                         .build());
@@ -91,19 +91,19 @@ class KafkaConsumerExceptionDeserializationApplicationTest {
                 "ORD1",
                 Order.newBuilder()
                         .setId("ORD1")
-                        .setCustomerId("CUS3")
+                        .setCustomerId("CUS1")
                         .setItems(List.of("Laptop", "Mouse"))
                         .setAmount(1249.90)
                         .build());
 
-        ConsumerRecord<String, Order> message2 = new ConsumerRecord<>(
+        ConsumerRecord<String, Order> messageTwo = new ConsumerRecord<>(
                 ORDER_TOPIC,
                 0,
                 2,
                 "ORD2",
                 Order.newBuilder()
                         .setId("ORD2")
-                        .setCustomerId("CUS3")
+                        .setCustomerId("CUS1")
                         .setItems(List.of("Laptop", "Mouse"))
                         .setAmount(1249.90)
                         .build());
@@ -124,7 +124,7 @@ class KafkaConsumerExceptionDeserializationApplicationTest {
                     new Exception());
         });
 
-        mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(message2));
+        mockConsumer.schedulePollTask(() -> mockConsumer.addRecord(messageTwo));
 
         mockConsumer.schedulePollTask(mockConsumer::wakeup);
 
