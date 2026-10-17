@@ -1,10 +1,10 @@
 # Kafka Streams Store Cleanup
 
-This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and adds and deletes events from a store.
+This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and adds and deletes orders from a key-value store.
 
 It demonstrates the following:
 
-- How to use the Kafka Streams Processor API, including `process()`, `addStateStore()` and `schedule()`.
+- How to use the Kafka Streams Processor API, including `process()`, `ProcessorSupplier#stores()` and `schedule()`.
 - How to use the processor context and schedule tasks based on stream time.
 - How to create and clean up a key-value store.
 - How to write unit tests with Topology Test Driver.

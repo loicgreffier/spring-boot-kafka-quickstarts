@@ -36,4 +36,4 @@ This will start the following services in Docker:
 - Schema Registry
 - Control Center
 - Producer Order
-- Kafka Streams Store Timestamped Key-Value
+- Kafka Streams Store Key-Value Timestamped

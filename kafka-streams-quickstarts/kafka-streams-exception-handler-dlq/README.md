@@ -1,6 +1,6 @@
 # Kafka Streams Exception Handler DLQ
 
-This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and routes exceptions to a Dead Letter Queue (DLQ) topic using the Kafka Streams native DLQ support. Orders with a negative amount fail during processing and are routed to the DLQ.
+This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and routes exceptions to a Dead Letter Queue (DLQ) topic using the Kafka Streams native DLQ support.
 
 It demonstrates the following:
 

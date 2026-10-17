@@ -4,7 +4,7 @@ This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and
 
 It demonstrates the following:
 
-- How to use the Kafka Streams DSL, including `map()` and`peek()`.
+- How to use the Kafka Streams DSL, including `map()` and `peek()`.
 - How to write unit tests with Topology Test Driver.
 
 ## Prerequisites

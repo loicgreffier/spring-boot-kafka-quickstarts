@@ -1,6 +1,6 @@
 # Kafka Streams Filter
 
-This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and filters them, keeping the orders with an amount greater than or equal to 1000 and at least 2 items.
+This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and keeps the orders with an amount of at least 1000 and at least 2 items.
 
 It demonstrates the following:
 

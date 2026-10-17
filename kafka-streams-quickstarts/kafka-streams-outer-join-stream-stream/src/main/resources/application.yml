@@ -1,9 +1,9 @@
 kafka:
   properties:
-    application.id: "streams-outer-join-stream-table"
+    application.id: "streams-outer-join-stream-stream"
     avro.remove.java.properties: true
     bootstrap.servers: "localhost:9092"
-    client.id: "streams-outer-join-stream-table"
+    client.id: "streams-outer-join-stream-stream"
     replication.factor: 1
     schema.registry.url: "http://localhost:8081"
     state.dir: "/tmp/kafka-streams-quickstarts"

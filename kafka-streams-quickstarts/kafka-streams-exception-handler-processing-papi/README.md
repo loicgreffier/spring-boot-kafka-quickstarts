@@ -1,6 +1,6 @@
 # Kafka Streams Processing Exception Handler PAPI
 
-This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and handles processing exceptions in the Processor API, thrown for orders with a negative amount.
+This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and handles processing exceptions in the Processor API.
 
 It demonstrates the following:
 

@@ -1,13 +1,13 @@
 # Kafka Streams Schedule
 
-This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and uses the Processor API to count orders by customer.
-It then schedules the emission of these counts to the downstream processor based on wall clock time and stream time.
+This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and counts the orders by customer in a key-value store.
+Every minute of stream time, the counters are forwarded as `<String, Long>` records to the `ORDER_SCHEDULE_TOPIC`. Every 2 minutes of wall clock time, the counters are reset to 0.
 
 It demonstrates the following:
 
 - How to use the Kafka Streams Processor API, including `process()` and `schedule()`.
 - How to use the processor context and schedule tasks based on wall clock time and stream time.
-- How to create a timestamped key-value store.
+- How to create a key-value store.
 - How to write unit tests with Topology Test Driver.
 
 ## Prerequisites

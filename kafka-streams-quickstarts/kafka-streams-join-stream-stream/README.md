@@ -2,7 +2,6 @@
 
 This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and records of type `<String, Delivery>` from the `DELIVERY_TOPIC`,
 and joins them by order id within a 5-minute window, allowing a 1-minute grace period for delayed records.
-The deliveries are re-keyed by order id before being joined to the orders.
 
 It demonstrates the following:
 

@@ -1,6 +1,6 @@
 # Kafka Streams Processing Exception Handler DSL
 
-This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and handles processing exceptions in DSL operations, thrown for orders with a negative amount.
+This module streams records of type `<String, Order>` from the `ORDER_TOPIC` and handles processing exceptions in DSL operations.
 
 It demonstrates the following:
 
