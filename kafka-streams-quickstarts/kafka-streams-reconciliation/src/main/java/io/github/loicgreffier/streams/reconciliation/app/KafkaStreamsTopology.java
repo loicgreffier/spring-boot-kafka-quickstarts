@@ -33,9 +33,9 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.streams.kstream.Repartitioned;
-import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
+import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 
 /** Kafka Streams topology. */
 public class KafkaStreamsTopology {
@@ -52,8 +52,11 @@ public class KafkaStreamsTopology {
      * @param streamsBuilder The {@link StreamsBuilder} used to build the Kafka Streams topology.
      */
     public static void topology(StreamsBuilder streamsBuilder) {
-        StoreBuilder<KeyValueStore<String, Reconciliation>> storeBuilder = Stores.keyValueStoreBuilder(
-                Stores.persistentKeyValueStore(RECONCILIATION_STORE), Serdes.String(), SerdesUtils.getValueSerdes());
+        StoreBuilder<TimestampedKeyValueStore<String, Reconciliation>> storeBuilder =
+                Stores.timestampedKeyValueStoreBuilder(
+                        Stores.persistentTimestampedKeyValueStore(RECONCILIATION_STORE),
+                        Serdes.String(),
+                        SerdesUtils.getValueSerdes());
 
         streamsBuilder.addStateStore(storeBuilder);
 

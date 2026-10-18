@@ -26,7 +26,8 @@ import io.github.loicgreffier.avro.Reconciliation;
 import org.apache.kafka.streams.processor.api.ContextualProcessor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
-import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.TimestampedKeyValueStore;
+import org.apache.kafka.streams.state.ValueAndTimestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, String, Reconciliation> {
     private static final Logger log = LoggerFactory.getLogger(ReconciliationProcessor.class);
-    private KeyValueStore<String, Reconciliation> reconciliationStore;
+    private TimestampedKeyValueStore<String, Reconciliation> reconciliationStore;
 
     /**
      * Initialize the processor.
@@ -64,11 +65,17 @@ public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, S
         log.info("Processing record {}", message.value().getClass().getSimpleName());
 
         String orderId = message.key();
-        Reconciliation reconciliation = reconciliationStore.get(orderId);
+        ValueAndTimestamp<Reconciliation> valueAndTimestampReconciliation = reconciliationStore.get(orderId);
 
-        if (reconciliation == null) {
+        Reconciliation reconciliation;
+        long eventTimestamp;
+        if (valueAndTimestampReconciliation == null) {
             log.info("No reconciliation record found for key = {}. Storing record in the store", orderId);
             reconciliation = new Reconciliation();
+            eventTimestamp = message.timestamp();
+        } else {
+            reconciliation = valueAndTimestampReconciliation.value();
+            eventTimestamp = valueAndTimestampReconciliation.timestamp();
         }
 
         if (message.value() instanceof Order order) {
@@ -79,7 +86,7 @@ public class ReconciliationProcessor<T> extends ContextualProcessor<String, T, S
             reconciliation.setDelivery(delivery);
         }
 
-        reconciliationStore.put(orderId, reconciliation);
+        reconciliationStore.put(orderId, ValueAndTimestamp.make(reconciliation, eventTimestamp));
         log.info(
                 "Reconciliation record for key = {} updated in the store. Checking if reconciliation is complete",
                 orderId);
