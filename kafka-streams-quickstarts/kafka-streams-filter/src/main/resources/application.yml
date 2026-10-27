@@ -4,6 +4,7 @@ kafka:
     avro.remove.java.properties: true
     bootstrap.servers: "localhost:9092"
     client.id: "streams-filter"
+    compression.type: "lz4"
     replication.factor: 1
     schema.registry.url: "http://localhost:8081"
     state.dir: "/tmp/kafka-streams-quickstarts"

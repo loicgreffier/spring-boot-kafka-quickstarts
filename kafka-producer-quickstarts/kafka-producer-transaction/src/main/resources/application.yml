@@ -2,6 +2,7 @@ kafka:
   properties:
     bootstrap.servers: "localhost:9092"
     client.id: "producer-transaction"
+    compression.type: "lz4"
     key.serializer: "org.apache.kafka.common.serialization.StringSerializer"
     transactional.id: "producer-transaction"
     value.serializer: "org.apache.kafka.common.serialization.StringSerializer"
